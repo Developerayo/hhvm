@@ -1,0 +1,53 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItWDT extends FBShipItCLI {
+  public static function filterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $changeset = FBCommonFilters::applyAll(
+      $changeset,
+      shape(
+        'stripCommonFiles/exceptions' => ImmVector {
+          '@^(?:(?!fbonly/)[^/]+/)*TARGETS$@',
+        },
+      ),
+    );
+
+    $changeset = ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector { '@^(?!fbcode/wdt/)@' },
+    );
+
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap { 'fbcode/wdt/' => '' },
+    );
+
+    return $changeset;
+  }
+
+  protected static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'wdt',
+      'sourceRoots' => ImmSet { 'fbcode/wdt' },
+    );
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItWDT::cliMain();
+}

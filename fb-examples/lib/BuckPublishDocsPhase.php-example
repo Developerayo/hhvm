@@ -1,0 +1,67 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class BuckPublishDocsPhase extends ShipItPhase {
+  <<__Override>>
+  public function getReadableName(): string {
+    return 'Build and push docs on GitHub pages';
+  }
+
+  <<__Override>>
+  final public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
+    return ImmVector {
+      shape(
+        'long_name' => 'skip-publish-docs',
+        'description' => "Don't ".strtolower($this->getReadableName()),
+        'write' => $_ ==> $this->skip(),
+      ),
+    };
+  }
+
+  <<__Override>>
+  public function runImpl(ShipItBaseConfig $config): void {
+    $oss_dir = $config->getDestinationPath();
+    // Run every time without closing.
+    // It if runs already than I won't start again anyway.
+    $pipes = array();
+    $proc = proc_open(
+      'docs/soyweb-prod.sh',
+      array(
+        0 => array('pipe', 'r'),
+        1 => array('file', '/dev/null', 'w'),
+        2 => array('file', '/dev/null', 'w'),
+      ),
+      $pipes,
+      $oss_dir
+    );
+    try {
+      ShipItUtil::shellExec(
+        $oss_dir,
+        /* stdin = */ null,
+        ShipItUtil::DONT_VERBOSE,
+        'git', 'clean', '-xffd',
+      );
+      ShipItUtil::shellExec(
+        $oss_dir,
+        /* stdin = */ null,
+        ShipItUtil::DONT_VERBOSE,
+        'docs/publish.sh',
+      );
+    } finally {
+      $status = proc_get_status($proc);
+      if ($status !== null) {
+        // kill whole tree of docs/soyweb-prod.sh
+        exec('pstree -pl '.$status['pid'].
+             ' | grep -o "([0-9]\+)" | sed "s/(\|)//g" | xargs kill');
+      }
+    }
+  }
+}

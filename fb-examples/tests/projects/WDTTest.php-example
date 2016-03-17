@@ -1,0 +1,63 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+
+final class WDTTest extends FBProjectBaseTest {
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItWDT::filterChangeset(
+      $changeset,
+    );
+  }
+
+  protected function getExamplePublicPath(): string {
+    return 'fbcode/wdt/WdtBase.h';
+  }
+
+  <<__Override>>
+  public function testWithAlreadyOnGitHub(): void {
+    $this->markTestSkipped("not supported by this project");
+  }
+
+  public function testPathMappings(): void {
+    $in = (new ShipItChangeset())
+      ->withDiffs(ImmVector {
+        shape( 'path' => 'fbcode/wdt/foo', 'body' => 'placeholder')
+      });
+    $out = self::map($in);
+    $this->assertEquals(
+      ImmVector { 'foo' },
+      $out->getDiffs()->map($diff ==> $diff['path']),
+    );
+  }
+
+  public function testStripping(): void {
+    $diffs = ImmMap {
+      'fbcode/wdt/TARGETS' => 'keep',
+      'fbcode/wdt/PLATFORM' => 'skip',
+      'fbcode/wdt/fbonly/foo' => 'skip',
+      'fbcode/wdt/fbonly/TARGETS' => 'skip',
+      'fbcode/wdt/fbonly/subdir/TARGETS' => 'skip',
+      'fbcode/wdt/somethingelse/TARGETS' => 'keep',
+    };
+    $in = (new ShipItChangeset())
+      ->withDiffs(self::diffsFromMap($diffs));
+    $out = self::map($in);
+    $this->assertEquals(
+      $diffs
+        ->filter($action ==> $action === 'keep')
+        ->keys()
+        ->map($path ==> str_replace('fbcode/wdt/', '', $path)),
+      $out->getDiffs()->map($diff ==> $diff['path']),
+    );
+  }
+}

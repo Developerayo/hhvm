@@ -1,0 +1,68 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class BuckUpdateInternalMirrorPhase extends ShipItPhase {
+  <<__Override>>
+  public function getReadableName(): string {
+    return 'Update the internal mirror of the GitHub repo';
+  }
+
+  <<__Override>>
+  final public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
+    return ImmVector {
+      shape(
+        'long_name' => 'skip-sync-internal',
+        'description' => "Don't ".strtolower($this->getReadableName()),
+        'write' => $_ ==> $this->skip(),
+      ),
+    };
+  }
+
+  <<__Override>>
+  public function runImpl(ShipItBaseConfig $config): void {
+    // Remove it remote first in case it's changed, NO_THROW in case git errors
+    // because the remote already doesn't exist
+    ShipItUtil::shellExec(
+      $config->getSourcePath(),
+      /* stdin = */ null,
+      ShipItUtil::DONT_VERBOSE | ShipItUtil::NO_THROW,
+      'git',
+      'remote',
+      'rm',
+      'github_local',
+    );
+
+    // Long-form because https://github.com/facebook/hhvm/issues/6883
+    $exec = function (...$command): void use ($config) {
+      ShipItUtil::shellExec(
+        $config->getSourcePath(),
+        /* stdin = */ null,
+        ShipItUtil::DONT_VERBOSE,
+        ...$command,
+      );
+    };
+
+    $exec(
+      'git',
+      'remote',
+      'add',
+      'github_local',
+      $config->getDestinationPath(),
+    );
+    $exec('git', 'fetch', 'github_local');
+    $exec(
+      'git',
+      'push',
+      'origin',
+      'github_local/master:refs/heads/github/master',
+    );
+  }
+}

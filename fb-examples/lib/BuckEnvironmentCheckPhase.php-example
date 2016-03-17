@@ -1,0 +1,66 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+// Not strict because variadics aren't currently supported by strict
+
+final class BuckEnvironmentCheckPhase extends EnvironmentCheckPhase {
+  private static function runCommand(
+    int $extra_flags,
+    ...$command
+  ): string {
+    return ShipItUtil::shellExec(
+      /* path = */ '.',
+      /* stdin = */ null,
+      ShipItUtil::DONT_VERBOSE | ShipItUtil::NO_THROW | $extra_flags,
+      ...$command,
+    );
+  }
+
+  <<__Override>>
+  public function runImpl(ShipItBaseConfig $config): void {
+    $ant_v = self::runCommand(
+      /* flags = */ 0,
+      'ant', '-version',
+    );
+    $match = array();
+    if (!preg_match('@version ([0-9\.]+)@', $ant_v, $match)) {
+      fprintf(STDERR, "Couldn't identify ant version: %s\n", $ant_v);
+      exit(1);
+    }
+    if ($match[1] < '1.9') {
+      fprintf(STDERR, "Needed ant 1.9, got %s\n", $match[1]);
+      exit(1);
+    }
+
+    $java_v = self::runCommand(
+      ShipItUtil::RETURN_STDERR,
+      'java', '-version',
+    );
+    $match = array();
+    if (!preg_match('@version "([0-9\.]+)@', $java_v, $match)) {
+      fprintf(STDERR, "Couldn't identify java version: %s\n", $java_v);
+      exit(1);
+    }
+
+    if ($match[1] < '1.7') {
+      fprintf(STDERR, "Needed Java 1.7, got %s\n", $match[1]);
+      exit(1);
+    }
+
+    if (getenv('ANDROID_HOME') === false) {
+      fwrite(STDERR, "ANDROID_HOME env variable not set\n");
+      exit(1);
+    }
+    if (getenv('NDK_HOME') === false) {
+      fwrite(STDERR, "NDK_HOME env variable not set\n");
+      exit(1);
+    }
+  }
+}

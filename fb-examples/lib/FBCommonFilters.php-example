@@ -1,0 +1,256 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class FBCommonFilters {
+  public static function applyAll(
+    ShipItChangeset $changeset,
+    shape(
+      'stripCommonFiles/exceptions' => ?ImmVector<string>,
+      'filterMessageSections/keepFields' => ?ImmSet<string>,
+    ) $config = shape(),
+  ): ShipItChangeset {
+    $changeset = self::skipIfAlreadyOnGitHub($changeset);
+
+    $changeset = self::stripCommonFiles(
+      $changeset,
+      $config['stripCommonFiles/exceptions'] ?? ImmVector {},
+    );
+    $changeset = self::stripSubjectTags($changeset);
+    $changeset = self::delinkifyDifferentialURLs($changeset);
+    $changeset = self::restoreGitHubAuthor($changeset);
+    $changeset = ShipItUserFilters::rewriteSVNAuthor(
+      $changeset,
+      FBToGitHubUserInfo::class,
+    );
+    $changeset = self::filterMessageSections(
+      $changeset,
+      $config['filterMessageSections/keepFields']
+        ?? self::getDefaultMessageSectionNames(),
+    );
+    $changeset = self::rewriteMentions($changeset);
+    $changeset = self::rewriteReviewers($changeset);
+
+    return $changeset;
+  }
+
+  public static function stripSummariesByDefault(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    if (ShipItMentions::containsMention($changeset, '@public')) {
+      return ShipItMentions::rewriteMentions(
+        $changeset,
+        $mention ==> $mention === '@public' ? '' : $mention,
+      );
+    }
+
+    $sections = ShipItMessageSections::getSections(
+      $changeset,
+      self::getSupportedMessageSectionNames(),
+    );
+
+    if ($sections->containsKey('github author')) {
+      return $changeset;
+    }
+
+    $sections->removeKey('summary');
+
+    return $changeset->withMessage(
+      ShipItMessageSections::buildMessage($sections->toImmMap()),
+    );
+  }
+
+  ////////////////////////////////////////////
+  ///// most users can stop reading here /////
+  ////////////////////////////////////////////
+
+  public static function skipIfAlreadyOnGitHub(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    if (ShipItMentions::containsMention($changeset, '@already-on-github')) {
+      $changeset = $changeset
+        ->withDiffs(ImmVector { })
+        ->withDebugMessage('SKIP COMMIT: @already-on-github');
+      invariant(
+        !$changeset->isValid(),
+        '@already-on-github diff still valid',
+      );
+    }
+    return $changeset;
+  }
+
+  public static function stripCommonFiles(
+    ShipItChangeset $changeset,
+    ImmVector<string> $exception_patterns = ImmVector { },
+  ): ShipItChangeset {
+    return ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector {
+        '@(^|/)facebook(/|$)@', /** JAVA DEVELOPERS: HERE BE DANGER **/
+        '@(^|/)fb-?only(/|$)@',
+        '@(^|/)fb(/|$)@',
+        '@/TARGETS$@',
+        '@/PLATFORM$@',
+        '@/\.hgsparse(-\w+)?$@',
+        '@/BUCK$@', /** MOBILE DEVELOPERS: HERE BE DANGER **/
+        '@/FBBUILD_CONFIG$@',
+        '@/BUILD_MODE$@',
+        '@\.mk$@',
+      },
+      $exception_patterns,
+    );
+  }
+
+  public static function delinkifyDifferentialURLs(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return $changeset->withMessage(
+      preg_replace(
+        '@https?://phabricator\.fb\.com/@i',
+        '',
+        $changeset->getMessage(),
+      )
+    );
+  }
+
+  public static function stripSubjectTags(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    // strip tags like [hack] from the front of the subject. historically,
+    // this happened automatically when ShipItRepoGIT called `git am` without
+    // `-b`, so this is just maintaining that behavior since they sometimes
+    // contain codenames.
+    return $changeset->withSubject(
+      preg_replace(
+        '/^(?:\[[^\]]+\]\s*)+/',
+        '',
+        $changeset->getSubject(),
+      ),
+    );
+  }
+
+  public static function getDefaultMessageSectionNames(): ImmSet<string> {
+    return ImmSet {
+      'summary',
+      'reviewed by',
+      'differential revision',
+      'pulled by',
+    };
+  }
+
+  public static function getSupportedMessageSectionNames(): ImmSet<string> {
+    return ImmSet {
+      'summary',
+      'facebook',
+      'github author',
+      'test plan',
+      'reviewers',
+      'reviewed by',
+      'cc',
+      'differential revision',
+      'blame revision',
+      'task id',
+      'tasks',
+      'subscribers',
+      'signature',
+      'committer',
+      'pulled by',
+    };
+  }
+
+  public static function filterMessageSections(
+    ShipItChangeset $changeset,
+    ImmSet<string> $keep = self::getDefaultMessageSectionNames(),
+  ): ShipItChangeset {
+    $sections = ShipItMessageSections::getSections(
+      $changeset,
+      self::getSupportedMessageSectionNames(),
+    )->filterWithKey( ($k, $_) ==> $keep->contains($k));
+    return $changeset->withMessage(
+      ShipItMessageSections::buildMessage($sections->toImmMap())
+    );
+  }
+
+  public static function rewriteMentions(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $changeset = ShipItUserFilters::rewriteMentions(
+      $changeset,
+      FBToGitHubUserInfo::class,
+    );
+    $changeset = ShipItMentions::rewriteMentionsWithoutAt(
+      $changeset,
+      /* exceptions = */ ImmSet {
+        '@override-unit-failures',
+        '@already-on-github',
+        '@public',
+      },
+    );
+    return $changeset;
+  }
+
+  private static function isBotUser(string $user): bool {
+    return (ImmSet {
+      'androidtrunkagent',
+      'svcscm',
+    })->contains($user);
+  }
+
+  public static function restoreGitHubAuthor(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    if (!preg_match('/^Github author:/mi', $changeset->getMessage())) {
+      return $changeset;
+    }
+
+    $matches = [];
+    if (
+      preg_match(
+        '/<(?<author>[^@]*)@fb\.com>/',
+        $changeset->getAuthor(),
+        $matches,
+      ) && !self::isBotUser($matches['author'])
+    ) {
+      $pulled_by = $matches['author'];
+      $pulled_by = \HH\Asio\join(
+        FBToGitHubUserInfo::getDestinationUserFromLocalUser($pulled_by),
+      );
+
+      $changeset = $changeset->withMessage(
+        $changeset->getMessage()."\n\nPulled By: ".$pulled_by,
+      );
+    }
+
+    return ShipItUserFilters::rewriteAuthorFromGitHubAuthorLine($changeset);
+  }
+
+  public static function rewriteReviewers(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $sections = ShipItMessageSections::getSections(
+      $changeset,
+      self::getSupportedMessageSectionNames(),
+    );
+    if (!$sections->containsKey('reviewed by')) {
+      return $changeset;
+    }
+    $names = (new Vector(explode(', ', $sections['reviewed by'])))
+      // No project reviewers e.g., #WDT in D2407623
+      ->filter($name ==> substr(trim($name), 0, 1) !== '#')
+      ->map(async $name ==>
+        await FBToGitHubUserInfo::getDestinationUserFromLocalUser($name)
+      );
+    $names = \HH\Asio\join(\HH\Asio\v($names))->filter($x ==> strlen($x) > 0);
+    $sections['reviewed by'] = implode(', ', $names);
+    return $changeset->withMessage(
+      ShipItMessageSections::buildMessage($sections->toImmMap())
+    );
+  }
+}

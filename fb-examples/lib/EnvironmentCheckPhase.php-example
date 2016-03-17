@@ -1,0 +1,28 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+abstract class EnvironmentCheckPhase extends ShipItPhase {
+  <<__Override>>
+  final public function getReadableName(): string {
+    return 'Build environment check';
+  }
+
+  <<__Override>>
+  final public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
+    return ImmVector {
+      shape(
+        'long_name' => 'skip-environment-check',
+        'description' => "Don't check the build environment",
+        'write' => $_ ==> $this->skip(),
+      ),
+    };
+  }
+}

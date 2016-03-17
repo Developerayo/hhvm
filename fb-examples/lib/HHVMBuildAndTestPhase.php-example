@@ -1,0 +1,84 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class HHVMBuildAndTestPhase extends BuildAndTestPhase {
+  const int MAX_FAILURES = 5;
+
+  <<__Override>>
+  protected function build(ShipItBaseConfig $config): void {
+    $steps = ImmMap {
+      'cleaning tree' => ImmVector { 'git', 'clean', '-Xdff' },
+      'running cmake' => ImmVector {
+        'cmake',
+        '-DENABLE_ZEND_COMPAT=ON',
+        '-DCMAKE_BUILD_TYPE=Debug',
+        '-DMYSQL_UNIX_SOCK_ADDR=/dev/null',
+        '-DENABLE_LD_GOLD=Off',
+        '-DLIBINOTIFY_LIBRARY=/usr/lib64/libinotifytools.so.0',
+        '.',
+      },
+      'building' => ImmVector { 'make', '-j40' },
+    };
+
+    self::runExecutableSteps($config, $steps);
+
+    // Removed by the git clean step
+    invariant(
+      file_exists($config->getDestinationPath()."/hphp/hhvm/hhvm"),
+      'HHVM build exited with 0, but hhvm binary does not exist',
+    );
+  }
+
+  <<__Override>>
+  protected function test(ShipItBaseConfig $config): void {
+    $test_output = ShipItUtil::shellExec(
+      $config->getDestinationPath(),
+      /* stdin = */ null,
+      ShipItUtil::DONT_VERBOSE,
+      'hphp/hhvm/hhvm',
+      'hphp/test/run',
+      '--verbose',
+      'quick',
+    );
+
+    $matches = array();
+    preg_match("/([0-9]+) tests failed/", implode("", $test_output), $matches);
+    $failures = count($matches) === 2 ? (int) $matches[1] : 0;
+
+    // Don't block the push on a trivial number of failures, but make sure that
+    // we still stop if it's completely broken.
+    //
+    // Change the constraint if we end up supporting more than 'quick' again
+    if ($failures > self::MAX_FAILURES) {
+      fprintf(
+        STDERR,
+        "Too many test failures - got %d, needed <= %d\n",
+        $failures,
+        self::MAX_FAILURES,
+      );
+      exit(1);
+    }
+
+    if ($failures === 0) {
+      fwrite(STDERR, "All tests passed.\n");
+    } else {
+      $test_output_nice = implode(PHP_EOL, $test_output);
+      // Start from the # tests failed and give that part of the output back
+      $test_summary_start_pos = strpos($test_output_nice, $matches[0]);
+      $test_summary = substr($test_output_nice, $test_summary_start_pos);
+      fwrite(
+        STDERR,
+        "Some tests failed - summary:\n".
+        self::removeColorCodes($test_summary),
+      );
+    }
+  }
+}

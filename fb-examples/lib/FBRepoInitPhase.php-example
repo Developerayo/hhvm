@@ -1,0 +1,144 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class FBRepoInitPhase extends ShipItPhase {
+  public function __construct(
+    private ShipItBaseConfig $config, // temporary - legacy migration
+    private ShipItRepoSide $side,
+    private string $name = 'fbcode',
+  ) {
+    $this->assertIsSourceSide();
+  }
+
+  private function assertIsSourceSide(): void {
+    invariant(
+      $this->side === ShipItRepoSide::SOURCE,
+      'writing to Facebook repositories is not supported',
+    );
+  }
+
+  public function getReadableName(): string {
+    return 'Initialize '.$this->side.' '.$this->name.' repository';
+  }
+
+  public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
+    return ImmVector {
+      shape(
+        'long_name' => 'skip-'.$this->side.'-init',
+        'description' => "Don't initialize the repository",
+        'write' => $_ ==> $this->skip(),
+      ),
+      shape(
+        'long_name' => $this->side.'-repo::',
+        'description' => 'Source repo (fbcode, fbsource, or www) [fbcode]',
+        'write' => $x ==> {
+          $this->name = $x;
+          $this->assertIsSourceSide();
+          /* HH_FIXME[4128] calling deprecated method */
+          $this->config->__fb__setSourceDirectoryName($this->name);
+        },
+      ),
+      shape(
+        'long_name' => 'src-repo::',
+        'replacement' => $this->side.'-repo::',
+        'write' => $x ==> {
+          $this->assertIsSourceSide();
+          $this->name = $x;
+          /* HH_FIXME[4128] calling deprecated method */
+          $this->config->__fb__setSourceDirectoryName($this->name);
+        },
+      ),
+    };
+  }
+
+  public function runImpl(
+    ShipItBaseConfig $config,
+  ): void {
+    $local_path =
+      $this->side === ShipItRepoSide::SOURCE
+      ? $config->getSourcePath()
+      : $config->getDestinationPath();
+
+    if (is_dir($local_path)) {
+      return;
+    }
+
+    // In case the src repo dir was specified by hand
+    if (basename($local_path) !== $this->name) {
+      fprintf(
+        STDERR,
+        'Facebook clone scripts require directory names to match repo names: '.
+        "got '%s', expected '%s'\n",
+        basename($local_path),
+        $this->name,
+      );
+      exit(1);
+    }
+
+    $command = $this->getCloneCommand();
+    $local_parent_path = dirname($local_path);
+    if (!is_dir($local_parent_path)) {
+      mkdir($local_parent_path, 0755, /* recursive = */ true);
+    }
+    // Make sure that "remove stale temp file" jobs don't clean this up
+    touch($local_parent_path);
+
+    ShipItUtil::shellExec(
+      $local_parent_path,
+      /* stdin = */ null,
+      ShipItUtil::DONT_VERBOSE,
+      ...$command,
+    );
+
+  }
+
+  private function getCloneCommand(): ImmVector<string> {
+    switch ($this->name) {
+      case 'fbcode':
+        return ImmVector {
+          '/usr/local/bin/hg-clone-fbcode',
+          '--no-working-dir',
+          '--simple',
+        };
+      case 'fbsource':
+        return ImmVector {
+          '/usr/local/bin/hg-clone-fbsource',
+          '--no-working-dir',
+          '--simple',
+        };
+      case 'www':
+        return ImmVector {
+          '/usr/local/bin/hg-clone-www',
+          '--no-working-dir',
+          '--simple',
+        };
+      case 'infer-fb':
+        return ImmVector {
+          '/usr/bin/git',
+          'clone',
+          'ssh://projects.git.vip.facebook.com/data/gitrepos/infer',
+          'infer-fb',
+        };
+        break;
+      case 'buck_internal':
+        return ImmVector {
+          '/usr/bin/git',
+          'clone',
+          'ssh://projects.git.vip.facebook.com/data/gitrepos/buck.git',
+          'buck_internal',
+        };
+    }
+    invariant_violation(
+      "Unsupported repository: %s",
+      $this->name,
+    );
+  }
+}

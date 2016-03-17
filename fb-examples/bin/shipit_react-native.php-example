@@ -1,0 +1,72 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+
+final class ShipItReactNative extends FBShipItCLI {
+  <<__Override>>
+  public static function filterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $changeset = FBCommonFilters::stripSummariesByDefault($changeset);
+
+    $changeset = FBCommonFilters::applyAll(
+      $changeset,
+      shape(
+        // FBCommonFilters defines a common set of files to ignore
+        // across all fb projects, such as BUCK files and others.
+        // We want to export *all* of the react-native-github folder
+        // to GitHub, except for a few specific paths.
+        'stripCommonFiles/exceptions' => ImmVector {
+          '/.*/',
+        },
+      ),
+    );
+
+    // Ignore these when exporting the react-native-github folder to GitHub.
+    $changeset = ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector {
+        '@^(?!fbobjc/Libraries/FBReactKit/js/react-native-github/)@',
+        '@^fbobjc/Libraries/FBReactKit/js/react-native-github/node_modules/@',
+        '@^fbobjc/Libraries/FBReactKit/js/react-native-github/npm-shrinkwrap.json@',
+        '@/\.hgsparse(-\w+)?$@',
+      },
+    );
+
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+      'fbobjc/Libraries/FBReactKit/js/react-native-github/' => '',
+      },
+    );
+
+    return $changeset;
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'react-native',
+      'sourceRoots' => ImmSet {
+        'fbobjc/Libraries/FBReactKit/js/react-native-github',
+      },
+    );
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItReactNative::cliMain();
+}

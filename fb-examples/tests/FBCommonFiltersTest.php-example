@@ -1,0 +1,35 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+
+final class FBCommonFiltersTest extends BaseTest {
+  public function testFBAuthorWithoutGitHubAuthor(): void {
+    $in = (new ShipItChangeset())
+      ->withAuthor('Joel Marcey <joelm@fb.com>');
+    $out = FBCommonFilters::restoreGitHubAuthor($in);
+    $this->assertSame($in->getAuthor(), $out->getAuthor());
+  }
+
+  public function testFBAuthorWithGitHubAuthor(): void {
+    $in = (new ShipItChangeset())
+      ->withAuthor('Joel Marcey <joelm@fb.com>')
+      ->withMessage('GitHub Author: Fred Emmott <fe@fb.com>');
+    $out = FBCommonFilters::restoreGitHubAuthor($in);
+    $this->assertSame(
+      'Fred Emmott <fe@fb.com>',
+      $out->getAuthor(),
+    );
+    $this->assertSame(
+      $in->getMessage()."\n\nPulled By: JoelMarcey",
+      $out->getMessage(),
+    );
+  }
+}

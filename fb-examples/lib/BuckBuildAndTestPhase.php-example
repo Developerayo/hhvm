@@ -1,0 +1,71 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class BuckBuildAndTestPhase extends BuildAndTestPhase {
+  private static array<string> $testsWhitelist = array();
+
+  <<__Override>>
+  protected function build(ShipItBaseConfig $config): void {
+    $steps = ImmMap {
+      'clean' => ImmVector { 'git', 'clean', '-xffd' },
+      'lint' => ImmVector { 'ant', 'default', 'lint' },
+      'build' => ImmVector { './bin/buck', 'build', 'buck' },
+    };
+
+    self::runExecutableSteps($config, $steps);
+  }
+
+  <<__Override>>
+  protected function test(ShipItBaseConfig $config): void {
+    $root = $config->getDestinationPath();
+    $moe_occurrences = ShipItUtil::shellExec(
+      $config->getDestinationPath(),
+      /* stdin = */ null,
+      ShipItUtil::DONT_VERBOSE | ShipItUtil::NO_THROW,
+      'grep', '-r', 'MOE',
+    );
+    $moe_occurrences = preg_replace("@^.*Binary.*\n@m", '', $moe_occurrences);
+    invariant(
+      !$moe_occurrences,
+      "Grep found MOE in OSS repo:\n%s\n",
+      $moe_occurrences,
+    );
+
+    $tests_out = ShipItUtil::shellExec(
+      $config->getDestinationPath(),
+      /* stdin = */ null,
+      ShipItUtil::RETURN_STDERR,
+      './bin/buck', 'test',
+    );
+
+    $failed_targets = array();
+    if (
+      preg_match_all(
+        '@^FAIL ([^\s]*)$@m',
+        $tests_out,
+        $failed_targets,
+        PREG_PATTERN_ORDER,
+      )
+    ) {
+      foreach ($failed_targets[1] as $failed_target) {
+        if (!in_array($failed_target, self::$testsWhitelist)) {
+          fprintf(
+            STDERR,
+            "./bin/buck test failed, testing output:\n%s\n",
+            $tests_out,
+          );
+          exit(1);
+        }
+      }
+    }
+    fwrite(STDERR, "All tests passed\n");
+  }
+}

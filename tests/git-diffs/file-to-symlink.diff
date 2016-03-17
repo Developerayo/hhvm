@@ -1,0 +1,28 @@
+From f9f3f5645604ab1d95c21a7825a8f73948661f62 Mon Sep 17 00:00:00 2001
+From: Fred Emmott <fredemmott@fb.com>
+Date: Fri, 19 Feb 2016 14:56:13 -0800
+Subject: [PATCH] funky
+
+---
+ bar | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+ mode change 100644 => 120000 bar
+
+diff --git a/bar b/bar
+deleted file mode 100644
+index 257cc56..0000000
+--- a/bar
++++ /dev/null
+@@ -1 +0,0 @@
+-foo
+diff --git a/bar b/bar
+new file mode 120000
+index 0000000..7c29013
+--- /dev/null
++++ b/bar
+@@ -0,0 +1 @@
++derp
+\ No newline at end of file
+-- 
+2.4.6
+

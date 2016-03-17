@@ -1,0 +1,87 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+
+final class FlowTest extends FBProjectBaseTest {
+  <<__Override>>
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return (new ShipItScrubberFlow($changeset))->scrub();
+  }
+
+  <<__Override>>
+  protected function getExamplePublicPath(): string {
+    return 'flow/foo';
+  }
+
+  <<__Override>>
+  public function testWithAlreadyOnGitHub(): void {
+    // @already-on-github is not supported by flow scrubber
+  }
+
+  public function examplesForSummaryHandling(
+  ): array<(string, string, ImmVector<string>)> {
+    return [
+      tuple(
+        '[flow] [foo] foo bar',
+        '[foo] foo bar',
+        ImmVector { 'flow/foo', 'flow/bar' },
+      ),
+      tuple(
+        'foo bar',
+        '[hack] foo bar',
+        ImmVector { 'hphp/hack/foo' },
+      ),
+      tuple(
+        '[foo] foo bar',
+        '[hack] foo bar',
+        ImmVector { 'hphp/hack/foo' },
+      ),
+      tuple(
+        '[foo] foo bar',
+        'foo bar',
+        ImmVector { 'hphp/hack/foo', 'flow/foo' },
+      ),
+      tuple(
+        'foo bar',
+        'foo bar',
+        ImmVector { 'hphp/hack/foo', 'flow/foo' },
+      ),
+      tuple(
+        '[herp] foo bar',
+        'foo bar',
+        ImmVector { 'hphp/hack/foo', 'flow/foo' },
+      ),
+      tuple(
+        '[herp] [derp] foo bar',
+        'foo bar',
+        ImmVector { 'something/foo' }, // should be an empty commit
+      ),
+    ];
+  }
+
+  /**
+   * @dataProvider examplesForSummaryHandling
+   */
+  public function testSummaryHandling(
+    string $subject_in,
+    string $subject_expected,
+    ImmVector<string> $paths,
+  ): void {
+    $diffs = $paths->map($path ==> shape('path' => $path, 'body' => 'junk'));
+    $changeset = (new ShipItChangeset())
+      ->withDiffs($diffs)
+      ->withSubject($subject_in);
+    $changeset = self::map($changeset);
+    $this->assertSame($subject_expected, $changeset->getSubject());
+  }
+}

@@ -1,0 +1,47 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+
+final class WebDriverAgentTest extends FBProjectBaseTest {
+
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItWebDriverAgent::filterChangeset(
+      $changeset,
+    );
+  }
+
+  protected function getExamplePublicPath(): string {
+    return 'fbobjc/EndToEndTests/WebDriverAgent/src/foo';
+  }
+
+  public function testPathMappings(): void {
+    $root = 'fbobjc/EndToEndTests/WebDriverAgent/src';
+    $diffs = ImmMap {
+      $root.'/magicDir/File.foo' => 'magicDir/File.foo',
+      $root.'/file.foo' => 'file.foo',
+    };
+    $in = (new ShipItChangeset())
+      ->withDiffs(self::diffsFromMap($diffs));
+      $out = self::map($in);
+    foreach ($diffs as $_ => $expected_output_file) {
+      $this->assertSame(
+        $expected_output_file,
+        $out
+          ->getDiffs()
+          ->filter($diff ==> $diff['path'] === $expected_output_file)
+          ->map($diff ==> $diff['body'])
+          ->firstValue(),
+      );
+    }
+  }
+}

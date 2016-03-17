@@ -1,0 +1,66 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+require_once(__DIR__.'/../autoload.php');
+
+class ShipItBuck {
+  public static function filterChangeset(
+    string $src_path,
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return (new ShipItScrubberBuck(
+      $changeset,
+      $src_path,
+    ))->scrub();
+  }
+
+  public static function cliMain(): void {
+    $config = new ShipItBaseConfig(
+      '/tmp/oss_sync_and_push',
+      /* source dir = */ 'buck_internal',
+      /* dest dir = */ 'buck',
+    );
+
+    $phases = ImmVector {
+      new BuckEnvironmentCheckPhase(),
+      new FBRepoInitPhase(
+        $config,
+        ShipItRepoSide::SOURCE,
+        'buck_internal',
+      ),
+      new ShipItGitHubInitPhase(
+        'facebook',
+        'buck',
+        ShipItRepoSide::DESTINATION,
+        FBGitHubUtils::class,
+      ),
+      new ShipItPullPhase(ShipItRepoSide::SOURCE),
+      new ShipItPullPhase(ShipItRepoSide::DESTINATION),
+      new ShipItSyncPhase(
+        ($config, $changeset) ==> self::filterChangeset(
+          $config->getSourcePath(),
+          $changeset,
+        ),
+        /* paths in source repo */ ImmSet { '.' },
+      ),
+      new BuckBuildAndTestPhase(),
+      new ShipItPushPhase(),
+      new BuckUpdateInternalMirrorPhase(),
+      new BuckPublishDocsPhase(),
+    };
+
+    (new ShipItPhaseRunner($config, $phases))->run();
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItBuck::cliMain();
+}

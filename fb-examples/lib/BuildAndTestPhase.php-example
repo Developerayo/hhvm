@@ -1,0 +1,71 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+abstract class BuildAndTestPhase extends ShipItPhase {
+  abstract protected function build(ShipItBaseConfig $config): void;
+  abstract protected function test(ShipItBaseConfig $config): void;
+
+  <<__Override>>
+  final public function getReadableName(): string {
+    return 'Build and test';
+  }
+
+  <<__Override>>
+  final public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
+    return ImmVector {
+      shape(
+        'long_name' => 'skip-build-and-test',
+        'description' => "Don't build and test the destination repo",
+        'write' => $_ ==> $this->skip(),
+      ),
+    };
+  }
+
+  <<__Override>>
+  final protected function runImpl(ShipItBaseConfig $config): void {
+    $this->build($config);
+    $this->test($config);
+  }
+
+  <<__Deprecated("Only for OSSSyncAndPush migration", 0)>>
+  final public static function __fb__removeColorCodesPublic(
+    string $line,
+  ): string {
+    return self::removeColorCodes($line);
+  }
+
+  final protected static function removeColorCodes(string $line): string {
+    // Get rid of codes like ^[[31;31m that may get output to stdout or stderr.
+    // 0x1B is the hex code for the escape sequence ^[
+    $color_escape_code_pattern = "/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K|G]/";
+    return preg_replace($color_escape_code_pattern, "", $line);
+  }
+
+  /**
+   * Execute the build steps specified.
+   *
+   * @param $steps - a map from step names to a vector of CLI arguments
+   */
+  protected static function runExecutableSteps(
+    ShipItBaseConfig $config,
+    ImmMap<string, ImmVector<string>> $steps,
+  ): void {
+    foreach ($steps as $_ => $command) {
+      // throws if any step fails
+      ShipItUtil::shellExec(
+        $config->getDestinationPath(),
+        /* stdin = */ null,
+        ShipItUtil::VERBOSE_SHELL_OUTPUT,
+        ...$command,
+      );
+    }
+  }
+}

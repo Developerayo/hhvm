@@ -1,0 +1,54 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItFBCuda extends FBShipItCLI {
+  <<__Override>>
+  public static function filterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $changeset = FBCommonFilters::applyAll(
+      $changeset,
+    );
+
+    $changeset = ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector {
+        '@^(?!fbcode/cuda)@',
+      },
+    );
+
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+        'fbcode/cuda/' => '',
+      },
+    );
+
+    return $changeset;
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'fbcuda',
+      'sourceRoots' => ImmSet { 'fbcode/cuda' },
+    );
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItFBCuda::cliMain();
+}

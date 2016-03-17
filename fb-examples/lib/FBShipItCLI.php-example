@@ -1,0 +1,72 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+type FBShipItCLIStaticConfig = shape(
+  'internalRepo' => string,
+  'githubOrg' => string,
+  'githubProject' => string,
+  'sourceRoots' => ImmSet<string>,
+  'destDirName' => ?string, // defaults to githubProject
+);
+
+/** Base class for projects that have no special requirements.
+ *
+ * If you need more flexibility than this provides, use the classes
+ * directly (eg shipit_hhvm.php and shipit_buck.php)
+ */
+abstract class FBShipItCLI {
+  // Public so that you can add a unit test
+  abstract public static function filterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset;
+
+  protected abstract static function getStaticConfig(): FBShipItCLIStaticConfig;
+
+  final public static function cliMain(): void {
+    $static_config = static::getStaticConfig();
+
+    $config = new ShipItBaseConfig(
+      '/var/tmp/oss_sync_and_push',
+      /* source_dir = */ $static_config['internalRepo'],
+      Shapes::idx(
+        $static_config,
+        'destDirName',
+        $static_config['githubProject'],
+      ),
+    );
+    $phases = ImmVector {
+      new FBRepoInitPhase(
+        $config,
+        ShipItRepoSide::SOURCE,
+        $static_config['internalRepo'],
+      ),
+      new ShipItPullPhase(ShipItRepoSide::SOURCE),
+      new ShipItCreateNewRepoPhase(
+        $static_config['sourceRoots'],
+        $changeset ==> static::filterChangeset($changeset),
+      ),
+      new ShipItGitHubInitPhase(
+        $static_config['githubOrg'],
+        $static_config['githubProject'],
+        ShipItRepoSide::DESTINATION,
+        FBGitHubUtils::class,
+      ),
+      new ShipItPullPhase(ShipItRepoSide::DESTINATION),
+      new ShipItSyncPhase(
+        ($config, $changeset) ==> static::filterChangeset($changeset),
+        $static_config['sourceRoots'],
+      ),
+      new ShipItPushPhase(),
+    };
+
+    (new ShipItPhaseRunner($config, $phases))->run();
+  }
+}

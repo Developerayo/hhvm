@@ -1,0 +1,238 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+
+abstract class FBProjectBaseTest extends BaseTest {
+  protected function usesOptInPublicSummaries(): bool {
+    return false;
+  }
+
+  protected abstract function getExamplePublicPath(): string;
+
+  protected abstract static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset;
+
+  public function exampleMessagesWithDifferentialURLs(
+  ): array<(string, string)> {
+    return [
+      tuple('foo', 'foo'),
+      tuple('https://phabricator.fb.com/D12345', 'D12345'),
+      tuple('Foo https://phabricator.fb.com/D12345 bar', 'Foo D12345 bar'),
+      tuple(
+        'foo '.
+          'https://phabricator.fb.com/D12345 bar '.
+          'https://phabricator.fb.com/D6789 baz',
+        'foo D12345 bar D6789 baz',
+      ),
+    ];
+  }
+
+  /**
+   * @dataProvider exampleMessagesWithDifferentialURLs
+   */
+  public function testCollapsesDifferentialURLs(
+    string $message_in,
+    string $expected_message_out,
+  ): void {
+    if ($this->usesOptInPublicSummaries()) {
+      $message_in .= ' @public';
+    }
+
+    $in = (new ShipItChangeset())
+      ->withMessage("Summary: ".$message_in);
+    $out = static::map($in);
+    $this->assertSame(
+      "Summary: ".$expected_message_out,
+      $out->getMessage(),
+    );
+  }
+
+  public function examplesForSectionHandling(
+  ): array<(string, string)> {
+    if ($this->usesOptInPublicSummaries()) {
+      $this->markTestSkipped("Does not apply to repositories using @public");
+    }
+
+    return [
+      tuple('Summary: foo', 'Summary: foo'),
+      tuple(
+        "Summary: foo\nExample: bar",
+        "Summary:foo\nExample: bar",
+      ),
+      tuple(
+        "Summary: foo\nFacebook: bar",
+        "Summary: foo",
+      ),
+      tuple(
+        "Summary: \nFacebook: bar",
+        '',
+      ),
+      tuple(
+        'Summary:Facebook: bar',
+        '',
+      ),
+      tuple(
+        'Summary: Facebook: bar',
+        '',
+      ),
+    ];
+  }
+
+  /**
+   * @dataProvider examplesForSectionHandling
+   */
+  public function testSectionHandling(
+    string $in,
+    string $expected,
+  ): void {
+    $in = (new ShipItChangeset())->withMessage($in);
+    $out = static::map($in);
+    $this->assertSame($expected, $out->getMessage());
+  }
+
+  public function testOptInPublicSummaries(): void {
+    if (!$this->usesOptInPublicSummaries()) {
+      $this->markTestSkipped();
+    }
+
+    $in = (new ShipItChangeset())->withMessage('Summary: foo');
+    $out = static::map($in);
+    $this->assertEmpty($out->getMessage());
+
+    $in = (new ShipItChangeset())->withMessage('Summary: foo @public');
+    $out = static::map($in);
+    $this->assertSame('Summary: foo', $out->getMessage());
+  }
+
+  public function examplesForStripSubjectTags(
+  ): array<(string, string)> {
+    return [
+      tuple('foo bar', 'foo bar'),
+      tuple('[secret] foo', 'foo'),
+      tuple('[secret][super secret] foo bar', 'foo bar'),
+      tuple('[secret][super secret] foo bar', 'foo bar'),
+      tuple('[secret] [super secret] foo bar', 'foo bar'),
+    ];
+  }
+
+  /**
+   * @dataProvider examplesForStripSubjectTags
+   */
+  public function testStripSubjectTags(
+    string $in,
+    string $expected,
+  ): void {
+    $changeset = (new ShipItChangeset())->withSubject($in);
+    $changeset = static::map($changeset);
+    $out = $changeset->getSubject();
+    $this->assertSame($expected, $out);
+  }
+
+  public function testGitHubAuthor(): void {
+    $in = (new ShipItChangeset())
+      ->withMessage("GitHub Author: Foo Bar <foobar@example.com>");
+    $out = static::map($in);
+    $this->assertEquals('Foo Bar <foobar@example.com>', $out->getAuthor());
+  }
+
+  public function testPulledBy(): void {
+    $in = (new ShipItChangeset())
+      ->withMessage("GitHub Author: Foo Bar <foobar@example.com>")
+      ->withAuthor('Fred Emmott <fredemmott@fb.com>');
+    $out = static::map($in);
+    $this->assertEquals('Foo Bar <foobar@example.com>', $out->getAuthor());
+    $this->assertContains(
+      'Pulled By: fredemmott',
+      $out->getMessage(),
+    );
+  }
+
+  public function testPulledByWithUnixnameDifferentToGithub(): void {
+    $in = (new ShipItChangeset())
+      ->withMessage("GitHub Author: Foo Bar <foobar@example.com>")
+      ->withAuthor('Joel Marcey <joelm@fb.com>');
+    $out = static::map($in);
+    $this->assertEquals('Foo Bar <foobar@example.com>', $out->getAuthor());
+    $this->assertContains(
+      'Pulled By: JoelMarcey',
+      $out->getMessage(),
+    );
+  }
+
+  public function testNoPulledByIfNoGitHubAuthor(): void {
+    $in = (new ShipItChangeset())
+      ->withAuthor('Fred Emmott <fe@fb.com>');
+    $out = static::map($in);
+    $this->assertSame('Fred Emmott <fe@fb.com>', $out->getAuthor());
+    $this->assertSame('', $out->getMessage());
+  }
+
+  public function testReviewerMapping(): void {
+    $in = (new ShipItChangeset())
+      ->withMessage("Reviewed By: fredemmott, joelm");
+    $out = static::map($in);
+    $this->assertContains(
+      'Reviewed By: fredemmott, JoelMarcey',
+      $out->getMessage(),
+    );
+  }
+
+  public function testMentionMapping(): void {
+    $in = 'Summary: foo @joelm bar';
+    $expected = 'Summary: foo JoelMarcey bar';
+    if ($this->usesOptInPublicSummaries()) {
+      $in .= ' @public';
+    }
+
+    $in = (new ShipItChangeset())->withMessage($in);
+    $out = static::map($in);
+    $this->assertContains($expected, $out->getMessage());
+  }
+
+  public function testGitSVNAuthor(): void {
+    $in = (new ShipItChangeset())
+      ->withAuthor("joelm@d8a4e40d-db80-4680-aacd-cdc45a86d7e7");
+    $out = static::map($in);
+    $this->assertEquals("Joel Marcey <joelm@fb.com>", $out->getAuthor());
+  }
+
+  public function testPullRequestSummariesArePublic(): void {
+    $in = ShipItRepoHG::getChangesetFromExportedPatch(
+      file_get_contents(__DIR__.'/../hg-diffs/github-pull-request.diff')
+    );
+    $this->assertNotNull($in);
+    assert($in !== null); // for typechecker
+    $out = static::map($in);
+    $this->assertContains('Before we would', $out->getMessage());
+  }
+
+  public function testWithoutAlreadyOnGitHub(): void {
+    $in = (new ShipItChangeset())
+      ->withMessage('herp derp')
+      ->withDiffs( ImmVector {
+        shape('path' => $this->getExamplePublicPath(), 'body' => 'herp')
+      });
+    $out = static::map($in);
+    $this->assertTrue($out->isValid());
+  }
+
+  public function testWithAlreadyOnGitHub(): void {
+    $in = (new ShipItChangeset())
+      ->withMessage('herp derp @already-on-github')
+      ->withDiffs( ImmVector {
+        shape('path' => $this->getExamplePublicPath(), 'body' => 'herp')
+      });
+    $out = static::map($in);
+
+    $this->assertFalse($out->isValid());
+  }
+}

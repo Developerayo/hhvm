@@ -1,0 +1,93 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+class ShipItHHVM {
+  public static function filterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $changeset = FBCommonFilters::applyAll(
+      $changeset,
+      shape(
+        'stripCommonFiles/exceptions' => ImmVector {
+          // HHVM will rewrite this SHA file into something publicly usable
+          '@^fbcode/hphp/facebook/third-party-rev.txt@',
+          // HHVM has an extension named "fb" which is public
+          '@^fbcode/hphp/runtime/ext/fb/@',
+        },
+      ),
+    );
+
+    $changeset = ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector {
+        '@^(?!fbcode/hphp)@',
+        '@^fbcode/hphp/(?!hack).*Makefile$@',
+      },
+    );
+
+    $changeset = ShipItSubmoduleFilter::useSubmoduleCommitFromTextFile(
+      $changeset,
+      'fbcode/hphp/facebook/third-party-rev.txt',
+      'third-party',
+    );
+
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+        'fbcode/hphp/public_tld/' => '',
+        'fbcode/hphp/' => 'hphp/',
+      },
+    );
+
+    return $changeset;
+  }
+
+  public static function cliMain(): void {
+    $config = new ShipItBaseConfig(
+      '/var/tmp/oss_sync_and_push',
+      /* source dir = */ 'fbsource',
+      /* dest dir = */ 'hhvm',
+    );
+
+    $phases = ImmVector {
+      new HHVMEnvironmentCheckPhase(),
+      new FBRepoInitPhase(
+        $config,
+        ShipItRepoSide::SOURCE,
+        'fbsource',
+      ),
+      new ShipItGitHubInitPhase(
+        'facebook',
+        'hhvm',
+        ShipItRepoSide::DESTINATION,
+        FBGitHubUtils::class,
+      ),
+      new HHVMCleanThirdPartyPhase(),
+      new ShipItPullPhase(ShipItRepoSide::SOURCE),
+      new ShipItPullPhase(ShipItRepoSide::DESTINATION),
+      new ShipItSyncPhase(
+        ($config, $changeset) ==> self::filterChangeset($changeset),
+        ImmSet { 'fbcode/hphp' },
+      ),
+      new HHVMBuildAndTestPhase(),
+      new ShipItPushPhase(),
+    };
+
+    (new ShipItPhaseRunner($config, $phases))->run();
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItHHVM::cliMain();
+}

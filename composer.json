@@ -1,0 +1,19 @@
+{
+  "name": "facebook/fbshipit",
+  "description": "Library for syncing code repositories",
+  "keywords": [ "Facebook", "FBShipIt", "Hack" ],
+  "license": [ "BSD-3-Clause" ],
+  "require": {
+    "hhvm": "~3.12",
+    "91carriage/phpunit-hhi": "^5.1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.1.0"
+  },
+  "autoload": {
+    "classmap": [
+      "src/",
+      "tests/"
+    ]
+  }
+}
