@@ -243,7 +243,8 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
       );
       // FML
       invariant_violation(
-        "git diff should not have exited with 0, which means no changes"
+        'git diff exited with 0, which means no changes; expected 1, '.
+        'which means non-empty diff.'
       );
     } catch (ShipItShellCommandException $e) {
       // exit code 1 === success with non-empty diff.
