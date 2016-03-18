@@ -11,16 +11,15 @@ For example, Facebook uses it to:
   [the docs folder](https://github.com/facebook/nuclide/tree/master/docs)
    in the master branch.
 
-## Supported Repositories
+## Major Features
 
-FBShipIt can read from Mercurial (hg) and Git repositories. It also includes
-[a handler](https://github.com/facebook/fbshipit/blob/master/src/ShipItUserFilters.php)
-for correcting HGSubversion/GitSVN uuid-based authors.
-
-FBShipIt currently only supports writing to Git repositories; if
-you would like to write to a Mercurial repository, we would be
-happy to review a pull request extending `ShipItRepoHG` to
-implement the `ShipitDestinationRepo` interface.
+ - read from Git or Mercurial (hg) repositories
+ - write to Git repositories
+ - rewrite `user@uuid` authors from HgSubversion/git-svn
+ - remove files or directories matching certain patterns
+ - remove/rewrite sections of commit messages
+ - modify commit authors (for example, if all internal commits are authored by
+   employees, restore original authors for GitHub pull requests)
 
 ## Requirements
 
