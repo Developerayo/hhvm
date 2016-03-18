@@ -29,7 +29,7 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     ShipItBaseConfig $config,
   ): void {
     $source = ShipItRepo::typedOpen(
-      ShipItRepoHG::class,
+      ShipItSourceRepo::class,
       $config->getSourcePath(),
       $config->getSourceBranch(),
     );

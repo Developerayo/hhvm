@@ -130,15 +130,14 @@ This will require two additional classes:
 
 ## Using With An Empty Destination Repository
 
-If your source is in Mercurial and you are using `ShipItCreateNewRepoPhase`, run:
+Add `ShipItCreateNewRepoPhase` to your phase list (after source init and pull
+phases), then run:
 
 ```
 hhvm my_script.php --special-create-new-repo
 ```
 
 This will give you the path to a git repository with a single commit; you can then push it to your destination.
-
-We plan to support the same process for Git sources in the near future; for now, the initial commit must be made by hand - then follow the instructions for using with an existing destination repository.
 
 ## Using With An Existing Destination Repository
 

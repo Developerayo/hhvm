@@ -40,4 +40,11 @@ interface ShipItSourceRepo {
   public static function getChangesetFromExportedPatch(
     string $exported_diff,
   ): ?ShipItChangeset;
+
+  /**
+   * Create a directory containing the specified paths.
+   */
+  public function export(
+    ImmSet<string> $roots,
+  ): shape('tempDir' => ShipItTempDir, 'revision' => string);
 }

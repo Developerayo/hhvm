@@ -276,4 +276,29 @@ class ShipItRepoGIT
   public function push(): void {
     $this->gitCommand('push', 'origin', 'HEAD:'.$this->branch);
   }
+
+  public function export(
+    ImmSet<string> $roots,
+  ): shape('tempDir' => ShipItTempDir, 'revision' => string) {
+    $rev = trim($this->gitCommand('rev-parse', 'HEAD'));
+
+    $command = Vector {
+      'archive',
+      '--format=tar',
+      $rev,
+    };
+    $command->addAll($roots);
+    $tar = $this->gitCommand(...$command);
+
+    $dest = new ShipItTempDir('git-export');
+    ShipItUtil::shellExec(
+      $dest->getPath(),
+      /* stdin = */ $tar,
+      ShipItUtil::DONT_VERBOSE,
+      'tar',
+      'x',
+    );
+
+    return shape('tempDir' => $dest, 'revision' => $rev);
+  }
 }
