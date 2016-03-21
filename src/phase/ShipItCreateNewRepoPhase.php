@@ -19,10 +19,14 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
   public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
     return ImmVector {
       shape(
-        'long_name' => 'special-create-new-repo',
+        'long_name' => 'create-new-repo',
         'description' =>
           'Create a new git repository with a single commit, then exit',
         'write' => $_ ==> $this->unskip(),
+      ),
+      shape( // deprecated, renamed for consistency with verify
+        'long_name' => 'special-create-new-repo',
+        'replacement' => 'create-new-repo',
       ),
     };
   }

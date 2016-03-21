@@ -134,7 +134,7 @@ Add `ShipItCreateNewRepoPhase` to your phase list (after source init and pull
 phases), then run:
 
 ```
-hhvm my_script.php --special-create-new-repo
+hhvm my_script.php --create-new-repo
 ```
 
 This will give you the path to a git repository with a single commit; you can then push it to your destination.
