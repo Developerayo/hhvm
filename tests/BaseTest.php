@@ -17,4 +17,18 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
       ($path, $body) ==> shape('path' => $path, 'body' => $body)
     )->toImmVector();
   }
+
+  protected function execSteps(
+    string $cwd,
+    ...$steps
+  ): void {
+    foreach ($steps as $step) {
+      ShipItUtil::shellExec(
+        $cwd,
+        /* stdin = */ null,
+        ShipItUtil::DONT_VERBOSE,
+        ...$step,
+      );
+    }
+  }
 }

@@ -189,7 +189,7 @@ class ShipItRepoGIT
   public function commitPatch(ShipItChangeset $patch): string {
     $diff = $this->renderPatch($patch);
     try {
-      $this->gitPipeCommand($diff, 'am', '--keep-non-patch');
+      $this->gitPipeCommand($diff, 'am', '--keep-non-patch', '--keep-cr');
       // If a submodule has changed, then we need to actually update to the
       // new version. + before commit hash represents changed submdoule. Make
       // sure there is no leading whitespace that comes back when we get the

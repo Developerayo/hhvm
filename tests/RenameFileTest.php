@@ -60,18 +60,4 @@ final class RenameFileTest extends BaseTest {
     $this->assertContains('deleted file mode 100644', $diffs['initial.txt']);
     $this->assertContains('new file mode 100755', $diffs['moved.txt']);
   }
-
-  private function execSteps(
-    string $cwd,
-    ...$steps
-  ): void {
-    foreach ($steps as $step) {
-      ShipItUtil::shellExec(
-        $cwd,
-        /* stdin = */ null,
-        ShipItUtil::DONT_VERBOSE,
-        ...$step,
-      );
-    }
-  }
 }
