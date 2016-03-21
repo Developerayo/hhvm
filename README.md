@@ -46,6 +46,15 @@ object representing a commit.
 Filters are functions that take
 a Changeset, and return a new, modified one.
 
+### Provided Phases
+
+ - `ShipItCreateNewRepoPhase`: creates a new Git repository with an 'initial commit'. Skipped unless `--create-new-repo` passed.
+ - `ShipItGitHubInitPhase`: create and configure a github clone.
+ - `ShipItPullPhase`: pull in any new changes to a repository.
+ - `ShipItPushPhase`: push local changes to the destination repository.
+ - `ShipItSyncPhase`: copy commits from the source repository to the destination repository.
+ - `ShipitVerifyRepoPhase`: check that the destination repository matches the source repository and filter. Skipped unless `--verify` or `--create-fixup-patch` is passed.
+
 ## Using FBShipIt
 
 You need to construct:
@@ -76,7 +85,7 @@ class ShipMyProject {
         '@/non[-_]?public/@',
       },
     );
-    
+
     $changeset = ShipItPathFilters::moveDirectories(
       $changeset,
       ImmMap {
