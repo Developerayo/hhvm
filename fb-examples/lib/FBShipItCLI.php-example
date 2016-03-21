@@ -64,6 +64,10 @@ abstract class FBShipItCLI {
         ($config, $changeset) ==> static::filterChangeset($changeset),
         $static_config['sourceRoots'],
       ),
+      new ShipItVerifyRepoPhase(
+        $static_config['sourceRoots'],
+        $changeset ==> static::filterChangeset($changeset),
+      ),
       new ShipItPushPhase(),
     };
 

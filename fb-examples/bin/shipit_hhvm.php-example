@@ -79,6 +79,10 @@ class ShipItHHVM {
         ($config, $changeset) ==> self::filterChangeset($changeset),
         ImmSet { 'fbcode/hphp' },
       ),
+      new ShipItVerifyRepoPhase(
+        ImmSet { 'fbcode/hphp' },
+        $changeset ==> self::filterChangeset($changeset),
+      ),
       new HHVMBuildAndTestPhase(),
       new ShipItPushPhase(),
     };

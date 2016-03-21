@@ -10,10 +10,12 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     $this->skip();
   }
 
+  <<__Override>>
   public function getReadableName(): string {
     return 'Create a new git repo with an initial commit';
   }
 
+  <<__Override>>
   public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
     return ImmVector {
       shape(
@@ -25,9 +27,26 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     };
   }
 
+  <<__Override>>
   public function runImpl(
     ShipItBaseConfig $config,
   ): void {
+    $temp_dir = self::createNewGitRepo(
+      $config,
+      $this->roots,
+      $this->filter,
+    );
+    $temp_dir->keep();
+
+    print('  New repository created at '.$temp_dir->getPath()."\n");
+    exit(0);
+  }
+
+  public static function createNewGitRepo(
+    ShipItBaseConfig $config,
+    ImmSet<string> $roots,
+    (function(ShipItChangeset):ShipItChangeset) $filter,
+  ): ShipItTempDir {
     $source = ShipItRepo::typedOpen(
       ShipItSourceRepo::class,
       $config->getSourcePath(),
@@ -35,7 +54,7 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     );
 
     print("  Exporting...\n");
-    $export = $source->export($this->roots);
+    $export = $source->export($roots);
     $export_dir = $export['tempDir'];
     $rev = $export['revision'];
 
@@ -64,7 +83,6 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     $changeset = $exported_repo->getChangesetFromID('HEAD');
     invariant($changeset !== null, 'got a null changeset :/');
     $changeset = $changeset->withID($rev);
-    $filter = $this->filter;
     $changeset = $filter($changeset)->withSubject('Initial commit');
     $changeset = ShipItSync::addTrackingData($changeset, $rev);
 
@@ -75,7 +93,6 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     print("  Creating new repo...\n");
 
     $filtered_dir = new ShipItTempDir('git-with-initial-commit');
-    $filtered_dir->keep();
     self::execSteps(
       $filtered_dir->getPath(),
       ImmVector { ImmVector { 'git', 'init' } },
@@ -86,8 +103,8 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
       '--orphan=master',
     );
     $filtered_repo->commitPatch($changeset);
-    print('  New repository created at '.$filtered_dir->getPath()."\n");
-    exit(0);
+
+    return $filtered_dir;
   }
 
   private static function execSteps(
