@@ -3,6 +3,8 @@
 namespace Facebook\ShipIt;
 
 final class ShipItVerifyRepoPhase extends ShipItPhase {
+  private bool $createPatch = false;
+
   public function __construct(
     private ImmSet<string> $roots,
     private (function(ShipItChangeset):ShipItChangeset) $filter,
@@ -24,6 +26,12 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
           'Verify that the destination repository is in sync, then exit',
         'write' => $_ ==> $this->unskip(),
       ),
+      shape(
+        'long_name' => 'create-fixup-patch',
+        'description' =>
+          'Create a patch to get the destination repository in sync, then exit',
+        'write' => $_ ==> { $this->unskip(); $this->createPatch = true; }
+      ),
     };
   }
 
@@ -37,6 +45,8 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
       $this->filter,
     );
     $clean_path = $clean_dir->getPath();
+    $dirty_remote = 'shipit_dest';
+    $dirty_ref = $dirty_remote.'/'.$config->getDestinationBranch();
 
     ShipItUtil::shellExec(
       $clean_path,
@@ -45,7 +55,7 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
       'git',
       'remote',
       'add',
-      'shipit_dest',
+      $dirty_remote,
       $config->getDestinationPath(),
     );
     ShipItUtil::shellExec(
@@ -54,7 +64,7 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
       ShipItUtil::DONT_VERBOSE,
       'git',
       'fetch',
-      'shipit_dest',
+      $dirty_remote,
     );
 
     $diffstat = rtrim(ShipItUtil::shellExec(
@@ -65,19 +75,64 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
       'diff',
       '--stat',
       'HEAD',
-      'shipit_dest/'.$config->getDestinationBranch(),
+      $dirty_ref,
     ));
 
     if ($diffstat === '') {
+      if ($this->createPatch) {
+        fwrite(
+          STDERR,
+          "  CREATE PATCH FAILED: destination is already in sync.\n",
+        );
+        exit(1);
+      }
       printf("  Verification OK: destination is in sync.\n");
       exit(0);
     }
 
-    fprintf(
-      STDERR,
-      "  VERIFICATION FAILED: destination repo does not match:\n\n%s\n",
-      $diffstat,
+    if (!$this->createPatch) {
+      fprintf(
+        STDERR,
+        "  VERIFICATION FAILED: destination repo does not match:\n\n%s\n",
+        $diffstat,
+      );
+      exit(1);
+    }
+
+    $diff = ShipItUtil::shellExec(
+      $clean_path,
+      /* stdin = */ null,
+      ShipItUtil::DONT_VERBOSE,
+      'git',
+      'diff',
+      $dirty_ref,
+      'HEAD',
     );
-    exit(1);
+
+    $patch_file = tempnam(sys_get_temp_dir(), 'shipit-resync-patch-');
+    file_put_contents($patch_file, $diff);
+
+    printf(
+      "  Created patch file: %s\n\n".
+      "%s\n\n".
+      "  To apply:\n\n".
+      "    $ cd %s\n".
+      "    $ git apply < %s\n".
+      "    $ git status\n".
+      "    $ git add --all --patch\n".
+      "    $ git push\n\n".
+      "  WARNING: there are 4 possible causes for differences:\n\n".
+      "    1. changes in source haven't been copied to destination\n".
+      "    2. changes were made to destination that aren't in source\n".
+      "    3. the filter function has a bug\n".
+      "    4. FBShipIt has a bug\n\n".
+      "  APPLYING THE PATCH IS ONLY CORRECT FOR THE FIRST SITUATION; review\n".
+      "  the changes carefully.\n\n",
+      $patch_file,
+      $diffstat,
+      $config->getDestinationPath(),
+      $patch_file,
+    );
+    exit(0);
   }
 }
