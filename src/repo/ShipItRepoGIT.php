@@ -32,13 +32,17 @@ class ShipItRepoGIT
   ): ?string {
     $log = $this->gitCommand(
       'log', '-1', '--grep',
-      '^fb-gh-sync-id: [a-z0-9]\\+$',
+      '^\\(fb\\)\\?shipit-source-id: [a-z0-9]\\+$',
       ...$roots,
     );
     $log = trim($log);
     $matches = null;
     if (
-      !preg_match('/^ *fb-gh-sync-id: (?<commit>[a-z0-9]+)$/m', $log, $matches)
+      !preg_match(
+        '/^ *(fb)?shipit-source-id: (?<commit>[a-z0-9]+)$/m',
+        $log,
+        $matches,
+      )
     ) {
       return null;
     }

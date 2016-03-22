@@ -13,9 +13,7 @@ interface ShipItDestinationRepo {
   require extends ShipItRepo;
 
   /**
-   * Find the contents of the fb-gh-sync-id: header in the latest commit.
-   *
-   * Will use shipit-source-id instead in the near future.
+   * Find the contents of the fbshipit-source-id: header in the latest commit.
    *
    * @param $roots list of paths that contain synced commits.
    */
