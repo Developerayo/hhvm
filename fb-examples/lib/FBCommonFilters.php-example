@@ -93,7 +93,8 @@ final class FBCommonFilters {
     return ShipItPathFilters::stripPaths(
       $changeset,
       ImmVector {
-        '@(^|/)facebook(/|$)@', /** JAVA DEVELOPERS: HERE BE DANGER **/
+        '@^([^/]+/)*(?:(?!com/)([^/]+/))facebook(/|$)@',
+        '@^facebook[/|$]@',
         '@(^|/)fb-?only(/|$)@',
         '@(^|/)fb(/|$)@',
         '@/TARGETS$@',

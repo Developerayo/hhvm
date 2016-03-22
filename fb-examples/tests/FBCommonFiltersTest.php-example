@@ -32,4 +32,55 @@ final class FBCommonFiltersTest extends BaseTest {
       $out->getMessage(),
     );
   }
+
+  public function exampleFacebookDirectories():array<(string, bool)> {
+    return [
+      /* tuple(string $path, bool $private) */
+      tuple('facebook', true),
+      tuple('foo/facebook', true),
+      tuple('com/facebook', false),
+      tuple('foo/bar/facebook', true),
+      tuple('java/com/facebook', false),
+      tuple('facebook/com/facebook', true),
+      tuple('facebook/foo/com/facebook', true),
+      tuple('foo/facebook/com/facebook', true),
+      tuple('foo/java/com/facebook', false),
+      tuple('foo/bar/java/com/facebook', false),
+      tuple('src/java/com/facebook', false),
+      tuple('foo/com/facebook', false),
+      tuple('foo/bar/com/facebook', false),
+      tuple('foo/bar/baz/facebook', true),
+    ];
+  }
+
+  /**
+   * @dataProvider exampleFacebookDirectories
+   */
+  public function testFacebookDirectories(string $dir, bool $private): void {
+    $file = $dir.'/foo';
+    $changeset = (new ShipItChangeset())->withDiffs(ImmVector {
+      shape('path' => $file, 'body' => 'junk'),
+    });
+    $changeset = FBCommonFilters::stripCommonFiles($changeset);
+
+    if ($private) {
+      $expected = [ ];
+    } else {
+      $expected = [ $file ];
+    }
+    $actual = $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray();
+    $this->assertEquals($expected, $actual);
+  }
+
+  public function testPrivateFileInPublicFacebookDir(): void {
+    $changeset = (new ShipItChangeset())->withDiffs(ImmVector {
+      shape('path' => 'foo/com/facebook/TARGETS', 'body' => 'junk'),
+      shape('path' => 'foo/com/facebook/something', 'body' => 'junk'),
+    });
+    $changeset = FBCommonFilters::stripCommonFiles($changeset);
+    $this->assertEquals(
+      [ 'foo/com/facebook/something' ],
+      $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray(),
+    );
+  }
 }
