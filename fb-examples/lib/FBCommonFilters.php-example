@@ -38,6 +38,8 @@ final class FBCommonFilters {
     $changeset = self::rewriteMentions($changeset);
     $changeset = self::rewriteReviewers($changeset);
 
+    FBConfidentialFilter::throwIfContainsBadWords($changeset);
+
     return $changeset;
   }
 

@@ -11,6 +11,88 @@ namespace Facebook\ShipIt;
 
 
 final class FBCommonFiltersTest extends BaseTest {
+  public function exampleBadwordChangesets(
+  ): array<string, array<ShipItChangeset>> {
+    $bw = FBConfidentialFilter::EXAMPLE_BAD_WORD;
+    $out = ImmMap {
+      'subject' => (new ShipItChangeset())->withSubject($bw),
+      'subject lowercase' => (new ShipItChangeset())
+        ->withSubject(strtolower($bw)),
+      'subject uppercase' => (new ShipItChangeset())
+        ->withSubject(strtoupper($bw)),
+      'subject substr' => (new ShipItChangeset())
+        ->withSubject('foo '.$bw. ' bar'),
+      'message' => (new ShipItChangeset())
+        ->withMessage('Summary: '.$bw),
+      'message line' => (new ShipItChangeset())
+        ->withMessage("Summary: Foo\n".$bw."\nBar"),
+      'code' => (new ShipItChangeset())
+        ->withDiffs(ImmVector {
+          shape(
+            'path' => 'foo/bar',
+            'body' => $bw.'_SOME_CONST',
+          ),
+        }),
+      'path' => (new ShipItChangeset())
+        ->withDiffs(ImmVector {
+          shape(
+            'path' => 'foo/'.$bw.'/',
+            'body' => 'junk',
+          ),
+        }),
+      'the badwords list itself' => (new ShipItChangeset())
+        ->withDiffs(ImmVector {
+          shape(
+            'path' => 'foo/bar/FBConfidentialFilter.php',
+            'body' => 'junk',
+          ),
+        }),
+    };
+    return $out->mapWithKey(($k, $v) ==> [$v->withID($k)])->toArray();
+  }
+
+  /**
+   * @dataProvider exampleBadwordChangesets
+   * @expectedException \HH\InvariantException
+   */
+  public function testBadwords(ShipItChangeset $changeset): void {
+    FBCommonFilters::applyAll($changeset);
+    // assertion is the @expectedException
+  }
+
+  public function testAcceptableUseOfBadwords(): void {
+    $out = FBCommonFilters::applyAll(
+      (new ShipItChangeset())->withMessage(
+        "Summary: foo\n\nTest Plan: ".FBConfidentialFilter::EXAMPLE_BAD_WORD,
+      )
+    );
+    $this->assertSame('Summary: foo', $out->getMessage());
+
+    $out = FBCommonFilters::applyAll(
+      (new ShipItChangeset())->withMessage(
+        "Summary: foo\n\nFacebook: ".FBConfidentialFilter::EXAMPLE_BAD_WORD,
+      )
+    );
+    $this->assertSame('Summary: foo', $out->getMessage());
+
+    $out = FBCommonFilters::applyAll(
+      (new ShipItChangeset())->withDiffs(ImmVector {
+        shape(
+          'path' => 'foo/fbonly/bar',
+          'body' => FBConfidentialFilter::EXAMPLE_BAD_WORD,
+        ),
+        shape(
+          'path' => 'herp/derp',
+          'body' => 'junk',
+        ),
+      })
+    );
+    $this->assertEquals(
+      ['herp/derp'],
+      $out->getDiffs()->map($diff ==> $diff['path'])->toArray(),
+    );
+  }
+
   public function testFBAuthorWithoutGitHubAuthor(): void {
     $in = (new ShipItChangeset())
       ->withAuthor('Joel Marcey <joelm@fb.com>');
