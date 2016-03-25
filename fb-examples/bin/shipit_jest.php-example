@@ -1,0 +1,61 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItJest extends FBShipItCLI {
+
+  const JEST_ROOT = 'scripts/jest';
+
+  <<__Override>>
+  public static function filterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $changeset = FBCommonFilters::stripSummariesByDefault($changeset);
+    $changeset = FBCommonFilters::applyAll($changeset);
+
+    // Ignore these when exporting the Jest folder to GitHub.
+    $changeset = ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector {
+        '@^(?!'.self::JEST_ROOT.'/)@',
+        '@^'.self::JEST_ROOT.'/node_modules/@',
+        '@^'.self::JEST_ROOT.'/packages/(.*?)/node_modules/@',
+      },
+    );
+
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+      self::JEST_ROOT.'/' => '',
+      },
+    );
+
+    return $changeset;
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'www',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'jest',
+      'sourceRoots' => ImmSet {
+        self::JEST_ROOT,
+      },
+    );
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItJest::cliMain();
+}
