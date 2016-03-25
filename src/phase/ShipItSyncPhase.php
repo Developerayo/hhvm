@@ -33,6 +33,11 @@ final class ShipItSyncPhase extends ShipItPhase {
   public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
     return ImmVector {
       shape(
+        'long_name' => 'skip-sync-commits',
+        'description' => "Don't copy any commits. Handy for testing.\n",
+        'write' => $_ ==> $this->skip(),
+      ),
+      shape(
         'long_name' => 'first-commit::',
         'description' => 'Hash of first commit that needs to be synced',
         'write' => $x ==> $this->firstCommit = $x,

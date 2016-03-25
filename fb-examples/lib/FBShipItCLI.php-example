@@ -31,6 +31,7 @@ abstract class FBShipItCLI {
   protected abstract static function getStaticConfig(): FBShipItCLIStaticConfig;
 
   final public static function cliMain(): void {
+    print('--- Starting '.static::class."\n");
     $static_config = static::getStaticConfig();
 
     $config = new ShipItBaseConfig(
