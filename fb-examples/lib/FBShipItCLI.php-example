@@ -44,6 +44,10 @@ abstract class FBShipItCLI {
       ),
     );
     $phases = ImmVector {
+      new ShipItFilterSanityCheckPhase(
+        $changeset ==> static::filterChangeset($changeset),
+        $static_config['sourceRoots'],
+      ),
       new FBRepoInitPhase(
         $config,
         ShipItRepoSide::SOURCE,

@@ -35,7 +35,16 @@ final class ShipItChangeset {
   }
 
   public function getShortID(): string {
-    return substr($this->getID(), 0, ShipItUtil::SHORT_REV_LENGTH);
+    if ($this->getID() === '') {
+      return '';
+    }
+    $short_id = substr($this->getID(), 0, ShipItUtil::SHORT_REV_LENGTH);
+    invariant(
+      is_string($short_id),
+      'got %s, expected string',
+      gettype($short_id),
+    );
+    return $short_id;
   }
 
   public function withID(string $id): ShipItChangeset {

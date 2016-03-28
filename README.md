@@ -49,6 +49,7 @@ a Changeset, and return a new, modified one.
 ### Provided Phases
 
  - `ShipItCreateNewRepoPhase`: creates a new Git repository with an 'initial commit'. Skipped unless `--create-new-repo` passed.
+ - `ShipItFilterSanityCheckPhase`: make sure that the filter is consistent with the specified roots.
  - `ShipItGitHubInitPhase`: create and configure a github clone.
  - `ShipItPullPhase`: pull in any new changes to a repository.
  - `ShipItPushPhase`: push local changes to the destination repository.
