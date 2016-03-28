@@ -11,6 +11,11 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
   }
 
   <<__Override>>
+  protected function isProjectSpecific(): bool {
+    return false;
+  }
+
+  <<__Override>>
   public function getReadableName(): string {
     return 'Create a new git repo with an initial commit';
   }

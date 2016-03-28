@@ -18,6 +18,11 @@ final class FBRepoInitPhase extends ShipItPhase {
     $this->assertIsSourceSide();
   }
 
+  <<__Override>>
+  protected function isProjectSpecific(): bool {
+    return false;
+  }
+
   private function assertIsSourceSide(): void {
     invariant(
       $this->side === ShipItRepoSide::SOURCE,
@@ -25,10 +30,12 @@ final class FBRepoInitPhase extends ShipItPhase {
     );
   }
 
+  <<__Override>>
   public function getReadableName(): string {
     return 'Initialize '.$this->side.' '.$this->name.' repository';
   }
 
+  <<__Override>>
   public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
     return ImmVector {
       shape(
@@ -59,6 +66,7 @@ final class FBRepoInitPhase extends ShipItPhase {
     };
   }
 
+  <<__Override>>
   public function runImpl(
     ShipItBaseConfig $config,
   ): void {

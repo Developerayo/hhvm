@@ -84,6 +84,12 @@ final class ShipItPhaseRunner {
         'replacement' => 'verbose',
       ),
       shape(
+        'long_name' => 'skip-project-specific',
+        'description' => 'Skip anything project-specific',
+        'write' => $_ ==>
+          $this->config = $this->config->withProjectSpecificPhasesDisabled(),
+      ),
+      shape(
         'short_name' => 'v',
         'long_name' => 'verbose',
         'description' => 'Give more verbose output',

@@ -11,6 +11,11 @@ namespace Facebook\ShipIt;
 
 final class BuckPublishDocsPhase extends ShipItPhase {
   <<__Override>>
+  protected function isProjectSpecific(): bool {
+    return true;
+  }
+
+  <<__Override>>
   public function getReadableName(): string {
     return 'Build and push docs on GitHub pages';
   }

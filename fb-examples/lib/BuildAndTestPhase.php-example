@@ -14,6 +14,11 @@ abstract class BuildAndTestPhase extends ShipItPhase {
   abstract protected function test(ShipItBaseConfig $config): void;
 
   <<__Override>>
+  final public function isProjectSpecific(): bool {
+    return true;
+  }
+
+  <<__Override>>
   final public function getReadableName(): string {
     return 'Build and test';
   }

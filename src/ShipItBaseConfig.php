@@ -92,6 +92,15 @@ final class ShipItBaseConfig {
     return $this->modified($ret ==> $ret->verbose = true);
   }
 
+  private bool $projectSpecificPhases = true;
+  public function areProjectSpecificPhasesEnabled(): bool {
+    return $this->projectSpecificPhases;
+  }
+
+  public function withProjectSpecificPhasesDisabled(): this {
+    return $this->modified($ret ==> $ret->projectSpecificPhases = false);
+  }
+
   private string $sourceBranch = 'master';
   public function getSourceBranch(): string {
     return $this->sourceBranch;

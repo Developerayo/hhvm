@@ -14,10 +14,17 @@ final class ShipItPullPhase extends ShipItPhase {
     private ShipItRepoSide $side,
   ) {}
 
+  <<__Override>>
+  protected function isProjectSpecific(): bool {
+    return false;
+  }
+
+  <<__Override>>
   public function getReadableName(): string {
     return 'Pull '.$this->side.' repository';
   }
 
+  <<__Override>>
   public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
     $skip_arg = shape(
       'long_name' => 'skip-'.$this->side.'-pull',

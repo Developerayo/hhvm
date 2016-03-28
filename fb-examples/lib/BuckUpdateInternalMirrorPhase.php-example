@@ -11,6 +11,11 @@ namespace Facebook\ShipIt;
 
 final class BuckUpdateInternalMirrorPhase extends ShipItPhase {
   <<__Override>>
+  protected function isProjectSpecific(): bool {
+    return true;
+  }
+
+  <<__Override>>
   public function getReadableName(): string {
     return 'Update the internal mirror of the GitHub repo';
   }

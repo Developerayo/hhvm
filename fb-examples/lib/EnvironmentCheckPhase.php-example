@@ -11,6 +11,11 @@ namespace Facebook\ShipIt;
 
 abstract class EnvironmentCheckPhase extends ShipItPhase {
   <<__Override>>
+  final public function isProjectSpecific(): bool {
+    return true;
+  }
+
+  <<__Override>>
   final public function getReadableName(): string {
     return 'Build environment check';
   }

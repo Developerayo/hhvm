@@ -11,6 +11,11 @@ namespace Facebook\ShipIt;
 
 final class HHVMCleanThirdPartyPhase extends ShipItPhase {
   <<__Override>>
+  protected function isProjectSpecific(): bool {
+    return true;
+  }
+
+  <<__Override>>
   final public function getReadableName(): string {
     return 'Clean hhvm/third-party/';
   }
