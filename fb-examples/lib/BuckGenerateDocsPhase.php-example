@@ -1,0 +1,108 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+/**
+ * Generate buck documentation from source repo into the destination repo.
+ */
+final class BuckGenerateDocsPhase extends ShipItPhase {
+  <<__Override>>
+  public function isProjectSpecific(): bool {
+    return true;
+  }
+
+  <<__Override>>
+  public function getReadableName(): string {
+    return 'Generate buck documentation';
+  }
+
+  <<__Override>>
+  protected function runImpl(
+    ShipItBaseConfig $config,
+  ): void {
+    $sourcePath = $config->getSourcePath();
+    $docsPath = $config->getDestinationPath();
+
+    $verbose =
+      $config->isVerboseEnabled()
+        ? ShipItUtil::VERBOSE_SHELL_OUTPUT
+        : ShipItUtil::DONT_VERBOSE;
+
+    // Delete all existing files first such that files which are no longer
+    // generated don't linger.
+    ShipItUtil::shellExec(
+      $docsPath,
+      /* stdin = */ null,
+      $verbose,
+      'git', 'rm', '-r', '.',
+    );
+
+    $pipes = array();
+    $proc = proc_open(
+      'docs/soyweb-prod.sh',
+      array(
+        0 => array('pipe', 'r'),
+        1 => array('file', '/dev/null', 'w'),
+        2 => array('file', '/dev/null', 'w'),
+      ),
+      $pipes,
+      $sourcePath
+    );
+    fclose($pipes[0]);
+
+    try {
+      ShipItUtil::shellExec(
+        $sourcePath,
+        /* stdin = */ null,
+        $verbose,
+        'docs/soy2html.sh', $docsPath,
+      );
+    } finally {
+      $status = proc_get_status($proc);
+      if ($status !== null) {
+        // kill whole tree of docs/soyweb-prod.sh
+        exec('pstree -pl '.$status['pid'].
+             ' | grep -o "([0-9]\+)" | sed "s/(\|)//g" | xargs kill');
+      }
+    }
+
+    ShipItUtil::shellExec(
+      $docsPath,
+      /* stdin = */ null,
+      $verbose,
+      'git', 'add', '.',
+    );
+
+    // Check if this is no-op. If so, omit commit.
+    $changes = rtrim(ShipItUtil::shellExec(
+      $docsPath,
+      /* stdin = */ null,
+      $verbose,
+      'git', 'status', '--porcelain',
+    ));
+    if ($changes !== "") {
+      $sourceCommitHash = rtrim(ShipItUtil::shellExec(
+        $sourcePath,
+        /* stdin = */ null,
+        $verbose,
+        'git', 'log', '-1', '--format=%H',
+      ));
+      ShipItUtil::shellExec(
+        $docsPath,
+        /* stdin = */ null,
+        $verbose,
+        'git', 'commit',
+        '-m', sprintf('Updated HTML documentation to %s.', $sourceCommitHash),
+      );
+    } else if ($config->isVerboseEnabled()) {
+      printf("Nothing changed, skipping commit.\n");
+    }
+  }
+}
