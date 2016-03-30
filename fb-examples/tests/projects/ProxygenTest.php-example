@@ -1,0 +1,58 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class ProxygenTest extends FBProjectBaseTest {
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItProxygen::filterChangeset(
+      $changeset,
+    );
+  }
+
+  protected function getExamplePublicPath(): string {
+    return 'fbcode/proxygen/lib/http/codec/HTTPCodec.h';
+  }
+
+  public function examplePathMappings(
+  ): array<(ImmVector<string>, ImmVector<string>)> {
+    return [
+      tuple(
+        ImmVector { 'fbcode/proxygen/lib' },
+        ImmVector { 'proxygen/lib' },
+      ),
+      tuple(
+        ImmVector { 'fbcode/proxygen/public_tld/LICENSE' },
+        ImmVector { 'LICENSE' },
+      ),
+      tuple(
+        ImmVector { 'fbcode/not_proxygen/lib', 'fbcode/proxygen/lib' },
+        ImmVector { 'proxygen/lib' },
+      ),
+    ];
+  }
+
+  /**
+   * @dataProvider examplePathMappings
+   */
+  public function testPathMappings(
+    ImmVector<string> $paths_in,
+    ImmVector<string> $paths_expected,
+  ): void {
+    $diffs = $paths_in->map($path ==> shape('path' => $path, 'body' => 'junk'));
+    $changeset = (new ShipItChangeset())->withDiffs($diffs);
+    $changeset = self::map($changeset);
+    $this->assertEquals(
+      $paths_expected,
+      $changeset->getDiffs()->map($diff ==> $diff['path']),
+    );
+  }
+}
