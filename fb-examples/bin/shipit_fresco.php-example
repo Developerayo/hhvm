@@ -1,0 +1,86 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItFresco extends FBShipItCLI {
+  <<__Override>>
+  public static function filterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    // Strip summary if it is not marked as @public
+    $changeset = FBCommonFilters::stripSummariesByDefault($changeset);
+
+    // Move the Fresco files in other directories
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+        'fbandroid/libraries/drawee/' => 'fbandroid/libraries/fresco/drawee/',
+        'fbandroid/libraries/fbcore/' => 'fbandroid/libraries/fresco/fbcore/',
+        'fbandroid/libraries/imagepipeline/'
+          => 'fbandroid/libraries/fresco/imagepipeline/',
+      },
+    );
+
+    // Strip files that are not in the Fresco directory
+    $changeset = ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector {
+        '@^(?!fbandroid/libraries/fresco/)@',
+        '@/whitelist_for_modules$@',
+        '@/local.properties$@',
+        '@dep_test.py$@',
+      },
+    );
+
+    // Apply common changes to the changeset, like removing unwanted files
+    $changeset = FBCommonFilters::applyAll(
+      $changeset,
+      shape(
+        // We want to keep .mk files for native code
+        'stripCommonFiles/exceptions' => ImmVector {
+          '@\.mk$@',
+        },
+      ),
+    );
+
+    // Move the Fresco files
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+        'fbandroid/libraries/fresco/' => '',
+      },
+    );
+
+    return $changeset;
+  }
+
+  <<__Override>>
+  protected static function getStaticConfig(
+  ): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'fresco',
+      'sourceRoots' => ImmSet {
+        'fbandroid/libraries/fresco',
+        'fbandroid/libraries/drawee',
+        'fbandroid/libraries/fbcore',
+        'fbandroid/libraries/imagepipeline',
+      },
+    );
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItFresco::cliMain();
+}
