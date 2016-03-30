@@ -30,11 +30,9 @@ abstract class FBShipItCLI {
 
   protected abstract static function getStaticConfig(): FBShipItCLIStaticConfig;
 
-  final public static function cliMain(): void {
-    print('--- Starting '.static::class."\n");
+  protected static function getBaseConfig(): ShipItBaseConfig {
     $static_config = static::getStaticConfig();
-
-    $config = new ShipItBaseConfig(
+    return new ShipItBaseConfig(
       '/var/tmp/oss_sync_and_push',
       /* source_dir = */ $static_config['internalRepo'],
       Shapes::idx(
@@ -43,6 +41,13 @@ abstract class FBShipItCLI {
         $static_config['githubProject'],
       ),
     );
+  }
+
+  final public static function cliMain(): void {
+    print('--- Starting '.static::class."\n");
+    $static_config = static::getStaticConfig();
+    $config = static::getBaseConfig();
+
     $phases = ImmVector {
       new ShipItFilterSanityCheckPhase(
         $changeset ==> static::filterChangeset($changeset),
