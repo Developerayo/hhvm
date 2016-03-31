@@ -1,0 +1,58 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class NuclideTest extends FBProjectBaseTest {
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItNuclide::filterChangeset(
+      $changeset,
+    );
+  }
+
+  public function examplePathMappings(
+  ): array<(ImmVector<string>, ImmVector<string>)> {
+    return [
+      tuple(
+        ImmVector { 'fbobjc/Tools/Nuclide/foo' },
+        ImmVector { 'foo' },
+      ),
+      tuple(
+        ImmVector { 'fbobjc/not_Nuclide/foo', 'fbobjc/Tools/Nuclide/bar' },
+        ImmVector { 'bar' },
+      ),
+      tuple(
+        ImmVector { 'fbobjc/Tools/foo.txt' },
+        ImmVector { },
+      ),
+    ];
+  }
+
+  /**
+   * @dataProvider examplePathMappings
+   */
+  public function testPathMappings(
+    ImmVector<string> $paths_in,
+    ImmVector<string> $paths_expected,
+  ): void {
+    $diffs = $paths_in->map($path ==> shape('path' => $path, 'body' => 'junk'));
+    $changeset = (new ShipItChangeset())->withDiffs($diffs);
+    $changeset = self::map($changeset);
+    $this->assertEquals(
+      $paths_expected,
+      $changeset->getDiffs()->map($diff ==> $diff['path']),
+    );
+  }
+
+  protected function getExamplePublicPath(): string {
+    return 'fbobjc/Tools/Nuclide/foo';
+  }
+}

@@ -1,0 +1,58 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+class ShipItNuclide extends FBShipItCLI {
+  <<__Override>>
+  public static function filterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $changeset = FBCommonFilters::applyAll($changeset);
+
+    $changeset = ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector {
+        '@^(?!fbobjc/Tools/Nuclide/)@',
+        // Our internal npm config
+        '@^fbobjc/Tools/Nuclide/\.npmrc$@',
+        // fb-* and fb_*
+        '@(^|/)fb-[^/]*(/|$)@',
+        '@(^|/)fb_[^/]*(/|$)@',
+      },
+    );
+
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+        'fbobjc/Tools/Nuclide/' => '',
+      },
+    );
+
+    return $changeset;
+  }
+
+  <<__Override>>
+  protected static function getStaticConfig(
+  ): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'nuclide',
+      'sourceRoots' => ImmSet { 'fbobjc/Tools/Nuclide' },
+    );
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItNuclide::cliMain();
+}
