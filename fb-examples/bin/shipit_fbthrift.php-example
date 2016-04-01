@@ -1,0 +1,49 @@
+<?hh
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItFBThrift extends FBShipItCLI {
+  <<__Override>>
+  public static function filterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $changeset = FBCommonFilters::applyAll($changeset);
+
+    $changeset = ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector {
+        '@^(?!fbcode/thrift/)@',  // Redundant with sourceRoots, but safer.
+        '@^fbcode/thrift/thrift-config\\.h$@',  // Made by autoconf.
+        // These 2 aren't usable in OSS at present. Future: release these?
+        '@^fbcode/thrift/perf/canary.py$@',
+        '@^fbcode/thrift/perf/loadtest.py$@',
+      },
+    );
+
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+        'fbcode/thrift/public_tld/' => '',
+        'fbcode/thrift/' => 'thrift/',
+      },
+    );
+
+    return $changeset;
+  }
+
+  <<__Override>>
+  protected static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'fbthrift',
+      'sourceRoots' => ImmSet { 'fbcode/thrift' },
+    );
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItFBThrift::cliMain();
+}
