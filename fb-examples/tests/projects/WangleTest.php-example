@@ -1,0 +1,40 @@
+<?hh
+namespace Facebook\ShipIt;
+
+final class WangleTest extends FBProjectBaseTest {
+
+  protected static function map(ShipItChangeset $changeset): ShipItChangeset {
+    return ShipItWangle::filterChangeset($changeset);
+  }
+
+  protected function getExamplePublicPath(): string {
+    return 'fbcode/wangle/channel/Pipeline.h';
+  }
+
+  public function testPathMappings(): void {
+    $this->assertEquals(
+      ImmVector { 'wangle/ssl/SSLUtil.h', 'README.md' },
+      self::map((new ShipItChangeset())->withDiffs(ImmVector {
+        shape('path' => 'fbcode/wangle/ssl/SSLUtil.h', 'body' => 'ignored'),
+        shape('path' => 'fbcode/wangle/public_tld/README.md', 'body' => ''),
+      }))->getDiffs()->map($diff ==> $diff['path']),
+    );
+  }
+
+  public function testStripping(): void {
+    $diffs = ImmMap {
+      'fbcode/wangle/codec/README.md' => 'keep',
+      'fbcode/wangle/facebook/secret' => 'skip',
+    };
+    $this->assertEquals(
+      $diffs
+        ->filter($action ==> $action === 'keep')
+        ->keys()
+        ->map($path ==> str_replace('fbcode/', '', $path)),
+      self::map(
+        (new ShipItChangeset())->withDiffs(self::diffsFromMap($diffs))
+      )->getDiffs()->map($diff ==> $diff['path']),
+    );
+  }
+
+}
