@@ -1,0 +1,46 @@
+<?hh
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItFolly extends FBShipItCLI {
+  <<__Override>>
+  public static function filterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $changeset = FBCommonFilters::applyAll($changeset);
+
+    $changeset = ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector {
+        '@^(?!fbcode/folly/)@',  // Redundant with sourceRoots, but safer.
+        '@^fbcode/folly/folly-config\\.h$@',
+      },
+    );
+
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+        'fbcode/folly/public_tld/' => '',
+        'fbcode/folly/' => 'folly/',
+      },
+    );
+
+    return $changeset;
+  }
+
+  <<__Override>>
+  protected static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'folly',
+      'sourceRoots' => ImmSet { 'fbcode/folly' },
+    );
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItFolly::cliMain();
+}

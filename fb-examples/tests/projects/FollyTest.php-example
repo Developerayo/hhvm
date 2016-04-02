@@ -1,0 +1,41 @@
+<?hh
+namespace Facebook\ShipIt;
+
+final class FollyTest extends FBProjectBaseTest {
+
+  protected static function map(ShipItChangeset $changeset): ShipItChangeset {
+    return ShipItFolly::filterChangeset($changeset);
+  }
+
+  protected function getExamplePublicPath(): string {
+    return 'fbcode/folly/foo';
+  }
+
+  public function testPathMappings(): void {
+    $this->assertEquals(
+      ImmVector { 'folly/NormalFile.h', 'TLDFile.txt' },
+      self::map((new ShipItChangeset())->withDiffs(ImmVector {
+        shape('path' => 'fbcode/folly/NormalFile.h', 'body' => 'ignored'),
+        shape('path' => 'fbcode/folly/public_tld/TLDFile.txt', 'body' => ''),
+      }))->getDiffs()->map($diff ==> $diff['path']),
+    );
+  }
+
+  public function testStripping(): void {
+    $diffs = ImmMap {
+      'fbcode/folly/dynamic.h' => 'keep',
+      'fbcode/folly/folly-config.h' => 'skip',  // Written by autoconf
+      'fbcode/folly/facebook/secret' => 'skip',
+    };
+    $this->assertEquals(
+      $diffs
+        ->filter($action ==> $action === 'keep')
+        ->keys()
+        ->map($path ==> str_replace('fbcode/', '', $path)),
+      self::map(
+        (new ShipItChangeset())->withDiffs(self::diffsFromMap($diffs))
+      )->getDiffs()->map($diff ==> $diff['path']),
+    );
+  }
+
+}
