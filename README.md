@@ -21,6 +21,11 @@ For example, Facebook uses it to:
  - modify commit authors (for example, if all internal commits are authored by
    employees, restore original authors for GitHub pull requests)
 
+## Major Limitations
+
+FBShipIt has been primarily designed for branches with linear histories; in
+particular, it does not understand merge commits.
+
 ## Requirements
 
  - [HHVM 3.12 or later](https://docs.hhvm.com/hhvm/installation)
