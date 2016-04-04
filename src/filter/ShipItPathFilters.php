@@ -110,4 +110,35 @@ abstract final class ShipItPathFilters {
     }
     return $changeset->withDiffs($diffs->toImmVector());
   }
+
+  public static function stripExceptDirectories(
+    ShipItChangeset $changeset,
+    ImmSet<string> $roots,
+  ): ShipItChangeset {
+    $roots = $roots->map(
+      $root ==> substr($root, -1) === '/' ? $root : $root.'/'
+    );
+    $diffs = Vector { };
+    foreach ($changeset->getDiffs() as $diff) {
+      $path = $diff['path'];
+      $match = false;
+      foreach ($roots as $root) {
+        if (substr($path, 0, strlen($root)) === $root) {
+          $match = true;
+          break;
+        }
+      }
+      if ($match) {
+        $diffs[] = $diff;
+        continue;
+      }
+
+      $changeset = $changeset->withDebugMessage(
+        'STRIP FILE: "%s" is not in a listed root (%s)',
+        $path,
+        implode(', ', $roots),
+      );
+    }
+    return $changeset->withDiffs($diffs->toImmVector());
+  }
 }

@@ -43,6 +43,15 @@ abstract class FBShipItCLI {
     );
   }
 
+  final protected static function stripExceptSourceRoots(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItPathFilters::stripExceptDirectories(
+      $changeset,
+      static::getStaticConfig()['sourceRoots'],
+    );
+  }
+
   final public static function cliMain(): void {
     print('--- Starting '.static::class."\n");
     $static_config = static::getStaticConfig();

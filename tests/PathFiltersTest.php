@@ -138,4 +138,52 @@ final class PathFiltersTest extends BaseTest {
       $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray(),
     );
   }
+
+  public function examplesForStripExceptDirectories(
+  ): array<(ImmSet<string>, ImmVector<string>, ImmVector<string>)> {
+    return [
+      tuple(
+        ImmSet { 'foo' },
+        ImmVector { 'foo/bar', 'herp/derp' },
+        ImmVector { 'foo/bar' },
+      ),
+      tuple(
+        ImmSet { 'foo/' },
+        ImmVector { 'foo/bar', 'herp/derp' },
+        ImmVector { 'foo/bar' },
+      ),
+      tuple(
+        ImmSet { 'foo' },
+        ImmVector { 'foo/bar', 'foobaz' },
+        ImmVector { 'foo/bar' },
+      ),
+      tuple(
+        ImmSet { 'foo', 'herp' },
+        ImmVector { 'foo/bar', 'herp/derp', 'baz' },
+        ImmVector { 'foo/bar', 'herp/derp' },
+      ),
+    ];
+  }
+
+  /**
+   * @dataProvider examplesForStripExceptDirectories
+   */
+  public function testStripExceptDirectories(
+    ImmSet<string> $roots,
+    ImmVector<string> $paths_in,
+    ImmVector<string> $paths_expected,
+  ): void {
+    $changeset = (new ShipItChangeset())
+      ->withDiffs($paths_in->map(
+        $path ==> shape('path' => $path, 'body' => 'junk')
+      ));
+    $changeset = ShipItPathFilters::stripExceptDirectories(
+      $changeset,
+      $roots,
+    );
+    $this->assertEquals(
+      $paths_expected->toArray(),
+      $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray(),
+    );
+  }
 }
