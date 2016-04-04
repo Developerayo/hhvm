@@ -83,4 +83,59 @@ final class PathFiltersTest extends BaseTest {
       $changeset->getDiffs()->map($diff ==> $diff['path'])->toImmSet(),
     );
   }
+
+  public function examplesForMoveDirectories(
+  ): array<
+    string,
+    (ImmMap<string,string>, ImmVector<string>, ImmVector<string>)
+  > {
+    return [
+      'first takes precedence (first is more specific)' => tuple(
+        ImmMap {
+          'foo/public_tld/' => '',
+          'foo/' => ''
+        },
+        ImmVector { 'foo/orig_root_file', 'foo/public_tld/public_root_file' },
+        ImmVector { 'orig_root_file', 'public_root_file' },
+      ),
+      // this mapping doesn't make sense given the behavior, just using it to
+      // check that order matters
+      'first takes precedence (second is more specific)' => tuple(
+        ImmMap {
+          'foo/' => '',
+          'foo/public_tld/' => '',
+        },
+        ImmVector { 'foo/orig_root_file', 'foo/public_tld/public_root_file' },
+        ImmVector { 'orig_root_file', 'public_tld/public_root_file' },
+      ),
+      'only one rule applied' => tuple(
+        ImmMap {
+          'foo/' => '',
+          'bar/' => 'project_bar/',
+        },
+        ImmVector { 'foo/bar/part of project foo', 'bar/part of project bar' },
+        ImmVector {
+          'bar/part of project foo',
+          'project_bar/part of project bar',
+        },
+      ),
+    ];
+  }
+
+  /**
+   * @dataProvider examplesForMoveDirectories
+   */
+  public function testMoveDirectories(
+    ImmMap<string, string> $map,
+    ImmVector<string> $in,
+    ImmVector<string> $expected,
+  ): void {
+    $changeset = (new ShipItChangeset())
+      ->withDiffs($in->map($path ==> shape('path' => $path, 'body' => 'junk')));
+    $changeset = ShipItPathFilters::moveDirectories($changeset, $map);
+    $this->assertEquals(
+      $expected->toArray(),
+      $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray(),
+    );
+  }
 }

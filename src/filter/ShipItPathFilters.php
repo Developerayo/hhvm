@@ -53,6 +53,12 @@ abstract final class ShipItPathFilters {
     return $changeset->withDiffs($diffs->toImmVector());
   }
 
+  /**
+   * Change directory paths in a diff using a mapping.
+   *
+   * @param $mapping a map from directory paths in the source repository to
+   *   paths in the destination repository. The first matching mapping is used.
+   */
   public static function moveDirectories(
     ShipItChangeset $changeset,
     ImmMap<string, string> $mapping,
