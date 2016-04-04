@@ -151,8 +151,10 @@ final class FBRepoInitPhase extends ShipItPhase {
         };
     }
     invariant_violation(
-      "Unsupported repository: %s",
+      "Unsupported repository '%s' - add support in %s::%s()",
       $this->name,
+      __CLASS__,
+      __FUNCTION__,
     );
   }
 }
