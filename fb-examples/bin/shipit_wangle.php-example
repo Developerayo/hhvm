@@ -13,7 +13,7 @@ final class ShipItWangle extends FBShipItCLI {
     $changeset = ShipItPathFilters::stripPaths(
       $changeset,
       ImmVector {
-        '@^(?!fbcode/wangle/)@',  // Redundant with sourceRoots, but safer.
+        '@^(?!fbcode/wangle/)@',
       },
     );
 

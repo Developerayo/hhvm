@@ -13,7 +13,7 @@ final class ShipItFolly extends FBShipItCLI {
     $changeset = ShipItPathFilters::stripPaths(
       $changeset,
       ImmVector {
-        '@^(?!fbcode/folly/)@',  // Redundant with sourceRoots, but safer.
+        '@^(?!fbcode/folly/)@',
         '@^fbcode/folly/folly-config\\.h$@',
       },
     );

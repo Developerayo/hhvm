@@ -13,7 +13,7 @@ final class ShipItFBThrift extends FBShipItCLI {
     $changeset = ShipItPathFilters::stripPaths(
       $changeset,
       ImmVector {
-        '@^(?!fbcode/thrift/)@',  // Redundant with sourceRoots, but safer.
+        '@^(?!fbcode/thrift/)@',
         '@^fbcode/thrift/thrift-config\\.h$@',  // Made by autoconf.
         // These 2 aren't usable in OSS at present. Future: release these?
         '@^fbcode/thrift/perf/canary.py$@',
