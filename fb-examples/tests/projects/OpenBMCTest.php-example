@@ -1,0 +1,62 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class OpenBMCTest extends FBProjectBaseTest {
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItOpenBMC::filterChangeset(
+      $changeset,
+    );
+  }
+
+  protected function usesOptInPublicSummaries(): bool {
+    return true;
+  }
+
+  protected function getExamplePublicPath(): string {
+    return 'README.md';
+  }
+
+  public function examplePathMappings(
+  ): array<(ImmVector<string>, ImmVector<string>)> {
+    return [
+      tuple(
+        ImmVector { 'meta-facebook/meta-yosemite/conf/layer.conf' },
+        ImmVector { 'meta-facebook/meta-yosemite/conf/layer.conf' },
+      ),
+      tuple(
+        ImmVector { 'facebook/arcanist/__phutil_library_init__.php' },
+        ImmVector { },
+      ),
+      tuple(
+        ImmVector { 'source_mirror/bash-4.3.tar.gz' },
+        ImmVector { },
+      ),
+    ];
+  }
+
+  /**
+   * @dataProvider examplePathMappings
+   */
+  public function testPathMappings(
+    ImmVector<string> $paths_in,
+    ImmVector<string> $paths_expected,
+  ): void {
+    $diffs = $paths_in->map($path ==> shape('path' => $path, 'body' => 'junk'));
+    $changeset = (new ShipItChangeset())->withDiffs($diffs);
+    $changeset = self::map($changeset);
+    $this->assertEquals(
+      $paths_expected,
+      $changeset->getDiffs()->map($diff ==> $diff['path']),
+    );
+  }
+}

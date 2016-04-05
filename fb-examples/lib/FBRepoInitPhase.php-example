@@ -149,6 +149,15 @@ final class FBRepoInitPhase extends ShipItPhase {
           'ssh://projects.git.vip.facebook.com/data/gitrepos/buck.git',
           'buck_internal',
         };
+      case 'meta-openbmc':
+        return ImmVector {
+          '/usr/bin/git',
+          'clone',
+          '-b',
+          'fido',
+          'ssh://git.vip.facebook.com/data/gitrepos/yocto/meta-openbmc.git',
+          'meta-openbmc',
+        };
     }
     invariant_violation(
       "Unsupported repository '%s' - add support in %s::%s()",

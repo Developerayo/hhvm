@@ -1,0 +1,63 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItOpenBMC extends FBShipItCLI {
+  <<__Override>>
+  public static function filterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $changeset = FBCommonFilters::stripSummariesByDefault($changeset);
+    $changeset = FBCommonFilters::applyAll($changeset);
+
+    $changeset = ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector {
+        # Remove facebook source mirrors.
+        '@^source_mirror@',
+        '@^facebook@',
+        # Remove linux and uboot patches (for now, resolve independently).
+        '@^meta-aspeed/recipes-kernel/linux/files/linux-.*@',
+        '@^meta-aspeed/recipes-bsp/u-boot/files/u-boot.*@',
+        '@^meta-aspeed/recipes-bsp/u-boot/u-boot.*@',
+        # Remove code landed in fido from lighting, resolve independently.
+        '@^meta-facebook/meta-lightning@',
+        # Anything marked 'private' should not be synced.
+        '@^.*private@',
+      },
+    );
+
+    // Kernel patches
+    // meta-aspeed/recipes-kernel/linux/files/linux-aspeed-2.6.28.9/
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap { },
+    );
+
+    return $changeset;
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'meta-openbmc',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'openbmc',
+      'sourceRoots' => ImmSet { '' },
+    );
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItOpenBMC::cliMain();
+}
