@@ -134,6 +134,12 @@ final class FBRepoInitPhase extends ShipItPhase {
           '--no-working-dir',
           '--simple',
         };
+      case 'connectivity-lab':
+        return ImmVector {
+          '/usr/local/bin/hg-clone-connectivity-lab',
+          '--no-working-dir',
+          '--simple',
+        };
       case 'infer-fb':
         return ImmVector {
           '/usr/bin/git',
