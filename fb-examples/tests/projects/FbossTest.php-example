@@ -1,0 +1,41 @@
+<?hh
+namespace Facebook\ShipIt;
+
+final class FbossTest extends FBProjectBaseTest {
+
+  protected static function map(ShipItChangeset $changeset): ShipItChangeset {
+    return ShipItFboss::filterChangeset($changeset);
+  }
+
+  protected function getExamplePublicPath(): string {
+    return 'fbcode/fboss/foo';
+  }
+
+  public function testPathMappings(): void {
+    $this->assertEquals(
+      ImmVector { 'fboss/NormalFile.h', 'GithubFile.txt' },
+      self::map((new ShipItChangeset())->withDiffs(ImmVector {
+        shape('path' => 'fbcode/fboss/NormalFile.h', 'body' => 'ignored'),
+        shape('path' => 'fbcode/fboss/github/GithubFile.txt', 'body' => ''),
+      }))->getDiffs()->map($diff ==> $diff['path']),
+    );
+  }
+
+  public function testStripping(): void {
+    $diffs = ImmMap {
+      'fbcode/fboss/Main.cpp' => 'keep',
+      'fbcode/fboss/TARGETS' => 'skip',
+      'fbcode/fboss/facebook/secret' => 'skip',
+    };
+    $this->assertEquals(
+      $diffs
+        ->filter($action ==> $action === 'keep')
+        ->keys()
+        ->map($path ==> str_replace('fbcode/', '', $path)),
+      self::map(
+        (new ShipItChangeset())->withDiffs(self::diffsFromMap($diffs))
+      )->getDiffs()->map($diff ==> $diff['path']),
+    );
+  }
+
+}
