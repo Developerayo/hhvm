@@ -17,39 +17,33 @@ final class ShipItReactNative extends FBShipItCLI {
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $changeset = FBCommonFilters::stripSummariesByDefault($changeset);
-
-    $changeset = FBCommonFilters::applyAll(
-      $changeset,
-      shape(
-        // FBCommonFilters defines a common set of files to ignore
-        // across all fb projects, such as BUCK files and others.
-        // We want to export *all* of the react-native-github folder
-        // to GitHub, except for a few specific paths.
-        'stripCommonFiles/exceptions' => ImmVector {
-          '/.*/',
-        },
-      ),
-    );
-
-    // Ignore these when exporting the react-native-github folder to GitHub.
-    $changeset = ShipItPathFilters::stripPaths(
-      $changeset,
-      ImmVector {
-        '@^fbobjc/Libraries/FBReactKit/js/react-native-github/node_modules/@',
-        '@^fbobjc/Libraries/FBReactKit/js/react-native-github/npm-shrinkwrap.json@',
-        '@/\.hgsparse(-\w+)?$@',
-      },
-    );
-
-    $changeset = ShipItPathFilters::moveDirectories(
-      $changeset,
-      ImmMap {
-      'fbobjc/Libraries/FBReactKit/js/react-native-github/' => '',
-      },
-    );
-
-    return $changeset;
+    return $changeset
+      |> FBCommonFilters::stripSummariesByDefault($$)
+      |> FBCommonFilters::applyAll(
+          $$,
+          shape(
+            // FBCommonFilters defines a common set of files to ignore
+            // across all fb projects, such as BUCK files and others.
+            // We want to export *all* of the react-native-github folder
+            // to GitHub, except for a few specific paths.
+            'stripCommonFiles/exceptions' => ImmVector {
+              '/.*/',
+            },
+          ),
+        )
+      |> ShipItPathFilters::stripPaths(
+          $$,
+          ImmVector {
+            '@(^|/)node_modules/@',
+            '@(^|/)npm-shrinkwrap.json@',
+          },
+        )
+      |> ShipItPathFilters::moveDirectories(
+          $$,
+          ImmMap {
+            'fbobjc/Libraries/FBReactKit/js/react-native-github/' => '',
+          },
+        );
   }
 
   <<__Override>>
@@ -66,6 +60,6 @@ final class ShipItReactNative extends FBShipItCLI {
 }
 
 // Allow require() from unit test
-if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+if ($argv[0] ?? null === realpath(__FILE__)) {
   ShipItReactNative::cliMain();
 }
