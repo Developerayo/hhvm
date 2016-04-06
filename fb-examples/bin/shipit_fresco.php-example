@@ -34,7 +34,6 @@ final class ShipItFresco extends FBShipItCLI {
     $changeset = ShipItPathFilters::stripPaths(
       $changeset,
       ImmVector {
-        '@^(?!fbandroid/libraries/fresco/)@',
         '@/whitelist_for_modules$@',
         '@/local.properties$@',
         '@dep_test.py$@',

@@ -24,11 +24,6 @@ final class ShipItWDT extends FBShipItCLI {
       ),
     );
 
-    $changeset = ShipItPathFilters::stripPaths(
-      $changeset,
-      ImmVector { '@^(?!fbcode/wdt/)@' },
-    );
-
     $changeset = ShipItPathFilters::moveDirectories(
       $changeset,
       ImmMap { 'fbcode/wdt/' => '' },

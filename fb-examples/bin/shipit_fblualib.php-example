@@ -19,13 +19,6 @@ final class ShipItFBLualib extends FBShipItCLI {
       $changeset,
     );
 
-    $changeset = ShipItPathFilters::stripPaths(
-      $changeset,
-      ImmVector {
-        '@^(?!fbcode/fblualib)@',
-      },
-    );
-
     $changeset = ShipItPathFilters::moveDirectories(
       $changeset,
       ImmMap {

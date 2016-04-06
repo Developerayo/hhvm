@@ -33,6 +33,7 @@ abstract class FBShipItCLI {
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     return $changeset
+      |> self::stripExceptSourceRoots($$)
       |> static::projectFilterChangeset($$)
       |> FBConfidentialFilter::applyAll($$);
   }
@@ -53,9 +54,15 @@ abstract class FBShipItCLI {
   final protected static function stripExceptSourceRoots(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
+    $roots = static::getStaticConfig()['sourceRoots']
+      ->filter($root ==> $root !== '');
+    if (count($roots) === 0) {
+      return $changeset;
+    }
+
     return ShipItPathFilters::stripExceptDirectories(
       $changeset,
-      static::getStaticConfig()['sourceRoots'],
+      $roots,
     );
   }
 

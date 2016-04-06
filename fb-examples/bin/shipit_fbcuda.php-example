@@ -20,13 +20,6 @@ final class ShipItFBCuda extends FBShipItCLI {
       $changeset,
     );
 
-    $changeset = ShipItPathFilters::stripPaths(
-      $changeset,
-      ImmVector {
-        '@^(?!fbcode/cuda)@',
-      },
-    );
-
     $changeset = ShipItPathFilters::moveDirectories(
       $changeset,
       ImmMap {

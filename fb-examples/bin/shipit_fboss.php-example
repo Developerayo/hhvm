@@ -13,7 +13,6 @@ final class ShipItFboss extends FBShipItCLI {
     $changeset = ShipItPathFilters::stripPaths(
       $changeset,
       ImmVector {
-        '@^(?!fbcode/fboss/)@',
         '@.*facebook.*@',
       },
     );

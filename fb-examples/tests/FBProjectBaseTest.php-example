@@ -222,7 +222,7 @@ abstract class FBProjectBaseTest extends BaseTest {
         shape('path' => $this->getExamplePublicPath(), 'body' => 'herp')
       });
     $out = static::map($in);
-    $this->assertTrue($out->isValid());
+    $this->assertTrue($out->isValid(), 'Diff was preserved');
   }
 
   public function testWithAlreadyOnGitHub(): void {

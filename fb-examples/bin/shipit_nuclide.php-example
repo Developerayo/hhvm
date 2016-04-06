@@ -21,7 +21,6 @@ class ShipItNuclide extends FBShipItCLI {
     $changeset = ShipItPathFilters::stripPaths(
       $changeset,
       ImmVector {
-        '@^(?!fbobjc/Tools/Nuclide/)@',
         // Our internal npm config
         '@^fbobjc/Tools/Nuclide/\.npmrc$@',
         // fb-* and fb_*

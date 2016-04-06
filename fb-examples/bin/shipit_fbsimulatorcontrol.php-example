@@ -17,14 +17,6 @@ final class ShipItFBSimulatorControl extends FBShipItCLI {
   ): ShipItChangeset {
     $changeset = FBCommonFilters::applyAll($changeset);
 
-    // Ignore these when exporting the FBSimulatorControl directory to GitHub.
-    $changeset = ShipItPathFilters::stripPaths(
-      $changeset,
-      ImmVector {
-        '@^(?!fbobjc/EndToEndTests/FBSimulatorControl/src/)@',
-      },
-    );
-
     // Strip the parent directories from the commit paths
     $changeset = ShipItPathFilters::moveDirectories(
       $changeset,

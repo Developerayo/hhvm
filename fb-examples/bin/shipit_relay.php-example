@@ -28,7 +28,6 @@ final class ShipItRelay extends FBShipItCLI {
       $changeset,
       ImmVector {
         // Only sync out files from the Relay project
-        '@^(?!'.self::RELAY_ROOT.'/|'.self::PLUGIN_ROOT.'/)@',
         // Ignore __forks__ (but permit __github__/__forks__/)
         '@^'.self::RELAY_ROOT.'/__forks__/@',
         // The public project uses different Flow configs than we do internally

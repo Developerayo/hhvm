@@ -22,7 +22,6 @@ final class ShipItWebDriverAgent extends FBShipItCLI{
     $changeset = ShipItPathFilters::stripPaths(
       $changeset,
       ImmVector {
-        '@^(?!fbobjc/EndToEndTests/WebDriverAgent/src/)@',
         '@^fbobjc/EndToEndTests/WebDriverAgent/src/Pods@',
       },
     );
