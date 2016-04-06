@@ -18,7 +18,7 @@ final class ShipItRelay extends FBShipItCLI {
     'fbobjc/Libraries/FBReactKit/js/node_modules/babel-relay-plugin';
 
   <<__Override>>
-  public static function filterChangeset(
+  protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     $changeset = FBCommonFilters::stripSummariesByDefault($changeset);

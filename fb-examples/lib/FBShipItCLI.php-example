@@ -23,12 +23,19 @@ type FBShipItCLIStaticConfig = shape(
  * directly (eg shipit_hhvm.php and shipit_buck.php)
  */
 abstract class FBShipItCLI {
-  // Public so that you can add a unit test
-  abstract public static function filterChangeset(
-    ShipItChangeset $changeset,
+  protected abstract static function getStaticConfig(): FBShipItCLIStaticConfig;
+  protected abstract static function projectFilterChangeset(
+    ShipItChangeset $changeset
   ): ShipItChangeset;
 
-  protected abstract static function getStaticConfig(): FBShipItCLIStaticConfig;
+  // Public so that you can add a unit test
+  final public static function filterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return $changeset
+      |> static::projectFilterChangeset($$)
+      |> FBConfidentialFilter::applyAll($$);
+  }
 
   protected static function getBaseConfig(): ShipItBaseConfig {
     $static_config = static::getStaticConfig();
@@ -59,7 +66,7 @@ abstract class FBShipItCLI {
 
     $phases = ImmVector {
       new ShipItFilterSanityCheckPhase(
-        $changeset ==> static::filterChangeset($changeset),
+        $changeset ==> self::filterChangeset($changeset),
         $static_config['sourceRoots'],
       ),
       new FBRepoInitPhase(
@@ -70,7 +77,7 @@ abstract class FBShipItCLI {
       new ShipItPullPhase(ShipItRepoSide::SOURCE),
       new ShipItCreateNewRepoPhase(
         $static_config['sourceRoots'],
-        $changeset ==> static::filterChangeset($changeset),
+        $changeset ==> self::filterChangeset($changeset),
       ),
       new ShipItGitHubInitPhase(
         $static_config['githubOrg'],
@@ -80,12 +87,12 @@ abstract class FBShipItCLI {
       ),
       new ShipItPullPhase(ShipItRepoSide::DESTINATION),
       new ShipItSyncPhase(
-        ($config, $changeset) ==> static::filterChangeset($changeset),
+        ($config, $changeset) ==> self::filterChangeset($changeset),
         $static_config['sourceRoots'],
       ),
       new ShipItVerifyRepoPhase(
         $static_config['sourceRoots'],
-        $changeset ==> static::filterChangeset($changeset),
+        $changeset ==> self::filterChangeset($changeset),
       ),
       new ShipItPushPhase(),
     };

@@ -49,6 +49,8 @@ class ShipItHHVM {
       },
     );
 
+    $changeset = FBConfidentialFilter::applyAll($changeset);
+
     return $changeset;
   }
 

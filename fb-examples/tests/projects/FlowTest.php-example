@@ -15,7 +15,16 @@ final class FlowTest extends FBProjectBaseTest {
   protected static function map(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
+    // When migrating to shipit_flow.php, remove the skip in
+    // exampleBadwordChangesets
     return (new ShipItScrubberFlow($changeset))->scrub();
+  }
+
+  <<__Override>>
+  public function exampleBadwordChangesets(
+  ): array<string, array<ShipItChangeset>> {
+    $this->markTestSkipped("Implemented in OSSSyncAndPush, not scrubber");
+    invariant_violation('markTestSkipped should throw');
   }
 
   <<__Override>>

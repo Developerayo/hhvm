@@ -12,7 +12,7 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItFBLualib extends FBShipItCLI {
-  public static function filterChangeset(
+  protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     $changeset = FBCommonFilters::applyAll(

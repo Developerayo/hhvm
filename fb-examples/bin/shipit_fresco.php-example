@@ -13,7 +13,7 @@ require_once(__DIR__.'/../autoload.php');
 
 final class ShipItFresco extends FBShipItCLI {
   <<__Override>>
-  public static function filterChangeset(
+  protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     // Strip summary if it is not marked as @public

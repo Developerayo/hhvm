@@ -235,4 +235,61 @@ abstract class FBProjectBaseTest extends BaseTest {
 
     $this->assertFalse($out->isValid());
   }
+
+  public function exampleBadwordChangesets(
+  ): array<string, array<ShipItChangeset>> {
+    $bw = FBConfidentialFilter::EXAMPLE_BAD_WORD;
+    $out = Map {
+      'subject' => (new ShipItChangeset())->withSubject($bw),
+      'subject lowercase' => (new ShipItChangeset())
+        ->withSubject(strtolower($bw)),
+      'subject uppercase' => (new ShipItChangeset())
+        ->withSubject(strtoupper($bw)),
+      'subject substr' => (new ShipItChangeset())
+        ->withSubject('foo '.$bw. ' bar'),
+      'message' => (new ShipItChangeset())
+        ->withMessage('Summary: @public '.$bw),
+      'message line' => (new ShipItChangeset())
+        ->withMessage("Summary: @public Foo\n".$bw."\nBar"),
+      'code' => (new ShipItChangeset())
+        ->withDiffs(ImmVector {
+          shape(
+            'path' => $this->getExamplePublicPath(),
+            'body' => $bw.'_SOME_CONST',
+          ),
+        }),
+      'path' => (new ShipItChangeset())
+        ->withDiffs(ImmVector {
+          shape(
+            'path' => $this->getExamplePublicPath().'/'.$bw.'/',
+            'body' => 'junk',
+          ),
+        }),
+      'the badwords list itself' => (new ShipItChangeset())
+        ->withDiffs(ImmVector {
+          shape(
+            'path' => $this->getExamplePublicPath().'/FBConfidentialFilter.php',
+            'body' => 'junk',
+          ),
+        }),
+    };
+    foreach ($out as $k => $v) {
+      if (!$v->isValid()) {
+        $out[$k] = $v->withDiffs(ImmVector { shape(
+          'path' => $this->getExamplePublicPath(),
+          'body' => 'junk',
+        )});
+      }
+    }
+    return $out->mapWithKey(($k, $v) ==> [$v->withID($k)])->toArray();
+  }
+
+  /**
+   * @dataProvider exampleBadwordChangesets
+   * @expectedException \HH\InvariantException
+   */
+  public function testBadwords(ShipItChangeset $changeset): void {
+    static::map($changeset);
+    // assertion is the @expectedException
+  }
 }

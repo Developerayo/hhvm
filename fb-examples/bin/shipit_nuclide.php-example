@@ -13,7 +13,7 @@ require_once(__DIR__.'/../autoload.php');
 
 class ShipItNuclide extends FBShipItCLI {
   <<__Override>>
-  public static function filterChangeset(
+  protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     $changeset = FBCommonFilters::applyAll($changeset);

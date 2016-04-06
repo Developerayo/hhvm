@@ -16,7 +16,7 @@ final class ShipItJest extends FBShipItCLI {
   const JEST_ROOT = 'scripts/jest';
 
   <<__Override>>
-  public static function filterChangeset(
+  protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     $changeset = FBCommonFilters::stripSummariesByDefault($changeset);
