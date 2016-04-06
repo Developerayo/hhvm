@@ -114,7 +114,7 @@ final class FBCommonFilters {
   ): ShipItChangeset {
     return $changeset->withMessage(
       preg_replace(
-        '@https?://phabricator\.fb\.com/@i',
+        '@https?://phabricator\.[^/]+/@i',
         '',
         $changeset->getMessage(),
       )

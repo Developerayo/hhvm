@@ -33,6 +33,22 @@ abstract class FBProjectBaseTest extends BaseTest {
           'https://phabricator.fb.com/D6789 baz',
         'foo D12345 bar D6789 baz',
       ),
+      tuple(
+        'https://phabricator.cstools.facebook.com/D12345',
+        'D12345'
+      ),
+      tuple(
+        'Foo https://phabricator.cstools.facebook.com/D12345 bar',
+        'Foo D12345 bar'
+      ),
+      tuple(
+        'https://phabricator.asuarez.sb.facebook.com/D12345',
+        'D12345'
+      ),
+      tuple(
+        'Foo https://phabricator.asuarez.sb.facebook.com/D12345 bar',
+        'Foo D12345 bar'
+      ),
     ];
   }
 
