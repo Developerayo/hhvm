@@ -1,0 +1,78 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+
+final class FbTftpTest extends FBProjectBaseTest {
+
+  private $base_project_dir = 'fbcode/syseng/tftp/github/';
+  private $project_name = 'fbtftp';
+
+  protected static function map(
+    ShipItChangeset $changeset
+  ): ShipItChangeset {
+    return ShipItFbTftp::filterChangeset(
+      $changeset,
+    );
+  }
+
+  public function examplePathMappings(
+  ): array<(ImmVector<string>, ImmVector<string>)> {
+    return [
+      // Test that a valid file of the project has the base dir stripped off
+      tuple(
+        ImmVector { 'fbcode/syseng/tftp/github/examples/server.py' },
+        ImmVector { 'examples/server.py' },
+      ),
+      // Test that a non-existing file of the project has still the base dir
+      // stripped off (it doesn't matter if it doesn't exist)
+      tuple(
+        ImmVector { 'fbcode/syseng/tftp/github/non/existing' },
+        ImmVector { 'non/existing' },
+      ),
+      // Test that TARGETS has been stripped off
+      tuple(
+        ImmVector { 'fbcode/syseng/tftp/github/TARGETS' },
+        ImmVector { },
+      ),
+      // Test a path that is outside the fbtftp base dir
+      tuple(
+        ImmVector { 'fbcode/somewhere/else/entirely' },
+        ImmVector { },
+      ),
+      // Test a path that resembles the fbtftp base dir but that has an
+      // additional component in the middle
+      tuple(
+          ImmVector { 'fbcode/wrong/tftp/github/setup.py' },
+        ImmVector { },
+      ),
+    ];
+  }
+
+  /**
+   * @dataProvider examplePathMappings
+   */
+  public function testPathMappings(
+    ImmVector<string> $paths_in,
+    ImmVector<string> $paths_expected,
+  ): void {
+    $diffs = $paths_in->map($path ==> shape('path' => $path, 'body' => 'junk'));
+    $changeset = (new ShipItChangeset())->withDiffs($diffs);
+    $changeset = self::map($changeset);
+    $this->assertEquals(
+      $paths_expected,
+      $changeset->getDiffs()->map($diff ==> $diff['path']),
+    );
+  }
+
+  protected function getExamplePublicPath(): string {
+    return 'fbcode/syseng/tftp/github/foo';
+  }
+}
