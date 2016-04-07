@@ -3,6 +3,8 @@
 namespace Facebook\ShipIt;
 
 final class ShipItCreateNewRepoPhase extends ShipItPhase {
+  private ?string $sourceCommit = null;
+
   public function __construct(
     private ImmSet<string> $roots,
     private (function(ShipItChangeset):ShipItChangeset) $filter,
@@ -29,6 +31,15 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
           'Create a new git repository with a single commit, then exit',
         'write' => $_ ==> $this->unskip(),
       ),
+      shape(
+        'long_name' => 'create-new-repo-from-commit::',
+        'description' =>
+          'Like --create-new-repo, but at a specified source commit',
+        'write' => $rev ==> {
+            $this->sourceCommit = $rev;
+            $this->unskip();
+        },
+      ),
       shape( // deprecated, renamed for consistency with verify
         'long_name' => 'special-create-new-repo',
         'replacement' => 'create-new-repo',
@@ -44,6 +55,7 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
       $config,
       $this->roots,
       $this->filter,
+      $this->sourceCommit,
     );
     $temp_dir->keep();
 
@@ -55,6 +67,7 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     ShipItBaseConfig $config,
     ImmSet<string> $roots,
     (function(ShipItChangeset):ShipItChangeset) $filter,
+    ?string $revision = null,
   ): ShipItTempDir {
     $source = ShipItRepo::typedOpen(
       ShipItSourceRepo::class,
@@ -63,7 +76,7 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     );
 
     print("  Exporting...\n");
-    $export = $source->export($roots);
+    $export = $source->export($roots, $revision);
     $export_dir = $export['tempDir'];
     $rev = $export['revision'];
 

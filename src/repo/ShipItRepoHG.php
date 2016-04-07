@@ -310,14 +310,17 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
 
   public function export(
     ImmSet<string> $roots,
+    ?string $rev = null,
   ): shape('tempDir' => ShipItTempDir, 'revision' => string) {
-    $rev = $this->hgCommand(
-      'log',
-      '-r',
-      $this->branch,
-      '-T',
-      '{node}'
-    );
+    if ($rev === null) {
+      $rev = $this->hgCommand(
+        'log',
+        '-r',
+        $this->branch,
+        '-T',
+        '{node}'
+      );
+    }
 
     $temp_dir = new ShipItTempDir('hg-export');
     $this->checkoutFilesAtRevToPath(

@@ -46,5 +46,6 @@ interface ShipItSourceRepo {
    */
   public function export(
     ImmSet<string> $roots,
+    ?string $rev = null, // defaults to the current revision
   ): shape('tempDir' => ShipItTempDir, 'revision' => string);
 }

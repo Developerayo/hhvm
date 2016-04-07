@@ -283,8 +283,11 @@ class ShipItRepoGIT
 
   public function export(
     ImmSet<string> $roots,
+    ?string $rev = null,
   ): shape('tempDir' => ShipItTempDir, 'revision' => string) {
-    $rev = trim($this->gitCommand('rev-parse', 'HEAD'));
+    if ($rev === null) {
+      $rev = trim($this->gitCommand('rev-parse', 'HEAD'));
+    }
 
     $command = Vector {
       'archive',
