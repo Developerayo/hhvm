@@ -60,6 +60,6 @@ final class ShipItReactNative extends FBShipItCLI {
 }
 
 // Allow require() from unit test
-if ($argv[0] ?? null === realpath(__FILE__)) {
+if (isset($argv[0]) && realpath($argv[0]) === realpath(__FILE__)) {
   ShipItReactNative::cliMain();
 }
