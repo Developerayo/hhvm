@@ -8,24 +8,21 @@ final class ShipItFolly extends FBShipItCLI {
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $changeset = FBCommonFilters::applyAll($changeset);
-
-    $changeset = ShipItPathFilters::stripPaths(
-      $changeset,
-      ImmVector {
-        '@^fbcode/folly/folly-config\\.h$@',
-      },
-    );
-
-    $changeset = ShipItPathFilters::moveDirectories(
-      $changeset,
-      ImmMap {
-        'fbcode/folly/public_tld/' => '',
-        'fbcode/folly/' => 'folly/',
-      },
-    );
-
-    return $changeset;
+    return $changeset
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::stripPaths(
+          $$,
+          ImmVector {
+            '@^fbcode/folly/folly-config\\.h$@',
+          },
+        )
+      |> ShipItPathFilters::moveDirectories(
+          $$,
+          ImmMap {
+            'fbcode/folly/public_tld/' => '',
+            'fbcode/folly/' => 'folly/',
+          },
+        );
   }
 
   <<__Override>>

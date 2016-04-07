@@ -12,22 +12,15 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItFBCuda extends FBShipItCLI {
+  const string ROOT = 'fbcode/cuda/';
+
   <<__Override>>
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $changeset = FBCommonFilters::applyAll(
-      $changeset,
-    );
-
-    $changeset = ShipItPathFilters::moveDirectories(
-      $changeset,
-      ImmMap {
-        'fbcode/cuda/' => '',
-      },
-    );
-
-    return $changeset;
+    return $changeset
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::moveDirectories($$, ImmMap { self::ROOT => '' });
   }
 
   <<__Override>>
@@ -36,7 +29,7 @@ final class ShipItFBCuda extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'fbcuda',
-      'sourceRoots' => ImmSet { 'fbcode/cuda' },
+      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

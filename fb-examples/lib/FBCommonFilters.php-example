@@ -95,7 +95,7 @@ final class FBCommonFilters {
       ImmVector {
         '@^([^/]+/)*(?:(?!com/)([^/]+/))facebook(/|$)@',
         '@^facebook[/|$]@',
-        '@(^|/)fb-?only(/|$)@',
+        '@(^|/)fb[-_]?only(/|$)@',
         '@(^|/)fb(/|$)@',
         '@/TARGETS$@',
         '@/PLATFORM$@',

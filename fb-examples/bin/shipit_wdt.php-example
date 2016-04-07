@@ -12,26 +12,25 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItWDT extends FBShipItCLI {
+  const string ROOT = 'fbcode/wdt/';
+
+  <<__Override>>
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $changeset = FBCommonFilters::applyAll(
-      $changeset,
-      shape(
-        'stripCommonFiles/exceptions' => ImmVector {
-          '@^(?:(?!fbonly/)[^/]+/)*TARGETS$@',
-        },
-      ),
-    );
-
-    $changeset = ShipItPathFilters::moveDirectories(
-      $changeset,
-      ImmMap { 'fbcode/wdt/' => '' },
-    );
-
-    return $changeset;
+    return $changeset
+      |> FBCommonFilters::applyAll(
+          $$,
+          shape(
+            'stripCommonFiles/exceptions' => ImmVector {
+              '@^(?:(?!fbonly/)[^/]+/)*TARGETS$@',
+            },
+          ),
+        )
+      |> ShipItPathFilters::moveDirectories($$, ImmMap { self::ROOT => '' });
   }
 
+  <<__Override>>
   protected static function getStaticConfig(): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => 'fbsource',

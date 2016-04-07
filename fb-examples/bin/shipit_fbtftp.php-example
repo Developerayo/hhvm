@@ -12,21 +12,15 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItFbTftp extends FBShipItCLI {
+  const string ROOT = 'fbcode/syseng/tftp/github/';
+
   <<__Override>>
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $changeset = FBCommonFilters::applyAll($changeset);
-
-    // Strip the parent directories from the commit paths
-    $changeset = ShipItPathFilters::moveDirectories(
-      $changeset,
-      ImmMap {
-        'fbcode/syseng/tftp/github/' => '',
-      },
-    );
-
-    return $changeset;
+    return $changeset
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::moveDirectories($$, ImmMap { self::ROOT => '' });
   }
 
   <<__Override>>
@@ -35,7 +29,7 @@ final class ShipItFbTftp extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'fbtftp',
-      'sourceRoots' => ImmSet { 'fbcode/syseng/tftp/github' },
+      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }
