@@ -19,21 +19,26 @@ final class ShipItJest extends FBShipItCLI {
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    return $changeset
-      |> FBCommonFilters::stripSummariesByDefault($$)
-      |> FBCommonFilters::applyAll($$)
-      // Ignore these when exporting the Jest folder to GitHub.
-      |> ShipItPathFilters::stripPaths(
-          $$,
-          ImmVector {
-            '@^'.self::JEST_ROOT.'/node_modules/@',
-            '@^'.self::JEST_ROOT.'/packages/(.*?)/node_modules/@',
-          },
-        )
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap { self::JEST_ROOT.'/' => '' }
-        );
+    $changeset = FBCommonFilters::stripSummariesByDefault($changeset);
+    $changeset = FBCommonFilters::applyAll($changeset);
+
+    // Ignore these when exporting the Jest folder to GitHub.
+    $changeset = ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector {
+        '@^'.self::JEST_ROOT.'/node_modules/@',
+        '@^'.self::JEST_ROOT.'/packages/(.*?)/node_modules/@',
+      },
+    );
+
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+      self::JEST_ROOT.'/' => '',
+      },
+    );
+
+    return $changeset;
   }
 
   <<__Override>>

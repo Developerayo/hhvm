@@ -12,20 +12,28 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItWebDriverAgent extends FBShipItCLI{
-  const string ROOT = 'fbobjc/EndToEndTests/WebDriverAgent/src/';
   <<__Override>>
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    return $changeset
-      |> FBCommonFilters::applyAll($$)
-      |> ShipItPathFilters::stripPaths(
-          $$,
-          ImmVector {
-            '@^'.self::ROOT.'Pods@',
-          },
-        )
-      |> ShipItPathFilters::moveDirectories($$, ImmMap { self::ROOT => ''});
+    $changeset = FBCommonFilters::applyAll($changeset);
+
+    // Ignore these when exporting the FBSimulatorControl directory to GitHub.
+    $changeset = ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector {
+        '@^fbobjc/EndToEndTests/WebDriverAgent/src/Pods@',
+      },
+    );
+
+    // Strip the parent directories from the commit paths
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+        'fbobjc/EndToEndTests/WebDriverAgent/src/' => '',
+      },
+    );
+    return $changeset;
   }
 
   <<__Override>>
@@ -34,7 +42,9 @@ final class ShipItWebDriverAgent extends FBShipItCLI{
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'webdriveragent',
-      'sourceRoots' => ImmSet { self::ROOT },
+      'sourceRoots' => ImmSet {
+        'fbobjc/EndToEndTests/WebDriverAgent/src',
+      },
     );
   }
 }

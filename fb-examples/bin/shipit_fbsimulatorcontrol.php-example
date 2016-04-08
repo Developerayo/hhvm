@@ -11,14 +11,21 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItFBSimulatorControl extends FBShipItCLI {
-  const string ROOT = 'fbobjc/EndToEndTests/FBSimulatorControl/src/';
   <<__Override>>
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    return $changeset
-      |> FBCommonFilters::applyAll($$)
-      |> ShipItPathFilters::moveDirectories($$, ImmMap {self::ROOT => '' });
+    $changeset = FBCommonFilters::applyAll($changeset);
+
+    // Strip the parent directories from the commit paths
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+        'fbobjc/EndToEndTests/FBSimulatorControl/src/' => '',
+      },
+    );
+
+    return $changeset;
   }
 
   <<__Override>>
@@ -27,7 +34,9 @@ final class ShipItFBSimulatorControl extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'FBSimulatorControl',
-      'sourceRoots' => ImmSet { self::ROOT },
+      'sourceRoots' => ImmSet {
+        'fbobjc/EndToEndTests/FBSimulatorControl/src',
+      },
     );
   }
 }

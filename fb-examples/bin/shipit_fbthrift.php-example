@@ -8,24 +8,27 @@ final class ShipItFBThrift extends FBShipItCLI {
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    return $changeset
-      |> FBCommonFilters::applyAll($$)
-      |> ShipItPathFilters::stripPaths(
-          $$,
-          ImmVector {
-            '@^fbcode/thrift/thrift-config\\.h$@',  // Made by autoconf.
-            // These 2 aren't usable in OSS at present. Future: release these?
-            '@^fbcode/thrift/perf/canary.py$@',
-            '@^fbcode/thrift/perf/loadtest.py$@',
-          },
-        )
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap {
-            'fbcode/thrift/public_tld/' => '',
-            'fbcode/thrift/' => 'thrift/',
-          },
-        );
+    $changeset = FBCommonFilters::applyAll($changeset);
+
+    $changeset = ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector {
+        '@^fbcode/thrift/thrift-config\\.h$@',  // Made by autoconf.
+        // These 2 aren't usable in OSS at present. Future: release these?
+        '@^fbcode/thrift/perf/canary.py$@',
+        '@^fbcode/thrift/perf/loadtest.py$@',
+      },
+    );
+
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+        'fbcode/thrift/public_tld/' => '',
+        'fbcode/thrift/' => 'thrift/',
+      },
+    );
+
+    return $changeset;
   }
 
   <<__Override>>

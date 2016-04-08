@@ -8,15 +8,17 @@ final class ShipItWangle extends FBShipItCLI {
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    return $changeset
-      |> FBCommonFilters::applyAll($$)
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap {
-            'fbcode/wangle/public_tld/' => '',
-            'fbcode/wangle/' => 'wangle/',
-          },
-        );
+    $changeset = FBCommonFilters::applyAll($changeset);
+
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+        'fbcode/wangle/public_tld/' => '',
+        'fbcode/wangle/' => 'wangle/',
+      },
+    );
+
+    return $changeset;
   }
 
   <<__Override>>

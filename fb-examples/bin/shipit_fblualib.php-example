@@ -12,15 +12,21 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItFBLualib extends FBShipItCLI {
-  const string ROOT = 'fbcode/fblualib/';
-
-  <<__Override>>
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    return $changeset
-      |> FBCommonFilters::applyAll($$)
-      |> ShipItPathFilters::moveDirectories($$, ImmMap { self::ROOT => '' });
+    $changeset = FBCommonFilters::applyAll(
+      $changeset,
+    );
+
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+        'fbcode/fblualib/' => 'fblualib/',
+      },
+    );
+
+    return $changeset;
   }
 
   <<__Override>>
@@ -29,7 +35,7 @@ final class ShipItFBLualib extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'fblualib',
-      'sourceRoots' => ImmSet { self::ROOT },
+      'sourceRoots' => ImmSet { 'fbcode/fblualib' },
     );
   }
 }
