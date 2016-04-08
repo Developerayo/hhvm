@@ -26,6 +26,17 @@ final class NuclideTest extends FBProjectBaseTest {
         ImmVector { 'foo' },
       ),
       tuple(
+        ImmVector {
+          'fbobjc/Tools/Nuclide/fb-only/foo',
+          'fbobjc/Tools/Nuclide/fb_only/foo',
+          'fbobjc/Tools/Nuclide/fb-package/foo',
+          'fbobjc/Tools/Nuclide/fb_package/foo',
+          'fbobjc/Tools/Nuclide/fb-config.js',
+          'fbobjc/Tools/Nuclide/fb_config.js',
+        },
+        ImmVector { },
+      ),
+      tuple(
         ImmVector { 'fbobjc/not_Nuclide/foo', 'fbobjc/Tools/Nuclide/bar' },
         ImmVector { 'bar' },
       ),
