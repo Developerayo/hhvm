@@ -1,0 +1,108 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+/**
+ * We only publish the scripts for public repos. This creates an issue
+ * when the repository is initially private, made public, then the fbshipit
+ * script is modified. To work around this, automatically add stuff that's
+ * newly public.
+ */
+final class FBShipItPublicizeSyncScriptsPhase extends ShipItPhase {
+  public function __construct(
+    private ImmSet<string> $sourceRoots,
+    private (function(ShipItChangeset):ShipItChangeset) $filter,
+  ) {
+  }
+
+  <<__Override>>
+  protected function isProjectSpecific(): bool {
+    return true;
+  }
+
+  <<__Override>>
+  public function getReadableName(): string {
+    return 'release sync scripts and tests for newly-public projects';
+  }
+
+  <<__Override>>
+  protected function runImpl(ShipItBaseConfig $config): void {
+    $dest = ShipItRepo::typedOpen(
+      ShipItDestinationRepo::class,
+      $config->getDestinationPath(),
+      $config->getDestinationBranch(),
+    );
+
+    $src_rev = $dest->findLastSourceCommit(ImmSet { });
+    if ($src_rev === null) {
+      return;
+    }
+
+    $export = ShipItCreateNewRepoPhase::createNewGitRepo(
+      $config,
+      $this->sourceRoots,
+      $this->filter,
+      $src_rev,
+    );
+
+    $export_root = realpath($export->getPath());
+    $dest_root = realpath($config->getDestinationPath());
+
+    $globs = ImmSet {
+      '/fb-examples/bin/shipit_*.php-example',
+      '/fb-examples/tests/projects/*.php-example',
+    };
+    $files = Set { };
+    foreach ($globs as $glob) {
+      $files->addAll(glob($export_root.$glob));
+    }
+    $files = $files->map($file ==> realpath($file))->toImmSet();
+
+    foreach ($files as $file) {
+      invariant(
+        substr($file, 0, strlen($export_root)) === $export_root,
+        'file %s is not inside %',
+        $file,
+        $export_root,
+      );
+      $dest_file = $dest_root.substr($file, strlen($export_root));
+      if (!file_exists($dest_file)) {
+        $this->releaseFile(
+          $dest,
+          $file,
+          $dest_file,
+        );
+      }
+    }
+  }
+
+  private function releaseFile(
+    ShipItDestinationRepo $repo,
+    string $exported_file,
+    string $destination_file,
+  ): void {
+    $dest_root = $repo->getPath();
+    copy($exported_file, $destination_file);
+
+    ShipItUtil::shellExec(
+      $dest_root,
+      /* stdin = */  null,
+      ShipItUtil::DONT_VERBOSE,
+      'git', 'add', $destination_file,
+    );
+    ShipItUtil::shellExec(
+      $dest_root,
+      /* stdin = */  null,
+      ShipItUtil::DONT_VERBOSE,
+      'git', 'commit', '-m',
+      '[autocommit] release '.basename($destination_file),
+    );
+  }
+}
