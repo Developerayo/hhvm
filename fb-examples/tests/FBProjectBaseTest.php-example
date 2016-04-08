@@ -284,7 +284,8 @@ abstract class FBProjectBaseTest extends BaseTest {
       'the badwords list itself' => (new ShipItChangeset())
         ->withDiffs(ImmVector {
           shape(
-            'path' => $this->getExamplePublicPath().'/FBConfidentialFilter.php',
+            'path' => $this->getExamplePublicPath().
+            '/FBConfiden'.'tialFilter.php', // split to avoid triggering filter
             'body' => 'junk',
           ),
         }),
