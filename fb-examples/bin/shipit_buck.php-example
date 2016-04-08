@@ -11,15 +11,14 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 class ShipItBuck {
-  public static function filterChangeset(
-    string $src_path,
-    ShipItChangeset $changeset,
-  ): ShipItChangeset {
-    return (new ShipItScrubberBuck(
-      $changeset,
-      $src_path,
-    ))->scrub();
-  }
+  const NOT_A_TEST_PLAN = 'Imported from GitHub, without a `Test Plan:` line.';
+  const BUCK_SHIPIT_CONFIG_FILE = 'opensource.json';
+  const STRIPPED_FILE_PATHS_KEY = 'paths_to_strip';
+  const FILE_NOT_TO_STRIP_RE = (
+    '@\.jar|\.txt|\.iml|\.idea|\.name|'.
+    '\.class|\.project|\.classpath|\.buckconfig'.
+    '|\.git$|\.sh@'
+  );
 
   public static function cliMain(): void {
     $config = new ShipItBaseConfig(
@@ -56,6 +55,232 @@ class ShipItBuck {
     };
 
     (new ShipItPhaseRunner($config, $phases))->run();
+  }
+
+  public static function filterChangeset(
+    string $src_path,
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $strip_path_patterns = self::loadStrippedPathPatternsFromConfig(
+      $src_path.'/'.self::BUCK_SHIPIT_CONFIG_FILE,
+    );
+    return $changeset
+      |> ShipItPathFilters::stripPaths($$, $strip_path_patterns)
+      |> self::rewriteMessage($$)
+      |> self::rewriteDiffs($src_path, $$)
+      |> FBCommonFilters::applyAll(
+          $$,
+          shape(
+            // skip all the default strips.
+            'stripCommonFiles/exceptions' => ImmVector {'/.*/'},
+            'filterMessageSections/keepFields' => ImmSet {
+              'summary',
+              'reviewed by',
+              'test plan',
+            },
+          ));
+  }
+
+  private static function rewriteMessage(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $sections = ShipItMessageSections::getSections(
+      $changeset,
+      FBCommonFilters::getSupportedMessageSectionNames()
+    );
+    $reviewers = Set { };
+    if ($sections->containsKey('reviewed by')) {
+      $reviewers = new Set(explode(', ', $sections['reviewed by']));
+    }
+    if (($sections['test plan'] ?? null) === self::NOT_A_TEST_PLAN) {
+      $sections->removeKey('test plan');
+    }
+
+    // superclass behavior is to add 'Pulled By' - we'd rather have them as
+    // a reviewer
+    $puller = self::getPulledBy($changeset);
+    if ($puller !== null) {
+      $reviewers[] = $puller;
+    }
+
+    $reviewers->remove('svcscm');
+    $sections['reviewed by'] = implode(', ', $reviewers);
+    return $changeset->withMessage(
+      ShipItMessageSections::buildMessage($sections->toImmMap()));
+  }
+
+  private static function getPulledBy(ShipItChangeset $changeset): ?string {
+    $matches = null;
+    if (preg_match('/(^|\n)GitHub Author: (.*?)(\n|$)/si',
+                   $changeset->getMessage()) &&
+        preg_match('/<([^@]*)@fb\.com>/',
+                       $changeset->getAuthor(), $matches) &&
+        is_array($matches) &&
+        isset($matches[1])) {
+      if ($matches[1] === 'svcscm') {
+        return null;
+      }
+      return trim($matches[1]);
+    }
+    return null;
+  }
+
+  private static function rewriteDiffs(
+    string $src_path,
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    // Short cut for unit tests that don't have diffs
+    if (!$changeset->isValid()) {
+      return $changeset->withDiffs(ImmVector{});
+    }
+
+    $diffs = Vector {};
+    $revision = $changeset->getID();
+
+    $stripper = new ShipItSourceStripper('MOE');
+    foreach ($changeset->getDiffs() as $diff) {
+      $path = $diff['path'];
+      $change = $diff['body'];
+
+      $change = self::processCodeIfHasTo(
+        $src_path,
+        $stripper,
+        $path,
+        $change,
+        $revision);
+      if (!$change) {
+        // processed change may be empty
+        continue;
+      }
+      $diffs[] = shape(
+        'path' => $path,
+        'body' => $change,
+      );
+    }
+    return $changeset->withDiffs($diffs->toImmVector());
+  }
+
+  private static function loadStrippedPathPatternsFromConfig(
+    string $config_path,
+  ): ImmVector<string> {
+    $config_contents = file_get_contents($config_path);
+    if ($config_contents === false) {
+      throw new ShipItException(
+        "couldn't read fboss2 config file: ".$config_path,
+      );
+    }
+    $parsed = json_decode($config_contents, true);
+    if ($parsed === null) {
+      throw new ShipItException(
+        "couldn't decode fboss2 config file: ".$config_path,
+      );
+    }
+    $patterns = new Vector($parsed[self::STRIPPED_FILE_PATHS_KEY]);
+    return $patterns->map(
+      $a ==> {
+        return '@^'.preg_quote($a).'@';
+      },
+    )->toImmVector();
+  }
+
+  private static function processCodeIfHasTo(
+    string $src_path,
+    ShipItSourceStripper $stripper,
+    string $path,
+    string $body,
+    string $revision,
+  ): string {
+    $old_has_internal = false;
+    $new_has_internal = false;
+    $old_stripped_filename = '/dev/null';
+    $new_stripped_filename = '/dev/null';
+    $old_processed = '';
+    $new_processed = '';
+    if (!ShipItUtil::isNewFile($body)) {
+      $old_has_internal =
+        self::shouldProcess($src_path, $stripper, $revision.'~1', $path);
+    }
+    if (!ShipItUtil::isFileRemoval($body)) {
+      $new_has_internal =
+        self::shouldProcess($src_path, $stripper, $revision, $path);
+    }
+    if ($old_has_internal ||
+        ($new_has_internal && !ShipItUtil::isNewFile($body))) {
+      $old_processed =
+        self::processedContent($src_path, $stripper, $revision.'~1', $path);
+      $old_stripped_filename = tempnam('/tmp/', 'fboss_stripped');
+      file_put_contents($old_stripped_filename, $old_processed);
+    }
+    if ($new_has_internal ||
+        ($old_has_internal && !ShipItUtil::isFileRemoval($body))) {
+      $new_processed =
+        self::processedContent($src_path, $stripper, $revision, $path);
+      $new_stripped_filename = tempnam('/tmp/', 'fboss_stripped');
+      file_put_contents($new_stripped_filename, $new_processed);
+    }
+
+    if ($new_has_internal || $old_has_internal) {
+      $new_diff =
+        shell_exec("git diff $old_stripped_filename $new_stripped_filename");
+      $old_true_diff_begin = strpos($body, "\n@@");
+      $new_true_diff_begin = strpos($new_diff, "\n@@");
+      if ($new_diff === '') {
+        // setting it up as empty removes it from patch
+        $body = '';
+      } else {
+        $body =
+          substr($body, 0, $old_true_diff_begin).
+          substr($new_diff, $new_true_diff_begin);
+      }
+    }
+    if ($old_stripped_filename !== '/dev/null') {
+      unlink($old_stripped_filename);
+    }
+    if ($new_stripped_filename !== '/dev/null') {
+      unlink($new_stripped_filename);
+    }
+    return $body;
+  }
+
+  private static function shouldProcess(
+    string $src_path,
+    ShipItSourceStripper $stripper,
+    string $revision,
+    string $path,
+  ): bool {
+    if (preg_match(self::FILE_NOT_TO_STRIP_RE, $path)) {
+      return false;
+    }
+    $source = ShipItUtil::shellExec(
+      $src_path,
+      null,
+      ShipItUtil::DONT_VERBOSE,
+      'git',
+      'show',
+      $revision.':'.$path,
+    );
+    return
+      (bool) preg_match($stripper->getStripMarkersRegex(), $source);
+  }
+
+  private static function processedContent(
+    string $src_path,
+    ShipItSourceStripper $stripper,
+    string $revision,
+    string $path,
+  ): string {
+    $cmd = "cd {$src_path} && git show '{$revision}:{$path}'";
+    return $stripper->stripInternal(
+      ShipItUtil::shellExec(
+        $src_path,
+        null,
+        ShipItUtil::DONT_VERBOSE,
+        'git',
+        'show',
+        $revision.':'.$path,
+      ),
+      pathinfo($path, PATHINFO_EXTENSION),
+    );
   }
 }
 
