@@ -66,12 +66,11 @@ abstract class FBShipItCLI {
     );
   }
 
-  final public static function cliMain(): void {
-    print('--- Starting '.static::class."\n");
+  protected static function getPhases(): ImmVector<ShipItPhase> {
     $static_config = static::getStaticConfig();
     $config = static::getBaseConfig();
 
-    $phases = ImmVector {
+    return ImmVector {
       new ShipItFilterSanityCheckPhase(
         $changeset ==> self::filterChangeset($changeset),
         $static_config['sourceRoots'],
@@ -103,7 +102,12 @@ abstract class FBShipItCLI {
       ),
       new ShipItPushPhase(),
     };
+  }
 
-    (new ShipItPhaseRunner($config, $phases))->run();
+  final public static function cliMain(): void {
+    print('--- Starting '.static::class."\n");
+    $config = static::getBaseConfig();
+
+    (new ShipItPhaseRunner($config, static::getPhases()))->run();
   }
 }

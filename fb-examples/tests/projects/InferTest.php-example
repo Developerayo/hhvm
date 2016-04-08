@@ -1,0 +1,158 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+
+final class InferTest extends FBProjectBaseTest {
+  <<__Override>>
+  protected function usesOptInPublicSummaries(): bool {
+    return true;
+  }
+
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItInfer::filterChangeset(
+      $changeset,
+    );
+  }
+
+  public function examplePathMappings(
+  ): array<(ImmVector<string>, ImmVector<string>)> {
+    return [
+      tuple(
+        ImmVector {
+          # Example things that *should* make it through
+          '.buckconfig',
+          '.clang-format',
+          '.gitignore',
+          '.gitmodules',
+          '.inferconfig',
+          'CONTRIBUTING.md',
+          'LICENSE',
+          'PATENTS',
+          'README.md',
+          'INSTALL.md',
+          'FILES.md',
+          'build-infer.sh',
+          'compile-fcp.sh',
+          'dependencies/java/jsr-305/jsr305.jar',
+          'docker/Dockerfile',
+          'infer/Makefile.in',
+          'examples/hello.c',
+          'scripts/build_integration_tests.py',
+          'scripts/check_clang_plugin_version.sh',
+          'scripts/package_infer_source_with_clang_binaries.sh',
+          'scripts/test.sh',
+          'update-fcp.sh',
+          'opam',
+          'infer.install',
+          'facebook-clang-plugins',
+          'autogen.sh',
+          'configure.ac',
+          'install-sh',
+          'm4/',
+          'Makefile.config.in',
+          'Makefile.in',
+          'infer/tests/.idea/.name',
+          'infer/tests/tests.iml',
+          'infer/tests/codetoanalyze/c/errors/generic.mk',
+          # Example things that should *not* make it through
+          'benchmarks/foo',
+          'facebook/foo',
+          'infer/src/facebook/foo',
+          'ci_config.json',
+          '.facebook',
+          'setup-infer.sh',
+          'setup.sh',
+          'infer/bin/clang_frontend_stats.sh',
+          'infer/bin/errors.pl',
+          'infer/bin/inferiOS',
+          'infer/bin/ios_csv_stats',
+          'infer/bin/procs.pl',
+          'infer/bin/stats.pl',
+          'infer/lib/python/inferiOS',
+          'infer/models/java/src/com/facebook/rti/',
+          'infer/models/java/src/com/instagram/',
+          'infer/models/objc/src/Facebook/',
+          'infer/src/checkers/codequery_examples/examples.txt',
+          'infer/src/facebook/',
+          'infer/tests/codetoanalyze/java/checkers/GatekeeperChecker.java',
+          'infer/tests/codetoanalyze/java/checkers/TraceCallSequence.java',
+          'infer/tests/codetoanalyze/objc/errors/memory_leaks_benchmark/FBViewExample.m',
+          'infer/tests/endtoend/java/checkers/GatekeeperCheckerTest.java',
+          'infer/tests/endtoend/java/checkers/TraceCallSequenceCheckerTest.java',
+          'infer/tests/endtoend/objc/FBViewMemoryLeakTest.java',
+          'scripts/create_binaries.sh',
+          'scripts/create_tv_links.py',
+          'scripts/facebook_dewey_release.sh',
+          'scripts/gen_ios_tv_links.py',
+          'scripts/infer_utils.py',
+        },
+        ImmVector {
+          '.buckconfig',
+          '.clang-format',
+          '.gitignore',
+          '.gitmodules',
+          '.inferconfig',
+          'CONTRIBUTING.md',
+          'LICENSE',
+          'PATENTS',
+          'README.md',
+          'INSTALL.md',
+          'FILES.md',
+          'build-infer.sh',
+          'compile-fcp.sh',
+          'dependencies/java/jsr-305/jsr305.jar',
+          'docker/Dockerfile',
+          'infer/Makefile.in',
+          'examples/hello.c',
+          'scripts/build_integration_tests.py',
+          'scripts/check_clang_plugin_version.sh',
+          'scripts/package_infer_source_with_clang_binaries.sh',
+          'scripts/test.sh',
+          'update-fcp.sh',
+          'opam',
+          'infer.install',
+          'facebook-clang-plugins',
+          'autogen.sh',
+          'configure.ac',
+          'install-sh',
+          'm4/',
+          'Makefile.config.in',
+          'Makefile.in',
+          'infer/tests/.idea/.name',
+          'infer/tests/tests.iml',
+          'infer/tests/codetoanalyze/c/errors/generic.mk',
+        },
+      ),
+    ];
+  }
+
+  /**
+   * @dataProvider examplePathMappings
+   */
+  public function testPathMappings(
+    ImmVector<string> $paths_in,
+    ImmVector<string> $paths_expected,
+  ): void {
+    $diffs = $paths_in->map($path ==> shape('path' => $path, 'body' => 'junk'));
+    $changeset = (new ShipItChangeset())->withDiffs($diffs);
+    $changeset = self::map($changeset);
+    $this->assertEquals(
+      $paths_expected,
+      $changeset->getDiffs()->map($diff ==> $diff['path']),
+    );
+  }
+
+  protected function getExamplePublicPath(): string {
+    return 'docker/example-does-not-exist.txt';
+  }
+}

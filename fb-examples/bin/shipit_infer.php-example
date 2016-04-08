@@ -1,0 +1,147 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItInfer extends FBShipItCLI {
+  <<__Override>>
+  protected static function projectFilterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return $changeset
+      |> FBCommonFilters::stripSummariesByDefault($$)
+      |> FBCommonFilters::applyAll(
+          $$,
+          shape(
+            'stripCommonFiles/exceptions' => ImmVector {
+              '@(^|/)BUCK$@',
+              '@\.mk$@',
+            },
+          ),
+        )
+      |> $$->withDiffs($$->getDiffs()->filter(
+          $diff ==> !self::matchesPrefixList($diff, self::getBlacklist())
+        ))
+      |> $$->withDiffs($$->getDiffs()->filter(
+          $diff ==> self::matchesPrefixList($diff, self::getWhitelist())
+        ));
+  }
+
+  <<__Override>>
+  protected static function getStaticConfig(
+  ): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'infer-fb',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'infer',
+      'sourceRoots' => ImmSet { },
+    );
+  }
+
+  <<__Override>>
+  protected static function getPhases(): ImmVector<ShipItPhase> {
+    // The SanityCheck is incompatible with the whitelist approach
+    return parent::getPhases()->filter(
+      $phase ==> !($phase instanceof ShipItFilterSanityCheckPhase)
+    );
+  }
+
+  private static function matchesPrefixList(
+    ShipItDiff $diff,
+    ImmSet<string> $list,
+  ): bool {
+    $path = $diff['path'];
+    foreach ($list as $entry) {
+      if (strpos($path, $entry) === 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // TODO: convert to private once ShipItScrubberInfer is gone
+  public static function getWhitelist(): ImmSet<string> {
+    return ImmSet {
+      '.buckconfig',
+      '.clang-format',
+      '.gitignore',
+      '.gitmodules',
+      '.inferconfig',
+      'CONTRIBUTING.md',
+      'LICENSE',
+      'PATENTS',
+      'README.md',
+      'INSTALL.md',
+      'FILES.md',
+      'build-infer.sh',
+      'compile-fcp.sh',
+      'dependencies/clang-plugin/',
+      'dependencies/java/',
+      'docker/',
+      'infer/',
+      'examples/',
+      'scripts/build_integration_tests.py',
+      'scripts/check_clang_plugin_version.sh',
+      'scripts/package_infer_source_with_clang_binaries.sh',
+      'scripts/test.sh',
+      'update-fcp.sh',
+      'opam',
+      'infer.install',
+      'facebook-clang-plugins',
+      'autogen.sh',
+      'configure.ac',
+      'install-sh',
+      'm4/',
+      'Makefile.config.in',
+      'Makefile.in',
+    };
+  }
+
+  // TODO: convert to private once ShipItScrubberInfer is gone
+  public static function getBlacklist(): ImmSet<string> {
+    return ImmSet {
+      '.facebook',
+      'ci_config.json',
+      'benchmarks/',
+      'facebook/',
+      'infer/bin/clang_frontend_stats.sh',
+      'infer/bin/errors.pl',
+      'infer/bin/inferiOS',
+      'infer/bin/ios_csv_stats',
+      'infer/bin/procs.pl',
+      'infer/bin/stats.pl',
+      'infer/lib/python/inferiOS',
+      'infer/models/java/src/com/facebook/rti/',
+      'infer/models/java/src/com/instagram/',
+      'infer/models/objc/src/Facebook/',
+      'infer/src/checkers/codequery_examples/examples.txt',
+      'infer/src/facebook/',
+      'infer/tests/codetoanalyze/java/checkers/GatekeeperChecker.java',
+      'infer/tests/codetoanalyze/java/checkers/TraceCallSequence.java',
+      'infer/tests/codetoanalyze/objc/errors/memory_leaks_benchmark/FBViewExample.m',
+      'infer/tests/endtoend/java/checkers/GatekeeperCheckerTest.java',
+      'infer/tests/endtoend/java/checkers/TraceCallSequenceCheckerTest.java',
+      'infer/tests/endtoend/objc/FBViewMemoryLeakTest.java',
+      'scripts/create_binaries.sh',
+      'scripts/create_tv_links.py',
+      'scripts/facebook_dewey_release.sh',
+      'scripts/gen_ios_tv_links.py',
+      'scripts/infer_utils.py',
+      'setup-infer.sh',
+      'setup.sh',
+    };
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItInfer::cliMain();
+}
