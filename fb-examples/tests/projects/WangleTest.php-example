@@ -1,40 +1,27 @@
 <?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 namespace Facebook\ShipIt;
 
 final class WangleTest extends FBProjectBaseTest {
-
+  <<__Override>>
   protected static function map(ShipItChangeset $changeset): ShipItChangeset {
     return ShipItWangle::filterChangeset($changeset);
   }
 
-  protected function getExamplePublicPath(): string {
-    return 'fbcode/wangle/channel/Pipeline.h';
-  }
-
-  public function testPathMappings(): void {
-    $this->assertEquals(
-      ImmVector { 'wangle/ssl/SSLUtil.h', 'README.md' },
-      self::map((new ShipItChangeset())->withDiffs(ImmVector {
-        shape('path' => 'fbcode/wangle/ssl/SSLUtil.h', 'body' => 'ignored'),
-        shape('path' => 'fbcode/wangle/public_tld/README.md', 'body' => ''),
-      }))->getDiffs()->map($diff ==> $diff['path']),
-    );
-  }
-
-  public function testStripping(): void {
-    $diffs = ImmMap {
-      'fbcode/wangle/codec/README.md' => 'keep',
-      'fbcode/wangle/facebook/secret' => 'skip',
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/wangle/ssl/SSLUtil.h' => 'wangle/ssl/SSLUtil.h',
+      'fbcode/wangle/public_tld/README.md' => 'README.md',
+      'fbcode/wangle/codec/README.md' => 'wangle/codec/README.md',
+      'fbcode/wangle/facebook/secret' => null,
     };
-    $this->assertEquals(
-      $diffs
-        ->filter($action ==> $action === 'keep')
-        ->keys()
-        ->map($path ==> str_replace('fbcode/', '', $path)),
-      self::map(
-        (new ShipItChangeset())->withDiffs(self::diffsFromMap($diffs))
-      )->getDiffs()->map($diff ==> $diff['path']),
-    );
   }
-
 }

@@ -9,7 +9,6 @@
  */
 namespace Facebook\ShipIt;
 
-
 final class FlowTest extends FBProjectBaseTest {
   <<__Override>>
   protected static function map(
@@ -19,8 +18,12 @@ final class FlowTest extends FBProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePublicPath(): string {
-    return 'fbcode/flow/foo';
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/flow/foo' => 'foo',
+      'fbcode/hphp/hack/src/foo' => 'hack/foo',
+      'fbcode/somethingelse/foo' => null,
+    };
   }
 
   <<__Override>>

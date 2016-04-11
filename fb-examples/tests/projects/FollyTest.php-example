@@ -1,41 +1,27 @@
 <?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 namespace Facebook\ShipIt;
 
 final class FollyTest extends FBProjectBaseTest {
-
+  <<__Override>>
   protected static function map(ShipItChangeset $changeset): ShipItChangeset {
     return ShipItFolly::filterChangeset($changeset);
   }
 
-  protected function getExamplePublicPath(): string {
-    return 'fbcode/folly/foo';
-  }
-
-  public function testPathMappings(): void {
-    $this->assertEquals(
-      ImmVector { 'folly/NormalFile.h', 'TLDFile.txt' },
-      self::map((new ShipItChangeset())->withDiffs(ImmVector {
-        shape('path' => 'fbcode/folly/NormalFile.h', 'body' => 'ignored'),
-        shape('path' => 'fbcode/folly/public_tld/TLDFile.txt', 'body' => ''),
-      }))->getDiffs()->map($diff ==> $diff['path']),
-    );
-  }
-
-  public function testStripping(): void {
-    $diffs = ImmMap {
-      'fbcode/folly/dynamic.h' => 'keep',
-      'fbcode/folly/folly-config.h' => 'skip',  // Written by autoconf
-      'fbcode/folly/facebook/secret' => 'skip',
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/folly/NormalFile.h' => 'folly/NormalFile.h',
+      'fbcode/folly/public_tld/TLDFile.txt' => 'TLDFile.txt',
+      'fbcode/folly/folly-config.h' => null,  // Written by autoconf
+      'fbcode/folly/facebook/secret' => null,
     };
-    $this->assertEquals(
-      $diffs
-        ->filter($action ==> $action === 'keep')
-        ->keys()
-        ->map($path ==> str_replace('fbcode/', '', $path)),
-      self::map(
-        (new ShipItChangeset())->withDiffs(self::diffsFromMap($diffs))
-      )->getDiffs()->map($diff ==> $diff['path']),
-    );
   }
-
 }

@@ -9,8 +9,8 @@
  */
 namespace Facebook\ShipIt;
 
-
 final class FBLualibTest extends FBProjectBaseTest {
+  <<__Override>>
   protected static function map(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
@@ -19,8 +19,10 @@ final class FBLualibTest extends FBProjectBaseTest {
     );
   }
 
-  protected function getExamplePublicPath(): string {
-    return 'fbcode/fblualib/foo';
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/fblualib/foo' => 'fblualib/foo',
+    };
   }
-
 }

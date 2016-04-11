@@ -10,6 +10,7 @@
 namespace Facebook\ShipIt;
 
 final class NuclideTest extends FBProjectBaseTest {
+  <<__Override>>
   protected static function map(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
@@ -18,52 +19,18 @@ final class NuclideTest extends FBProjectBaseTest {
     );
   }
 
-  public function examplePathMappings(
-  ): array<(ImmVector<string>, ImmVector<string>)> {
-    return [
-      tuple(
-        ImmVector { 'fbobjc/Tools/Nuclide/foo' },
-        ImmVector { 'foo' },
-      ),
-      tuple(
-        ImmVector {
-          'fbobjc/Tools/Nuclide/fb-only/foo',
-          'fbobjc/Tools/Nuclide/fb_only/foo',
-          'fbobjc/Tools/Nuclide/fb-package/foo',
-          'fbobjc/Tools/Nuclide/fb_package/foo',
-          'fbobjc/Tools/Nuclide/fb-config.js',
-          'fbobjc/Tools/Nuclide/fb_config.js',
-        },
-        ImmVector { },
-      ),
-      tuple(
-        ImmVector { 'fbobjc/not_Nuclide/foo', 'fbobjc/Tools/Nuclide/bar' },
-        ImmVector { 'bar' },
-      ),
-      tuple(
-        ImmVector { 'fbobjc/Tools/foo.txt' },
-        ImmVector { },
-      ),
-    ];
-  }
-
-  /**
-   * @dataProvider examplePathMappings
-   */
-  public function testPathMappings(
-    ImmVector<string> $paths_in,
-    ImmVector<string> $paths_expected,
-  ): void {
-    $diffs = $paths_in->map($path ==> shape('path' => $path, 'body' => 'junk'));
-    $changeset = (new ShipItChangeset())->withDiffs($diffs);
-    $changeset = self::map($changeset);
-    $this->assertEquals(
-      $paths_expected,
-      $changeset->getDiffs()->map($diff ==> $diff['path']),
-    );
-  }
-
-  protected function getExamplePublicPath(): string {
-    return 'fbobjc/Tools/Nuclide/foo';
+  <<__Override>>
+  public function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbobjc/Tools/Nuclide/foo' => 'foo',
+      'fbobjc/Tools/Nuclide/fb-only/foo' => null,
+      'fbobjc/Tools/Nuclide/fb_only/foo' => null,
+      'fbobjc/Tools/Nuclide/fb-package/foo' => null,
+      'fbobjc/Tools/Nuclide/fb_package/foo' => null,
+      'fbobjc/Tools/Nuclide/fb-config.js' => null,
+      'fbobjc/Tools/Nuclide/fb_config.js' => null,
+      'fbobjc/not_Nuclide/foo' => null,
+      'fbobjc/Tools/foo.txt' => null,
+    };
   }
 }

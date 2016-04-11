@@ -10,6 +10,7 @@
 namespace Facebook\ShipIt;
 
 final class McrouterTest extends FBProjectBaseTest {
+  <<__Override>>
   protected static function map(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
@@ -18,41 +19,13 @@ final class McrouterTest extends FBProjectBaseTest {
     );
   }
 
-  protected function getExamplePublicPath(): string {
-    return 'fbcode/mcrouter/proxy.h';
-  }
-
-  public function examplePathMappings(
-  ): array<(ImmVector<string>, ImmVector<string>)> {
-    return [
-      tuple(
-        ImmVector { 'fbcode/mcrouter/lib' },
-        ImmVector { 'mcrouter/lib' },
-      ),
-      tuple(
-        ImmVector { 'fbcode/mcrouter/public_tld/LICENSE' },
-        ImmVector { 'LICENSE' },
-      ),
-      tuple(
-        ImmVector { 'fbcode/not_mcrouter/lib', 'fbcode/mcrouter/lib' },
-        ImmVector { 'mcrouter/lib' },
-      ),
-    ];
-  }
-
-  /**
-   * @dataProvider examplePathMappings
-   */
-  public function testPathMappings(
-    ImmVector<string> $paths_in,
-    ImmVector<string> $paths_expected,
-  ): void {
-    $diffs = $paths_in->map($path ==> shape('path' => $path, 'body' => 'junk'));
-    $changeset = (new ShipItChangeset())->withDiffs($diffs);
-    $changeset = self::map($changeset);
-    $this->assertEquals(
-      $paths_expected,
-      $changeset->getDiffs()->map($diff ==> $diff['path']),
-    );
+  <<__Override>>
+  public function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/mcrouter/proxy.h' => 'mcrouter/proxy.h',
+      'fbcode/mcrouter/lib' => 'mcrouter/lib',
+      'fbcode/mcrouter/public_tld/LICENSE' => 'LICENSE',
+      'fbcode/not_mcrouter/lib' => null,
+    };
   }
 }

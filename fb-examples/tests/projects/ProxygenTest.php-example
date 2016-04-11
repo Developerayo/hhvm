@@ -10,6 +10,7 @@
 namespace Facebook\ShipIt;
 
 final class ProxygenTest extends FBProjectBaseTest {
+  <<__Override>>
   protected static function map(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
@@ -18,41 +19,14 @@ final class ProxygenTest extends FBProjectBaseTest {
     );
   }
 
-  protected function getExamplePublicPath(): string {
-    return 'fbcode/proxygen/lib/http/codec/HTTPCodec.h';
-  }
-
-  public function examplePathMappings(
-  ): array<(ImmVector<string>, ImmVector<string>)> {
-    return [
-      tuple(
-        ImmVector { 'fbcode/proxygen/lib' },
-        ImmVector { 'proxygen/lib' },
-      ),
-      tuple(
-        ImmVector { 'fbcode/proxygen/public_tld/LICENSE' },
-        ImmVector { 'LICENSE' },
-      ),
-      tuple(
-        ImmVector { 'fbcode/not_proxygen/lib', 'fbcode/proxygen/lib' },
-        ImmVector { 'proxygen/lib' },
-      ),
-    ];
-  }
-
-  /**
-   * @dataProvider examplePathMappings
-   */
-  public function testPathMappings(
-    ImmVector<string> $paths_in,
-    ImmVector<string> $paths_expected,
-  ): void {
-    $diffs = $paths_in->map($path ==> shape('path' => $path, 'body' => 'junk'));
-    $changeset = (new ShipItChangeset())->withDiffs($diffs);
-    $changeset = self::map($changeset);
-    $this->assertEquals(
-      $paths_expected,
-      $changeset->getDiffs()->map($diff ==> $diff['path']),
-    );
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/proxygen/lib' => 'proxygen/lib',
+      'fbcode/proxygen/public_tld/LICENSE' => 'LICENSE',
+      'fbcode/not_proxygen/lib' => null,
+      'fbcode/proxygen/lib/http/codec/HTTPCodec.h'
+        => 'proxygen/lib/http/codec/HTTPCodec.h'
+    };
   }
 }

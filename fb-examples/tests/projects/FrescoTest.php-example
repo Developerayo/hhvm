@@ -10,6 +10,7 @@
 namespace Facebook\ShipIt;
 
 final class FrescoTest extends FBProjectBaseTest {
+  const string FRESCO = 'fbandroid/libraries/fresco';
   <<__Override>>
   protected function usesOptInPublicSummaries(): bool {
     return true;
@@ -23,208 +24,141 @@ final class FrescoTest extends FBProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePublicPath(): string {
-    return 'fbandroid/libraries/fresco/foo';
-  }
-
-  public function examplePathMappings(
-  ): array<(ImmVector<string>, ImmVector<string>)> {
-    return [
+  protected function getExamplePathMappings(): ImmMap<string, ?string>{
+    return ImmMap {
       // Basic folder test
-      tuple(
-        ImmVector { 'fbandroid/libraries/fresco/foo' },
-        ImmVector { 'foo' },
-      ),
+      self::FRESCO.'/foo' => 'foo',
       // Basic class test
-      tuple(
-        ImmVector { 'fbandroid/libraries/fresco/drawee/Foo.java' },
-        ImmVector { 'drawee/Foo.java' },
-      ),
+      self::FRESCO.'/drawee/Foo.java' => 'drawee/Foo.java',
       // License test
-      tuple(
-        ImmVector { 'fbandroid/libraries/fresco/LICENSE' },
-        ImmVector { 'LICENSE' },
-      ),
+      self::FRESCO.'/LICENSE' => 'LICENSE',
       // Test gradle wrapper
-      tuple(
-        ImmVector {
-          'fbandroid/libraries/fresco/gradle/wrapper/gradle-wrapper.jar',
-          'fbandroid/libraries/fresco/gradle/wrapper/gradle-wrapper.properties',
-        },
-        ImmVector {
-          'gradle/wrapper/gradle-wrapper.jar',
-          'gradle/wrapper/gradle-wrapper.properties',
-        },
-      ),
+      self::FRESCO.'/gradle/wrapper/gradle-wrapper.jar'
+        => 'gradle/wrapper/gradle-wrapper.jar',
+      self::FRESCO.'/gradle/wrapper/gradle-wrapper.properties'
+        => 'gradle/wrapper/gradle-wrapper.properties',
       // Test for excluding other folders
-      tuple(
-        ImmVector {
-          'fbandroid/libraries/fresco/bar',
-          // Should be ignored:
-          'fbandroid/libraries/something/foo1',
-          'fbandroid/fresco/foo2',
-          'fbandroid/abc/fresco/foo3',
-          'fbandroid/libraries/abc/fresco/foo4',
-          'fbandroid/libraries/abc/libraries/fresco/foo5',
-        },
-        ImmVector { 'bar' },
-      ),
+      'fbandroid/libraries/something/foo1' => null,
+      'fbandroid/fresco/foo2' => null,
+      'fbandroid/abc/fresco/foo3' => null,
+      'fbandroid/libraries/abc/fresco/foo4' => null,
+      'fbandroid/libraries/abc/libraries/fresco/foo5' => null,
       // Test for including other Fresco folders
-      tuple(
-        ImmVector {
-          'fbandroid/libraries/fresco/foo1',
-          'fbandroid/libraries/drawee/foo2',
-          'fbandroid/libraries/fbcore/foo3',
-          'fbandroid/libraries/imagepipeline/foo4',
-          'fbandroid/libraries/imagepipeline/foo/bar',
-        },
-        ImmVector {
-          'foo1',
-          'drawee/foo2',
-          'fbcore/foo3',
-          'imagepipeline/foo4',
-          'imagepipeline/foo/bar',
-        },
-      ),
+      self::FRESCO.'/foo1' => 'foo1',
+      'fbandroid/libraries/drawee/foo2' => 'drawee/foo2',
+      'fbandroid/libraries/fbcore/foo3' => 'fbcore/foo3',
+      'fbandroid/libraries/imagepipeline/foo4' => 'imagepipeline/foo4',
+      'fbandroid/libraries/imagepipeline/foo/bar' => 'imagepipeline/foo/bar',
       // Test for including Fresco files
-      tuple(
-        ImmVector {
-          'fbandroid/libraries/fresco/.gitignore',
-          'fbandroid/libraries/fresco/build.gradle',
-          'fbandroid/libraries/fresco/proguard-fresco.pro',
-          'fbandroid/libraries/fresco/README.md',
-          'fbandroid/libraries/fresco/test.bat',
-          'fbandroid/libraries/fresco/test.py',
-          'fbandroid/libraries/fresco/test.sh',
-          'fbandroid/libraries/fresco/drawee/gradle.properties',
-          'fbandroid/libraries/fresco/drawee/build.gradle',
-          'fbandroid/libraries/fresco/drawee/src/main/AndroidManifest.xml',
-          'fbandroid/libraries/fresco/drawee/src/main/java/com/facebook/drawee/view/DraweeView.java',
-          'fbandroid/libraries/fresco/drawee/src/main/res/values/attrs.xml',
-          'fbandroid/libraries/fresco/drawee/src/test/java/com/facebook/drawee/view/DraweeHolderTest.java',
-          'fbandroid/libraries/fresco/drawee/src/test/java/com/facebook/drawee/view/DraweeHolderTest.java',
-          'fbandroid/libraries/fresco/imagepipeline-base/src/main/java/com/facebook/cache/disk/DiskStorage.java',
-          'fbandroid/libraries/fresco/imagepipeline/build.gradle',
-          'fbandroid/libraries/fresco/imagepipeline/src/main/java/com/facebook/imagepipeline/memory/BitmapPool.java',
-          // Should be ignored:
-          'fbandroid/libraries/fresco/BUCK',
-          'fbandroid/libraries/fresco/drawee/src/main/BUCK',
-          'fbandroid/libraries/fresco/drawee/src/main/java/com/facebook/drawee/view/BUCK',
-          'fbandroid/libraries/fresco/drawee/src/test/java/com/facebook/drawee/BUCK',
-        },
-        ImmVector {
-          '.gitignore',
-          'build.gradle',
-          'proguard-fresco.pro',
-          'README.md',
-          'test.bat',
-          'test.py',
-          'test.sh',
-          'drawee/gradle.properties',
-          'drawee/build.gradle',
-          'drawee/src/main/AndroidManifest.xml',
-          'drawee/src/main/java/com/facebook/drawee/view/DraweeView.java',
-          'drawee/src/main/res/values/attrs.xml',
-          'drawee/src/test/java/com/facebook/drawee/view/DraweeHolderTest.java',
-          'drawee/src/test/java/com/facebook/drawee/view/DraweeHolderTest.java',
-          'imagepipeline-base/src/main/java/com/facebook/cache/disk/DiskStorage.java',
-          'imagepipeline/build.gradle',
-          'imagepipeline/src/main/java/com/facebook/imagepipeline/memory/BitmapPool.java',
-
-        },
-      ),
+      self::FRESCO.'/.gitignore' => '.gitignore',
+      self::FRESCO.'/build.gradle' => 'build.gradle',
+      self::FRESCO.'/proguard-fresco.pro' => 'proguard-fresco.pro',
+      self::FRESCO.'/README.md' => 'README.md',
+      self::FRESCO.'/test.bat' => 'test.bat',
+      self::FRESCO.'/test.py' => 'test.py',
+      self::FRESCO.'/test.sh' => 'test.sh',
+      self::FRESCO.'/drawee/gradle.properties' => 'drawee/gradle.properties',
+      self::FRESCO.'/drawee/build.gradle' => 'drawee/build.gradle',
+      self::FRESCO.'/drawee/src/main/AndroidManifest.xml'
+        => 'drawee/src/main/AndroidManifest.xml',
+      self::FRESCO.'/drawee/src/main/java/'.
+        'com/facebook/drawee/view/DraweeView.java'
+        => 'drawee/src/main/java/com/facebook/drawee/view/DraweeView.java',
+      self::FRESCO.'/drawee/src/main/res/values/attrs.xml'
+        => 'drawee/src/main/res/values/attrs.xml',
+      self::FRESCO.'/drawee/src/test/java/'.
+        'com/facebook/drawee/view/DraweeHolderTest.java'
+        => 'drawee/src/test/java/'.
+          'com/facebook/drawee/view/DraweeHolderTest.java',
+      self::FRESCO.'/drawee/src/test/java/'.
+        'com/facebook/drawee/view/DraweeHolderTest.java'
+      => 'drawee/src/test/java/'.
+        'com/facebook/drawee/view/DraweeHolderTest.java',
+      self::FRESCO.'/imagepipeline-base/src/main/java/'.
+        'com/facebook/cache/disk/DiskStorage.java'
+        => 'imagepipeline-base/src/main/java/'.
+          'com/facebook/cache/disk/DiskStorage.java',
+      self::FRESCO.'/imagepipeline/build.gradle'
+        => 'imagepipeline/build.gradle',
+      self::FRESCO.'/imagepipeline/src/main/java/'.
+        'com/facebook/imagepipeline/memory/BitmapPool.java'
+        => 'imagepipeline/src/main/java/'.
+          'com/facebook/imagepipeline/memory/BitmapPool.java',
+      // Should be ignored:
+      self::FRESCO.'/BUCK' => null,
+      self::FRESCO.'/drawee/src/main/BUCK' => null,
+      self::FRESCO.'/drawee/src/main/java/com/facebook/drawee/view/BUCK'
+        => null,
+      self::FRESCO.'/drawee/src/test/java/com/facebook/drawee/BUCK' => null,
       // Test for excluding other Fresco files
-      tuple(
-        ImmVector {
-          'fbandroid/libraries/fresco/whitelist_for_modules',
-          'fbandroid/libraries/fresco/local.properties',
-          'fbandroid/libraries/fresco/not_local.properties',
-          'fbandroid/libraries/fresco/simple_dep_test.py',
-          'fbandroid/libraries/fresco/dep_test.py',
-        },
-        ImmVector {
-          'not_local.properties',
-        },
-      ),
+      self::FRESCO.'/whitelist_for_modules' => null,
+      self::FRESCO.'/local.properties' => null,
+      self::FRESCO.'/not_local.properties' => 'not_local.properties',
+      self::FRESCO.'/simple_dep_test.py' => null,
+      self::FRESCO.'/dep_test.py' => null,
       // Test JNI
-      tuple(
-        ImmVector {
-          'fbandroid/libraries/fresco/imagepipeline/src/main/jni/Application.mk',
-          'fbandroid/libraries/fresco/imagepipeline/src/main/jni/bitmaps/Android.mk',
-          'fbandroid/libraries/fresco/imagepipeline/src/main/jni/bitmaps/Bitmaps.c',
-          'fbandroid/libraries/fresco/imagepipeline/src/main/jni/imagepipeline/exceptions.h',
-          'fbandroid/libraries/fresco/imagepipeline/src/main/jni/imagepipeline/init.cpp',
-          // Should be ignored:
-          'fbandroid/libraries/fresco/imagepipeline/src/main/jni/bitmaps/BUCK',
-          'fbandroid/libraries/something/Application.mk',
-          'fbandroid/libraries/something/imagepipeline/src/main/jni/bitmaps/Android.mk',
-        },
-        ImmVector {
-          'imagepipeline/src/main/jni/Application.mk',
-          'imagepipeline/src/main/jni/bitmaps/Android.mk',
-          'imagepipeline/src/main/jni/bitmaps/Bitmaps.c',
-          'imagepipeline/src/main/jni/imagepipeline/exceptions.h',
-          'imagepipeline/src/main/jni/imagepipeline/init.cpp',
-        },
-      ),
+      self::FRESCO.'/imagepipeline/src/main/jni/Application.mk'
+        => 'imagepipeline/src/main/jni/Application.mk',
+      self::FRESCO.'/imagepipeline/src/main/jni/bitmaps/Android.mk'
+        => 'imagepipeline/src/main/jni/bitmaps/Android.mk',
+      self::FRESCO.'/imagepipeline/src/main/jni/bitmaps/Bitmaps.c'
+        => 'imagepipeline/src/main/jni/bitmaps/Bitmaps.c',
+      self::FRESCO.'/imagepipeline/src/main/jni/imagepipeline/exceptions.h'
+        => 'imagepipeline/src/main/jni/imagepipeline/exceptions.h',
+      self::FRESCO.'/imagepipeline/src/main/jni/imagepipeline/init.cpp'
+        => 'imagepipeline/src/main/jni/imagepipeline/init.cpp',
+      // Should be ignored:
+      self::FRESCO.'/imagepipeline/src/main/jni/bitmaps/BUCK' => null,
+      'fbandroid/libraries/something/Application.mk' => null,
+      'fbandroid/libraries/something/imagepipeline/'.
+        'src/main/jni/bitmaps/Android.mk'
+        => null,
       // Test for image formats
-      tuple(
-        ImmVector {
-          'fbandroid/libraries/fresco/imagepipeline/src/test/java/com/facebook/imagepipeline/decoder/images/image.gif',
-          'fbandroid/libraries/fresco/imagepipeline/src/test/java/com/facebook/imagepipeline/decoder/images/image.jpg',
-          'fbandroid/libraries/fresco/imagepipeline/src/test/java/com/facebook/imagepipeline/decoder/images/image.png',
-          'fbandroid/libraries/fresco/imagepipeline/src/test/java/com/facebook/imagepipeline/decoder/images/image.webp',
-        },
-        ImmVector {
-          'imagepipeline/src/test/java/com/facebook/imagepipeline/decoder/images/image.gif',
-          'imagepipeline/src/test/java/com/facebook/imagepipeline/decoder/images/image.jpg',
-          'imagepipeline/src/test/java/com/facebook/imagepipeline/decoder/images/image.png',
-          'imagepipeline/src/test/java/com/facebook/imagepipeline/decoder/images/image.webp',
-        },
-      ),
+      self::FRESCO.'/imagepipeline/src/test/java/'.
+        'com/facebook/imagepipeline/decoder/images/image.gif'
+        => 'imagepipeline/src/test/java/'.
+          'com/facebook/imagepipeline/decoder/images/image.gif',
+      self::FRESCO.'/imagepipeline/src/test/java/'.
+        'com/facebook/imagepipeline/decoder/images/image.jpg'
+        => 'imagepipeline/src/test/java/'.
+          'com/facebook/imagepipeline/decoder/images/image.jpg',
+      self::FRESCO.'/imagepipeline/src/test/java/'.
+        'com/facebook/imagepipeline/decoder/images/image.png'
+        => 'imagepipeline/src/test/java/'.
+          'com/facebook/imagepipeline/decoder/images/image.png',
+      self::FRESCO.'/imagepipeline/src/test/java/'.
+        'com/facebook/imagepipeline/decoder/images/image.webp'
+        => 'imagepipeline/src/test/java/'.
+          'com/facebook/imagepipeline/decoder/images/image.webp',
       // Test for samples
-      tuple(
-        ImmVector {
-          'fbandroid/libraries/fresco/samples/demo/build.gradle',
-          'fbandroid/libraries/fresco/samples/demo/src/main/java/com/facebook/samples/demo/MainActivity.java',
-          'fbandroid/libraries/fresco/samples/demo/src/main/java/com/facebook/samples/demo/ui/MyView.java',
-          'fbandroid/libraries/fresco/samples/demo/src/main/AndroidManifest.xml',
-          'fbandroid/libraries/fresco/samples/demo/src/main/res/layout/activity_main.xml',
-          'fbandroid/libraries/fresco/samples/demo/src/main/res/values/dimens.xml',
-          'fbandroid/libraries/fresco/samples/demo/src/main/res/values/strings.xml',
-          'fbandroid/libraries/fresco/samples/demo/src/androidTest/java/com/facebook/samples/demo/ApplicationTest.java',
-          // Should be ignored:
-          'fbandroid/libraries/fresco/samples/demo/BUCK',
-          'fbandroid/libraries/fresco/samples/demo/src/main/BUCK',
-          'fbandroid/libraries/fresco/samples/demo/src/main/java/com/facebook/samples/demo/BUCK',
-        },
-        ImmVector {
-          'samples/demo/build.gradle',
-          'samples/demo/src/main/java/com/facebook/samples/demo/MainActivity.java',
-          'samples/demo/src/main/java/com/facebook/samples/demo/ui/MyView.java',
-          'samples/demo/src/main/AndroidManifest.xml',
-          'samples/demo/src/main/res/layout/activity_main.xml',
-          'samples/demo/src/main/res/values/dimens.xml',
-          'samples/demo/src/main/res/values/strings.xml',
-          'samples/demo/src/androidTest/java/com/facebook/samples/demo/ApplicationTest.java',
-        },
-      ),
-    ];
-  }
-
-  /**
-   * @dataProvider examplePathMappings
-   */
-  public function testPathMappings(
-    ImmVector<string> $paths_in,
-    ImmVector<string> $paths_expected,
-  ): void {
-    $diffs = $paths_in->map($path ==> shape('path' => $path, 'body' => 'junk'));
-    $changeset = (new ShipItChangeset())->withDiffs($diffs);
-    $changeset = self::map($changeset);
-    $this->assertEquals(
-      $paths_expected,
-      $changeset->getDiffs()->map($diff ==> $diff['path']),
-    );
+      self::FRESCO.'/samples/demo/build.gradle'
+        => 'samples/demo/build.gradle',
+      self::FRESCO.'/samples/demo/src/main/java/'.
+        'com/facebook/samples/demo/MainActivity.java'
+        => 'samples/demo/src/main/java/'.
+          'com/facebook/samples/demo/MainActivity.java',
+      self::FRESCO.'/samples/demo/src/main/java/'.
+        'com/facebook/samples/demo/ui/MyView.java'
+        => 'samples/demo/src/main/java/'.
+          'com/facebook/samples/demo/ui/MyView.java',
+      self::FRESCO.'/samples/demo/src/main/AndroidManifest.xml'
+        => 'samples/demo/src/main/AndroidManifest.xml',
+      self::FRESCO.'/samples/demo/src/main/res/layout/activity_main.xml'
+        => 'samples/demo/src/main/res/layout/activity_main.xml',
+      self::FRESCO.'/samples/demo/src/main/res/values/strings.xml'
+        => 'samples/demo/src/main/res/values/strings.xml',
+      self::FRESCO.'/samples/demo/src/androidTest/java/'.
+        'com/facebook/samples/demo/ApplicationTest.java'
+        => 'samples/demo/src/androidTest/java/'.
+          'com/facebook/samples/demo/ApplicationTest.java',
+      self::FRESCO.'/samples/demo/src/main/res/values/dimens.xml'
+        => 'samples/demo/src/main/res/values/dimens.xml',
+      // Should be ignored:
+      self::FRESCO.'/samples/demo/BUCK' => null,
+      self::FRESCO.'/samples/demo/src/main/BUCK' => null,
+      self::FRESCO.'/samples/demo/src/main/java/'.
+        'com/facebook/samples/demo/BUCK'
+        => null
+    };
   }
 }

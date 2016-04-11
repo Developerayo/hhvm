@@ -2,40 +2,20 @@
 namespace Facebook\ShipIt;
 
 final class FBThriftTest extends FBProjectBaseTest {
-
+  <<__Override>>
   protected static function map(ShipItChangeset $changeset): ShipItChangeset {
     return ShipItFBThrift::filterChangeset($changeset);
   }
 
-  protected function getExamplePublicPath(): string {
-    return 'fbcode/thrift/doc/Cpp2.md';
-  }
-
-  public function testPathMappings(): void {
-    $this->assertEquals(
-      ImmVector { 'thrift/NormalFile.h', 'TLDFile.txt' },
-      self::map((new ShipItChangeset())->withDiffs(ImmVector {
-        shape('path' => 'fbcode/thrift/NormalFile.h', 'body' => 'ignored'),
-        shape('path' => 'fbcode/thrift/public_tld/TLDFile.txt', 'body' => ''),
-      }))->getDiffs()->map($diff ==> $diff['path']),
-    );
-  }
-
-  public function testStripping(): void {
-    $diffs = ImmMap {
-      'fbcode/thrift/compiler/main.h' => 'keep',
-      'fbcode/thrift/thrift-config.h' => 'skip',  // Written by autoconf
-      'fbcode/thrift/facebook/secret' => 'skip',
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string>{
+    return ImmMap {
+      'fbcode/thrift/doc/Cpp2.md' => 'thrift/doc/Cpp2.md',
+      'fbcode/thrift/NormalFile.h' => 'thrift/NormalFile.h',
+      'fbcode/thrift/public_tld/TLDFile.txt' => 'TLDFile.txt',
+      'fbcode/thrift/compiler/main.h' => 'thrift/compiler/main.h',
+      'fbcode/thrift/thrift-config.h' => null,
+      'fbcode/thrift/facebook/secret' => null,
     };
-    $this->assertEquals(
-      $diffs
-        ->filter($action ==> $action === 'keep')
-        ->keys()
-        ->map($path ==> str_replace('fbcode/', '', $path)),
-      self::map(
-        (new ShipItChangeset())->withDiffs(self::diffsFromMap($diffs))
-      )->getDiffs()->map($diff ==> $diff['path']),
-    );
   }
-
 }

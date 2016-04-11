@@ -9,13 +9,20 @@
  */
 namespace Facebook\ShipIt;
 
-
 abstract class FBProjectBaseTest extends BaseTest {
   protected function usesOptInPublicSummaries(): bool {
     return false;
   }
 
-  protected abstract function getExamplePublicPath(): string;
+  /**
+   * Example input/output paths for filter.
+   *
+   * @returns a map from source path to either a destination path, or null if
+   *   changes to the specified internal path should be removed from the
+   *   destination repository.
+   */
+  protected abstract function getExamplePathMappings(
+  ): ImmMap<string, ?string>;
 
   protected abstract static function map(
     ShipItChangeset $changeset,
@@ -308,5 +315,40 @@ abstract class FBProjectBaseTest extends BaseTest {
   public function testBadwords(ShipItChangeset $changeset): void {
     static::map($changeset);
     // assertion is the @expectedException
+  }
+
+  final public function examplePathMappings(
+  ): array<string, (string, ?string)> {
+    return $this->getExamplePathMappings()
+      ->mapWithKey(($k, $v) ==> tuple($k, $v))
+      ->toArray();
+  }
+
+  /**
+   * @dataProvider examplePathMappings
+   */
+  final public function testPathMapping(
+    string $path_in,
+    ?string $path_expected,
+  ): void {
+    $diffs = ImmVector { shape('path' => $path_in, 'body' => 'junk') };
+    $changeset = (new ShipItChangeset())->withDiffs($diffs);
+    $changeset = static::map($changeset);
+
+    $expected_paths = $path_expected === null ? [] : [$path_expected];
+    $this->assertEquals(
+      $expected_paths,
+      $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray(),
+    );
+  }
+
+  final protected function getExamplePublicPath(): string {
+    foreach ($this->getExamplePathMappings() as $source => $dest) {
+      if ($dest !== null) {
+        return $source;
+      }
+    }
+    $this->markTestFailed("No example public paths provided");
+    invariant_violation('test fails should throw');
   }
 }

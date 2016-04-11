@@ -46,6 +46,7 @@ final class HHVMTest extends FBProjectBaseTest {
     $this->assertEquals($expected, $out->toImmMap());
   }
 
+  <<__Override>>
   protected static function map(
     ShipItChangeset $changeset
   ): ShipItChangeset {
@@ -54,58 +55,12 @@ final class HHVMTest extends FBProjectBaseTest {
     );
   }
 
-  public function examplePathMappings(
-  ): array<(ImmVector<string>, ImmVector<string>)> {
-    return [
-      tuple(
-        ImmVector { 'fbcode/hphp/foo' },
-        ImmVector { 'hphp/foo' },
-      ),
-      tuple(
-        ImmVector { 'fbcode/hphp/public_tld/foo' },
-        ImmVector { 'foo' },
-      ),
-      tuple(
-        ImmVector { 'fbcode/not_hphp/foo', 'fbcode/hphp/bar' },
-        ImmVector { 'hphp/bar' },
-      ),
-    ];
-  }
-
-  /**
-   * @dataProvider examplePathMappings
-   */
-  public function testPathMappings(
-    ImmVector<string> $paths_in,
-    ImmVector<string> $paths_expected,
-  ): void {
-    $diffs = $paths_in->map($path ==> shape('path' => $path, 'body' => 'junk'));
-    $changeset = (new ShipItChangeset())->withDiffs($diffs);
-    $changeset = self::map($changeset);
-    $this->assertEquals(
-      $paths_expected,
-      $changeset->getDiffs()->map($diff ==> $diff['path']),
-    );
-  }
-
-  public function testThirdPartySubmodule(): void {
-    // The bulk of the check is in SubmoduleTest
-    $changeset = ShipItRepoHG::getChangesetFromExportedPatch(
-      file_get_contents(
-        __DIR__.'/../../hg-diffs/submodule-hhvm-third-party.diff'
-      )
-    );
-    $this->assertNotNull($changeset);
-    assert($changeset !== null); // typechecker
-
-    $changeset = self::map($changeset);
-    $this->assertEquals(
-      ImmVector { 'third-party' },
-      $changeset->getDiffs()->map($diff ==> $diff['path']),
-    );
-  }
-
-  protected function getExamplePublicPath(): string {
-    return 'fbcode/hphp/foo';
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/hphp/foo' => 'hphp/foo',
+      'fbcode/hphp/public_tld/foo' => 'foo',
+      'fbcode/not_hphp/foo' => null,
+    };
   }
 }

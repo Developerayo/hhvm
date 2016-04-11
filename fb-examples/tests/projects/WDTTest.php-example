@@ -9,8 +9,8 @@
  */
 namespace Facebook\ShipIt;
 
-
 final class WDTTest extends FBProjectBaseTest {
+  <<__Override>>
   protected static function map(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
@@ -19,45 +19,17 @@ final class WDTTest extends FBProjectBaseTest {
     );
   }
 
-  protected function getExamplePublicPath(): string {
-    return 'fbcode/wdt/WdtBase.h';
-  }
-
   <<__Override>>
-  public function testWithAlreadyOnGitHub(): void {
-    $this->markTestSkipped("not supported by this project");
-  }
-
-  public function testPathMappings(): void {
-    $in = (new ShipItChangeset())
-      ->withDiffs(ImmVector {
-        shape( 'path' => 'fbcode/wdt/foo', 'body' => 'placeholder')
-      });
-    $out = self::map($in);
-    $this->assertEquals(
-      ImmVector { 'foo' },
-      $out->getDiffs()->map($diff ==> $diff['path']),
-    );
-  }
-
-  public function testStripping(): void {
-    $diffs = ImmMap {
-      'fbcode/wdt/TARGETS' => 'keep',
-      'fbcode/wdt/PLATFORM' => 'skip',
-      'fbcode/wdt/fbonly/foo' => 'skip',
-      'fbcode/wdt/fbonly/TARGETS' => 'skip',
-      'fbcode/wdt/fbonly/subdir/TARGETS' => 'skip',
-      'fbcode/wdt/somethingelse/TARGETS' => 'keep',
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/wdt/WdtBase.h' => 'WdtBase.h',
+      'fbcode/wdt/PLATFORM' => null,
+      'fbcode/wdt/fbonly/foo' => null,
+      'fbcode/wdt/fbonly/TARGETS' => null,
+      'fbcode/wdt/fbonly/subdir/TARGETS' => null,
+      // Not confidential, allows PRs to update
+      'fbcode/wdt/TARGETS' => 'TARGETS',
+      'fbcode/wdt/somethingelse/TARGETS' => 'somethingelse/TARGETS',
     };
-    $in = (new ShipItChangeset())
-      ->withDiffs(self::diffsFromMap($diffs));
-    $out = self::map($in);
-    $this->assertEquals(
-      $diffs
-        ->filter($action ==> $action === 'keep')
-        ->keys()
-        ->map($path ==> str_replace('fbcode/wdt/', '', $path)),
-      $out->getDiffs()->map($diff ==> $diff['path']),
-    );
   }
 }

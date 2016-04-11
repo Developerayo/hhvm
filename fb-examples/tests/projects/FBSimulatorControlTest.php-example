@@ -9,9 +9,9 @@
  */
 namespace Facebook\ShipIt;
 
-
 final class FBSimulatorControlTest extends FBProjectBaseTest {
-
+  const string ROOT = 'fbobjc/EndToEndTests/FBSimulatorControl/src';
+  <<__Override>>
   protected static function map(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
@@ -20,28 +20,11 @@ final class FBSimulatorControlTest extends FBProjectBaseTest {
     );
   }
 
-  protected function getExamplePublicPath(): string {
-    return 'fbobjc/EndToEndTests/FBSimulatorControl/src/foo';
-  }
-
-  public function testPathMappings(): void {
-    $root = 'fbobjc/EndToEndTests/FBSimulatorControl/src';
-    $diffs = ImmMap {
-      $root.'/magicDir/File.foo' => 'magicDir/File.foo',
-      $root.'/file.foo' => 'file.foo',
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      self::ROOT.'/magicDir/File.foo' => 'magicDir/File.foo',
+      self::ROOT.'/file.foo' => 'file.foo',
     };
-    $in = (new ShipItChangeset())
-      ->withDiffs(self::diffsFromMap($diffs));
-    $out = self::map($in);
-    foreach ($diffs as $_ => $expected_output_file) {
-      $this->assertSame(
-        $expected_output_file,
-        $out
-          ->getDiffs()
-          ->filter($diff ==> $diff['path'] === $expected_output_file)
-          ->map($diff ==> $diff['body'])
-          ->firstValue(),
-      );
-    }
   }
 }

@@ -9,12 +9,10 @@
  */
 namespace Facebook\ShipIt;
 
-
 final class FbTftpTest extends FBProjectBaseTest {
+  const string ROOT = 'fbcode/syseng/tftp/github';
 
-  private $base_project_dir = 'fbcode/syseng/tftp/github/';
-  private $project_name = 'fbtftp';
-
+  <<__Override>>
   protected static function map(
     ShipItChangeset $changeset
   ): ShipItChangeset {
@@ -23,56 +21,21 @@ final class FbTftpTest extends FBProjectBaseTest {
     );
   }
 
-  public function examplePathMappings(
-  ): array<(ImmVector<string>, ImmVector<string>)> {
-    return [
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
       // Test that a valid file of the project has the base dir stripped off
-      tuple(
-        ImmVector { 'fbcode/syseng/tftp/github/examples/server.py' },
-        ImmVector { 'examples/server.py' },
-      ),
+      self::ROOT.'/examples/server.py' => 'examples/server.py',
       // Test that a non-existing file of the project has still the base dir
       // stripped off (it doesn't matter if it doesn't exist)
-      tuple(
-        ImmVector { 'fbcode/syseng/tftp/github/non/existing' },
-        ImmVector { 'non/existing' },
-      ),
+      self::ROOT.'/non/existing' => 'non/existing',
       // Test that TARGETS has been stripped off
-      tuple(
-        ImmVector { 'fbcode/syseng/tftp/github/TARGETS' },
-        ImmVector { },
-      ),
+      self::ROOT.'/TARGETS' => null,
       // Test a path that is outside the fbtftp base dir
-      tuple(
-        ImmVector { 'fbcode/somewhere/else/entirely' },
-        ImmVector { },
-      ),
+      'fbcode/somewhere/else/entirely' => null,
       // Test a path that resembles the fbtftp base dir but that has an
       // additional component in the middle
-      tuple(
-          ImmVector { 'fbcode/wrong/tftp/github/setup.py' },
-        ImmVector { },
-      ),
-    ];
-  }
-
-  /**
-   * @dataProvider examplePathMappings
-   */
-  public function testPathMappings(
-    ImmVector<string> $paths_in,
-    ImmVector<string> $paths_expected,
-  ): void {
-    $diffs = $paths_in->map($path ==> shape('path' => $path, 'body' => 'junk'));
-    $changeset = (new ShipItChangeset())->withDiffs($diffs);
-    $changeset = self::map($changeset);
-    $this->assertEquals(
-      $paths_expected,
-      $changeset->getDiffs()->map($diff ==> $diff['path']),
-    );
-  }
-
-  protected function getExamplePublicPath(): string {
-    return 'fbcode/syseng/tftp/github/foo';
+      'fbcode/wrong/tftp/github/setup.py' => null,
+    };
   }
 }

@@ -10,6 +10,7 @@
 namespace Facebook\ShipIt;
 
 final class OpenBMCTest extends FBProjectBaseTest {
+  <<__Override>>
   protected static function map(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
@@ -18,45 +19,18 @@ final class OpenBMCTest extends FBProjectBaseTest {
     );
   }
 
+  <<__Override>>
   protected function usesOptInPublicSummaries(): bool {
     return true;
   }
 
-  protected function getExamplePublicPath(): string {
-    return 'README.md';
-  }
-
-  public function examplePathMappings(
-  ): array<(ImmVector<string>, ImmVector<string>)> {
-    return [
-      tuple(
-        ImmVector { 'meta-facebook/meta-yosemite/conf/layer.conf' },
-        ImmVector { 'meta-facebook/meta-yosemite/conf/layer.conf' },
-      ),
-      tuple(
-        ImmVector { 'facebook/arcanist/__phutil_library_init__.php' },
-        ImmVector { },
-      ),
-      tuple(
-        ImmVector { 'source_mirror/bash-4.3.tar.gz' },
-        ImmVector { },
-      ),
-    ];
-  }
-
-  /**
-   * @dataProvider examplePathMappings
-   */
-  public function testPathMappings(
-    ImmVector<string> $paths_in,
-    ImmVector<string> $paths_expected,
-  ): void {
-    $diffs = $paths_in->map($path ==> shape('path' => $path, 'body' => 'junk'));
-    $changeset = (new ShipItChangeset())->withDiffs($diffs);
-    $changeset = self::map($changeset);
-    $this->assertEquals(
-      $paths_expected,
-      $changeset->getDiffs()->map($diff ==> $diff['path']),
-    );
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'meta-facebook/meta-yosemite/conf/layer.conf'
+        => 'meta-facebook/meta-yosemite/conf/layer.conf',
+      'facebook/arcanist/__phutil_library_init__.php' => null,
+      'source_mirror/bash-4.3.tar.gz' => null,
+    };
   }
 }
