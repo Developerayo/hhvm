@@ -62,6 +62,12 @@ abstract class ShipItUtil {
   private static function parsePatch(string $patch, bool $expectHeader) {
     $lookForDiff = !$expectHeader;
     $contents = '';
+    $matches = [];
+
+    $minus_lines = 0;
+    $plus_lines = 0;
+    $seen_range_header = false;
+
     foreach (explode("\n", $patch) as $line) {
       $line = preg_replace('/(\r\n|\n)/', "\n", $line);
 
@@ -76,12 +82,61 @@ abstract class ShipItUtil {
       if (preg_match('@^diff --git [ab]/(.*?) [ab]/\1$@', trim($line))) {
         if ($contents !== '' || $expectHeader) {
           yield $contents;
-          $contents = '';
         }
-      } else if (rtrim($line) == '--') {
-        // Marker for end-of-git-format-patch
-        yield $contents;
-        return;
+        $seen_range_header = false;
+        $contents = $line."\n";
+        continue;
+      }
+      if (
+        preg_match(
+          '/^@@ -\d+(,(?<minus_lines>\d+))? \+\d+(,(?<plus_lines>\d+))? @@/',
+          $line,
+          $matches,
+        )
+      ) {
+        $minus_lines = $matches['minus_lines'] ?? '';
+        $minus_lines = $minus_lines === '' ? 1 : (int) $minus_lines;
+        $plus_lines = $matches['plus_lines'] ?? '';
+        $plus_lines = $plus_lines === '' ? 1 : (int) $plus_lines;
+
+        $contents .= $line."\n";
+        $seen_range_header = true;
+        continue;
+      }
+
+      if (!$seen_range_header) {
+        $contents .= $line ."\n";
+        continue;
+      }
+
+      $leftmost = substr($line, 0, 1);
+      if ($leftmost === "\\") {
+        invariant(
+          $minus_lines === 0 && $plus_lines === 0,
+          "Special line '%s' not at end of hunk",
+          $line,
+        );
+        $contents .= $line."\n";
+      }
+
+      if ($minus_lines <= 0 && $plus_lines <= 0) {
+        continue;
+      }
+
+      $leftmost = substr($line, 0, 1);
+      if ($leftmost === '+') {
+        --$plus_lines;
+      } else if ($leftmost === '-') {
+        --$minus_lines;
+      } else if ($leftmost === ' ') {
+        // Context goes from both.
+        --$plus_lines;
+        --$minus_lines;
+      } else {
+        invariant_violation(
+          "Can't parse hunk line: %s",
+          $line,
+        );
       }
       $contents .= $line."\n";
     }
