@@ -15,21 +15,12 @@ final class FlowTest extends FBProjectBaseTest {
   protected static function map(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    // When migrating to shipit_flow.php, remove the skip in
-    // exampleBadwordChangesets
-    return (new ShipItScrubberFlow($changeset))->scrub();
-  }
-
-  <<__Override>>
-  public function exampleBadwordChangesets(
-  ): array<string, array<ShipItChangeset>> {
-    $this->markTestSkipped("Implemented in OSSSyncAndPush, not scrubber");
-    invariant_violation('markTestSkipped should throw');
+    return ShipItFlow::filterChangeset($changeset);
   }
 
   <<__Override>>
   protected function getExamplePublicPath(): string {
-    return 'flow/foo';
+    return 'fbcode/flow/foo';
   }
 
   <<__Override>>
@@ -43,32 +34,42 @@ final class FlowTest extends FBProjectBaseTest {
       tuple(
         '[flow] [foo] foo bar',
         '[foo] foo bar',
-        ImmVector { 'flow/foo', 'flow/bar' },
+        ImmVector { 'fbcode/flow/foo', 'fbcode/flow/bar' },
+      ),
+      tuple(
+        '[flow][foo] foo bar',
+        '[foo] foo bar',
+        ImmVector { 'fbcode/flow/foo', 'fbcode/flow/bar' },
+      ),
+      tuple(
+        '[foo][flow] foo bar',
+        '[foo] foo bar',
+        ImmVector { 'fbcode/flow/foo', 'fbcode/flow/bar' },
       ),
       tuple(
         'foo bar',
         '[hack] foo bar',
-        ImmVector { 'hphp/hack/foo' },
+        ImmVector { 'fbcode/hphp/hack/src/foo' },
       ),
       tuple(
         '[foo] foo bar',
         '[hack] foo bar',
-        ImmVector { 'hphp/hack/foo' },
+        ImmVector { 'fbcode/hphp/hack/src/foo' },
       ),
       tuple(
         '[foo] foo bar',
         'foo bar',
-        ImmVector { 'hphp/hack/foo', 'flow/foo' },
+        ImmVector { 'fbcode/hphp/hack/src/foo', 'fbcode/flow/foo' },
       ),
       tuple(
         'foo bar',
         'foo bar',
-        ImmVector { 'hphp/hack/foo', 'flow/foo' },
+        ImmVector { 'fbcode/hphp/hack/src/foo', 'fbcode/flow/foo' },
       ),
       tuple(
         '[herp] foo bar',
         'foo bar',
-        ImmVector { 'hphp/hack/foo', 'flow/foo' },
+        ImmVector { 'fbcode/hphp/hack/src/foo', 'fbcode/flow/foo' },
       ),
       tuple(
         '[herp] [derp] foo bar',

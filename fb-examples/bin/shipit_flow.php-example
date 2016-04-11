@@ -1,0 +1,85 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItFlow extends FBShipItCLI {
+  <<__Override>>
+  protected static function projectFilterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $subject = self::getNewSubject($changeset);
+
+    return $changeset
+      |> FBCommonFilters::applyAll($$)
+      |> $$->withSubject($subject)
+      |> ShipItPathFilters::stripPaths(
+          $$,
+          ImmVector {
+            '@fbcode/hphp/hack/([^/]+/)*h2tp(/|$)@',
+            '@fbcode/hphp/hack/([^/]+/)*sysConfig\.ml$@',
+          },
+        )
+      |> ShipItPathFilters::moveDirectories(
+          $$,
+          ImmMap {
+            'fbcode/flow/' => '',
+            'fbcode/hphp/hack/src/' => 'hack/',
+          }
+        );
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'flow',
+      'sourceRoots' => ImmSet { 'fbcode/flow', 'fbcode/hphp/hack/src' },
+    );
+  }
+
+  private static function getNewSubject(
+    ShipItChangeset $changeset,
+  ): string {
+    $subject = $changeset->getSubject();
+
+    if (stripos($subject, '[flow]') !== false) {
+      // Remove flow, preserve other sections
+      $subject = preg_replace(
+        '/^((?:\[[^\]]+\]\s*)*)\[flow\]/i', '$1',
+        $subject
+      );
+      return trim(preg_replace('/\s\s+/', ' ', $subject));
+    }
+
+    $subject = FBCommonFilters::stripSubjectTags($changeset)->getSubject();
+    if (!$changeset->isValid()) {
+      return $subject;
+    }
+
+    $search = 'fbcode/hphp/hack/';
+    $search_len = strlen($search);
+
+    foreach ($changeset->getDiffs() as $diff) {
+      if (substr($diff['path'], 0, $search_len) !== $search) {
+        return $subject;
+      }
+    }
+
+    return '[hack] '.trim($subject);
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItFlow::cliMain();
+}
