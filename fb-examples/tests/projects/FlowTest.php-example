@@ -97,4 +97,9 @@ final class FlowTest extends FBProjectBaseTest {
     $changeset = self::map($changeset);
     $this->assertSame($subject_expected, $changeset->getSubject());
   }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
 }

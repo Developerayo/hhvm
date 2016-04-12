@@ -25,4 +25,9 @@ final class FBLualibTest extends FBProjectBaseTest {
       'fbcode/fblualib/foo' => 'fblualib/foo',
     };
   }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
 }

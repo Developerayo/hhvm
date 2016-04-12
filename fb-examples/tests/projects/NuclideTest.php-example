@@ -33,4 +33,9 @@ final class NuclideTest extends FBProjectBaseTest {
       'fbobjc/Tools/foo.txt' => null,
     };
   }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
 }

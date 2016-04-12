@@ -29,4 +29,9 @@ final class ProxygenTest extends FBProjectBaseTest {
         => 'proxygen/lib/http/codec/HTTPCodec.h'
     };
   }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
 }

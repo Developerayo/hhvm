@@ -24,4 +24,9 @@ final class FollyTest extends FBProjectBaseTest {
       'fbcode/folly/facebook/secret' => null,
     };
   }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
 }

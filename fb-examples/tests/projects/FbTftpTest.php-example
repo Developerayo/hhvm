@@ -38,4 +38,9 @@ final class FbTftpTest extends FBProjectBaseTest {
       'fbcode/wrong/tftp/github/setup.py' => null,
     };
   }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
 }

@@ -20,7 +20,7 @@ final class OpenBMCTest extends FBProjectBaseTest {
   }
 
   <<__Override>>
-  protected function usesOptInPublicSummaries(): bool {
+  protected function removesSummariesByDefault(): bool {
     return true;
   }
 

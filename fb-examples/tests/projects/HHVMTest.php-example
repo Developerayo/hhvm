@@ -63,4 +63,9 @@ final class HHVMTest extends FBProjectBaseTest {
       'fbcode/not_hphp/foo' => null,
     };
   }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
 }

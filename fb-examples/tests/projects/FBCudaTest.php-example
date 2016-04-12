@@ -25,4 +25,9 @@ final class FBCudaTest extends FBProjectBaseTest {
       'fbcode/cuda/foo' => 'foo',
     };
   }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
 }

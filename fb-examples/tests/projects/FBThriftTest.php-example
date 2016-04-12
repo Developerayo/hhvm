@@ -18,4 +18,9 @@ final class FBThriftTest extends FBProjectBaseTest {
       'fbcode/thrift/facebook/secret' => null,
     };
   }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
 }

@@ -24,4 +24,9 @@ final class WangleTest extends FBProjectBaseTest {
       'fbcode/wangle/facebook/secret' => null,
     };
   }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
 }

@@ -10,9 +10,7 @@
 namespace Facebook\ShipIt;
 
 abstract class FBProjectBaseTest extends BaseTest {
-  protected function usesOptInPublicSummaries(): bool {
-    return false;
-  }
+  abstract protected function removesSummariesByDefault(): bool;
 
   /**
    * Example input/output paths for filter.
@@ -66,7 +64,7 @@ abstract class FBProjectBaseTest extends BaseTest {
     string $message_in,
     string $expected_message_out,
   ): void {
-    if ($this->usesOptInPublicSummaries()) {
+    if ($this->removesSummariesByDefault()) {
       $message_in .= ' @public';
     }
 
@@ -81,7 +79,7 @@ abstract class FBProjectBaseTest extends BaseTest {
 
   public function examplesForSectionHandling(
   ): array<(string, string)> {
-    if ($this->usesOptInPublicSummaries()) {
+    if ($this->removesSummariesByDefault()) {
       $this->markTestSkipped("Does not apply to repositories using @public");
     }
 
@@ -123,7 +121,7 @@ abstract class FBProjectBaseTest extends BaseTest {
   }
 
   public function testOptInPublicSummaries(): void {
-    if (!$this->usesOptInPublicSummaries()) {
+    if (!$this->removesSummariesByDefault()) {
       $this->markTestSkipped();
     }
 
@@ -212,7 +210,7 @@ abstract class FBProjectBaseTest extends BaseTest {
   public function testMentionMapping(): void {
     $in = 'Summary: foo @joelm bar';
     $expected = 'Summary: foo JoelMarcey bar';
-    if ($this->usesOptInPublicSummaries()) {
+    if ($this->removesSummariesByDefault()) {
       $in .= ' @public';
     }
 

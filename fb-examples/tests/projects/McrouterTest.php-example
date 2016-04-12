@@ -28,4 +28,9 @@ final class McrouterTest extends FBProjectBaseTest {
       'fbcode/not_mcrouter/lib' => null,
     };
   }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
 }

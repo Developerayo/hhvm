@@ -27,4 +27,9 @@ final class WebDriverAgentTest extends FBProjectBaseTest {
       self::ROOT.'/file.foo' => 'file.foo',
     };
   }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
 }
