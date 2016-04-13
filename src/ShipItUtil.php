@@ -111,12 +111,10 @@ abstract class ShipItUtil {
 
       $leftmost = substr($line, 0, 1);
       if ($leftmost === "\\") {
-        invariant(
-          $minus_lines === 0 && $plus_lines === 0,
-          "Special line '%s' not at end of hunk",
-          $line,
-        );
         $contents .= $line."\n";
+        // Doesn't count as a + or - line whatever happens; if NL at EOF
+        // changes, there is a + and - for the last line of content
+        continue;
       }
 
       if ($minus_lines <= 0 && $plus_lines <= 0) {

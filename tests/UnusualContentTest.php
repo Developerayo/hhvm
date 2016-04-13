@@ -92,4 +92,16 @@ final class UnusualContentTest extends BaseTest {
       $hunk,
     );
   }
+
+  public function testAddingNewlineAtEOF() {
+    $patch = file_get_contents(__DIR__.'/git-diffs/add-newline-at-eof.patch');
+    $changeset = ShipItRepoGIT::getChangesetFromExportedPatch($patch);
+    assert($changeset !== null);
+
+    $hunk = $changeset->getDiffs()->at(0)['body'];
+    $this->assertContains(' foo', $hunk);
+    $this->assertContains('-bar', $hunk);
+    $this->assertContains('+bar', $hunk);
+    $this->assertContains('\ No newline at end of file', $hunk);
+  }
 }
