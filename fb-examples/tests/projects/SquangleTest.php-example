@@ -25,4 +25,9 @@ final class SquangleTest extends FBProjectBaseTest {
       'fbcode/squangle/public_tld/README.md' => 'README.md',
     };
   }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
 }
