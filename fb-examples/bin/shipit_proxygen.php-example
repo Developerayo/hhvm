@@ -16,17 +16,15 @@ final class ShipItProxygen extends FBShipItCLI {
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $changeset = FBCommonFilters::applyAll($changeset);
-
-    $changeset = ShipItPathFilters::moveDirectories(
-      $changeset,
-      ImmMap {
-        'fbcode/proxygen/public_tld/' => '',
-        'fbcode/proxygen' => 'proxygen',
-      },
-    );
-
-    return $changeset;
+    return $changeset
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::moveDirectories(
+          $$,
+          ImmMap {
+            'fbcode/proxygen/public_tld/' => '',
+            'fbcode/proxygen' => 'proxygen',
+          },
+        );
   }
 
   <<__Override>>

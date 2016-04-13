@@ -12,22 +12,15 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItRedex extends FBShipItCLI {
+  const string ROOT = 'fbandroid/native/redex/';
+
   <<__Override>>
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $changeset = FBCommonFilters::applyAll(
-      $changeset,
-    );
-
-    $changeset = ShipItPathFilters::moveDirectories(
-      $changeset,
-      ImmMap {
-        'fbandroid/native/redex/' => '',
-      },
-    );
-
-    return $changeset;
+    return $changeset
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::moveDirectories($$, ImmMap { self::ROOT => '' });
   }
 
   <<__Override>>
@@ -36,7 +29,7 @@ final class ShipItRedex extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'redex',
-      'sourceRoots' => ImmSet { 'fbandroid/native/redex' },
+      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

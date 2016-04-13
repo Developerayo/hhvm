@@ -11,47 +11,42 @@ namespace Facebook\ShipIt;
 
 require_once(__DIR__.'/../autoload.php');
 
-class ShipItHHVM {
+final class ShipItHHVM {
   public static function filterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $changeset = FBCommonFilters::applyAll(
-      $changeset,
-      shape(
-        'stripCommonFiles/exceptions' => ImmVector {
-          // HHVM will rewrite this SHA file into something publicly usable
-          '@^fbcode/hphp/facebook/third-party-rev.txt@',
-          // HHVM has an extension named "fb" which is public
-          '@^fbcode/hphp/runtime/ext/fb/@',
-        },
-      ),
-    );
-
-    $changeset = ShipItPathFilters::stripPaths(
-      $changeset,
-      ImmVector {
-        '@^(?!fbcode/hphp)@',
-        '@^fbcode/hphp/(?!hack).*Makefile$@',
-      },
-    );
-
-    $changeset = ShipItSubmoduleFilter::useSubmoduleCommitFromTextFile(
-      $changeset,
-      'fbcode/hphp/facebook/third-party-rev.txt',
-      'third-party',
-    );
-
-    $changeset = ShipItPathFilters::moveDirectories(
-      $changeset,
-      ImmMap {
-        'fbcode/hphp/public_tld/' => '',
-        'fbcode/hphp/' => 'hphp/',
-      },
-    );
-
-    $changeset = FBConfidentialFilter::applyAll($changeset);
-
-    return $changeset;
+    return $changeset
+      |> FBCommonFilters::applyAll(
+          $$,
+          shape(
+            'stripCommonFiles/exceptions' => ImmVector {
+              // HHVM will rewrite this SHA file into something publicly usable
+              '@^fbcode/hphp/facebook/third-party-rev.txt@',
+              // HHVM has an extension named "fb" which is public
+              '@^fbcode/hphp/runtime/ext/fb/@',
+            },
+          ),
+        )
+      |> ShipItPathFilters::stripPaths(
+          $$,
+          ImmVector {
+            '@^(?!fbcode/hphp)@',
+            '@^fbcode/hphp/(?!hack).*Makefile$@',
+          },
+        )
+      |> ShipItSubmoduleFilter::useSubmoduleCommitFromTextFile(
+          $$,
+          'fbcode/hphp/facebook/third-party-rev.txt',
+          'third-party',
+        )
+      |> ShipItPathFilters::moveDirectories(
+          $$,
+          ImmMap {
+            'fbcode/hphp/public_tld/' => '',
+            'fbcode/hphp/' => 'hphp/',
+          },
+        )
+      |> FBConfidentialFilter::applyAll($$);
   }
 
   public static function cliMain(): void {

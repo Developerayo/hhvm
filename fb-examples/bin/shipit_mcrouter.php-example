@@ -16,17 +16,15 @@ final class ShipItMcrouter extends FBShipItCLI {
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $changeset = FBCommonFilters::applyAll($changeset);
-
-    $changeset = ShipItPathFilters::moveDirectories(
-      $changeset,
-      ImmMap {
-        'fbcode/mcrouter/public_tld/' => '',
-        'fbcode/mcrouter/' => 'mcrouter/',
-      },
-    );
-
-    return $changeset;
+    return $changeset
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::moveDirectories(
+          $$,
+          ImmMap {
+            'fbcode/mcrouter/public_tld/' => '',
+            'fbcode/mcrouter/' => 'mcrouter/',
+          },
+        );
   }
 
   <<__Override>>

@@ -16,28 +16,25 @@ class ShipItNuclide extends FBShipItCLI {
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $changeset = FBCommonFilters::applyAll($changeset);
-
-    $changeset = ShipItPathFilters::stripPaths(
-      $changeset,
-      ImmVector {
-        // Our internal npm config
-        '@^fbobjc/Tools/Nuclide/\.npmrc$@',
-        // This goes beyond the common case, it covers fb-* and fb_*
-        // e.g.: fb-package/index.js and fb-config.js
-        '@(^|/)fb-[^/]*(/|$)@',
-        '@(^|/)fb_[^/]*(/|$)@',
-      },
-    );
-
-    $changeset = ShipItPathFilters::moveDirectories(
-      $changeset,
-      ImmMap {
-        'fbobjc/Tools/Nuclide/' => '',
-      },
-    );
-
-    return $changeset;
+    return $changeset
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::stripPaths(
+          $$,
+          ImmVector {
+            // Our internal npm config
+            '@^fbobjc/Tools/Nuclide/\.npmrc$@',
+            // This goes beyond the common case, it covers fb-* and fb_*
+            // e.g.: fb-package/index.js and fb-config.js
+            '@(^|/)fb-[^/]*(/|$)@',
+            '@(^|/)fb_[^/]*(/|$)@',
+          },
+        )
+      |> ShipItPathFilters::moveDirectories(
+          $$,
+          ImmMap {
+            'fbobjc/Tools/Nuclide/' => '',
+          },
+        );
   }
 
   <<__Override>>
