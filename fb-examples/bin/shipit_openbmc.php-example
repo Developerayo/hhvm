@@ -36,11 +36,13 @@ final class ShipItOpenBMC extends FBShipItCLI {
       },
     );
 
-    // Kernel patches
-    // meta-aspeed/recipes-kernel/linux/files/linux-aspeed-2.6.28.9/
     $changeset = ShipItPathFilters::moveDirectories(
       $changeset,
-      ImmMap { },
+      ImmMap {
+        # Provide an overlay to keep patches locally, but 'replace' the source
+        # checkouts that exists for u-boot and Linux.
+        'github/' => '',
+      },
     );
 
     return $changeset;
