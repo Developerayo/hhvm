@@ -30,7 +30,6 @@ class ShipItBuck {
     $phases = ImmVector {
       new BuckEnvironmentCheckPhase(),
       new FBRepoInitPhase(
-        $config,
         ShipItRepoSide::SOURCE,
         'buck_internal',
       ),

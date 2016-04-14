@@ -10,49 +10,11 @@
 namespace Facebook\ShipIt;
 
 final class ShipItBaseConfig {
-  private bool $mutable = false;
-  private bool $canBeMadeMutable = true;
-
   public function __construct(
     private string $baseDirectoryPath,
     private string $defaultSourceDirectoryName,
     private string $defaultDestinationDirectoryName,
   ) { }
-
-  // the 0 argument is run-time log rate. Users can't do anything about this,
-  // so suppress all log messages about it.
-  <<__Deprecated('For OSSSyncAndPush migration - will be removed', 0)>>
-  public function __fb__makeMutable(): void {
-    invariant(
-      $this->canBeMadeMutable,
-      '__fb__makeMutable() called after __fb__makeImmutable',
-    );
-    $this->mutable = true;
-  }
-
-  <<__Deprecated('For OSSSyncAndPush migration - will be removed', 0)>>
-  public function __fb__makeImmutable(): void {
-    $this->mutable = false;
-    $this->canBeMadeMutable = false;
-  }
-
-  <<__Deprecated('For OSSSyncAndPush migration - will be removed', 0)>>
-  public function __fb__setSourceDirectoryName(string $v): void {
-    invariant(
-      $this->mutable,
-      'trying to mutate immutable object',
-    );
-    $this->defaultSourceDirectoryName = $v;
-  }
-
-  <<__Deprecated('For OSSSyncAndPush migration - will be removed', 0)>>
-  public function __fb__setDestinationDirectoryName(string $v): void {
-    invariant(
-      $this->mutable,
-      'trying to mutate immutable object',
-    );
-    $this->defaultDestinationDirectoryName = $v;
-  }
 
   public function getBaseDirectory(): string {
     return $this->baseDirectoryPath;
@@ -122,7 +84,7 @@ final class ShipItBaseConfig {
   private function modified<Tignored>(
     (function(ShipItBaseConfig):Tignored) $mutator,
   ): ShipItBaseConfig {
-    $ret = $this->mutable ? $this : (clone $this);
+    $ret = clone $this;
     $mutator($ret);
     return $ret;
   }

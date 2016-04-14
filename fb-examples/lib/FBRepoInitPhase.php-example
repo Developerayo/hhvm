@@ -11,7 +11,6 @@ namespace Facebook\ShipIt;
 
 final class FBRepoInitPhase extends ShipItPhase {
   public function __construct(
-    private ShipItBaseConfig $config, // temporary - legacy migration
     private ShipItRepoSide $side,
     private string $name = 'fbcode',
   ) {
@@ -43,25 +42,11 @@ final class FBRepoInitPhase extends ShipItPhase {
         'description' => "Don't initialize the repository",
         'write' => $_ ==> $this->skip(),
       ),
-      shape(
+      shape( // Removed; specified in code instead.
         'long_name' => $this->side.'-repo::',
-        'description' => 'Source repo (fbcode, fbsource, or www) [fbcode]',
-        'write' => $x ==> {
-          $this->name = $x;
-          $this->assertIsSourceSide();
-          /* HH_FIXME[4128] calling deprecated method */
-          $this->config->__fb__setSourceDirectoryName($this->name);
-        },
       ),
-      shape(
+      shape( // Removed; specified in code instead.
         'long_name' => 'src-repo::',
-        'replacement' => $this->side.'-repo::',
-        'write' => $x ==> {
-          $this->assertIsSourceSide();
-          $this->name = $x;
-          /* HH_FIXME[4128] calling deprecated method */
-          $this->config->__fb__setSourceDirectoryName($this->name);
-        },
       ),
     };
   }

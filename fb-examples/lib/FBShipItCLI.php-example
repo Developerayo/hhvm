@@ -76,7 +76,6 @@ abstract class FBShipItCLI {
         $static_config['sourceRoots'],
       ),
       new FBRepoInitPhase(
-        $config,
         ShipItRepoSide::SOURCE,
         $static_config['internalRepo'],
       ),

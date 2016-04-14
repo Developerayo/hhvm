@@ -59,7 +59,6 @@ final class ShipItHHVM {
     $phases = ImmVector {
       new HHVMEnvironmentCheckPhase(),
       new FBRepoInitPhase(
-        $config,
         ShipItRepoSide::SOURCE,
         'fbsource',
       ),

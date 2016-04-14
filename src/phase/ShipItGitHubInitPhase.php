@@ -61,16 +61,4 @@ final class ShipItGitHubInitPhase extends ShipItPhase {
 
     $class::initializeRepo($this->organization, $this->project, $local_path);
   }
-
-  // the 0 argument is run-time log rate. Users can't do anything about this,
-  // so suppress all log messages about it.
-  <<__Deprecated('For OSSSyncAndPush migration - will be removed', 0)>>
-  public function __fb__setOrganization(string $s): void {
-    $this->organization = $s;
-  }
-
-  <<__Deprecated('For OSSSyncAndPush migration - will be removed', 0)>>
-  public function __fb__setProject(string $p): void {
-    $this->project = $p;
-  }
 }

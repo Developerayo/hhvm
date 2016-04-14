@@ -17,8 +17,6 @@ final class ShipItPhaseRunner {
 
   public function run(): void {
     $this->parseCLIArguments();
-    /* HH_FIXME[4128] calling deprecated method */
-    $this->config->__fb__makeImmutable();
     foreach ($this->phases as $phase) {
       $phase->run($this->config);
     }
