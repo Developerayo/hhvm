@@ -29,8 +29,6 @@ final class ShipItOpenBMC extends FBShipItCLI {
         '@^meta-aspeed/recipes-kernel/linux/files/linux-.*@',
         '@^meta-aspeed/recipes-bsp/u-boot/files/u-boot.*@',
         '@^meta-aspeed/recipes-bsp/u-boot/u-boot.*@',
-        # Remove code landed in fido from lighting, resolve independently.
-        '@^meta-facebook/meta-lightning@',
         # Anything marked 'private' should not be synced.
         '@^.*private@',
       },
