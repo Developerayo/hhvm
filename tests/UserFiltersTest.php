@@ -9,8 +9,22 @@
  */
 namespace Facebook\ShipIt;
 
+final class UserInfoTestImplementation extends ShipItUserInfo {
+  public static async function getDestinationAuthorFromLocalUser(
+    string $local_user,
+  ): Awaitable<string> {
+    $user = await self::getDestinationUserFromLocalUser($local_user);
+    return 'Example User <'.$user.'@example.com>';
+  }
 
-final class MentionsTest extends BaseTest {
+  public static async function getDestinationUserFromLocalUser(
+    string $local_user,
+  ): Awaitable<string> {
+    return $local_user.'-public';
+  }
+}
+
+final class UserFiltersTest extends BaseTest {
   public function examplesForGetMentions(
   ): array<(string, ImmSet<string>)> {
     return [
@@ -98,6 +112,33 @@ final class MentionsTest extends BaseTest {
     );
     $this->assertFalse(
       ShipItMentions::containsMention($changeset, '@baz')
+    );
+  }
+
+  public function examplesForSVNUserMapping(
+  ): array<(string, string)> {
+    $fake_uuid = str_repeat('a', 36);
+    return [
+      tuple('Foo <foo@example.com>', 'Foo <foo@example.com>'),
+      tuple('foo@'.$fake_uuid, 'Example User <foo-public@example.com>'),
+    ];
+  }
+
+  /**
+   * @dataProvider examplesForSVNUserMapping
+   */
+  public function testSVNUserMapping(
+    string $in,
+    string $expected,
+  ): void {
+    $changeset = (new ShipItChangeset())->withAuthor($in)
+      |> ShipItUserFilters::rewriteSVNAuthor(
+          $$,
+          UserInfoTestImplementation::class,
+        );
+    $this->assertSame(
+      $expected,
+      $changeset->getAuthor(),
     );
   }
 }

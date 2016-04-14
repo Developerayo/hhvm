@@ -33,6 +33,20 @@ final class FBCommonFiltersTest extends BaseTest {
     );
   }
 
+  public function testSVNAuthor(): void {
+    $fake_uuid = str_repeat('a', 36);
+    $in = (new ShipItChangeset())
+      ->withAuthor('fredemmott@'.$fake_uuid);
+    $out = ShipItUserFilters::rewriteSVNAuthor(
+      $in,
+      FBToGitHubUserInfo::class,
+    );
+    $this->assertSame(
+      'Fred Emmott <fe@fb.com>',
+      $out->getAuthor(),
+    );
+  }
+
   public function exampleFacebookDirectories():array<(string, bool)> {
     return [
       /* tuple(string $path, bool $private) */
