@@ -10,6 +10,13 @@
 namespace Facebook\ShipIt;
 
 abstract class FBProjectBaseTest extends BaseTest {
+  /**
+   * Whether or not the filter removes summaries that don't include "@public".
+   *
+   * This should almost always be false; despite usually having the same
+   * implementation, it's abstract so that the behavior is explicit in each
+   * project test.
+   */
   abstract protected function removesSummariesByDefault(): bool;
 
   /**
