@@ -1,0 +1,35 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class RedexTest extends FBProjectBaseTest {
+  <<__Override>>
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItRedex::filterChangeset(
+      $changeset,
+    );
+  }
+
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbandroid/native/redex/foo' => 'foo',
+      'fbandroid/not_redex/foo' => null,
+      'fbandroid/redex-stable/foo' => null,
+    };
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+}
