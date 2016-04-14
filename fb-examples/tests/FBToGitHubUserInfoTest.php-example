@@ -1,0 +1,59 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class FBToGitHubUserInfoTest extends BaseTest {
+  public function exampleUsers(
+  ): array<string, (string, ?string, ?string)> {
+    return [
+      'internal user == external user' => tuple(
+        'fredemmott',
+        'fredemmott',
+        'Fred Emmott <fe@fb.com>',
+      ),
+      'internal user != external user' => tuple(
+        'joelm',
+        'JoelMarcey',
+        'Joel Marcey <joelm@fb.com>',
+      ),
+      'ex-employee' => tuple(
+        'sgolemon',
+        'sgolemon',
+        'Sara Golemon <saramg@fb.com>',
+      ),
+      'bot' => tuple(
+        'svcscm',
+        null,
+        null,
+      ),
+    ];
+  }
+
+  /**
+   * @dataProvider exampleUsers
+   */
+  public function testUserLookup(
+    string $local_user,
+    ?string $expected_remote_user,
+    ?string $expected_remote_author_line,
+  ): void {
+    $remote_user = \HH\Asio\join(
+      FBToGitHubUserInfo::getDestinationUserFromLocalUser($local_user)
+    );
+
+    $this->assertSame($expected_remote_user, $remote_user);
+
+    $remote_author_line = \HH\Asio\join(
+      FBToGitHubUserInfo::getDestinationAuthorFromLocalUser($local_user)
+    );
+
+    $this->assertSame($expected_remote_author_line, $remote_author_line);
+  }
+}
