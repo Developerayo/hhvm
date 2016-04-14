@@ -43,6 +43,7 @@ final class InferTest extends FBProjectBaseTest {
       'build-infer.sh',
       'compile-fcp.sh',
       'dependencies/java/jsr-305/jsr305.jar',
+      'dependencies/ocamldot/LICENSE',
       'docker/Dockerfile',
       'infer/Makefile.in',
       'examples/hello.c',

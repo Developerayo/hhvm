@@ -85,6 +85,7 @@ final class ShipItInfer extends FBShipItCLI {
       'compile-fcp.sh',
       'dependencies/clang-plugin/',
       'dependencies/java/',
+      'dependencies/ocamldot/',
       'docker/',
       'infer/',
       'examples/',
