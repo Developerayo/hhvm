@@ -10,19 +10,19 @@
 namespace Facebook\ShipIt;
 
 class ShipItUserFilters {
-  /** Rewrite author fields created by git-svn or HgSubversion.
+  /** Rewrite authors that match a certain pattern.
    *
-   * Original author: foobar@uuid
-   * New author: Foo Bar <foobar@example.com>
+   * @param $pattern a regular expression defining a 'user' named capture
    */
-  public static function rewriteSVNAuthor(
+  public static function rewriteAuthorWithUserPattern(
     ShipItChangeset $changeset,
     classname<ShipItUserInfo> $user_info,
+    string $pattern,
   ): ShipItChangeset {
     $matches = [];
     if (
       preg_match(
-        '/^(?<user>.*)@[a-f0-9-]{36}$/',
+        $pattern,
         $changeset->getAuthor(),
         $matches,
       )
@@ -38,6 +38,22 @@ class ShipItUserFilters {
       }
     }
     return $changeset;
+  }
+
+  /** Rewrite author fields created by git-svn or HgSubversion.
+   *
+   * Original author: foobar@uuid
+   * New author: Foo Bar <foobar@example.com>
+   */
+  public static function rewriteSVNAuthor(
+    ShipItChangeset $changeset,
+    classname<ShipItUserInfo> $user_info,
+  ): ShipItChangeset {
+    return self::rewriteAuthorWithUserPattern(
+      $changeset,
+      $user_info,
+      '/^(?<user>.*)@[a-f0-9-]{36}$/',
+    );
   }
 
   public static function rewriteMentions(

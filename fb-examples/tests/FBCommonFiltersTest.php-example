@@ -33,6 +33,39 @@ final class FBCommonFiltersTest extends BaseTest {
     );
   }
 
+  public function examplesForAuthorEmailCorrection(
+  ): array<(string, string)> {
+    return [
+      tuple('Email change <fredemmott@fb.com>', 'Fred Emmott <fe@fb.com>'),
+      tuple(
+        'Ex Employee email change <sgolemon@fb.com>',
+        'Sara Golemon <saramg@fb.com>',
+      ),
+      tuple('Some Bot <svcscm@fb.com>', 'Some Bot <svcscm@fb.com>'),
+      tuple(
+        'Invalid User <thisuserdoesnotexist@fb.com>',
+        'Invalid User <thisuserdoesnotexist@fb.com>',
+      ),
+    ];
+  }
+
+  /**
+   * @dataProvider examplesForAuthorEmailCorrection
+   */
+  public function testAuthorEmailCorrection(
+    string $in_author,
+    string $expected_author,
+  ): void {
+    // fredemmott@ => fe@
+    $changeset = (new ShipItChangeset())
+      ->withAuthor($in_author)
+      |> FBCommonFilters::applyAll($$);
+    $this->assertSame(
+      $expected_author,
+      $changeset->getAuthor(),
+    );
+  }
+
   public function testSVNAuthor(): void {
     $fake_uuid = str_repeat('a', 36);
     $in = (new ShipItChangeset())

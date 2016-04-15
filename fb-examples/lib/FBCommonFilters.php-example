@@ -37,6 +37,7 @@ final class FBCommonFilters {
     );
     $changeset = self::rewriteMentions($changeset);
     $changeset = self::rewriteReviewers($changeset);
+    $changeset = self::rewriteAuthor($changeset);
 
     return $changeset;
   }
@@ -70,6 +71,16 @@ final class FBCommonFilters {
   ////////////////////////////////////////////
   ///// most users can stop reading here /////
   ////////////////////////////////////////////
+
+  public static function rewriteAuthor(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItUserFilters::rewriteAuthorWithUserPattern(
+      $changeset,
+      FBToGitHubUserInfo::class,
+      '/<(?<user>[^<]+)@fb.com>$/',
+    );
+  }
 
   public static function skipIfAlreadyOnGitHub(
     ShipItChangeset $changeset,
