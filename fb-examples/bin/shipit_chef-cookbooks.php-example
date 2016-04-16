@@ -1,0 +1,111 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItChefCookbooks extends FBShipItCLI{
+
+  const string BASE_DIR = 'chef/cookbooks/core';
+
+  # Add new open-source cookbooks here. Be sure to get sign-off
+  # from the OpenSource team.
+  static ImmSet<string> $cookbooks = ImmSet{
+    'fb_cron',
+    'fb_fstab',
+    'fb_helpers',
+    'fb_hostconf',
+    'fb_hosts',
+    'fb_limits',
+    'fb_logrotate',
+    'fb_modprobe',
+    'fb_motd',
+    'fb_securetty',
+    'fb_swap',
+    'fb_sysctl',
+    'fb_syslog',
+    'fb_systemd',
+  };
+
+  /*
+   * !!!!!!!!!!!!!!!!!!!!!! READ THIS !!!!!!!!!!!!!!!!!!!!!!
+   * If you add yourself to this list, make sure that your GH account is
+   * linked to your internal profile so that FB can track copyright and commit
+   * stats correctly.
+   */
+  static ImmMap<string, string> $emailMap = ImmMap{
+    'Phil Dibowitz <phild@fb.com>' => 'Phil Dibowitz <phil@ipom.com>',
+    'Marcin Sawicki <odcinek@fb.com>' => 'Marcin Sawicki <odcinek@gmail.com>',
+    'Bryan Wann <bwann@fb.com>' => 'Bryan Wann <bwann@wann.net>',
+    'Pat Cox <pcox@fb.com>' => 'Pat Cox <pat@patcox.net>',
+    'Joshua Miller <joshmiller@fb.com>' =>
+      'Joshua Miller <joshuamiller01@gmail.com>',
+    'KC Braunschweig <kcb@fb.com>' =>
+      'KC Braunschweig <kcbraunschweig@gmail.com>',
+  };
+
+  public static function getDirs(): ImmSet<string> {
+    return self::$cookbooks->map($cookbook ==> self::BASE_DIR.'/'.$cookbook);
+  }
+
+  public static function rewriteEmails(
+    ShipItChangeset $changeset
+  ): ShipItChangeset {
+    $author = $changeset->getAuthor();
+    foreach (self::$emailMap as $internal => $external) {
+      if ($author === $internal) {
+        return $changeset->withAuthor($external);
+      }
+    }
+    return $changeset;
+  }
+
+  <<__Override>>
+  protected static function projectFilterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $changeset = FBCommonFilters::applyAll($changeset);
+    $changeset = ShipItChefCookbooks::rewriteEmails($changeset);
+
+    $changeset = ShipItPathFilters::stripPaths(
+      $changeset,
+      ImmVector {
+        # filter all tests not marked as public because most of our
+        # test require our crazy hacked up chefspec... but allow
+        # pure rspec tests.
+        '@^.*/spec/(?!public_).*@',
+      },
+    );
+
+    // Strip the parent directories from the commit paths
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      ImmMap {
+        'chef/cookbooks/core/' => '',
+      },
+    );
+    return $changeset;
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'opsfiles',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'chef-cookbooks',
+      'sourceRoots' => self::getDirs(),
+    );
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItChefCookbooks::cliMain();
+}
