@@ -23,6 +23,9 @@ final class FBLualibTest extends FBProjectBaseTest {
   protected function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/fblualib/foo' => 'fblualib/foo',
+      'fbcode/fblualib/public_tld/INSTALL.md' => 'INSTALL.md',
+      'fbcode/fblualib/editline/fb/editline/init.lua'
+        => 'fblualib/editline/fb/editline/init.lua',
     };
   }
 
