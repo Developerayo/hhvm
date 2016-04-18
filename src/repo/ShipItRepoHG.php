@@ -129,6 +129,7 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
       'export',
       '--git',
       '-r', $revision,
+      '--encoding', 'UTF-8',
     );
   }
 
