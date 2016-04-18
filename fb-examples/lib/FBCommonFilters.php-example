@@ -17,29 +17,27 @@ final class FBCommonFilters {
       'filterMessageSections/keepFields' => ?ImmSet<string>,
     ) $config = shape(),
   ): ShipItChangeset {
-    $changeset = self::skipIfAlreadyOnGitHub($changeset);
-
-    $changeset = self::stripCommonFiles(
-      $changeset,
-      $config['stripCommonFiles/exceptions'] ?? ImmVector {},
-    );
-    $changeset = self::stripSubjectTags($changeset);
-    $changeset = self::delinkifyDifferentialURLs($changeset);
-    $changeset = self::restoreGitHubAuthor($changeset);
-    $changeset = ShipItUserFilters::rewriteSVNAuthor(
-      $changeset,
-      FBToGitHubUserInfo::class,
-    );
-    $changeset = self::filterMessageSections(
-      $changeset,
-      $config['filterMessageSections/keepFields']
-        ?? self::getDefaultMessageSectionNames(),
-    );
-    $changeset = self::rewriteMentions($changeset);
-    $changeset = self::rewriteReviewers($changeset);
-    $changeset = self::rewriteAuthor($changeset);
-
-    return $changeset;
+    return $changeset
+      |> self::skipIfAlreadyOnGitHub($$)
+      |> self::stripCommonFiles(
+          $$,
+          $config['stripCommonFiles/exceptions'] ?? ImmVector {},
+        )
+      |> self::stripSubjectTags($$)
+      |> self::delinkifyDifferentialURLs($$)
+      |> self::restoreGitHubAuthor($$)
+      |> ShipItUserFilters::rewriteSVNAuthor(
+          $$,
+          FBToGitHubUserInfo::class,
+        )
+      |> self::filterMessageSections(
+          $$,
+          $config['filterMessageSections/keepFields']
+            ?? self::getDefaultMessageSectionNames(),
+        )
+      |> self::rewriteMentions($$)
+      |> self::rewriteReviewers($$)
+      |> self::rewriteAuthor($$);
   }
 
   public static function stripSummariesByDefault(
