@@ -14,7 +14,7 @@ final class FBCommonFiltersTest extends BaseTest {
   public function testFBAuthorWithoutGitHubAuthor(): void {
     $in = (new ShipItChangeset())
       ->withAuthor('Joel Marcey <joelm@fb.com>');
-    $out = FBCommonFilters::restoreGitHubAuthor($in);
+    $out = FBCommonFilters::applyAll($in);
     $this->assertSame($in->getAuthor(), $out->getAuthor());
   }
 
@@ -22,13 +22,13 @@ final class FBCommonFiltersTest extends BaseTest {
     $in = (new ShipItChangeset())
       ->withAuthor('Joel Marcey <joelm@fb.com>')
       ->withMessage('GitHub Author: Fred Emmott <fe@fb.com>');
-    $out = FBCommonFilters::restoreGitHubAuthor($in);
+    $out = FBCommonFilters::applyAll($in);
     $this->assertSame(
       'Fred Emmott <fe@fb.com>',
       $out->getAuthor(),
     );
     $this->assertSame(
-      $in->getMessage()."\n\nPulled By: JoelMarcey",
+      "Pulled By: JoelMarcey",
       $out->getMessage(),
     );
   }
@@ -108,7 +108,7 @@ final class FBCommonFiltersTest extends BaseTest {
     $changeset = (new ShipItChangeset())->withDiffs(ImmVector {
       shape('path' => $file, 'body' => 'junk'),
     });
-    $changeset = FBCommonFilters::stripCommonFiles($changeset);
+    $changeset = FBCommonFilters::applyAll($changeset);
 
     if ($private) {
       $expected = [ ];
@@ -124,7 +124,7 @@ final class FBCommonFiltersTest extends BaseTest {
       shape('path' => 'foo/com/facebook/TARGETS', 'body' => 'junk'),
       shape('path' => 'foo/com/facebook/something', 'body' => 'junk'),
     });
-    $changeset = FBCommonFilters::stripCommonFiles($changeset);
+    $changeset = FBCommonFilters::applyAll($changeset);
     $this->assertEquals(
       [ 'foo/com/facebook/something' ],
       $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray(),
