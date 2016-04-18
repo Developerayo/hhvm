@@ -73,6 +73,10 @@ final class MessageSectionsTest extends BaseTest {
         'Foo: bar',
       ),
       tuple(
+        ImmMap { 'foo' => "bar\nbaz" },
+        "Foo:\nbar\nbaz",
+      ),
+      tuple(
         ImmMap { 'foo bar' => 'herp derp' },
         'Foo Bar: herp derp',
       ),
@@ -101,6 +105,33 @@ final class MessageSectionsTest extends BaseTest {
     $this->assertSame(
       $expected,
       ShipItMessageSections::buildMessage($sections),
+    );
+  }
+
+  public function getExamplesForWhitespaceEndToEnd(
+  ): array<(string, string)> {
+    return [
+      tuple("Summary: foo", 'Summary: foo'),
+      tuple("Summary:\nfoo", 'Summary: foo'),
+      tuple("Summary: foo\nbar", "Summary:\nfoo\nbar"),
+      tuple("Summary:\nfoo\nbar", "Summary:\nfoo\nbar"),
+    ];
+  }
+
+  /**
+   * @dataProvider getExamplesForWhitespaceEndToEnd
+   */
+  public function testWhitespaceEndToEnd(
+    string $in,
+    string $expected,
+  ): void {
+    $message = (new ShipItChangeset())
+      ->withMessage($in)
+      |> ShipItMessageSections::getSections($$, ImmSet { 'summary' })
+      |> ShipItMessageSections::buildMessage($$->toImmMap());
+    $this->assertSame(
+      $expected,
+      $message,
     );
   }
 }

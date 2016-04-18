@@ -77,9 +77,11 @@ final class ShipItMessageSections {
         continue;
       }
       $section_head = ucwords($section).":";
+      $text = trim($text);
       if (!self::hasMoreThanOneNonEmptyLine($text)) {
-        $text = trim($text);
         $section_head .= ' ';
+      } else {
+        $section_head .= "\n";
       }
       $out .= $section_head."$text\n\n";
     }

@@ -94,7 +94,7 @@ abstract class FBProjectBaseTest extends BaseTest {
       tuple('Summary: foo', 'Summary: foo'),
       tuple(
         "Summary: foo\nExample: bar",
-        "Summary:foo\nExample: bar",
+        "Summary:\nfoo\nExample: bar",
       ),
       tuple(
         "Summary: foo\nFacebook: bar",
