@@ -238,29 +238,23 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
     $this->checkoutFilesAtRevToPath($files, $rev.'^', $path.'/a');
     $this->checkoutFilesAtRevToPath($files, $rev, $path.'/b');
 
-    try {
-      $patch = self::shellExec(
-        $path,
-        /* stdin = */ null,
+    $result = (new ShipItShellCommand(
+      $path,
         'git', 'diff',
         '--binary',
         '--no-prefix',
         '--no-renames',
         'a',
         'b',
-      );
-      // FML
-      invariant_violation(
-        'git diff exited with 0, which means no changes; expected 1, '.
-        'which means non-empty diff.'
-      );
-    } catch (ShipItShellCommandException $e) {
-      // exit code 1 === success with non-empty diff.
-      if ($e->getExitCode() !== 1) {
-        throw $e;
-      }
-      $patch = $e->getOutput();
-    }
+      ))->setNoExceptions()->runSynchronously();
+
+    invariant(
+      $result->getExitCode() === 1,
+      'git diff exited with %d, which means no changes; expected 1, '.
+      'which means non-empty diff.',
+      $result->getExitCode(),
+    );
+    $patch = $result->getStdOut();
 
     $ret = Vector { };
     foreach (

@@ -95,12 +95,4 @@ abstract class ShipItRepo {
       "Can't determine type of repo at ".$path,
     );
   }
-
-  protected static function shellExec(
-    string $path,
-    ?string $stdin,
-    ...$args
-  ): string {
-    return ShipItUtil::shellExec($path, $stdin, self::$VERBOSE, ...$args);
-  }
 }

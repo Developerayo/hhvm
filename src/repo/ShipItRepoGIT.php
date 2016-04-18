@@ -273,11 +273,11 @@ class ShipItRepoGIT
     if (ShipItRepo::$VERBOSE & ShipItRepo::VERBOSE_FETCH) {
       fwrite(STDERR, "** Cloning $origin to $path\n");
     }
-    ShipItRepo::shellExec(
+
+    (new ShipItShellCommand(
       $parent_path,
-      /* stdin = */ null,
       'git', 'clone', $origin, $path,
-    );
+    ))->runSynchronously();
   }
 
   <<__Override>>
@@ -317,13 +317,11 @@ class ShipItRepoGIT
     $tar = $this->gitCommand(...$command);
 
     $dest = new ShipItTempDir('git-export');
-    ShipItUtil::shellExec(
+    (new ShipItShellCommand(
       $dest->getPath(),
-      /* stdin = */ $tar,
-      ShipItUtil::DONT_VERBOSE,
       'tar',
       'x',
-    );
+    ))->runSynchronously();
 
     return shape('tempDir' => $dest, 'revision' => $rev);
   }
