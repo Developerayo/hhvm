@@ -206,7 +206,14 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
     return $changeset->withDiffs($diffs->toImmVector());
   }
   protected function hgPipeCommand(?string $stdin, ...$args): string {
-     return self::shellExec($this->path, $stdin, 'hg', ...$args);
+    $command = (new ShipItShellCommand($this->path, 'hg', ...$args))
+      ->setEnvironmentVariables(ImmMap {
+        'HGPLAIN' => '1',
+      });
+    if ($stdin) {
+      $command->setStdIn($stdin);
+    }
+    return $command->runSynchronously()->getStdOut();
   }
 
   protected function hgCommand(...$args): string {

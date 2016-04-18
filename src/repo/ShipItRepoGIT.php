@@ -19,6 +19,15 @@ class ShipItRepoGIT
   implements ShipItSourceRepo, ShipItDestinationRepo {
 
   private string $branch = 'master';
+  private ShipItTempDir $fakeHome;
+
+  public function __construct(
+    string $path,
+    string $branch,
+  ) {
+    $this->fakeHome = new ShipItTempDir('fake_home_for_git');
+    parent::__construct($path, $branch);
+  }
 
   <<__Override>>
   public function setBranch(string $branch): bool {
@@ -222,14 +231,24 @@ class ShipItRepoGIT
 
   protected function gitPipeCommand(?string $stdin, ...$args): string {
     if (!file_exists("{$this->path}/.git")) {
-      throw new ShipItRepoGITException($this, "{$this->path} is not a GIT repo");
+      throw new ShipItRepoGITException(
+        $this,
+        $this->path." is not a GIT repo",
+      );
     }
-    return self::shellExec(
-      $this->path,
-      $stdin,
-      'git',
-      ...$args,
-    );
+
+    $command = (new ShipItShellCommand($this->path, 'git', ...$args))
+      ->setEnvironmentVariables(ImmMap {
+        'GIT_CONFIG_NOSYSTEM' => '1',
+        // GIT_CONFIG_NOGLOBAL was dropped because it was possible to use
+        // HOME instead - see commit 8f323c00dd3c9b396b01a1aeea74f7dfd061bb7f in
+        // git itself.
+        'HOME' => $this->fakeHome->getPath(),
+      });
+    if ($stdin) {
+      $command->setStdIn($stdin);
+    }
+    return $command->runSynchronously()->getStdOut();
   }
 
   protected function gitCommand(...$args): string {
