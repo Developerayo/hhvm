@@ -39,7 +39,7 @@ final class ShipItShellCommandTest extends BaseTest {
     $this->assertSame('', $result->getStdErr());
   }
 
-  public function testEnvironmentVariables(): void {
+  public function testSettingEnvironmentVariable(): void {
     $herp = bin2hex(random_bytes(16));
     $result = (new ShipItShellCommand('/', 'env'))
       ->setEnvironmentVariables(ImmMap { 'HERP' => $herp })
@@ -47,6 +47,39 @@ final class ShipItShellCommandTest extends BaseTest {
     $this->assertContains(
       'HERP='.$herp,
       $result->getStdOut(),
+    );
+  }
+
+  public function testInheritingEnvironmentVariable(): void {
+    $to_try = ImmSet {
+      // Need to keep SSH/Kerberos environment variables to be able to access
+      // repositories
+      'SSH_AUTH_SOCK',
+      'KRB5CCNAME',
+      // Arbitrary common environment variables so we can test /something/ if
+      // the above aren't set
+      'MAIL',
+      'EDITOR',
+      'HISTFILE',
+      'PATH',
+    };
+
+    $output = (new ShipItShellCommand('/', 'env'))
+      ->setEnvironmentVariables(ImmMap { })
+      ->runSynchronously()
+      ->getStdOut();
+
+    $matched_any = false;
+    foreach ($to_try as $var) {
+      $value = getenv($var);
+      if ($value !== false) {
+        $this->assertContains($var.'='.$value."\n", $output);
+        $matched_any = true;
+      }
+    }
+    $this->assertTrue(
+      $matched_any,
+      'No acceptable variables found',
     );
   }
 

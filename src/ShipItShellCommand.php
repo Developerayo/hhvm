@@ -58,6 +58,7 @@ class ShipItShellCommand {
     if ($stdin === null) {
       unset($fds[0]);
     }
+    $env_vars = (new Map($_ENV))->setAll($this->environmentVariables);
 
     $pipes = null;
     $fp = proc_open(
@@ -65,7 +66,7 @@ class ShipItShellCommand {
       $fds,
       $pipes,
       $this->path,
-      $this->environmentVariables->toArray(),
+      $env_vars->toArray(),
     );
     if (!$fp || !is_array($pipes)) {
       throw new \Exception("Failed executing $command");
