@@ -1,0 +1,181 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItFBShipIt extends FBShipItCLI {
+  <<__Override>>
+  protected static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'fbshipit',
+      'sourceRoots' => ImmSet { 'fbcode/opensource/shipit' },
+    );
+  }
+
+  <<__Override>>
+  protected static function projectFilterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return $changeset
+      |> self::stripExceptSourceRoots($$)
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::stripPaths(
+          $$,
+          ImmVector {
+            '@/fb-private/@',
+            // Replacement implementation in public_tld
+            '@(^|/)autoload.php$@',
+            '@(^|fbcode/opensource/shipit/)composer.json$@',
+            '@(^|/)fb_.+\.sh$@',
+            '@(^|/)bin/generate-autoload-map.php@',
+          },
+        )
+      |> self::removePrivateProjects($$)
+      |> ShipItPathFilters::moveDirectories(
+          $$,
+          ImmMap {
+            'fbcode/opensource/shipit/public_tld/' => '',
+            'fbcode/opensource/shipit/' => '',
+          },
+        )
+      |> ShipItPathFilters::moveDirectories(
+          $$,
+          ImmMap {
+            'bin/' => 'fb-examples/bin/',
+            'src/fb-specific-but-public/' => 'fb-examples/lib/',
+            'tests/fb-specific-but-public/' => 'fb-examples/tests/',
+          },
+        )
+      |> self::changeExampleExtensions($$);
+  }
+
+  <<__Override>>
+  protected static function getPhases(): ImmVector<ShipItPhase> {
+    $original_phases = parent::getPhases();
+    $phases = Vector { };
+    foreach ($original_phases as $phase) {
+      if ($phase instanceof ShipItSyncPhase) {
+        $phases[] = new FBShipItPublicizeSyncScriptsPhase(
+          self::getStaticConfig()['sourceRoots'],
+          $changeset ==> self::filterChangeset($changeset),
+        );
+      }
+      $phases[] = $phase;
+    }
+    invariant(
+      $phases->count() === $original_phases->count() + 1,
+      'Expected to add an additional phase',
+    );
+    return $phases->toImmVector();
+  }
+
+  /**
+   * Rename fb-examples/foo.php to fb-examples/foo.php-example.
+   *
+   * These files depend on some private code (eg fetching GitHub API tokens) -
+   * so if these are .php files, the typechecker will fail.
+   */
+  private static function changeExampleExtensions(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItPathFilters::rewritePaths(
+      $changeset,
+      $path ==> preg_replace(
+        '@^fb-examples/.+\.php$@',
+        '\0-example',
+        $path,
+      ),
+    );
+  }
+
+  private static function removePrivateProjects(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $diffs = Vector { };
+    foreach ($changeset->getDiffs() as $diff) {
+      if (!self::isFileForPrivateProject($diff['path'])) {
+        $diffs[] = $diff;
+        continue;
+      }
+      $changeset = $changeset->withDebugMessage(
+        'SKIP FILE - private project: %s',
+        $diff['path'],
+      );
+    }
+    return $changeset->withDiffs($diffs->toImmVector());
+  }
+
+  private static function getProjectFilePatterns(): ImmSet<string> {
+    return ImmSet {
+      '@(^|/)bin/shipit_(?<project>[^.]+)\.php$@',
+      '@(^|/)tests(/[^/]+)*/projects/(?<project>[^.]+)Test\.php$@',
+    };
+  }
+
+  <<__Memoize>>
+  private static function isFileForPrivateProject(string $path): ?bool {
+    $public_projects = self::getPublicProjects()->map($x ==> strtolower($x));
+
+    foreach (self::getProjectFilePatterns() as $pattern) {
+      $matches = [];
+      if (preg_match($pattern, $path, $matches)) {
+        return !$public_projects->contains(strtolower($matches['project']));
+      }
+    }
+    return false;
+  }
+
+  <<__Memoize>>
+  private static function getPublicProjects(): ImmSet<string> {
+    $credentials = FBGitHubUtils::getCredentialsForProject(
+      'facebook',
+      'shipit',
+    );
+    $responses = \HH\Asio\join(ShipItGitHubUtils::makeAPIRequest(
+      $credentials,
+      '/orgs/facebook/repos?type=public',
+    ));
+    $repos = Vector { };
+    foreach ($responses as $response) {
+      $partial_repos = json_decode($response, /* as array = */ true);
+      if ($partial_repos === null) {
+        fprintf(STDERR, "Failed to decode JSON: %s\n", $response);
+        exit(1);
+      }
+      if (!is_array($partial_repos)) {
+        fprintf(STDERR, "Expected array of repos, got %s\n", $response);
+        exit(1);
+      }
+      $repos->addAll($partial_repos);
+    }
+
+    $repos = $repos
+      ->filter($repo ==> $repo['private'] === false)
+      ->map($repo ==> $repo['name'])
+      ->toImmSet();
+    foreach (['hhvm', 'buck', 'react-native', 'relay'] as $sanity_check) {
+      invariant(
+        $repos->contains($sanity_check),
+        'Expected %s to be in the list of public repos - got %s',
+        $sanity_check,
+        implode(', ', $repos),
+      );
+    }
+    return $repos;
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath(idx($argv, 0)) === realpath(__FILE__)) {
+  ShipItFBShipIt::cliMain();
+}
