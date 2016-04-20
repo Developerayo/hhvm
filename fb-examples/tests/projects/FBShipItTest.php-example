@@ -1,0 +1,68 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class FBShipItTest extends FBProjectBaseTest {
+  const string ROOT = 'fbcode/opensource/shipit';
+
+  public function setUp(): void {
+    // Avoid calling GitHub
+    \fb_intercept(
+      ShipItFBShipIt::class.'::getPublicProjects',
+      () ==> ImmSet { 'hhvm' },
+    );
+  }
+
+  <<__Override>>
+  protected static function map(
+    ShipItChangeset $changeset
+  ): ShipItChangeset {
+    return ShipItFBShipIt::filterChangeset(
+      $changeset,
+    );
+  }
+
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      // simple public
+      self::ROOT.'/src/ShipItRepoHG.php' => 'src/ShipItRepoHG.php',
+      self::ROOT.'/tests/PathFiltersTest.php' => 'tests/PathFiltersTest.php',
+      // fb examples
+      self::ROOT.'/src/fb-specific-but-public/FBShipItCLI.php'
+        => 'fb-examples/lib/FBShipItCLI.php-example',
+      self::ROOT.'/tests/fb-specific-but-public/FBProjectBaseTest.php'
+        => 'fb-examples/tests/FBProjectBaseTest.php-example',
+      // public project example
+      self::ROOT.'/bin/shipit_hhvm.php'
+        => 'fb-examples/bin/shipit_hhvm.php-example',
+      self::ROOT.'/tests/fb-specific-but-public/projects/HHVMTest.php'
+        => 'fb-examples/tests/projects/HHVMTest.php-example',
+      // public-only
+      self::ROOT.'/public_tld/composer.json' => 'composer.json',
+      // github interface implementations
+      self::ROOT.'/src/fb-private/FBToGitHubUserInfo.php' => null,
+      self::ROOT.'/src/fb-private/FBGitHubUtils.php' => null,
+      // private projects
+      self::ROOT.'/bin/shipit_NOT_A_REAL_PROJECT.php' => null,
+      self::ROOT.'/tests/fb-public/projects/NotARealProjectTest.php' => null,
+      // fb infra
+      self::ROOT.'/fb_runtests.sh' => null, // Wrapper around PHPUnit
+      self::ROOT.'/composer.json' => null, // OSS has a different one
+      self::ROOT.'/autoload.php' => null, // OSS generates with composer
+      self::ROOT.'/bin/generate-autoload-map.php' => null, // OSS uses composer
+    };
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+}
