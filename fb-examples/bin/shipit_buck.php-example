@@ -16,7 +16,7 @@ class ShipItBuck {
   const STRIPPED_FILE_PATHS_KEY = 'paths_to_strip';
   const FILE_NOT_TO_STRIP_RE = (
     '@\.jar|\.txt|\.iml|\.idea|\.name|'.
-    '\.class|\.project|\.classpath|\.buckconfig'.
+    '\.class|\.project|\.classpath'.
     '|\.git$|\.sh@'
   );
 
