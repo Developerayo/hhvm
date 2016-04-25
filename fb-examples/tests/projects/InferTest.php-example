@@ -47,10 +47,6 @@ final class InferTest extends FBProjectBaseTest {
       'docker/Dockerfile',
       'infer/Makefile.in',
       'examples/hello.c',
-      'scripts/build_integration_tests.py',
-      'scripts/check_clang_plugin_version.sh',
-      'scripts/package_infer_source_with_clang_binaries.sh',
-      'scripts/test.sh',
       'update-fcp.sh',
       'opam',
       'infer.install',
@@ -93,11 +89,7 @@ final class InferTest extends FBProjectBaseTest {
       'infer/tests/endtoend/java/checkers/GatekeeperCheckerTest.java',
       'infer/tests/endtoend/java/checkers/TraceCallSequenceCheckerTest.java',
       'infer/tests/endtoend/objc/FBViewMemoryLeakTest.java',
-      'scripts/create_binaries.sh',
-      'scripts/create_tv_links.py',
-      'scripts/facebook_dewey_release.sh',
-      'scripts/gen_ios_tv_links.py',
-      'scripts/infer_utils.py',
+      'scripts/',
     };
 
     $map = Map {};
