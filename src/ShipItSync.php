@@ -219,7 +219,6 @@ class ShipItSync {
       $rev = $changeset->getID();
     }
     $new_message = $changeset->getMessage()."\n\n".
-      'fb-gh-sync-id: '.$rev."\n".
       'fbshipit-source-id: '.$rev;
     return $changeset->withMessage(trim($new_message));
   }
