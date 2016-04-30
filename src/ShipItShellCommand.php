@@ -74,6 +74,19 @@ class ShipItShellCommand {
     if ($stdin !== null) {
       while (strlen($stdin)) {
         $written = fwrite($pipes[0], $stdin);
+        if ($written === 0) {
+          $status = proc_get_status($fp);
+          if ($status['running']) {
+            continue;
+          }
+          $exitcode = $status['exitcode'];
+          invariant(
+            is_int($exitcode) && $exitcode > 0,
+            'Expected non-zero exit from process, got %s',
+            var_export($exitcode, true),
+          );
+          break;
+        }
         $stdin = substr($stdin, $written);
       }
       fclose($pipes[0]);
