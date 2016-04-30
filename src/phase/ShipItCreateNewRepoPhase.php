@@ -8,6 +8,7 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
   public function __construct(
     private ImmSet<string> $roots,
     private (function(ShipItChangeset):ShipItChangeset) $filter,
+    private shape('name' => string, 'email' => string) $committer,
   ) {
     $this->skip();
   }
@@ -55,6 +56,7 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
       $config,
       $this->roots,
       $this->filter,
+      $this->committer,
       $this->sourceCommit,
     );
     $temp_dir->keep();
@@ -63,10 +65,25 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     exit(0);
   }
 
+  private static function initGitRepo(
+    ShipItTempDir $temp_dir,
+    shape('name' => string, 'email' => string) $committer,
+  ): void {
+    self::execSteps(
+      $temp_dir->getPath(),
+      ImmVector {
+        ImmVector { 'git', 'init' },
+        ImmVector { 'git', 'config', 'user.name', $committer['name'] },
+        ImmVector { 'git', 'config', 'user.email', $committer['email'] },
+      },
+    );
+  }
+
   public static function createNewGitRepo(
     ShipItBaseConfig $config,
     ImmSet<string> $roots,
     (function(ShipItChangeset):ShipItChangeset) $filter,
+    shape('name' => string, 'email' => string) $committer,
     ?string $revision = null,
   ): ShipItTempDir {
     $source = ShipItRepo::typedOpen(
@@ -82,10 +99,10 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
 
     print("  Creating unfiltered commit...\n");
 
+    self::initGitRepo($export_dir, $committer);
     self::execSteps(
       $export_dir->getPath(),
       ImmVector {
-        ImmVector { 'git', 'init' },
         ImmVector { 'git', 'add', '.' },
         ImmVector {
           'git',
@@ -115,10 +132,7 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     print("  Creating new repo...\n");
 
     $filtered_dir = new ShipItTempDir('git-with-initial-commit');
-    self::execSteps(
-      $filtered_dir->getPath(),
-      ImmVector { ImmVector { 'git', 'init' } },
-    );
+    self::initGitRepo($filtered_dir, $committer);
     $filtered_repo = ShipItRepo::typedOpen(
       ShipItDestinationRepo::class,
       $filtered_dir->getPath(),

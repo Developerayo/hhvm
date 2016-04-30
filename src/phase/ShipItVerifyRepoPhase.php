@@ -48,6 +48,10 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
       $config,
       $this->roots,
       $this->filter,
+      shape(
+        'name' => 'FBShipIt Internal User',
+        'email' => 'fbshipit@example.com',
+      ),
     );
     $clean_path = $clean_dir->getPath();
     $dirty_remote = 'shipit_dest';

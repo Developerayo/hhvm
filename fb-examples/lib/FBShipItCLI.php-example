@@ -70,6 +70,11 @@ abstract class FBShipItCLI {
     $static_config = static::getStaticConfig();
     $config = static::getBaseConfig();
 
+    $credentials = FBGitHubUtils::getCredentialsForProject(
+      $static_config['githubOrg'],
+      $static_config['githubProject'],
+    );
+
     return ImmVector {
       new ShipItFilterSanityCheckPhase(
         $changeset ==> self::filterChangeset($changeset),
@@ -83,6 +88,7 @@ abstract class FBShipItCLI {
       new ShipItCreateNewRepoPhase(
         $static_config['sourceRoots'],
         $changeset ==> self::filterChangeset($changeset),
+        $credentials,
       ),
       new ShipItGitHubInitPhase(
         $static_config['githubOrg'],

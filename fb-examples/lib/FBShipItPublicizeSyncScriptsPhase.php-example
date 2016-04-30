@@ -49,6 +49,10 @@ final class FBShipItPublicizeSyncScriptsPhase extends ShipItPhase {
       $config,
       $this->sourceRoots,
       $this->filter,
+      shape(
+        'name' => 'FBShipIt Internal Commit',
+        'email' => 'fbshipit@example.com',
+      ),
       $src_rev,
     );
 
