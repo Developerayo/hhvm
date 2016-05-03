@@ -24,8 +24,26 @@ final class ShipItFlow extends FBShipItCLI {
       |> ShipItPathFilters::stripPaths(
           $$,
           ImmVector {
-            '@fbcode/hphp/hack/([^/]+/)*h2tp(/|$)@',
-            '@fbcode/hphp/hack/([^/]+/)*sysConfig\.ml$@',
+            '@fbcode/hphp/hack/src/hh_client.ml$@',
+            '@fbcode/hphp/hack/src/hh_emitter.ml$@',
+            '@fbcode/hphp/hack/src/hh_format.ml$@',
+            '@fbcode/hphp/hack/src/hh_match.ml$@',
+            '@fbcode/hphp/hack/src/hh_server.ml$@',
+            '@fbcode/hphp/hack/src/hh_single_parse.ml$@',
+            '@fbcode/hphp/hack/src/hh_single_type_check.ml$@',
+            '@fbcode/hphp/hack/src/Makefile$@',
+            '@fbcode/hphp/hack/src/client(/|$)@',
+            '@fbcode/hphp/hack/src/decl(/|$)@',
+            '@fbcode/hphp/hack/src/deps(/|$)@',
+            '@fbcode/hphp/hack/src/emitter(/|$)@',
+            '@fbcode/hphp/hack/src/format(/|$)@',
+            '@fbcode/hphp/hack/src/h2tp(/|$)@',
+            '@fbcode/hphp/hack/src/hh_matcher(/|$)@',
+            '@fbcode/hphp/hack/src/js(/|$)@',
+            '@fbcode/hphp/hack/src/naming(/|$)@',
+            '@fbcode/hphp/hack/src/parsing(/|$)@',
+            '@fbcode/hphp/hack/src/server(/|$)@',
+            '@fbcode/hphp/hack/src/typing(/|$)@',
           },
         )
       |> ShipItPathFilters::moveDirectories(
