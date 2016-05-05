@@ -18,6 +18,7 @@ final class ShipItChefCookbooks extends FBShipItCLI{
   # Add new open-source cookbooks here. Be sure to get sign-off
   # from the OpenSource team.
   static ImmSet<string> $cookbooks = ImmSet{
+    'fb_apt',
     'fb_cron',
     'fb_fstab',
     'fb_helpers',
