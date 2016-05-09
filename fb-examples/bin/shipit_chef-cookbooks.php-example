@@ -89,7 +89,7 @@ final class ShipItChefCookbooks extends FBShipItCLI{
     $changeset = ShipItPathFilters::moveDirectories(
       $changeset,
       ImmMap {
-        'chef/cookbooks/core/' => '',
+        'chef/cookbooks/core/' => 'cookbooks/',
       },
     );
     return $changeset;
