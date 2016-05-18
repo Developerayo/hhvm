@@ -18,12 +18,14 @@ final class ShipItChefCookbooks extends FBShipItCLI{
   # Add new open-source cookbooks here. Be sure to get sign-off
   # from the OpenSource team.
   static ImmSet<string> $cookbooks = ImmSet{
+    'fb_apcupsd',
     'fb_apt',
     'fb_cron',
     'fb_dnsmasq',
     'fb_ethers',
     'fb_fstab',
     'fb_helpers',
+    'fb_hddtemp',
     'fb_hostconf',
     'fb_hosts',
     'fb_limits',
@@ -35,6 +37,7 @@ final class ShipItChefCookbooks extends FBShipItCLI{
     'fb_sysctl',
     'fb_syslog',
     'fb_systemd',
+    'fb_zfs',
   };
 
   /*
