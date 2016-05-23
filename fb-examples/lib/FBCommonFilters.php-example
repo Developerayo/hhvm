@@ -24,6 +24,7 @@ final class FBCommonFilters {
           $config['stripCommonFiles/exceptions'] ?? ImmVector {},
         )
       |> self::stripSubjectTags($$)
+      |> self::stripCommands($$)
       |> self::delinkifyDifferentialURLs($$)
       |> self::restoreGitHubAuthor($$)
       |> ShipItUserFilters::rewriteSVNAuthor(
@@ -142,6 +143,18 @@ final class FBCommonFilters {
         '/^(?:\[[^\]]+\]\s*)+/',
         '',
         $changeset->getSubject(),
+      ),
+    );
+  }
+
+  public static function stripCommands(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return $changeset->withMessage(
+      preg_replace(
+        '/@override-unit-failures/',
+        '',
+        $changeset->getMessage(),
       ),
     );
   }
