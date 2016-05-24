@@ -31,4 +31,32 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
       );
     }
   }
+
+  static protected function invoke_static_bypass_visibility<T>(
+    classname<T> $classname,
+    string $method,
+    ...$args
+  ) {
+    invariant(
+      method_exists($classname, $method),
+      'Method "%s" does not exists on "%s"!',
+      $method,
+      $classname,
+    );
+    $rm = new \ReflectionMethod($classname, $method);
+    invariant(
+      $rm->isStatic(),
+      '"%s" is not a static method on "%s"!',
+      $method,
+      $classname,
+    );
+    invariant(
+      null !== $rm->getAttribute('TestsBypassVisibility'),
+      '"%s" is not annotated with "TestsBypassVisibility" on "%s"',
+      $method,
+      $classname,
+    );
+    $rm->setAccessible(true);
+    return $rm->invokeArgs(null, $args);
+  }
 }

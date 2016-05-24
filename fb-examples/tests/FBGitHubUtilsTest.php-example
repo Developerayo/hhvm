@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -11,28 +11,68 @@ namespace Facebook\ShipIt;
 
 final class FBGitHubUtilsTest extends BaseTest {
   public function exampleProjectCredentials(
-  ): array<(string, string, string, string)> {
+  ): array<(FBGitHubUtils::TAllCredentials, string, string, string, string)> {
     return [
-      tuple('facebook', 'hhvm', '/^hhvm-bot$/', '/^hhvm.+@fb.com$/'),
       tuple(
+        array(
+          'FACEBOOK_HHVM' => array(
+            'hhvm-bot' => shape(
+              'access_token' => 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+            ),
+          ),
+          'FACEBOOK_DEFAULT' => array(
+            'facebook-github-bot' => shape(
+              'access_token' => 'beefdeadbeefdeadbeefdeadbeefdeadbeefdead',
+            ),
+          ),
+        ),
+        'facebook',
+        'hhvm',
+        '/^hhvm-bot$/',
+        '/^hhvm.+@fb.com$/',
+      ),
+      tuple(
+        array(
+          'FACEBOOK_DEFAULT' => array(
+            'facebook-github-bot' => shape(
+              'access_token' => 'beefdeadbeefdeadbeefdeadbeefdeadbeefdead',
+            ),
+          ),
+        ),
         'facebook',
         'not-a-real-project',
-        '/^facebook-github-bot-\d+$/',
+        '/^facebook-github-bot-*\d*$/',
         '/^facebook-github-bot.*@fb.com$/',
       ),
     ];
+  }
+
+  static private function getCredentialsForProjectFrom(
+    FBGitHubUtils::TAllCredentials $credentials,
+    string $organization,
+    string $project,
+  ): ShipItGitHubCredentials {
+    return self::invoke_static_bypass_visibility(
+      FBGitHubUtils::class,
+      'getCredentialsForProjectFrom',
+      $credentials,
+      $organization,
+      $project,
+    );
   }
 
   /**
    * @dataProvider exampleProjectCredentials
    */
   public function testPerProjectCredentials(
+    FBGitHubUtils::TAllCredentials $credentials,
     string $organization,
     string $project,
     string $user_regexp,
     string $email_regexp,
   ): void {
-    $credentials = FBGitHubUtils::getCredentialsForProject(
+    $credentials = self::getCredentialsForProjectFrom(
+      $credentials,
       $organization,
       $project,
     );
