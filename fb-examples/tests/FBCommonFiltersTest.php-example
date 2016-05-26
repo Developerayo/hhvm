@@ -134,9 +134,7 @@ final class FBCommonFiltersTest extends BaseTest {
   public function testOverideUnitFailuresStripped(): void {
     $in = (new ShipItChangeset())
       ->withMessage('Summary: @override-unit-failures');
-    print_r($in);
     $out = FBCommonFilters::applyAll($in);
-    print_r($out);
     $this->assertSame(
       '',
       $out->getMessage(),
