@@ -55,6 +55,11 @@ final class ShipItOpenBMC extends FBShipItCLI {
       'sourceRoots' => ImmSet { '' },
     );
   }
+
+  <<__Override>>
+  protected static function getBaseConfig(): ShipItBaseConfig {
+    return parent::getBaseConfig()->withSourceBranch('fido');
+  }
 }
 
 // Allow require() from unit test
