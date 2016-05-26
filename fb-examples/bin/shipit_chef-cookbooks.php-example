@@ -32,6 +32,7 @@ final class ShipItChefCookbooks extends FBShipItCLI{
     'fb_logrotate',
     'fb_modprobe',
     'fb_motd',
+    'fb_nsswitch',
     'fb_securetty',
     'fb_swap',
     'fb_sysctl',
