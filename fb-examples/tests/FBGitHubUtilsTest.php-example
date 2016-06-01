@@ -56,6 +56,67 @@ final class FBGitHubUtilsTest extends BaseTest {
     );
   }
 
+  public function exampleOverrides(
+  ): array<array<ShipItGitHubCredentialOverrides>> {
+    return array(
+      array(
+        shape(
+          'name' => 'Foo Bar',
+          'email' => 'foo@example.com',
+        ),
+      ),
+      array(
+        shape(
+          'name' => 'Foo Bar',
+          'email' => null,
+        ),
+      ),
+      array(
+        shape(
+          'name' => null,
+          'email' => 'foo@example.com',
+        ),
+      ),
+      array(
+        shape(
+          'name' => null,
+          'email' => null,
+        ),
+      )
+    );
+  }
+
+  /**
+   * @dataProvider exampleOverrides
+   */
+  public function testOverrides(
+    ShipItGitHubCredentialOverrides $override
+  ): void {
+    $projects = $this->exampleProjectCredentials();
+    $credentials = FBGitHubUtils::getCredentialsForProject(
+      $projects[0][0],
+      $projects[0][1],
+      $override,
+    );
+    if ($override['name'] !== null) {
+      $this->assertSame($override['name'], $credentials['name']);
+    } else {
+      // nameof('facebook-github-bot-1') === 'Facebook Github Bot 1'
+      $this->assertSame(
+        ucwords(strtr($credentials['user'], '-', ' ')),
+        $credentials['name'],
+      );
+    }
+    if ($override['email'] !== null) {
+      $this->assertSame($override['email'], $credentials['email']);
+    } else {
+      $this->assertSame(
+        $credentials['user'].'-bot@fb.com',
+        $credentials['email'],
+      );
+    }
+  }
+
   private function assertLooksLikeAPIToken(
     string $password,
   ): void {

@@ -59,6 +59,19 @@ final class ShipItGitHubInitPhase extends ShipItPhase {
       ? $config->getSourcePath()
       : $config->getDestinationPath();
 
-    $class::initializeRepo($this->organization, $this->project, $local_path);
+    // Allows override of destination committer name/email but keeps the same
+    // username and password.
+    $overrides = $this->side === ShipItRepoSide::DESTINATION ?
+      shape(
+        'name' => $config->getDestinationCommitterName(),
+        'email' => $config->getDestinationCommitterEmail(),
+      ) :
+      null;
+    $class::initializeRepo(
+      $this->organization,
+      $this->project,
+      $local_path,
+      $overrides,
+    );
   }
 }

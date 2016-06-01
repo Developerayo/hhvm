@@ -2,13 +2,18 @@
 
 namespace Facebook\ShipIt;
 
+type ShipItNewRepoCommitter = shape(
+  'name' => string,
+  'email' => string,
+);
+
 final class ShipItCreateNewRepoPhase extends ShipItPhase {
   private ?string $sourceCommit = null;
 
   public function __construct(
     private ImmSet<string> $roots,
     private (function(ShipItChangeset):ShipItChangeset) $filter,
-    private shape('name' => string, 'email' => string) $committer,
+    private (function(ShipItBaseConfig):ShipItNewRepoCommitter) $committer,
   ) {
     $this->skip();
   }
@@ -48,6 +53,13 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     };
   }
 
+  public function getCommitter(
+    ShipItBaseConfig $config
+  ): ShipItNewRepoCommitter {
+    $getter = $this->committer;
+    return $getter($config);
+  }
+
   <<__Override>>
   public function runImpl(
     ShipItBaseConfig $config,
@@ -56,7 +68,7 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
       $config,
       $this->roots,
       $this->filter,
-      $this->committer,
+      $this->getCommitter($config),
       $this->sourceCommit,
     );
     $temp_dir->keep();
