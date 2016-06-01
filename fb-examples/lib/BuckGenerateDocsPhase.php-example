@@ -13,6 +13,8 @@ namespace Facebook\ShipIt;
  * Generate buck documentation from source repo into the destination repo.
  */
 final class BuckGenerateDocsPhase extends ShipItPhase {
+  const GH_PAGES_BRANCH = 'gh-pages';
+
   <<__Override>>
   public function isProjectSpecific(): bool {
     return true;
@@ -29,19 +31,43 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
   ): void {
     $sourcePath = $config->getSourcePath();
     $docsPath = $config->getDestinationPath();
+    $branch = $config->getDestinationBranch();
 
     $verbose =
       $config->isVerboseEnabled()
         ? ShipItUtil::VERBOSE_SHELL_OUTPUT
         : ShipItUtil::DONT_VERBOSE;
 
-    // Delete all existing files first such that files which are no longer
-    // generated don't linger.
+    // Get out of our current branch so it can be deleted.
     ShipItUtil::shellExec(
       $docsPath,
       /* stdin = */ null,
       $verbose,
-      'git', 'rm', '-r', '.',
+      'git', 'checkout', '--detach',
+    );
+
+    // Delete the current branch.
+    ShipItUtil::shellExec(
+      $docsPath,
+      /* stdin = */ null,
+      $verbose,
+      'git', 'branch', '--delete', '--force', $branch,
+    );
+
+    // Create a historyless branch in its place.
+    ShipItUtil::shellExec(
+      $docsPath,
+      /* stdin = */ null,
+      $verbose,
+      'git', 'checkout', '--orphan', $branch,
+    );
+
+    // Erase all existing files.
+    ShipItUtil::shellExec(
+      $docsPath,
+      /* stdin = */ null,
+      $verbose,
+      'git', 'rm', '--force', '-r', '.',
     );
 
     $pipes = array();
@@ -80,29 +106,18 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
       'git', 'add', '.',
     );
 
-    // Check if this is no-op. If so, omit commit.
-    $changes = rtrim(ShipItUtil::shellExec(
+    $sourceCommitHash = rtrim(ShipItUtil::shellExec(
+      $sourcePath,
+      /* stdin = */ null,
+      $verbose,
+      'git', 'log', '-1', '--format=%H',
+    ));
+    ShipItUtil::shellExec(
       $docsPath,
       /* stdin = */ null,
       $verbose,
-      'git', 'status', '--porcelain',
-    ));
-    if ($changes !== "") {
-      $sourceCommitHash = rtrim(ShipItUtil::shellExec(
-        $sourcePath,
-        /* stdin = */ null,
-        $verbose,
-        'git', 'log', '-1', '--format=%H',
-      ));
-      ShipItUtil::shellExec(
-        $docsPath,
-        /* stdin = */ null,
-        $verbose,
-        'git', 'commit',
-        '-m', sprintf('Updated HTML documentation to %s.', $sourceCommitHash),
-      );
-    } else if ($config->isVerboseEnabled()) {
-      printf("Nothing changed, skipping commit.\n");
-    }
+      'git', 'commit',
+      '-m', sprintf('Updated HTML documentation to %s.', $sourceCommitHash),
+    );
   }
 }

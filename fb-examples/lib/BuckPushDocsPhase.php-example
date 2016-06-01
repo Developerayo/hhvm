@@ -1,0 +1,65 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+/**
+ * Push buck docs into the remote repo.
+ *
+ * Unlike normal push, this pushes with --force as buck docs do not preserve
+ * history.
+ */
+final class BuckPushDocsPhase extends ShipItPhase {
+  const EXPECTED_BUCK_DOCS_BRANCH = 'gh-pages';
+
+  <<__Override>>
+  protected function isProjectSpecific(): bool {
+    return true;
+  }
+
+  <<__Override>>
+  final public function getReadableName(): string {
+    return 'Push buck docs';
+  }
+
+  <<__Override>>
+  final public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
+    return ImmVector {
+      shape(
+        'long_name' => 'skip-push',
+        'description' => 'Do not push the destination repository',
+        'write' => $_ ==> $this->skip(),
+      ),
+    };
+  }
+
+  <<__Override>>
+  final protected function runImpl(ShipItBaseConfig $config): void {
+    $docsPath = $config->getDestinationPath();
+    $branch = $config->getDestinationBranch();
+    $verbose =
+      $config->isVerboseEnabled()
+        ? ShipItUtil::VERBOSE_SHELL_OUTPUT
+        : ShipItUtil::DONT_VERBOSE;
+
+    invariant(
+      $branch === self::EXPECTED_BUCK_DOCS_BRANCH,
+      'Invalid branch for pushing buck docs - got: %s, expected: %s',
+      $branch,
+      self::EXPECTED_BUCK_DOCS_BRANCH,
+    );
+
+    ShipItUtil::shellExec(
+      $docsPath,
+      /* stdin = */ null,
+      $verbose,
+      'git', 'push', '--force', 'origin', 'HEAD:'.$branch,
+    );
+  }
+}
