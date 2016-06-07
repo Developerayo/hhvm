@@ -41,6 +41,10 @@ final class ShipItFBShipIt extends FBShipItCLI {
           },
         )
       |> self::removePrivateProjects($$)
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> str_replace('/public_tld/dot_', '/public_tld/.', $path),
+      )
       |> ShipItPathFilters::moveDirectories(
           $$,
           ImmMap {

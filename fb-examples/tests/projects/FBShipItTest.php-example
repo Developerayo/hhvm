@@ -47,6 +47,8 @@ final class FBShipItTest extends FBProjectBaseTest {
         => 'fb-examples/tests/projects/HHVMTest.php-example',
       // public-only
       self::ROOT.'/public_tld/composer.json' => 'composer.json',
+      self::ROOT.'/public_tld/dot_gitignore' => '.gitignore',
+      self::ROOT.'/tests/dot_foo' => 'tests/dot_foo', // just in case
       // github interface implementations
       self::ROOT.'/src/fb-private/FBToGitHubUserInfo.php' => null,
       self::ROOT.'/src/fb-private/FBGitHubUtils.php' => null,
