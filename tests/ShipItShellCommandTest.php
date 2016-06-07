@@ -18,7 +18,7 @@ final class ShipItShellCommandTest extends BaseTest {
   public function testExitOneException(): void {
     try {
       (new ShipItShellCommand('/', 'false'))->runSynchronously();
-      $this->markTestFailed('Expected exception');
+      $this->fail('Expected exception');
     } catch (ShipItShellCommandException $e) {
       $this->assertSame(1, $e->getExitCode());
     }

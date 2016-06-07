@@ -353,7 +353,7 @@ abstract class FBProjectBaseTest extends BaseTest {
         return $source;
       }
     }
-    $this->markTestFailed("No example public paths provided");
+    $this->fail("No example public paths provided");
     invariant_violation('test fails should throw');
   }
 }
