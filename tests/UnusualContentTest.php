@@ -104,4 +104,29 @@ final class UnusualContentTest extends BaseTest {
     $this->assertContains('+bar', $hunk);
     $this->assertContains('\ No newline at end of file', $hunk);
   }
+
+  public function testStripFileListFromShortCommit() {
+    $patch = file_get_contents(__DIR__.'/git-diffs/no-summary-in-message.patch');
+    $changeset = ShipItRepoGIT::getChangesetFromExportedPatch($patch);
+    assert($changeset !== null);
+
+    $message = $changeset->getMessage();
+    $this->assertEquals("", $message);
+  }
+
+  public function testStripFileListFromLongCommit() {
+    $patch = file_get_contents(__DIR__.'/git-diffs/has-summary-in-message.patch');
+    $changeset = ShipItRepoGIT::getChangesetFromExportedPatch($patch);
+    assert($changeset !== null);
+
+    $message = $changeset->getMessage();
+    $this->assertContains('This is a long commit message.', $changeset->getSubject());
+    $this->assertEquals(
+      "This is a really long commit message.\n\n".
+      "And it also has a \"---\" block in it.\n\n".
+      "---\n\n".
+      "More stuff!!",
+      $message
+    );
+  }
 }

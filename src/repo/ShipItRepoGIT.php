@@ -90,12 +90,20 @@ class ShipItRepoGIT
     list($envelope, $message) = explode("\n\n", trim($header), 2);
 
     $message = trim($message);
-    if (strpos($message, "\n---\n") !== false) {
-      // Get rid of the file list
-      $parts = explode("\n---\n", $message);
-      array_pop($parts);
-      $message = implode("\n---\n", $parts);
+
+    $matches = [];
+    preg_match(
+      "/^((.*\\n)?)---\\n /us",
+      $message,
+      $matches,
+      PREG_OFFSET_CAPTURE
+    );
+    if (count($matches) > 0) {
+      // get rid of file list
+      $length = strlen($matches[1][0]);
+      $message = trim(substr($message, 0, $length));
     }
+
     $changeset = (new ShipItChangeset())->withMessage($message);
 
     $envelope = str_replace(["\n\t","\n "], ' ', $envelope);

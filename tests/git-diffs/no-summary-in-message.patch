@@ -1,0 +1,20 @@
+From 0b46c933d9e0d5f5c4c18c8259910431bc921a9b Mon Sep 17 00:00:00 2001
+From: Fred Emmott <fredemmott@fb.com>
+Date: Wed, 13 Apr 2016 13:54:39 -0700
+Subject: [PATCH] Doesn't have a summary (single line commit message).
+
+---
+ test.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test.txt b/test.txt
+index a907ec3..3bd1f0e 100644
+--- a/test.txt
++++ b/test.txt
+@@ -1,2 +1,2 @@
+ foo
+-bar
+\ No newline at end of file
++bar
+--
+2.8.0.rc2
