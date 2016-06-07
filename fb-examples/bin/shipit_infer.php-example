@@ -67,8 +67,7 @@ final class ShipItInfer extends FBShipItCLI {
     return false;
   }
 
-  // TODO: convert to private once ShipItScrubberInfer is gone
-  public static function getWhitelist(): ImmSet<string> {
+  private static function getWhitelist(): ImmSet<string> {
     return ImmSet {
       '.buckconfig',
       '.clang-format',
@@ -99,12 +98,12 @@ final class ShipItInfer extends FBShipItCLI {
       'install-sh',
       'm4/',
       'Makefile.config.in',
-      'Makefile.in',
+      'Makefile',
+      'scripts/package_infer_source_with_clang_binaries.sh',
     };
   }
 
-  // TODO: convert to private once ShipItScrubberInfer is gone
-  public static function getBlacklist(): ImmSet<string> {
+  private static function getBlacklist(): ImmSet<string> {
     return ImmSet {
       '.facebook',
       'ci_config.json',
