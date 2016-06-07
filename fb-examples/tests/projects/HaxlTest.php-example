@@ -1,0 +1,42 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class HaxlTest extends FBProjectBaseTest {
+
+  <<__Override>>
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItHaxl::filterChangeset(
+      $changeset,
+    );
+  }
+
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/haxl/core/foo' => 'foo',
+      'fbcode/haxl/core/foo/bar' => 'foo/bar',
+      'fbcode/haxl/core/tests/Main.hs' => null, // FB-internal test runner
+      'fbcode/haxl/core/TARGETS' => null,
+      'fbcode/haxl/core/foo/TARGETS' => null,
+      'fbcode/haxl/core/open-source/foo' => null, // OSS export/import scripts
+      'fbcode/haxl/core/open-source/foo/bar' => null,
+      'fbcode/foo' => null,
+      'fbcode/foo/bar' => null,
+    };
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+}
