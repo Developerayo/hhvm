@@ -173,6 +173,7 @@ final class FBCommonFilters {
       'summary',
       'facebook',
       'github author',
+      'github pr sync',
       'test plan',
       'reviewers',
       'reviewed by',

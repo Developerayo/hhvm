@@ -172,6 +172,16 @@ abstract class FBProjectBaseTest extends BaseTest {
     $this->assertEquals('Foo Bar <foobar@example.com>', $out->getAuthor());
   }
 
+  public function testGitHubAuthorWithSupportedFieldAfter(): void {
+    $in = (new ShipItChangeset())
+      ->withMessage(
+        "GitHub Author: Foo Bar <foobar@example.com>\n".
+        "Github PR Sync: foo",
+      );
+    $out = static::map($in);
+    $this->assertEquals('Foo Bar <foobar@example.com>', $out->getAuthor());
+  }
+
   public function testPulledBy(): void {
     $in = (new ShipItChangeset())
       ->withMessage("GitHub Author: Foo Bar <foobar@example.com>")
