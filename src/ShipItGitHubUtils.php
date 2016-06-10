@@ -40,17 +40,43 @@ abstract class ShipItGitHubUtils {
     string $organization,
     string $project,
     string $local_path,
+    ?ShipItGitHubCredentials $credentials,
   ): void {
-    $credentials = static::getCredentialsForProject($organization, $project);
-
-    $origin = sprintf(
-      'https://%s:%s@github.com/%s/%s.git',
-      urlencode($credentials['user']),
-      urlencode($credentials['password']),
-      $organization,
-      $project,
+    $git_config = ($key, $value) ==> new ShipItShellCommand(
+      $local_path,
+      'git', 'config', $key, $value,
     );
 
+    if (!is_null($credentials)) {
+      $origin = sprintf(
+        'https://%s:%s@github.com/%s/%s.git',
+        urlencode($credentials['user']),
+        urlencode($credentials['password']),
+        $organization,
+        $project,
+      );
+
+      self::cloneAndVerifyRepo($origin, $local_path);
+
+      $git_config('user.name', $credentials['name'])->runSynchronously();
+      $git_config('user.email', $credentials['email'])->runSynchronously();
+    } else {
+      $origin = sprintf(
+        'https://github.com/%s/%s.git',
+        $organization,
+        $project,
+      );
+
+      self::cloneAndVerifyRepo($origin, $local_path);
+    }
+
+    $git_config('remote.origin.url', $origin)->runSynchronously();
+  }
+
+  private static function cloneAndVerifyRepo(
+    string $origin,
+    string $local_path,
+  ): void {
     if (!file_exists($local_path)) {
       ShipItRepoGIT::cloneRepo(
         $origin,
@@ -62,16 +88,6 @@ abstract class ShipItGitHubUtils {
       '%s is not a git repo',
       $local_path,
     );
-
-    $git_config = ($key, $value) ==> ShipItUtil::shellExec(
-      $local_path,
-      /* stdin = */ null,
-      /* flags = */ ShipItUtil::DONT_VERBOSE,
-      'git', 'config', $key, $value,
-    );
-    $git_config('user.name', $credentials['name']);
-    $git_config('user.email', $credentials['email']);
-    $git_config('remote.origin.url', $origin);
   }
 
   final public static async function makeAPIRequest(

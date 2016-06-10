@@ -11,6 +11,8 @@ namespace Facebook\ShipIt;
 
 final class ShipItGitHubInitPhase extends ShipItPhase {
 
+  private bool $useProjectAuthentication = true;
+
   public function __construct(
     private string $organization,
     private string $project,
@@ -47,6 +49,11 @@ final class ShipItGitHubInitPhase extends ShipItPhase {
         'description' => 'GitHub Project ['.$this->project.']',
         'write' => $v ==> $this->project = $v,
       ),
+      shape(
+        'long_name' => $this->side.'-use-system-credentials',
+        'description' => 'Use local environment/settings for authenticaion',
+        'write' => $_ ==> $this->useProjectAuthentication = false,
+      ),
     };
   }
 
@@ -59,6 +66,18 @@ final class ShipItGitHubInitPhase extends ShipItPhase {
       ? $config->getSourcePath()
       : $config->getDestinationPath();
 
-    $class::initializeRepo($this->organization, $this->project, $local_path);
+    $credentials = null;
+    if ($this->useProjectAuthentication) {
+      $credentials = $class::getCredentialsForProject(
+        $this->organization,
+        $this->project,
+      );
+    }
+    $class::initializeRepo(
+      $this->organization,
+      $this->project,
+      $local_path,
+      $credentials,
+    );
   }
 }
