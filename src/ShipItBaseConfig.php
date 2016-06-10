@@ -81,24 +81,6 @@ final class ShipItBaseConfig {
     return $this->modified($ret ==> $ret->destinationBranch = $branch);
   }
 
-  private ?string $destinationCommitterName;
-  public function getDestinationCommitterName(): ?string {
-    return $this->destinationCommitterName;
-  }
-
-  public function withDestinationCommitterName(string $name): this {
-    return $this->modified($ret ==> $ret->destinationCommitterName = $name);
-  }
-
-  private ?string $destinationCommitterEmail;
-  public function getDestinationCommitterEmail(): ?string {
-    return $this->destinationCommitterEmail;
-  }
-
-  public function withDestinationCommitterEmail(string $email): this {
-    return $this->modified($ret ==> $ret->destinationCommitterEmail = $email);
-  }
-
   private function modified<Tignored>(
     (function(ShipItBaseConfig):Tignored) $mutator,
   ): ShipItBaseConfig {

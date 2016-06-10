@@ -68,6 +68,12 @@ abstract class FBShipItCLI {
 
   protected static function getPhases(): ImmVector<ShipItPhase> {
     $static_config = static::getStaticConfig();
+    $config = static::getBaseConfig();
+
+    $credentials = FBGitHubUtils::getCredentialsForProject(
+      $static_config['githubOrg'],
+      $static_config['githubProject'],
+    );
 
     return ImmVector {
       new ShipItFilterSanityCheckPhase(
@@ -82,22 +88,7 @@ abstract class FBShipItCLI {
       new ShipItCreateNewRepoPhase(
         $static_config['sourceRoots'],
         $changeset ==> self::filterChangeset($changeset),
-        $config ==> {
-          $committer_name = $config->getDestinationCommitterName();
-          $committer_email = $config->getDestinationCommitterEmail();
-          if ($committer_name !== null && $committer_email !== null) {
-            return shape(
-              'name' => $committer_name,
-              'email' => $committer_email,
-            );
-          } else {
-            return FBGitHubUtils::getCredentialsForProject(
-              $static_config['githubOrg'],
-              $static_config['githubProject'],
-              null,
-            );
-          }
-        },
+        $credentials,
       ),
       new ShipItGitHubInitPhase(
         $static_config['githubOrg'],

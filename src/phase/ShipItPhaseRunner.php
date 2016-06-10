@@ -78,18 +78,6 @@ final class ShipItPhaseRunner {
           $this->config = $this->config->withDestinationBranch(trim($x)),
       ),
       shape(
-        'long_name' => 'destination-committer-name::',
-        'description' => 'Name of committer to destination repo',
-        'write' => $x ==>
-          $this->config = $this->config->withDestinationCommitterName(trim($x)),
-      ),
-      shape(
-        'long_name' => 'destination-committer-email::',
-        'description' => 'Email address of committer to destination repo',
-        'write' => $x ==> $this->config =
-          $this->config->withDestinationCommitterEmail(trim($x)),
-      ),
-      shape(
         'long_name' => 'debug',
         'replacement' => 'verbose',
       ),

@@ -16,11 +16,6 @@ type ShipItGitHubCredentials = shape(
   'password' => string,
 );
 
-type ShipItGitHubCredentialOverrides = shape(
-  'name' => ?string,
-  'email' => ?string,
-);
-
 abstract class ShipItGitHubUtils {
   /** Fetch information on a user that has permission to write to a project.
    *
@@ -33,7 +28,6 @@ abstract class ShipItGitHubUtils {
   public abstract static function getCredentialsForProject(
     string $organization,
     string $project,
-    ?ShipItGitHubCredentialOverrides $overrides = null,
   ): ShipItGitHubCredentials;
 
   /**
@@ -46,13 +40,8 @@ abstract class ShipItGitHubUtils {
     string $organization,
     string $project,
     string $local_path,
-    ?ShipItGitHubCredentialOverrides $overrides,
   ): void {
-    $credentials = static::getCredentialsForProject(
-      $organization,
-      $project,
-      $overrides,
-    );
+    $credentials = static::getCredentialsForProject($organization, $project);
 
     $origin = sprintf(
       'https://%s:%s@github.com/%s/%s.git',
