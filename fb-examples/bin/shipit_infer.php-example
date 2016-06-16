@@ -74,6 +74,8 @@ final class ShipItInfer extends FBShipItCLI {
       '.gitignore',
       '.gitmodules',
       '.inferconfig',
+      '.travis.yml',
+      '.travis/',
       'CONTRIBUTING.md',
       'LICENSE',
       'PATENTS',
