@@ -48,6 +48,7 @@ final class ShipItFlow extends FBShipItCLI {
             '@fbcode/hphp/hack/src/stubs/(ai|ai_options|buildMain|clientMessages|debug|filesToIgnore|formatEventLogger|hackEventLogger|linting_service|prolog|prologMain).ml$@',
             '@fbcode/hphp/hack/src/typing(/|$)@',
             '@fbcode/hphp/hack/src/utils/errors.mli?$@',
+            '@fbcode/hphp/hack/src/utils/lint.mli?$@',
           },
         )
       |> ShipItPathFilters::moveDirectories(
