@@ -29,10 +29,7 @@ final class ShipItInfer extends FBShipItCLI {
         )
       |> $$->withDiffs($$->getDiffs()->filter(
           $diff ==> !self::matchesPrefixList($diff, self::getBlacklist())
-        ))
-      |> $$->withDiffs($$->getDiffs()->filter(
-          $diff ==> self::matchesPrefixList($diff, self::getWhitelist())
-        ));
+      ));
   }
 
   <<__Override>>
@@ -67,71 +64,18 @@ final class ShipItInfer extends FBShipItCLI {
     return false;
   }
 
-  private static function getWhitelist(): ImmSet<string> {
-    return ImmSet {
-      '.buckconfig',
-      '.clang-format',
-      '.gitignore',
-      '.gitmodules',
-      '.inferconfig',
-      '.travis.yml',
-      '.travis/',
-      'CONTRIBUTING.md',
-      'LICENSE',
-      'PATENTS',
-      'README.md',
-      'INSTALL.md',
-      'FILES.md',
-      'build-infer.sh',
-      'compile-fcp.sh',
-      'dependencies/clang-plugin/',
-      'dependencies/java/',
-      'dependencies/ocamldot/',
-      'docker/',
-      'infer/',
-      'infer/models/java/src/com/facebook/infer/',
-      'examples/',
-      'update-fcp.sh',
-      'opam',
-      'infer.install',
-      'facebook-clang-plugins',
-      'autogen.sh',
-      'configure.ac',
-      'install-sh',
-      'm4/',
-      'Makefile.config.in',
-      'Makefile',
-      'scripts/package_infer_source_with_clang_binaries.sh',
-    };
-  }
-
   private static function getBlacklist(): ImmSet<string> {
     return ImmSet {
+      '.arcconfig',
+      '.deweyconfig',
       '.facebook',
       'ci_config.json',
-      'benchmarks/',
-      'facebook/',
-      'infer/bin/clang_frontend_stats.sh',
-      'infer/bin/errors.pl',
-      'infer/bin/inferiOS',
-      'infer/bin/ios_csv_stats',
-      'infer/bin/procs.pl',
-      'infer/bin/stats.pl',
-      'infer/lib/python/inferiOS',
-      'infer/models/java/src/com/facebook/',
-      'infer/models/java/src/com/instagram/',
-      'infer/models/objc/src/Facebook/',
-      'infer/src/checkers/codequery_examples/examples.txt',
-      'infer/src/facebook/',
-      'infer/tests/codetoanalyze/java/checkers/GatekeeperChecker.java',
-      'infer/tests/codetoanalyze/java/checkers/TraceCallSequence.java',
-      'infer/tests/codetoanalyze/objc/errors/memory_leaks_benchmark/FBViewExample.m',
-      'infer/tests/endtoend/java/checkers/GatekeeperCheckerTest.java',
-      'infer/tests/endtoend/java/checkers/TraceCallSequenceCheckerTest.java',
-      'infer/tests/endtoend/objc/FBViewMemoryLeakTest.java',
-      'scripts/',
       'setup-infer.sh',
       'setup.sh',
+      'arcanist/',
+      'benchmarks/',
+      'data/',
+      'facebook/',
     };
   }
 }

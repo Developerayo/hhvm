@@ -65,33 +65,17 @@ final class InferTest extends FBProjectBaseTest {
     };
     # Example things that should *not* make it through
     $strip = ImmVector {
-      'benchmarks/foo',
-      'facebook/foo',
-      'infer/src/facebook/foo',
-      'ci_config.json',
+      '.arcconfig',
+      '.deweyconfig',
       '.facebook',
+      'ci_config.json',
       'setup-infer.sh',
       'setup.sh',
-      'infer/bin/clang_frontend_stats.sh',
-      'infer/bin/errors.pl',
-      'infer/bin/inferiOS',
-      'infer/bin/ios_csv_stats',
-      'infer/bin/procs.pl',
-      'infer/bin/stats.pl',
-      'infer/lib/python/inferiOS',
-      'infer/models/java/src/com/facebook/rti/',
-      'infer/models/java/src/com/instagram/',
-      'infer/models/objc/src/Facebook/',
-      'infer/src/checkers/codequery_examples/examples.txt',
-      'infer/src/facebook/',
-      'infer/tests/codetoanalyze/java/checkers/GatekeeperChecker.java',
-      'infer/tests/codetoanalyze/java/checkers/TraceCallSequence.java',
-      'infer/tests/codetoanalyze/objc/'.
-        'errors/memory_leaks_benchmark/FBViewExample.m',
-      'infer/tests/endtoend/java/checkers/GatekeeperCheckerTest.java',
-      'infer/tests/endtoend/java/checkers/TraceCallSequenceCheckerTest.java',
-      'infer/tests/endtoend/objc/FBViewMemoryLeakTest.java',
-      'scripts/',
+      'arcanist/foo',
+      'benchmarks/foo',
+      'data/foo',
+      'facebook/foo',
+      'infer/src/facebook/foo',
     };
 
     $map = Map {};
