@@ -12,7 +12,7 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItTreadmill extends FBShipItCLI {
-  const string ROOT = 'fbcode/windtunnel/treadmill/';
+  const string ROOT = 'fbcode/treadmill/';
 
   <<__Override>>
   protected static function projectFilterChangeset(

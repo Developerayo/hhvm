@@ -10,7 +10,7 @@
 namespace Facebook\ShipIt;
 
 final class TreadmillTest extends FBProjectBaseTest {
-  const string ROOT = 'fbcode/windtunnel/treadmill';
+  const string ROOT = 'fbcode/treadmill';
 
   <<__Override>>
   protected static function map(
