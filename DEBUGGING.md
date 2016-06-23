@@ -95,3 +95,72 @@ If both contain changes you want, you will need to merge the two files by hand, 
 You can disable the 'merge pull request' button for your project  by sending a
 fake unit test result (eg 'no-direct-merges') via the GitHub API, then marking
 that unit test as required for merges to master.
+
+# Stalls/lockups when using Mercurial repositories
+
+We use `flock()` for added safety when interacting with Mercurial; to find out
+if this is causing problems, try setting the `FBSHIPIT_DEBUG_FLOCK`
+environment variable:
+
+```
+[fredemmott@devbig349.prn1 ~/fbcode/opensource/shipit/bin] hhvm shipit_folly.php --skip-push --skip-project-specific
+--- Starting Facebook\ShipIt\ShipItFolly
+Starting phase: Sanity-check commit filter
+Finished phase: Sanity-check commit filter
+Starting phase: Initialize source fbsource repository
+Finished phase: Initialize source fbsource repository
+Starting phase: Pull source repository
+Finished phase: Pull source repository
+Skipping phase: Create a new git repo with an initial commit
+Starting phase: Initialize destination GitHub repository
+Finished phase: Initialize destination GitHub repository
+Starting phase: Pull destination repository
+Finished phase: Pull destination repository
+Starting phase: Synchronize commits
+  No new commits to sync.
+Finished phase: Synchronize commits
+Skipping phase: Verify that destination repository is sync
+Skipping phase: Push destination repository
+[fredemmott@devbig349.prn1 ~/fbcode/opensource/shipit/bin] FBSHIPIT_DEBUG_FLOCK=yes hhvm shipit_folly.php --skip-push --skip-project-specific
+--- Starting Facebook\ShipIt\ShipItFolly
+Starting phase: Sanity-check commit filter
+Finished phase: Sanity-check commit filter
+Starting phase: Initialize source fbsource repository
+Finished phase: Initialize source fbsource repository
+Starting phase: Pull source repository
+  [flock] Acquiring shared lock...
+    /var/tmp/oss_sync_and_push/fbsource/.hg/fbshipit.lock
+  [flock] ...lock acquired.
+    /var/tmp/oss_sync_and_push/fbsource/.hg/fbshipit.lock
+  [flock] Acquiring exclusive lock...
+    /var/tmp/oss_sync_and_push/fbsource/.hg/fbshipit.lock
+  [flock] ...lock acquired.
+    /var/tmp/oss_sync_and_push/fbsource/.hg/fbshipit.lock
+  [flock] Downgrading to shared lock...
+    /var/tmp/oss_sync_and_push/fbsource/.hg/fbshipit.lock
+  [flock] ...lock downgraded.
+    /var/tmp/oss_sync_and_push/fbsource/.hg/fbshipit.lock
+  [flock] Releasing lock...
+    /var/tmp/oss_sync_and_push/fbsource/.hg/fbshipit.lock
+  [flock] ...lock released.
+    /var/tmp/oss_sync_and_push/fbsource/.hg/fbshipit.lock
+Finished phase: Pull source repository
+Skipping phase: Create a new git repo with an initial commit
+Starting phase: Initialize destination GitHub repository
+Finished phase: Initialize destination GitHub repository
+Starting phase: Pull destination repository
+Finished phase: Pull destination repository
+Starting phase: Synchronize commits
+  [flock] Acquiring shared lock...
+    /var/tmp/oss_sync_and_push/fbsource/.hg/fbshipit.lock
+  [flock] ...lock acquired.
+    /var/tmp/oss_sync_and_push/fbsource/.hg/fbshipit.lock
+  No new commits to sync.
+  [flock] Releasing lock...
+    /var/tmp/oss_sync_and_push/fbsource/.hg/fbshipit.lock
+  [flock] ...lock released.
+    /var/tmp/oss_sync_and_push/fbsource/.hg/fbshipit.lock
+Finished phase: Synchronize commits
+Skipping phase: Verify that destination repository is sync
+Skipping phase: Push destination repository
+```
