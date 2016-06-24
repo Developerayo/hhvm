@@ -41,7 +41,7 @@ abstract class FBShipItCLI {
   protected static function getBaseConfig(): ShipItBaseConfig {
     $static_config = static::getStaticConfig();
     return new ShipItBaseConfig(
-      '/var/tmp/oss_sync_and_push',
+      '/var/tmp/fbshipit',
       /* source_dir = */ $static_config['internalRepo'],
       Shapes::idx(
         $static_config,
