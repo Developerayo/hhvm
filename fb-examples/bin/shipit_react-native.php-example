@@ -36,6 +36,7 @@ final class ShipItReactNative extends FBShipItCLI {
           ImmVector {
             '@(^|/)node_modules/@',
             '@(^|/)npm-shrinkwrap.json@',
+            '@(^|/)fbkpm.lock@',
           },
         )
       |> ShipItPathFilters::moveDirectories(
