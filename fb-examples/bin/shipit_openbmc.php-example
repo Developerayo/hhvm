@@ -29,6 +29,8 @@ final class ShipItOpenBMC extends FBShipItCLI {
         '@^meta-aspeed/recipes-kernel/linux/files/linux-.*@',
         '@^meta-aspeed/recipes-bsp/u-boot/files/u-boot.*@',
         '@^meta-aspeed/recipes-bsp/u-boot/u-boot.*@',
+        '@^meta-facebook/meta-galaxy.*@',
+        '@^meta-facebook/meta-cmm.*@',
         # Anything marked 'private' should not be synced.
         '@^.*private@',
       },
