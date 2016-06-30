@@ -39,6 +39,7 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
         : ShipItUtil::DONT_VERBOSE;
 
     // Get out of our current branch so it can be deleted.
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $docsPath,
       /* stdin = */ null,
@@ -47,6 +48,7 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
     );
 
     // Delete the current branch.
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $docsPath,
       /* stdin = */ null,
@@ -55,6 +57,7 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
     );
 
     // Create a historyless branch in its place.
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $docsPath,
       /* stdin = */ null,
@@ -63,6 +66,7 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
     );
 
     // Erase all existing files.
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $docsPath,
       /* stdin = */ null,
@@ -84,6 +88,7 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
     fclose($pipes[0]);
 
     try {
+/* HH_FIXME[4128] Use ShipItShellCommand */
       ShipItUtil::shellExec(
         $sourcePath,
         /* stdin = */ null,
@@ -99,6 +104,7 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
       }
     }
 
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $docsPath,
       /* stdin = */ null,
@@ -106,12 +112,14 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
       'git', 'add', '.',
     );
 
+/* HH_FIXME[4128] Use ShipItShellCommand */
     $sourceCommitHash = rtrim(ShipItUtil::shellExec(
       $sourcePath,
       /* stdin = */ null,
       $verbose,
       'git', 'log', '-1', '--format=%H',
     ));
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $docsPath,
       /* stdin = */ null,

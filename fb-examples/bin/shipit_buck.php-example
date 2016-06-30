@@ -251,6 +251,7 @@ class ShipItBuck {
     if (preg_match(self::FILE_NOT_TO_STRIP_RE, $path)) {
       return false;
     }
+/* HH_FIXME[4128] Use ShipItShellCommand */
     $source = ShipItUtil::shellExec(
       $src_path,
       null,
@@ -271,6 +272,7 @@ class ShipItBuck {
   ): string {
     $cmd = "cd {$src_path} && git show '{$revision}:{$path}'";
     return $stripper->stripInternal(
+/* HH_FIXME[4128] Use ShipItShellCommand */
       ShipItUtil::shellExec(
         $src_path,
         null,

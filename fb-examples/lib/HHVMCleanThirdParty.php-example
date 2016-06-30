@@ -33,12 +33,14 @@ final class HHVMCleanThirdPartyPhase extends ShipItPhase {
   <<__Override>>
   final protected function runImpl(ShipItBaseConfig $config): void {
     $root = $config->getDestinationPath();
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $root,
       /* stdin = */ null,
       ShipItUtil::DONT_VERBOSE,
       'rm', '-rf', 'third-party',
     );
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $root,
       /* stdin = */ null,

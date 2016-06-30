@@ -95,12 +95,14 @@ final class FBShipItPublicizeSyncScriptsPhase extends ShipItPhase {
     $dest_root = $repo->getPath();
     copy($exported_file, $destination_file);
 
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $dest_root,
       /* stdin = */  null,
       ShipItUtil::DONT_VERBOSE,
       'git', 'add', $destination_file,
     );
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $dest_root,
       /* stdin = */  null,

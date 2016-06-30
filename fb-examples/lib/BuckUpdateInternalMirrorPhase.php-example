@@ -35,6 +35,7 @@ final class BuckUpdateInternalMirrorPhase extends ShipItPhase {
   public function runImpl(ShipItBaseConfig $config): void {
     // Remove it remote first in case it's changed, NO_THROW in case git errors
     // because the remote already doesn't exist
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $config->getSourcePath(),
       /* stdin = */ null,
@@ -47,6 +48,7 @@ final class BuckUpdateInternalMirrorPhase extends ShipItPhase {
 
     // Long-form because https://github.com/facebook/hhvm/issues/6883
     $exec = function (...$command): void use ($config) {
+/* HH_FIXME[4128] Use ShipItShellCommand */
       ShipItUtil::shellExec(
         $config->getSourcePath(),
         /* stdin = */ null,

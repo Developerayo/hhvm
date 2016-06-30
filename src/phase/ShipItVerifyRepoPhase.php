@@ -57,6 +57,7 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
     $dirty_remote = 'shipit_dest';
     $dirty_ref = $dirty_remote.'/'.$config->getDestinationBranch();
 
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $clean_path,
       /* stdin = */ null,
@@ -67,6 +68,7 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
       $dirty_remote,
       $config->getDestinationPath(),
     );
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $clean_path,
       null,
@@ -76,6 +78,7 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
       $dirty_remote,
     );
 
+/* HH_FIXME[4128] Use ShipItShellCommand */
     $diffstat = rtrim(ShipItUtil::shellExec(
       $clean_path,
       null,
@@ -108,6 +111,7 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
       exit(1);
     }
 
+/* HH_FIXME[4128] Use ShipItShellCommand */
     $diff = ShipItUtil::shellExec(
       $clean_path,
       /* stdin = */ null,

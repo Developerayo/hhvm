@@ -26,6 +26,7 @@ final class BuckBuildAndTestPhase extends BuildAndTestPhase {
   <<__Override>>
   protected function test(ShipItBaseConfig $config): void {
     $root = $config->getDestinationPath();
+/* HH_FIXME[4128] Use ShipItShellCommand */
     $moe_occurrences = ShipItUtil::shellExec(
       $config->getDestinationPath(),
       /* stdin = */ null,
@@ -39,6 +40,7 @@ final class BuckBuildAndTestPhase extends BuildAndTestPhase {
       $moe_occurrences,
     );
 
+/* HH_FIXME[4128] Use ShipItShellCommand */
     $tests_out = ShipItUtil::shellExec(
       $config->getDestinationPath(),
       /* stdin = */ null,

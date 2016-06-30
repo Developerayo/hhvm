@@ -148,6 +148,7 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     ImmVector<ImmVector<string>> $steps,
   ): void {
     foreach ($steps as $step) {
+/* HH_FIXME[4128] Use ShipItShellCommand */
       ShipItUtil::shellExec(
         $path,
         /* stdin = */ null,

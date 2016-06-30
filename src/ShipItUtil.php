@@ -141,6 +141,8 @@ abstract class ShipItUtil {
     return (bool) preg_match('@^deleted file@m', $body);
   }
 
+  // 0 is runtime log rate - typechecker is sufficient.
+  <<__Deprecated('Use ShipItShellCommand instead in new code', 0)>>
   public static function shellExec(
     string $path,
     ?string $stdin,

@@ -55,6 +55,7 @@ final class BuckPushDocsPhase extends ShipItPhase {
       self::EXPECTED_BUCK_DOCS_BRANCH,
     );
 
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $docsPath,
       /* stdin = */ null,

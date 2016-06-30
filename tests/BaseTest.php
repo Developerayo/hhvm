@@ -23,6 +23,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
     ...$steps
   ): void {
     foreach ($steps as $step) {
+/* HH_FIXME[4128] Use ShipItShellCommand */
       ShipItUtil::shellExec(
         $cwd,
         /* stdin = */ null,

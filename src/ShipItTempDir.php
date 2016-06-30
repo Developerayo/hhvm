@@ -36,6 +36,7 @@ final class ShipItTempDir {
 
   public function remove(): void {
     $this->assertMode(ShipItTempDirMode::AUTO_REMOVE);
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       sys_get_temp_dir(),
       /* stdin = */ null,

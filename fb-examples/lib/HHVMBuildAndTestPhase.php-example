@@ -39,6 +39,7 @@ final class HHVMBuildAndTestPhase extends BuildAndTestPhase {
 
   <<__Override>>
   protected function test(ShipItBaseConfig $config): void {
+/* HH_FIXME[4128] Use ShipItShellCommand */
     $test_output = ShipItUtil::shellExec(
       $config->getDestinationPath(),
       /* stdin = */ null,

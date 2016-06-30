@@ -84,6 +84,7 @@ final class FBRepoInitPhase extends ShipItPhase {
     // Make sure that "remove stale temp file" jobs don't clean this up
     touch($local_parent_path);
 
+/* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
       $local_parent_path,
       /* stdin = */ null,

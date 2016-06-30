@@ -65,6 +65,7 @@ abstract class BuildAndTestPhase extends ShipItPhase {
   ): void {
     foreach ($steps as $_ => $command) {
       // throws if any step fails
+/* HH_FIXME[4128] Use ShipItShellCommand */
       ShipItUtil::shellExec(
         $config->getDestinationPath(),
         /* stdin = */ null,

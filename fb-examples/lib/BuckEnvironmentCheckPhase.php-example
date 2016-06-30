@@ -15,6 +15,7 @@ final class BuckEnvironmentCheckPhase extends EnvironmentCheckPhase {
     int $extra_flags,
     ...$command
   ): string {
+/* HH_FIXME[4128] Use ShipItShellCommand */
     return ShipItUtil::shellExec(
       /* path = */ '.',
       /* stdin = */ null,
