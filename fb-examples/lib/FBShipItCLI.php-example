@@ -108,6 +108,17 @@ abstract class FBShipItCLI {
   }
 
   final public static function cliMain(): void {
+    if (get_current_user() === 'svcscm') {
+      throw new \Exception(
+        'FBShipIt must be ran as an individual user, or via a hipster '.
+        "account. If you are seeing this from Chronos:\n".
+        "1. disable this job permanently\n".
+        "2. find your repository on /intern/opensource/github/repo\n".
+        "3. open workflow settings - click 'get permission now' if needed\n".
+        "4. tick the 'ShipIt Chronos Job' box\n".
+        "5. A secure Chronos job will be created for you within 24 hours."
+      );
+    }
     print('--- Starting '.static::class."\n");
     $config = static::getBaseConfig();
 
