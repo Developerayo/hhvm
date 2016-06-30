@@ -11,12 +11,13 @@ namespace Facebook\ShipIt;
 
 final class ShipItGitHubInitPhase extends ShipItPhase {
 
-  private bool $useProjectAuthentication = true;
+  private bool $anonymousHttps = false;
 
   public function __construct(
     private string $organization,
     private string $project,
     private ShipItRepoSide $side,
+    private ShipItTransport $transport,
     private classname<ShipItGitHubUtils> $github_utils,
   ): void {
   }
@@ -50,9 +51,22 @@ final class ShipItGitHubInitPhase extends ShipItPhase {
         'write' => $v ==> $this->project = $v,
       ),
       shape(
-        'long_name' => $this->side.'-use-system-credentials',
-        'description' => 'Use local environment/settings for authenticaion',
-        'write' => $_ ==> $this->useProjectAuthentication = false,
+        'long_name' => $this->side.'-use-ssh',
+        'description' => 'Use ssh to talk to GitHub',
+        'write' => $_ ==> $this->transport = ShipItTransport::SSH,
+      ),
+      shape(
+        'long_name' => $this->side.'-use-authenticated-https',
+        'description' => 'Use HTTPS to talk to GitHub',
+        'write' => $_ ==> $this->transport = ShipItTransport::HTTPS,
+      ),
+      shape(
+        'long_name' => $this->side.'-use-anonymous-https',
+        'description' => 'Talk to GitHub anonymously over HTTPS',
+        'write' => $_ ==> {
+          $this->transport = ShipItTransport::HTTPS;
+          $this->anonymousHttps = true;
+        }
       ),
     };
   }
@@ -67,7 +81,7 @@ final class ShipItGitHubInitPhase extends ShipItPhase {
       : $config->getDestinationPath();
 
     $credentials = null;
-    if ($this->useProjectAuthentication) {
+    if ($this->transport !== ShipItTransport::SSH && !$this->anonymousHttps) {
       $credentials = $class::getCredentialsForProject(
         $this->organization,
         $this->project,
@@ -77,6 +91,7 @@ final class ShipItGitHubInitPhase extends ShipItPhase {
       $this->organization,
       $this->project,
       $local_path,
+      $this->transport,
       $credentials,
     );
   }

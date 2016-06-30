@@ -92,6 +92,7 @@ abstract class FBShipItCLI {
         $static_config['githubOrg'],
         $static_config['githubProject'],
         ShipItRepoSide::DESTINATION,
+        ShipItTransport::HTTPS,
         FBGitHubUtils::class,
       ),
       new ShipItPullPhase(ShipItRepoSide::DESTINATION),

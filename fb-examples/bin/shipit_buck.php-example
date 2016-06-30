@@ -37,6 +37,7 @@ class ShipItBuck {
         'facebook',
         'buck',
         ShipItRepoSide::DESTINATION,
+        ShipItTransport::HTTPS,
         FBGitHubUtils::class,
       ),
       new ShipItPullPhase(ShipItRepoSide::SOURCE),

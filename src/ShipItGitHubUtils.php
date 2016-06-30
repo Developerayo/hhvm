@@ -40,6 +40,7 @@ abstract class ShipItGitHubUtils {
     string $organization,
     string $project,
     string $local_path,
+    ShipItTransport $transport,
     ?ShipItGitHubCredentials $credentials,
   ): void {
     $git_config = ($key, $value) ==> new ShipItShellCommand(
@@ -47,28 +48,52 @@ abstract class ShipItGitHubUtils {
       'git', 'config', $key, $value,
     );
 
-    if (!is_null($credentials)) {
-      $origin = sprintf(
-        'https://%s:%s@github.com/%s/%s.git',
-        urlencode($credentials['user']),
-        urlencode($credentials['password']),
-        $organization,
-        $project,
-      );
+    $origin = null;
 
-      self::cloneAndVerifyRepo($origin, $local_path);
+    switch ($transport) {
+      case ShipItTransport::SSH:
+        invariant(
+          $credentials === null,
+          'Credentials should not be specified for SSH transport',
+        );
+        $origin = sprintf(
+          'git@github.com:%s/%s.git',
+          $organization,
+          $project,
+        );
 
-      $git_config('user.name', $credentials['name'])->runSynchronously();
-      $git_config('user.email', $credentials['email'])->runSynchronously();
-    } else {
-      $origin = sprintf(
-        'https://github.com/%s/%s.git',
-        $organization,
-        $project,
-      );
+        self::cloneAndVerifyRepo($origin, $local_path);
+        break;
+      case ShipItTransport::HTTPS:
+        if ($credentials === null) {
+          $origin = sprintf(
+            'https://github.com/%s/%s.git',
+            $organization,
+            $project,
+          );
 
-      self::cloneAndVerifyRepo($origin, $local_path);
+          self::cloneAndVerifyRepo($origin, $local_path);
+          break;
+        }
+        $origin = sprintf(
+          'https://%s:%s@github.com/%s/%s.git',
+          urlencode($credentials['user']),
+          urlencode($credentials['password']),
+          $organization,
+          $project,
+        );
+
+        self::cloneAndVerifyRepo($origin, $local_path);
+
+        $git_config('user.name', $credentials['name'])->runSynchronously();
+        $git_config('user.email', $credentials['email'])->runSynchronously();
+        break;
     }
+
+    invariant(
+      $origin !== null,
+      'No origin specified :(',
+    );
 
     $git_config('remote.origin.url', $origin)->runSynchronously();
   }
