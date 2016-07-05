@@ -68,6 +68,10 @@ final class ShipItGitHubInitPhase extends ShipItPhase {
           $this->anonymousHttps = true;
         }
       ),
+      shape(
+        'long_name' => $this->side.'-use-system-credentials',
+        'replacement' => $this->side.'-use-anonymous-https',
+      ),
     };
   }
 
