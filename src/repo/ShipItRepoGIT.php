@@ -209,15 +209,6 @@ class ShipItRepoGIT
     $diff = $this->renderPatch($patch);
     try {
       $this->gitPipeCommand($diff, 'am', '--keep-non-patch', '--keep-cr');
-      // If a submodule has changed, then we need to actually update to the
-      // new version. + before commit hash represents changed submdoule. Make
-      // sure there is no leading whitespace that comes back when we get the
-      // status since the first character will tell us whether submodule
-      // changed.
-      $sm_status = ltrim($this->gitPipeCommand(null, 'submodule', 'status'));
-      if ($sm_status !== '' && $sm_status[0] === '+') {
-        $this->gitPipeCommand(null, 'submodule', 'update', '--recursive');
-      }
     } catch (ShipItRepoGITException $e) {
       // If we are trying to git am on a non-git repo, for example
       $this->gitCommand('am', '--abort');
@@ -229,6 +220,17 @@ class ShipItRepoGIT
       $this->gitCommand('am', '--abort');
       throw $e;
     }
+
+    // If a submodule has changed, then we need to actually update to the
+    // new version. + before commit hash represents changed submdoule. Make
+    // sure there is no leading whitespace that comes back when we get the
+    // status since the first character will tell us whether submodule
+    // changed.
+    $sm_status = ltrim($this->gitPipeCommand(null, 'submodule', 'status'));
+    if ($sm_status !== '' && $sm_status[0] === '+') {
+      $this->gitPipeCommand(null, 'submodule', 'update', '--recursive');
+    }
+
     $log = trim($this->gitCommand('log', '-1'));
     list($commit) = explode("\n", $log, 2);
     list($_,$sha)   = explode(' ', $commit, 2);
