@@ -50,6 +50,12 @@ abstract class ShipItRepo {
     return $this->path;
   }
 
+  public static function createSharedLockForPath(
+    string $repo_path
+  ): ShipItScopedFlock {
+    $lock_path = dirname($repo_path).'/'.basename($repo_path).'.fbshipit-lock';
+    return ShipItScopedFlock::createShared($lock_path);
+  }
 
   /**
    * Implement to allow changing branches

@@ -10,6 +10,8 @@
 namespace Facebook\ShipIt;
 
 final class FBRepoInitPhase extends ShipItPhase {
+  private bool $allowNuke = false;
+
   public function __construct(
     private ShipItRepoSide $side,
     private string $name = 'fbcode',
@@ -42,6 +44,11 @@ final class FBRepoInitPhase extends ShipItPhase {
         'description' => "Don't initialize the repository",
         'write' => $_ ==> $this->skip(),
       ),
+      shape(
+        'long_name' => $this->side.'-allow-nuke',
+        'description' => "Allow FBShipIt to delete the repository if corrupted",
+        'write' => $_ ==> $this->allowNuke = true,
+      ),
       shape( // Removed; specified in code instead.
         'long_name' => $this->side.'-repo::',
       ),
@@ -59,6 +66,18 @@ final class FBRepoInitPhase extends ShipItPhase {
       $this->side === ShipItRepoSide::SOURCE
       ? $config->getSourcePath()
       : $config->getDestinationPath();
+
+    if ($this->allowNuke) {
+      $lock_sh = ShipItRepo::createSharedLockForPath($local_path);
+      if (file_exists($local_path.'/.hg/store/journal')) {
+        fwrite(STDERR, "  HG corruption detected, re-cloning\n");
+        $lock_ex = $lock_sh->getExclusive();
+        (new ShipItShellCommand(
+          dirname($local_path),
+          'rm', '-rf', '--preserve-root', $local_path,
+        ))->runSynchronously();
+      }
+    }
 
     if (is_dir($local_path)) {
       return;

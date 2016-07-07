@@ -32,9 +32,7 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
   ): void {
     parent::__construct($path, $branch);
 
-    $this->lock = ShipItScopedFlock::createShared(
-      $path.'/.hg/fbshipit.lock',
-    );
+    $this->lock = self::createSharedLockForPath($path);
 
     try {
       // $this->path will be set by here as it is the first thing to
