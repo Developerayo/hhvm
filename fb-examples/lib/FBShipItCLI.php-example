@@ -123,6 +123,19 @@ abstract class FBShipItCLI {
     print('--- Starting '.static::class."\n");
     $config = static::getBaseConfig();
 
-    (new ShipItPhaseRunner($config, static::getPhases()))->run();
+    $runner = new ShipItPhaseRunner($config, static::getPhases());
+    try {
+      $runner->run();
+    } catch (ShipItShellCommandException $e) {
+      if (strpos($e->getError(), 'abort: unknown compression type') === false) {
+        throw $e;
+      }
+      // Recover by restarting; the init phase will detect the bad state, and
+      // fix it by deleting and re-cloning the repo.
+      fwrite(STDERR, "**** HG: TRANSACTION ABORT (t12066068) ****\n");
+      fwrite(STDERR, $e->getError()."\n");
+      fwrite(STDERR, "**** RESTARTING ****\n");
+      $runner->run();
+    }
   }
 }
