@@ -23,6 +23,10 @@ class ShipItScopedFlock {
   public static function createShared(
     string $path,
   ): ShipItScopedFlock {
+    $dir = dirname($path);
+    if (!file_exists($dir)) {
+      mkdir($dir, /* mode = */ 0755, /* recursive = */ true);
+    }
     $fp = fopen($path, 'w+');
     if (!$fp) {
       throw new \Exception('Failed to fopen: '.$path);
