@@ -75,6 +75,7 @@ abstract class FBShipItCLI {
         $changeset ==> self::filterChangeset($changeset),
         $static_config['sourceRoots'],
       ),
+      new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::SOURCE),
       new FBRepoInitPhase(
         ShipItRepoSide::SOURCE,
         $static_config['internalRepo'],

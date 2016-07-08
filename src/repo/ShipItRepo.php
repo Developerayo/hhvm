@@ -23,6 +23,8 @@ class ShipItRepoException extends \Exception {
  * For agnostic communication with git, hg, etc...
  */
 abstract class ShipItRepo {
+  private ShipItScopedFlock $lock;
+
   /**
    * @param $path the path to the repository
    */
@@ -30,7 +32,12 @@ abstract class ShipItRepo {
     protected string $path,
     string $branch,
   ) {
+    $this->lock = self::createSharedLockForPath($path);
     $this->setBranch($branch);
+  }
+
+  protected function getSharedLock(): ShipItScopedFlock {
+    return $this->lock;
   }
 
   const VERBOSE_FETCH = 1;

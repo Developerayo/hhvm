@@ -16,23 +16,12 @@ class ShipItRepoHGException extends ShipItRepoException {}
  */
 class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
   private ?string $branch;
-  // We're seeing various bugs that we think are caused by contention; use a
-  // lock to avoid this. The repository is too big to have a separate
-  // repository per project.
-  //
-  // We think these issues are related:
-  //  - "abandoned transaction found"
-  //  - "unknown revision 'master'"
-  //  - "repository default not found"
-  private ShipItScopedFlock $lock;
 
   public function __construct(
     string $path,
     string $branch,
   ): void {
     parent::__construct($path, $branch);
-
-    $this->lock = self::createSharedLockForPath($path);
 
     try {
       // $this->path will be set by here as it is the first thing to
@@ -233,7 +222,7 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
 
   <<__Override>>
   public function pull(): void {
-    $lock = $this->lock->getExclusive();
+    $lock = $this->getSharedLock()->getExclusive();
 
     if (ShipItRepo::$VERBOSE & ShipItRepo::VERBOSE_FETCH) {
       fwrite(STDERR, "** Updating checkout in {$this->path}\n");
@@ -303,7 +292,7 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
 
     // Prefetch is needed for reasonable performance with the remote file
     // log extension
-    $lock = $this->lock->getExclusive();
+    $lock = $this->getSharedLock()->getExclusive();
     try {
       $this->hgPipeCommand(
         $patterns,

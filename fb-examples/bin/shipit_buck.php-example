@@ -29,6 +29,7 @@ class ShipItBuck {
 
     $phases = ImmVector {
       new BuckEnvironmentCheckPhase(),
+      new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::SOURCE),
       new FBRepoInitPhase(
         ShipItRepoSide::SOURCE,
         'buck_internal',
