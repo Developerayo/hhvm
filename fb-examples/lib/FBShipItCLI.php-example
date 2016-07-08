@@ -109,7 +109,30 @@ abstract class FBShipItCLI {
     };
   }
 
+  /** Custom exception handler that repeats the message at the bottom.
+   *
+   * Some of our scheduling tools report the last line of STDERR; with the
+   * default handler, this is something fairly meaningless like '#8 {main}'
+   */
+  final private static function abortWithException(
+    \Exception $ex,
+  ): noreturn {
+    $first_line = sprintf(
+      "Fatal error: Uncaught exception '%s' with message '%s'",
+      get_class($ex),
+      $ex->getMessage(),
+    );
+    fprintf(STDERR, "%s\nStack trace:\n%s\n%s\n",
+      $first_line,
+      $ex->getTraceAsString(),
+      $first_line,
+    );
+    exit(128);
+  }
+
   final public static function cliMain(): void {
+    \set_exception_handler($ex ==> self::abortWithException($ex));
+
     if (get_current_user() === 'svcscm') {
       throw new \Exception(
         'FBShipIt must be ran as an individual user, or via a hipster '.
