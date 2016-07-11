@@ -86,14 +86,18 @@ final class FBRepoInitPhase extends ShipItPhase {
     // Make sure that "remove stale temp file" jobs don't clean this up
     touch($local_parent_path);
 
-/* HH_FIXME[4128] Use ShipItShellCommand */
-    ShipItUtil::shellExec(
-      $local_parent_path,
-      /* stdin = */ null,
-      ShipItUtil::DONT_VERBOSE,
-      ...$command,
-    );
-
+    (new ShipItShellCommand($local_parent_path, ...$command))
+      ->setRetries(2)
+      ->setFailureHandler(
+        $_ ==> (new ShipItShellCommand(
+          $local_parent_path,
+          'rm',
+          '-rf',
+          '--preserve-root',
+          $local_path,
+        ))->runSynchronously()
+      )
+      ->runSynchronously();
   }
 
   private function getCloneCommand(): ImmVector<string> {
