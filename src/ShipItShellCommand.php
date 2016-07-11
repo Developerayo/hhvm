@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -10,16 +10,19 @@
 namespace Facebook\ShipIt;
 
 class ShipItShellCommand {
+  const type TFailureHandler = (function(ShipItShellCommandResult): void);
   private ImmVector<string> $command;
 
   private Map<string, string> $environmentVariables = Map {};
   private bool $throwForNonZeroExit = true;
   private ?string $stdin = null;
   private bool $outputToScreen = false;
+  private int $retries = 0;
+  private ?self::TFailureHandler $failureHandler = null;
 
   public function __construct(
     private string $path,
-    ...$command
+    /* HH_FIXME[4033] type hint */ ...$command
   ) {
     $this->command = new ImmVector($command);
   }
@@ -46,9 +49,57 @@ class ShipItShellCommand {
     return $this;
   }
 
-  public function runSynchronously(): ShipItShellCommandResult {
-    $command = implode(' ', $this->command->map($str ==> escapeshellarg($str)));
+  public function setRetries(int $retries): this {
+    invariant(
+      $retries >= 0,
+      "Can't have a negative number of retries"
+    );
+    $this->retries = $retries;
+    return $this;
+  }
 
+  public function setFailureHandler<TIgnored>(
+    (function(ShipItShellCommandResult):TIgnored) $handler,
+  ): this {
+    // Wrap so that the function returns void instead of TIgnored
+    $this->failureHandler = ($result ==> { $handler($result); });
+    return $this;
+  }
+
+  public function runSynchronously(): ShipItShellCommandResult {
+    $max_tries = $this->retries + 1;
+    $tries_remaining = $max_tries;
+    invariant(
+      $tries_remaining >= 1,
+      "Need positive number of tries, got %d",
+      $tries_remaining,
+    );
+
+    while ($tries_remaining > 1) {
+      try {
+        $result = $this->runOnceSynchronously();
+        // Handle case when $this->throwForNonZeroExit === false
+        if ($result->getExitCode() !== 0) {
+          throw new ShipItShellCommandException(
+            $this->getCommandAsString(),
+            $result,
+          );
+        }
+        return $result;
+      } catch (ShipItShellCommandException $ex) {
+        --$tries_remaining;
+        continue;
+      }
+      invariant_violation('Unreachable');
+    }
+    return $this->runOnceSynchronously();
+  }
+
+  private function getCommandAsString(): string {
+    return implode(' ', $this->command->map($str ==> escapeshellarg($str)));
+  }
+
+  private function runOnceSynchronously(): ShipItShellCommandResult {
     $fds = array(
       0 => array('pipe', 'r'),
       1 => array('pipe', 'w'),
@@ -58,8 +109,10 @@ class ShipItShellCommand {
     if ($stdin === null) {
       unset($fds[0]);
     }
+    /* HH_FIXME[2050] undefined $_ENV */
     $env_vars = (new Map($_ENV))->setAll($this->environmentVariables);
 
+    $command = $this->getCommandAsString();
     $pipes = null;
     $fp = proc_open(
       $command,
@@ -144,8 +197,14 @@ class ShipItShellCommand {
       $stderr,
     );
 
-    if ($exitcode !== 0 && $this->throwForNonZeroExit) {
-      throw new ShipItShellCommandException($command, $result);
+    if ($exitcode !== 0) {
+      $handler = $this->failureHandler;
+      if ($handler) {
+        $handler($result);
+      }
+      if ($this->throwForNonZeroExit) {
+        throw new ShipItShellCommandException($command, $result);
+      }
     }
 
     return $result;

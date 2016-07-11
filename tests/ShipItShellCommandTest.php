@@ -116,4 +116,59 @@ final class ShipItShellCommandTest extends BaseTest {
       ->getStdOut();
     $this->assertSame("foo \$FOO\n", $output);
   }
+
+  public function testFailureHandlerNotCalledWhenNoFailure(): void {
+    (new ShipItShellCommand('/', 'true'))
+      ->setFailureHandler($_ ==> {throw new \Exception("handler called");})
+      ->runSynchronously();
+    // no exception
+  }
+
+  /**
+   * @expectedException \Exception
+   * @expectedExceptionMessage handler called
+   */
+  public function testFailureHandlerCalledOnFailure(): void {
+    // Using exceptions because locals are passed to lambdas byval
+    (new ShipItShellCommand('/', 'false'))
+      ->setFailureHandler($_ ==> {throw new \Exception("handler called");})
+      ->runSynchronously();
+  }
+
+  public function testNoRetriesByDefault(): void {
+    $file = tempnam(sys_get_temp_dir(), __CLASS__);
+    unlink($file);
+    $result = (new ShipItShellCommand('/', 'test', '-e', $file))
+      ->setFailureHandler($_ ==> touch($file))
+      ->setNoExceptions()
+      ->runSynchronously();
+    unlink($file);
+    $this->assertSame(1, $result->getExitCode());
+  }
+
+  public function testRetries(): void {
+    $file = tempnam(sys_get_temp_dir(), __CLASS__);
+    unlink($file);
+    $result = (new ShipItShellCommand('/', 'test', '-e', $file))
+      ->setFailureHandler($_ ==> touch($file))
+      ->setNoExceptions()
+      ->setRetries(1)
+      ->runSynchronously();
+    if (file_exists($file)) {
+      unlink($file);
+    }
+    $this->assertSame(0, $result->getExitCode());
+  }
+
+  public function testRetriesNotUsedOnSuccess(): void {
+    $file = tempnam(sys_get_temp_dir(), __CLASS__);
+    // rm will fail if ran twice with same arg
+    $result = (new ShipItShellCommand('/', 'rm', '--preserve-root', $file))
+      ->setRetries(1)
+      ->runSynchronously();
+    if (file_exists($file)) {
+      unlink($file);
+    }
+    $this->assertSame(0, $result->getExitCode());
+  }
 }
