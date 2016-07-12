@@ -9,7 +9,7 @@
  */
 namespace Facebook\ShipIt;
 
-final class FrescoTest extends FBProjectBaseTest {
+final class FrescoTest extends FBPublicProjectBaseTest {
   const string FRESCO = 'fbandroid/libraries/fresco';
   <<__Override>>
   protected function removesSummariesByDefault(): bool {

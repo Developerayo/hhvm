@@ -9,7 +9,7 @@
  */
 namespace Facebook\ShipIt;
 
-final class TreadmillTest extends FBProjectBaseTest {
+final class TreadmillTest extends FBPublicProjectBaseTest {
   const string ROOT = 'fbcode/treadmill';
 
   <<__Override>>

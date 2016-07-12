@@ -10,7 +10,7 @@
 namespace Facebook\ShipIt;
 
 
-final class SquangleTest extends FBProjectBaseTest {
+final class SquangleTest extends FBPublicProjectBaseTest {
   <<__Override>>
   protected static function map(
     ShipItChangeset $changeset,

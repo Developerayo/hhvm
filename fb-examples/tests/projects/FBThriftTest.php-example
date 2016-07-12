@@ -1,7 +1,7 @@
 <?hh
 namespace Facebook\ShipIt;
 
-final class FBThriftTest extends FBProjectBaseTest {
+final class FBThriftTest extends FBPublicProjectBaseTest {
   <<__Override>>
   protected static function map(ShipItChangeset $changeset): ShipItChangeset {
     return ShipItFBThrift::filterChangeset($changeset);

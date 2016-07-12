@@ -10,7 +10,7 @@
 namespace Facebook\ShipIt;
 
 
-final class InferTest extends FBProjectBaseTest {
+final class InferTest extends FBPublicProjectBaseTest {
   <<__Override>>
   protected function removesSummariesByDefault(): bool {
     return true;

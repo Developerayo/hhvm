@@ -10,7 +10,7 @@
 namespace Facebook\ShipIt;
 
 
-final class HHVMTest extends FBProjectBaseTest {
+final class HHVMTest extends FBPublicProjectBaseTest {
   public function examplesForFilteredSections(
   ): array<(ImmMap<string, string>,ImmMap<string, string>)> {
     return [

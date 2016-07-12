@@ -9,7 +9,7 @@
  */
 namespace Facebook\ShipIt;
 
-final class NuclideTest extends FBProjectBaseTest {
+final class NuclideTest extends FBPublicProjectBaseTest {
   <<__Override>>
   protected static function map(
     ShipItChangeset $changeset,

@@ -9,7 +9,7 @@
  */
 namespace Facebook\ShipIt;
 
-final class HaxlTest extends FBProjectBaseTest {
+final class HaxlTest extends FBPublicProjectBaseTest {
 
   <<__Override>>
   protected static function map(

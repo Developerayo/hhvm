@@ -9,7 +9,7 @@
  */
 namespace Facebook\ShipIt;
 
-final class FBSimulatorControlTest extends FBProjectBaseTest {
+final class FBSimulatorControlTest extends FBPublicProjectBaseTest {
   const string ROOT = 'fbobjc/EndToEndTests/FBSimulatorControl/src';
   <<__Override>>
   protected static function map(

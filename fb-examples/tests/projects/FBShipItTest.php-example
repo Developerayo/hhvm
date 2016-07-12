@@ -9,7 +9,7 @@
  */
 namespace Facebook\ShipIt;
 
-final class FBShipItTest extends FBProjectBaseTest {
+final class FBShipItTest extends FBPublicProjectBaseTest {
   const string ROOT = 'fbcode/opensource/shipit';
 
   public function setUp(): void {

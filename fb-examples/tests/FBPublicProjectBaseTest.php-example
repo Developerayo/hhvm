@@ -1,0 +1,91 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+abstract class FBPublicProjectBaseTest extends FBProjectBaseTest {
+
+  /**
+   * @dataProvider exampleMessagesWithDifferentialURLs
+   */
+  public function testCollapsesDifferentialURLs(
+    string $message_in,
+    string $expected_message_out,
+  ): void {
+    if ($this->removesSummariesByDefault()) {
+      $message_in .= ' @public';
+    }
+
+    $in = (new ShipItChangeset())
+      ->withMessage("Summary: ".$message_in);
+    $out = static::map($in);
+    $this->assertSame(
+      "Summary: ".$expected_message_out,
+      $out->getMessage(),
+    );
+  }
+
+  /**
+   * @dataProvider examplesForSectionHandling
+   */
+  public function testSectionHandling(
+    string $in,
+    string $expected,
+  ): void {
+    $in = (new ShipItChangeset())->withMessage($in);
+    $out = static::map($in);
+    $this->assertSame($expected, $out->getMessage());
+  }
+
+  public function examplesForSectionHandling(
+  ): array<(string, string)> {
+    if ($this->removesSummariesByDefault()) {
+      $this->markTestSkipped("Does not apply to repositories using @public");
+    }
+
+    return [
+      tuple('Summary: foo', 'Summary: foo'),
+      tuple(
+        "Summary: foo\nExample: bar",
+        "Summary:\nfoo\nExample: bar",
+      ),
+      tuple(
+        "Summary: foo\nFacebook: bar",
+        "Summary: foo",
+      ),
+      tuple(
+        "Summary: \nFacebook: bar",
+        '',
+      ),
+      tuple(
+        'Summary:Facebook: bar',
+        '',
+      ),
+      tuple(
+        'Summary: Facebook: bar',
+        '',
+      ),
+    ];
+  }
+
+  public function testOptInPublicSummaries(): void {
+    if (!$this->removesSummariesByDefault()) {
+      $this->markTestSkipped();
+    }
+
+    $in = (new ShipItChangeset())->withMessage('Summary: foo');
+    $out = static::map($in);
+    $this->assertEmpty($out->getMessage());
+
+    $in = (new ShipItChangeset())->withMessage('Summary: foo @public');
+    $out = static::map($in);
+    $this->assertSame('Summary: foo', $out->getMessage());
+  }
+
+}

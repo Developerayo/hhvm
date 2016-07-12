@@ -9,7 +9,7 @@
  */
 namespace Facebook\ShipIt;
 
-final class FbossTest extends FBProjectBaseTest {
+final class FbossTest extends FBPublicProjectBaseTest {
   <<__Override>>
   protected static function map(ShipItChangeset $changeset): ShipItChangeset {
     return ShipItFboss::filterChangeset($changeset);

@@ -9,7 +9,7 @@
  */
 namespace Facebook\ShipIt;
 
-final class McrouterTest extends FBProjectBaseTest {
+final class McrouterTest extends FBPublicProjectBaseTest {
   <<__Override>>
   protected static function map(
     ShipItChangeset $changeset,

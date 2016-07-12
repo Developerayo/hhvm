@@ -9,7 +9,7 @@
  */
 namespace Facebook\ShipIt;
 
-final class WebDriverAgentTest extends FBProjectBaseTest {
+final class WebDriverAgentTest extends FBPublicProjectBaseTest {
   const string ROOT = 'fbobjc/EndToEndTests/WebDriverAgent/src';
   <<__Override>>
   protected static function map(

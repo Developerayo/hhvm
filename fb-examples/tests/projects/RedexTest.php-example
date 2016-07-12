@@ -9,7 +9,7 @@
  */
 namespace Facebook\ShipIt;
 
-final class RedexTest extends FBProjectBaseTest {
+final class RedexTest extends FBPublicProjectBaseTest {
   <<__Override>>
   protected static function map(
     ShipItChangeset $changeset,

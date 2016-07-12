@@ -9,7 +9,7 @@
  */
 namespace Facebook\ShipIt;
 
-final class FbTftpTest extends FBProjectBaseTest {
+final class FbTftpTest extends FBPublicProjectBaseTest {
   const string ROOT = 'fbcode/syseng/tftp/github';
 
   <<__Override>>
