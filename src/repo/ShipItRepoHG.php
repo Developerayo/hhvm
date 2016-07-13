@@ -209,7 +209,8 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
     $command = (new ShipItShellCommand($this->path, 'hg', ...$args))
       ->setEnvironmentVariables(ImmMap {
         'HGPLAIN' => '1',
-      });
+      })
+      ->setRetries(1);
     if ($stdin) {
       $command->setStdIn($stdin);
     }
