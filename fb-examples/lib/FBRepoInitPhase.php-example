@@ -62,9 +62,13 @@ final class FBRepoInitPhase extends ShipItPhase {
       ? $config->getSourcePath()
       : $config->getDestinationPath();
 
+    $sh_lock = ShipItRepo::createSharedLockForPath($local_path);
+
     if (is_dir($local_path)) {
       return;
     }
+
+    $ex_lock = $sh_lock->getExclusive();
 
     // In case the src repo dir was specified by hand
     if (basename($local_path) !== $this->name) {
