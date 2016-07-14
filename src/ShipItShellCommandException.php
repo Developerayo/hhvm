@@ -23,7 +23,7 @@ class ShipItShellCommandException extends \Exception {
       '%s returned exit code %s: %s',
       $command,
       $exitCode,
-      $error,
+      trim($error),
     );
     parent::__construct($message);
   }
