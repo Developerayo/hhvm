@@ -129,6 +129,40 @@ abstract class FBProjectBaseTest extends BaseTest {
     );
   }
 
+  public function testPulledByWithBotAuthor(): void {
+    $in = (new ShipItChangeset())
+      ->withMessage(
+        "GitHub Author: Foo Bar <foobar@example.com>\n\n".
+        "Reviewed By: joelm"
+      )
+      ->withAuthor('svcscm <svcscm@fb.com>');
+    $out = static::map($in);
+    $this->assertEquals('Foo Bar <foobar@example.com>', $out->getAuthor());
+    $this->assertContains(
+      'Pulled By: JoelMarcey',
+      $out->getMessage(),
+    );
+  }
+
+  public function testPulledByWithBotAuthorAndMultipleReviewers(): void {
+    $in = (new ShipItChangeset())
+      ->withMessage(
+        "GitHub Author: Foo Bar <foobar@example.com>\n\n".
+        "Reviewed By: joelm, fredemmott"
+      )
+      ->withAuthor('svcscm <svcscm@fb.com>');
+    $out = static::map($in);
+    $this->assertEquals('Foo Bar <foobar@example.com>', $out->getAuthor());
+    $this->assertNotContains(
+      'Pulled By: ',
+      $out->getMessage(),
+    );
+    $this->assertContains(
+      'Reviewed By: JoelMarcey, fredemmott',
+      $out->getMessage(),
+    );
+  }
+
   public function testNoPulledByIfNoGitHubAuthor(): void {
     $in = (new ShipItChangeset())
       ->withAuthor('Fred Emmott <fe@fb.com>');

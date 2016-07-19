@@ -234,6 +234,7 @@ final class FBCommonFilters {
       return $changeset;
     }
 
+    $pulled_by_unixname = null;
     $matches = [];
     if (
       preg_match(
@@ -242,9 +243,25 @@ final class FBCommonFilters {
         $matches,
       ) && !self::isBotUser($matches['author'])
     ) {
-      $pulled_by = $matches['author'];
+      $pulled_by_unixname = $matches['author'];
+    } else {
+      $sections = ShipItMessageSections::getSections(
+        $changeset,
+        self::getSupportedMessageSectionNames(),
+        );
+      if ($sections->containsKey('reviewed by')) {
+        $names = (new Vector(explode(', ', $sections['reviewed by'])));
+        if (count($names) === 1) {
+          $pulled_by_unixname = $names[0];
+        }
+      }
+    }
+
+    if ($pulled_by_unixname !== null) {
       $pulled_by = \HH\Asio\join(
-        FBToGitHubUserInfo::getDestinationUserFromLocalUser($pulled_by),
+        FBToGitHubUserInfo::getDestinationUserFromLocalUser(
+          $pulled_by_unixname,
+        ),
       );
 
       $changeset = $changeset->withMessage(
