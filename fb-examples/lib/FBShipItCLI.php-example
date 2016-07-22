@@ -156,15 +156,22 @@ abstract class FBShipItCLI {
     try {
       $runner->run();
     } catch (ShipItShellCommandException $e) {
-      if (strpos($e->getError(), 'abort: unknown compression type') === false) {
-        throw $e;
+      $retry_causes = ImmSet {
+        'abort: unknown compression type',
+        'abort: abandoned transaction found!',
+      };
+      foreach ($retry_causes as $cause) {
+        if (strpos($e->getError(), $cause) !== false) {
+          // Recover by restarting; the init phase will detect the bad state
+          // fix it by deleting and re-cloning the repo.
+          fwrite(STDERR, "**** HG: TRANSACTION ABORT (t12066068) ****\n");
+          fwrite(STDERR, $e->getError()."\n");
+          fwrite(STDERR, "**** RESTARTING ****\n");
+          $runner->run();
+          return;
+        }
       }
-      // Recover by restarting; the init phase will detect the bad state, and
-      // fix it by deleting and re-cloning the repo.
-      fwrite(STDERR, "**** HG: TRANSACTION ABORT (t12066068) ****\n");
-      fwrite(STDERR, $e->getError()."\n");
-      fwrite(STDERR, "**** RESTARTING ****\n");
-      $runner->run();
+      throw $e;
     }
   }
 }
