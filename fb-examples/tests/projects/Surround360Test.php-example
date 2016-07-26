@@ -1,0 +1,40 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class Surround360Test extends FBPublicProjectBaseTest {
+  <<__Override>>
+  protected static function map(ShipItChangeset $changeset): ShipItChangeset {
+    return ShipItSurround360::filterChangeset($changeset);
+  }
+
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/surround360/README.md' => 'README.md',
+      'fbcode/surround360/surround360_camera_ctl/README.md'
+        => 'surround360_camera_ctl/README.md',
+      'fbcode/surround360/surround360_design/README.md'
+        => 'surround360_design/README.md',
+      'fbcode/surround360/surround360_design/3d_models/STEP_files/'
+        .'FB360_V1_21.STEP'
+        => 'surround360_design/3d_models/STEP_files/FB360_V1_21.STEP',
+      'fbcode/surround360/surround360_render/README.md'
+        => 'surround360_render/README.md',
+      'fbcode/surround360/surround360_render/source/util/SystemUtil.h'
+        => 'surround360_render/source/util/SystemUtil.h',
+    };
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+}
