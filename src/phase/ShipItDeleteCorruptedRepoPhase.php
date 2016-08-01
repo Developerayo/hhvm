@@ -101,9 +101,24 @@ final class ShipItDeleteCorruptedRepoPhase extends ShipItPhase {
       return true;
     }
 
-    return (new ShipItShellCommand($local_path, 'hg', 'log', '-r', 'tip'))
+    $result = (new ShipItShellCommand(
+      $local_path,
+      'hg', 'log', '-r', 'tip', '--template', "{node}\n"
+    ))
       ->setNoExceptions()
-      ->runSynchronously()
-      ->getExitCode() !== 0;
+      ->setEnvironmentVariables(ImmMap { 'HGPLAIN' => '1' })
+      ->runSynchronously();
+
+    if ($result->getExitCode() !== 0) {
+      return true;
+    }
+    $revision = trim($result->getStdOut());
+    if (preg_match('/^0+$/', $revision)) {
+      // 000000...0 is not a valid revision ID, but it's what we get
+      // for an empty repository
+      return true;
+    }
+
+    return false;
   }
 }
