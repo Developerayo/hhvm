@@ -165,7 +165,17 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
       $matches,
       PREG_PATTERN_ORDER,
     );
-    $needs_git = new ImmSet($matches['files']);
+    $has_rename_or_copy = new ImmSet($matches['files']);
+    $has_mode_change = $changeset
+      ->getDiffs()
+      ->filter($diff ==> preg_match('/^old mode/m', $diff['body']) === 1)
+      ->map($diff ==> $diff['path'])
+      ->toImmSet();
+
+    $needs_git = $has_rename_or_copy
+      ->concat($has_mode_change)
+      ->toImmSet();
+
     if ($needs_git) {
       $diffs = $changeset
         ->getDiffs()
