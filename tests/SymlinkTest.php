@@ -106,6 +106,14 @@ final class SymlinkTest extends BaseTest {
   ): void {
     // make sure we don't pick up any user configs in git
     $home_dir = new ShipItTempDir('fake-home-for-git');
+    file_put_contents(
+      $home_dir->getPath().'/.hgrc',
+      "[ui]\nusername = FBShipit <fbshipit@example.com>\n"
+    );
+    file_put_contents(
+      $home_dir->getPath().'/.gitconfig',
+      "[user]\nname = FBShipit\nemail = fbshipit@example.com\n"
+    );
     $temp_dir = new ShipItTempDir('symlink-test');
     foreach ($steps as $step) {
       (new ShipItShellCommand($temp_dir->getPath(), ...$step))
