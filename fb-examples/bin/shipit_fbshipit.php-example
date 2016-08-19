@@ -121,8 +121,8 @@ final class ShipItFBShipIt extends FBShipItCLI {
 
   private static function getProjectFilePatterns(): ImmSet<string> {
     return ImmSet {
-      '@(^|/)bin/shipit_(?<project>[^.]+)\.php$@',
-      '@(^|/)tests(/[^/]+)*/projects/(?<project>[^.]+)Test\.php$@',
+      '@(^|/)bin/shipit_(?<project>[^/]+)\.php$@',
+      '@(^|/)tests(/[^/]+)*/projects/(?<project>[^/]+)Test\.php$@',
     };
   }
 
