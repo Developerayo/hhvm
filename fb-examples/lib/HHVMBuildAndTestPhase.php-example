@@ -22,6 +22,7 @@ final class HHVMBuildAndTestPhase extends BuildAndTestPhase {
         '-DCMAKE_BUILD_TYPE=Debug',
         '-DMYSQL_UNIX_SOCK_ADDR=/dev/null',
         '-DENABLE_LD_GOLD=Off',
+        '-DENABLE_EXTENSION_PGSQL=Off',
         '-DLIBINOTIFY_LIBRARY=/usr/lib64/libinotifytools.so.0',
         '.',
       },
