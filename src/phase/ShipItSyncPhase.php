@@ -13,6 +13,7 @@ final class ShipItSyncPhase extends ShipItPhase {
   private ?string $firstCommit = null;
   private ImmSet<string> $skippedSourceCommits = ImmSet { };
   private ?string $patchesDirectory = null;
+  private ?string $statsFilename = null;
 
   public function __construct(
     private
@@ -70,6 +71,12 @@ final class ShipItSyncPhase extends ShipItPhase {
             }
           },
       ),
+      shape(
+        'long_name' => 'log-sync-stats-to::',
+        'description' => 'The filename to log a JSON-encoded file with stats '.
+                         'about the sync.',
+        'write' => $x ==> $this->statsFilename = $x,
+      ),
     };
   }
 
@@ -81,7 +88,8 @@ final class ShipItSyncPhase extends ShipItPhase {
      ->withDestinationRoots($this->destinationRoots)
      ->withFirstCommit($this->firstCommit)
      ->withSkippedSourceCommits($this->skippedSourceCommits)
-     ->withPatchesDirectory($this->patchesDirectory);
+     ->withPatchesDirectory($this->patchesDirectory)
+     ->withStatsFilename($this->statsFilename);
 
     (new ShipItSync($base, $sync))->run();
   }

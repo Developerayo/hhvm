@@ -36,6 +36,11 @@ abstract class ShipItRepo {
     $this->setBranch($branch);
   }
 
+  /**
+   * Get the ShipItChangeset of the HEAD revision in the current branch.
+   */
+  public abstract function getHeadChangeset(): ?ShipItChangeset;
+
   protected function getSharedLock(): ShipItScopedFlock {
     return $this->lock;
   }

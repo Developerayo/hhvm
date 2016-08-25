@@ -38,6 +38,32 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
     return true;
   }
 
+  <<__Override>>
+  public function getHeadChangeset(
+  ): ?ShipItChangeset {
+    if (!$this->branch) {
+      throw new ShipItRepoHGException($this, "setBranch must be called first.");
+    }
+    $log = $this->hgCommand(
+      'log',
+      '--limit',
+      '1',
+      '-r',
+      $this->branch,
+       '--template',
+       '{node}\\n',
+    );
+    $log = trim($log);
+    if ($log === '') {
+      return null;
+    }
+    if (strlen($log) != 40) {
+      throw new ShipItRepoHGException($this, "{$log} doesn't look like a valid".
+                                            " hg changeset id");
+    }
+    return $this->getChangesetFromID($log);
+  }
+
   public function findNextCommit(
     string $revision,
     ImmSet<string> $roots,

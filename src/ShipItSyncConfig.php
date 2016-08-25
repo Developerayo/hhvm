@@ -14,6 +14,7 @@ final class ShipItSyncConfig {
   private ImmSet<string> $skippedSourceCommits = ImmSet { };
   private ?string $patchesDirectory = null;
   private ImmSet<string> $destinationRoots = ImmSet { };
+  private ?string $statsFilename = null;
 
   public function __construct(
     private ImmSet<string> $sourceRoots,
@@ -70,6 +71,18 @@ final class ShipItSyncConfig {
   public function getFilter(
   ): (function(ShipItBaseConfig, ShipItChangeset): ShipItChangeset) {
     return $this->filter;
+  }
+
+  public function getStatsFilename(): ?string {
+    return $this->statsFilename;
+  }
+
+  public function withStatsFilename(?string $filename): this {
+    invariant(
+      $filename !== '',
+      'Pass null instead of empty string',
+    );
+    return $this->modified($ret ==> $ret->statsFilename = $filename);
   }
 
   private function modified<Tignored>(

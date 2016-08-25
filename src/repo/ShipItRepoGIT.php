@@ -36,6 +36,21 @@ class ShipItRepoGIT
     return true;
   }
 
+  <<__Override>>
+  public function getHeadChangeset(
+  ): ?ShipItChangeset {
+    $rev = $this->gitCommand(
+      'rev-parse',
+      $this->branch,
+    );
+
+    $rev = trim($rev);
+    if (trim($rev) === '') {
+      return null;
+    }
+    return $this->getChangesetFromID($rev);
+  }
+
   public function findLastSourceCommit(
     ImmSet<string> $roots,
   ): ?string {

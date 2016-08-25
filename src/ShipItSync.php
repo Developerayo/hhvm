@@ -93,6 +93,7 @@ class ShipItSync {
     $changesets = $this->getFilteredChangesets();
     if ($changesets->isEmpty()) {
       print("  No new commits to sync.\n");
+      $this->maybeLogStats(Vector {});
       return;
     }
 
@@ -103,6 +104,7 @@ class ShipItSync {
 
     $verbose = $this->baseConfig->isVerboseEnabled();
     $dest = $this->getRepo(ShipItDestinationRepo::class);
+    $changesets_applied = Vector {};
     foreach ($changesets as $changeset) {
       if ($patches_dir !== null) {
         $file = $patches_dir.'/'.$changeset->getID().'.patch';
@@ -133,6 +135,7 @@ class ShipItSync {
           $changeset->getShortID(),
           $changeset->getSubject(),
         );
+        $changesets_applied->add($changeset);
         continue;
       } catch (ShipItRepoException $e) {
         fprintf(
@@ -145,6 +148,44 @@ class ShipItSync {
         throw $e;
       }
     }
+
+    $this->maybeLogStats($changesets_applied);
+  }
+
+  /**
+   * Optionally logs stats about the sync to the user-specified file.
+   *
+   * @param $changesets_applied the changesets that were applied.
+   */
+  private function maybeLogStats(
+    Vector<ShipItChangeset> $changesets_applied,
+  ): void {
+    $filename = $this->syncConfig->getStatsFilename();
+    if ($filename === null) {
+      return;
+    }
+    $sourceChangeset = $this
+      ->getRepo(ShipItSourceRepo::class)
+      ->getHeadChangeset();
+    $destinationChangeset = $this
+      ->getRepo(ShipItDestinationRepo::class)
+      ->getHeadChangeset();
+    file_put_contents(
+      $filename,
+      json_encode(array(
+        'source' => array(
+          'id' => $sourceChangeset?->getID(),
+          'timestamp' => $sourceChangeset?->getTimestamp(),
+        ),
+        'destination' => array(
+          'id' => $destinationChangeset?->getID(),
+          'timestamp' => $destinationChangeset?->getTimestamp(),
+        ),
+        'changesets' => $changesets_applied
+          ->map($changeset ==> $changeset->getID())
+          ->toArray(),
+      )),
+    );
   }
 
   private static function checkLastRev(?string $diff): string {
