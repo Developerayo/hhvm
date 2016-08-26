@@ -68,4 +68,21 @@ final class HHVMTest extends FBPublicProjectBaseTest {
   protected function removesSummariesByDefault(): bool {
     return false;
   }
+
+  final public function testPhases(): void {
+    $phases = ShipItHHVM::getPhases();
+
+    // Ensure our specialized phases are included
+    $this->assertEquals(1, $phases->filter(
+                          $phase ==> $phase instanceof HHVMEnvironmentCheckPhase
+                        )->count());
+
+    $this->assertEquals(1, $phases->filter(
+                          $phase ==> $phase instanceof HHVMCleanThirdPartyPhase
+                        )->count());
+
+    $this->assertEquals(1, $phases->filter(
+                          $phase ==> $phase instanceof HHVMBuildAndTestPhase
+                        )->count());
+  }
 }

@@ -11,8 +11,8 @@ namespace Facebook\ShipIt;
 
 require_once(__DIR__.'/../autoload.php');
 
-final class ShipItHHVM {
-  public static function filterChangeset(
+final class ShipItHHVM extends FBShipItCLI {
+  public static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     return $changeset
@@ -45,46 +45,35 @@ final class ShipItHHVM {
             'fbcode/hphp/public_tld/' => '',
             'fbcode/hphp/' => 'hphp/',
           },
-        )
-      |> FBConfidentialFilter::applyAll($$);
+        );
   }
 
-  public static function cliMain(): void {
-    $config = new ShipItBaseConfig(
-      '/var/tmp/oss_sync_and_push',
-      /* source dir = */ 'fbsource',
-      /* dest dir = */ 'hhvm',
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'hhvm',
+      'sourceRoots' => ImmSet { 'fbcode/hphp' },
     );
+  }
 
-    $phases = ImmVector {
-      new HHVMEnvironmentCheckPhase(),
-      new FBRepoInitPhase(
-        ShipItRepoSide::SOURCE,
-        'fbsource',
-      ),
-      new ShipItGitHubInitPhase(
-        'facebook',
-        'hhvm',
-        ShipItRepoSide::DESTINATION,
-        ShipItTransport::HTTPS,
-        FBGitHubUtils::class,
-      ),
-      new HHVMCleanThirdPartyPhase(),
-      new ShipItPullPhase(ShipItRepoSide::SOURCE),
-      new ShipItPullPhase(ShipItRepoSide::DESTINATION),
-      new ShipItSyncPhase(
-        ($config, $changeset) ==> self::filterChangeset($changeset),
-        ImmSet { 'fbcode/hphp' },
-      ),
-      new ShipItVerifyRepoPhase(
-        ImmSet { 'fbcode/hphp' },
-        $changeset ==> self::filterChangeset($changeset),
-      ),
-      new HHVMBuildAndTestPhase(),
-      new ShipItPushPhase(),
-    };
+  <<__Override>>
+  public static function getPhases(): ImmVector<ShipItPhase> {
+    $parentPhases = parent::getPhases()->toVector();
 
-    (new ShipItPhaseRunner($config, $phases))->run();
+    $phases = Vector { new HHVMEnvironmentCheckPhase() };
+
+    foreach ($parentPhases as $phase) {
+      $phases->add($phase);
+      if ($phase instanceof ShipItGitHubInitPhase) {
+        $phases->add(new HHVMCleanThirdPartyPhase());
+      } elseif ($phase instanceof ShipItVerifyRepoPhase) {
+        $phases->add(new HHVMBuildAndTestPhase());
+      }
+    }
+
+    return $phases->toImmVector();
   }
 }
 
