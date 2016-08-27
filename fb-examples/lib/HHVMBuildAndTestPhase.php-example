@@ -40,47 +40,16 @@ final class HHVMBuildAndTestPhase extends BuildAndTestPhase {
 
   <<__Override>>
   protected function test(ShipItBaseConfig $config): void {
-/* HH_FIXME[4128] Use ShipItShellCommand */
-    $test_output = ShipItUtil::shellExec(
+    $exit_code = (new ShipItShellCommand(
       $config->getDestinationPath(),
-      /* stdin = */ null,
-      ShipItUtil::DONT_VERBOSE,
       'hphp/hhvm/hhvm',
       'hphp/test/run',
       '--verbose',
       'quick',
-    );
-
-    $matches = array();
-    preg_match("/([0-9]+) tests failed/", implode("", $test_output), $matches);
-    $failures = count($matches) === 2 ? (int) $matches[1] : 0;
-
-    // Don't block the push on a trivial number of failures, but make sure that
-    // we still stop if it's completely broken.
-    //
-    // Change the constraint if we end up supporting more than 'quick' again
-    if ($failures > self::MAX_FAILURES) {
-      fprintf(
-        STDERR,
-        "Too many test failures - got %d, needed <= %d\n",
-        $failures,
-        self::MAX_FAILURES,
-      );
-      exit(1);
-    }
-
-    if ($failures === 0) {
-      fwrite(STDERR, "All tests passed.\n");
-    } else {
-      $test_output_nice = implode(PHP_EOL, $test_output);
-      // Start from the # tests failed and give that part of the output back
-      $test_summary_start_pos = strpos($test_output_nice, $matches[0]);
-      $test_summary = substr($test_output_nice, $test_summary_start_pos);
-      fwrite(
-        STDERR,
-        "Some tests failed - summary:\n".
-        self::removeColorCodes($test_summary),
-      );
-    }
+    ))
+      ->runSynchronously()
+      ->getExitCode();
+    invariant($exit_code === 0, 'expected exception if non-zero exit');
+    fwrite(STDERR, "All tests passed.\n");
   }
 }
