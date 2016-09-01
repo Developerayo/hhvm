@@ -23,13 +23,16 @@ final class ShipItFBNN extends FBShipItCLI {
           $$,
           shape(
             'stripCommonFiles/exceptions' => ImmVector {
-              '@^' . self::ROOT . '@',
+              '@/fb/@',
             },
           ),
         )
       |> ShipItPathFilters::stripPaths(
           $$,
-          ImmVector { '@/facebook/.*$@' }
+          ImmVector {
+            '@/facebook/.*$@',
+            '@/TARGETS$@',
+          }
          )
       |> ShipItPathFilters::moveDirectories(
           $$,

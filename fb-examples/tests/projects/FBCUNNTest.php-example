@@ -24,6 +24,7 @@ final class FBCUNNTest extends FBPublicProjectBaseTest {
     return ImmMap {
       'fbcode/torch/fb/fbcunn/foo' => 'foo',
       'fbcode/torch/fb/fbcunn/facebook/secret' => null,
+      'fbcode/torch/fb/fbcunn/TARGETS' => null,
     };
   }
 

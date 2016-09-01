@@ -24,6 +24,7 @@ final class FBNNTest extends FBPublicProjectBaseTest {
     return ImmMap {
       'fbcode/torch/fb/fbnn/foo' => 'foo',
       'fbcode/torch/fb/fbnn/facebook/secret' => null,
+      'fbcode/torch/fb/fbnn/TARGETS' => null,
     };
   }
 
