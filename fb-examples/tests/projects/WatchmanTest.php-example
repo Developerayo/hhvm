@@ -1,0 +1,42 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class WatchmanTest extends FBPublicProjectBaseTest {
+  <<__Override>>
+  protected static function map(
+    ShipItChangeset $changeset
+  ): ShipItChangeset {
+    return ShipItWatchman::filterChangeset(
+      $changeset,
+    );
+  }
+
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      # Example things that *should* make it through.
+      'fbcode/watchman/TARGETS' => 'TARGETS',
+      'fbcode/watchman/runtests.sh' => 'runtests.sh',
+
+      # Unlike most projects in fbcode, we publish our build files:
+      'fbcode/watchman/tests/integration/TARGETS'
+      => 'tests/integration/TARGETS',
+
+      # Contents of facebook/ directories should also be excluded.
+      'fbcode/watchman/facebook/add-to-yum.sh' => null,
+    };
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+}
