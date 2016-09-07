@@ -21,17 +21,10 @@ final class ShipItFBTorch extends FBShipItCLI {
     return $changeset
       |> FBCommonFilters::applyAll(
           $$,
-          shape(
-            'stripCommonFiles/exceptions' => ImmVector {
-              '@^fbcode/torch/fb/fbtorch/@',
-            },
-          ),
+          # Otherwise, entire file path gets stripped
+          shape( 'stripCommonFiles/exceptions' => ImmVector { '@/fb/@' } ),
         )
-      |> ShipItPathFilters::stripPaths(
-          $$,
-          // Auto commit scripts, might not need them anymore
-          ImmVector { '@^fbcode/torch/fb/fbtorch/facebook/.*$@' }
-         )
+      |> ShipItPathFilters::stripPaths( $$, ImmVector { '@/TARGETS$@' })
       |> ShipItPathFilters::moveDirectories($$, ImmMap { self::ROOT => '' });
   }
 

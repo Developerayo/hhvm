@@ -23,7 +23,7 @@ final class FBTorchTest extends FBPublicProjectBaseTest {
   protected function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/torch/fb/fbtorch/foo' => 'foo',
-      'fbcode/torch/fb/fbtorch/facebook/secret' => null,
+      'fbcode/torch/fb/fbtorch/TARGETS' => null,
     };
   }
 
