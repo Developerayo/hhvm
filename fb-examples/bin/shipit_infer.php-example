@@ -16,6 +16,7 @@ final class ShipItInfer extends FBShipItCLI {
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
+    $subject = $changeset->getSubject();
     return $changeset
       |> FBCommonFilters::stripSummariesByDefault($$)
       |> FBCommonFilters::applyAll(
@@ -27,6 +28,7 @@ final class ShipItInfer extends FBShipItCLI {
             },
           ),
         )
+      |> $$->withSubject($subject)
       |> $$->withDiffs($$->getDiffs()->filter(
           $diff ==> !self::matchesPrefixList($diff, self::getBlacklist())
       ));

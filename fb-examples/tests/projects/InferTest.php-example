@@ -26,6 +26,17 @@ final class InferTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
+  public function examplesForStripSubjectTags(
+  ): array<(string, string)> {
+    return [
+      tuple('foo bar', 'foo bar'),
+      tuple('[secret] foo', '[secret] foo'),
+      tuple('[secret][super secret] foo bar', '[secret][super secret] foo bar'),
+      tuple('[secret] [super secret] foo bar', '[secret] [super secret] foo bar'),
+    ];
+  }
+
+  <<__Override>>
   public function getExamplePathMappings(): ImmMap<string, ?string> {
     # Example things that *should* make it through
     $keep = ImmVector {
