@@ -19,6 +19,7 @@ final class ShipItChefCookbooks extends FBShipItCLI{
   # from the OpenSource team.
   static ImmSet<string> $cookbooks = ImmSet{
     'fb_apcupsd',
+    'fb_apache',
     'fb_apt',
     'fb_cron',
     'fb_dnsmasq',
