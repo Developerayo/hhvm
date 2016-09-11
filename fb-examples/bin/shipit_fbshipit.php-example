@@ -13,7 +13,7 @@ require_once(__DIR__.'/../autoload.php');
 
 final class ShipItFBShipIt extends FBShipItCLI {
   <<__Override>>
-  protected static function getStaticConfig(): FBShipItCLIStaticConfig {
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',

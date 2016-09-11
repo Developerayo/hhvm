@@ -20,7 +20,7 @@ final class ShipItWangle extends FBShipItCLI {
   }
 
   <<__Override>>
-  protected static function getStaticConfig(): FBShipItCLIStaticConfig {
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',

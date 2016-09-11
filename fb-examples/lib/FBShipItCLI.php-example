@@ -23,7 +23,7 @@ type FBShipItCLIStaticConfig = shape(
  * directly (eg shipit_hhvm.php and shipit_buck.php)
  */
 abstract class FBShipItCLI {
-  protected abstract static function getStaticConfig(): FBShipItCLIStaticConfig;
+  public abstract static function getStaticConfig(): FBShipItCLIStaticConfig;
   protected abstract static function projectFilterChangeset(
     ShipItChangeset $changeset
   ): ShipItChangeset;

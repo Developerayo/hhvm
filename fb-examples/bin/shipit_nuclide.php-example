@@ -38,7 +38,7 @@ class ShipItNuclide extends FBShipItCLI {
   }
 
   <<__Override>>
-  protected static function getStaticConfig(
+  public static function getStaticConfig(
   ): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => 'fbsource',
