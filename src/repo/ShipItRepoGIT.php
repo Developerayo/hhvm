@@ -148,7 +148,13 @@ class ShipItRepoGIT
   }
 
   public function getNativePatchFromID(string $revision): string {
-    return $this->gitCommand('format-patch', '-1', $revision, '--stdout');
+    return $this->gitCommand(
+        'format-patch',
+        '--no-renames',
+        '-1',
+        $revision,
+        '--stdout',
+    );
   }
 
   public function getChangesetFromID(string $revision): ?ShipItChangeset {
