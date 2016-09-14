@@ -60,4 +60,14 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
     $rm->setAccessible(true);
     return $rm->invokeArgs(null, $args);
   }
+
+  protected function configureGit(
+    ShipItTempDir $temp_dir
+  ): void {
+    $this->execSteps(
+      $temp_dir->getPath(),
+      [ 'git', 'config', 'user.name', 'FBShipIt Unit Test' ],
+      [ 'git', 'config', 'user.email', 'fbshipit@example.com' ],
+    );
+  }
 }

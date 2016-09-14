@@ -91,9 +91,8 @@ final class NewlinesTest extends BaseTest {
     $this->execSteps(
       $temp_dir->getPath(),
       [ 'git', 'init' ],
-      [ 'git', 'config', 'user.name', 'FBShipIt Unit Test' ],
-      [ 'git', 'config', 'user.email', 'fbshipit@example.com' ],
     );
+    $this->configureGit($temp_dir);
   }
 
   private function assertCreatesCorrectNewLines(

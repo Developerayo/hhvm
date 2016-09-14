@@ -123,16 +123,6 @@ abstract class ShipItUtil {
     }
   }
 
-  /**
-   * Convert a region to a (path, patch_body) tuple
-   */
-  public static function parseDiffRegion(string $region): (string, string) {
-    list($header, $body) = explode("\n", $region, 2);
-    $matches = array();
-    preg_match('@^diff --git [ab]/(.*?) [ab]/\1$@', trim($header), $matches);
-    return tuple($matches[1], $body);
-  }
-
   public static function isNewFile(string $body): bool {
     return (bool) preg_match('@^new file@m', $body);
   }

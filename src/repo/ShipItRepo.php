@@ -113,4 +113,17 @@ abstract class ShipItRepo {
       "Can't determine type of repo at ".$path,
     );
   }
+
+  /**
+   * Convert a hunk to a ShipItDiff shape
+   */
+  protected static function parseDiffHunk(string $hunk): ShipItDiff {
+    list($header, $body) = explode("\n", $hunk, 2);
+    $matches = array();
+    preg_match('@^diff --git [ab]/(.*?) [ab]/(.*?)$@', trim($header), $matches);
+    return shape(
+      'path' => $matches[1],
+      'body' => $body,
+    );
+  }
 }

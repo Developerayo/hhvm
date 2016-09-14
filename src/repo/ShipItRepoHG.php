@@ -228,12 +228,7 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
         $changeset = self::parseHeader($region);
         continue;
       }
-      list($header, $body) = explode("\n", $region, 2);
-      $path = substr(array_pop(explode(' ', $header)), 2);
-      $diffs[] = shape(
-        'path' => $path,
-        'body' => $body,
-      );
+      $diffs[] = self::parseDiffHunk($region);
     }
 
     if ($changeset === null) {
@@ -297,13 +292,9 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
 
     $ret = Vector { };
     foreach (
-      ShipItUtil::parsePatchWithoutHeader($patch) as $region
+      ShipItUtil::parsePatchWithoutHeader($patch) as $hunk
     ) {
-      list($path, $body) = ShipItUtil::parseDiffRegion($region);
-      $ret[] = shape(
-        'path' => $path,
-        'body' => $body,
-      );
+      $ret[] = self::parseDiffHunk($hunk);
     }
     return $ret->toImmVector();
   }

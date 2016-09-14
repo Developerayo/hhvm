@@ -171,16 +171,12 @@ class ShipItRepoGIT
   ): ?ShipItChangeset {
     $ret = null;
     $diffs = Vector { };
-    foreach(ShipItUtil::parsePatchWithHeader($patch) as $region) {
+    foreach(ShipItUtil::parsePatchWithHeader($patch) as $hunk) {
       if ($ret === null) {
-        $ret = self::parseHeader($region);
+        $ret = self::parseHeader($hunk);
         continue;
       }
-      list($path, $body) = ShipItUtil::parseDiffRegion($region);
-      $diffs[] = shape(
-        'path' => $path,
-        'body' => $body,
-      );
+      $diffs[] = self::parseDiffHunk($hunk);
     }
     if ($ret === null) {
       return $ret;
