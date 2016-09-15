@@ -37,7 +37,7 @@ Finished phase: Synchronize commits
 Skipping phase: Push destination repository
 ```
 
-# git-am: patch does not apply
+# `git-am: patch does not apply` or `already exists in index`
 
 This means that git is unable to use the patch that FBShipIt created.
 
