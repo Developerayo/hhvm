@@ -253,6 +253,11 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
   }
 
   <<__Override>>
+  public function clean(): void {
+    $this->hgCommand('purge', '--all');
+  }
+
+  <<__Override>>
   public function pull(): void {
     $lock = $this->getSharedLock()->getExclusive();
 

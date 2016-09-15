@@ -306,6 +306,11 @@ class ShipItRepoGIT
   }
 
   <<__Override>>
+  public function clean(): void {
+    $this->gitCommand('clean', '-x', '-f', '-f', '-d');
+  }
+
+  <<__Override>>
   public function pull(): void {
     if (ShipItRepo::$VERBOSE & ShipItRepo::VERBOSE_FETCH) {
       fwrite(STDERR, "** Updating checkout in {$this->path}\n");

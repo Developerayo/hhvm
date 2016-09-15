@@ -87,6 +87,9 @@ abstract class FBShipItCLI {
         ShipItRepoSide::SOURCE,
         $static_config['internalRepo'],
       ),
+      // Clean prior to pulling to remove any untracked files at the current
+      // revision that may conflict with updates.
+      new ShipItCleanPhase(ShipItRepoSide::SOURCE),
       new ShipItPullPhase(ShipItRepoSide::SOURCE),
       new ShipItCreateNewRepoPhase(
         $static_config['sourceRoots'],
@@ -103,6 +106,9 @@ abstract class FBShipItCLI {
         ShipItTransport::HTTPS,
         FBGitHubUtils::class,
       ),
+      // Clean prior to pulling to remove any untracked files at the current
+      // revision that may conflict with updates.
+      new ShipItCleanPhase(ShipItRepoSide::DESTINATION),
       new ShipItPullPhase(ShipItRepoSide::DESTINATION),
       new ShipItSyncPhase(
         ($config, $changeset) ==> self::filterChangeset($changeset),

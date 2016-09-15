@@ -41,7 +41,9 @@ class ShipItBuck {
         ShipItTransport::HTTPS,
         FBGitHubUtils::class,
       ),
+      new ShipItCleanPhase(ShipItRepoSide::SOURCE),
       new ShipItPullPhase(ShipItRepoSide::SOURCE),
+      new ShipItCleanPhase(ShipItRepoSide::DESTINATION),
       new ShipItPullPhase(ShipItRepoSide::DESTINATION),
       new ShipItSyncPhase(
         ($config, $changeset) ==> self::filterChangeset(
