@@ -1,0 +1,82 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+trait FBShipItCLITrait {
+  public abstract static function getStaticConfig(): FBShipItCLIStaticConfig;
+  protected abstract static function getBaseConfig(): ShipItBaseConfig;
+  protected abstract static function getPhases(): ImmVector<ShipItPhase>;
+
+  /** Custom exception handler that repeats the message at the bottom.
+   *
+   * Some of our scheduling tools report the last line of STDERR; with the
+   * default handler, this is something fairly meaningless like '#8 {main}'
+   */
+  final private static function abortWithException(
+    \Exception $ex,
+  ): noreturn {
+    $first_line = sprintf(
+      "Fatal error: Uncaught exception '%s' with message '%s'",
+      get_class($ex),
+      $ex->getMessage(),
+    );
+    fprintf(STDERR, "%s\nStack trace:\n%s\n%s\n",
+      $first_line,
+      $ex->getTraceAsString(),
+      $first_line,
+    );
+    exit(128);
+  }
+
+  final public static function cliMain(): void {
+    \set_exception_handler($ex ==> self::abortWithException($ex));
+    \set_error_handler(
+      function($severity, $message, $file, $line) {
+        throw new \ErrorException($message, 0, $severity, $file, $line);
+      }
+    );
+
+    if (get_current_user() === 'svcscm') {
+      throw new \Exception(
+        'This executable must be ran as an individual user, or via a hipster '.
+        "account. If you are seeing this from Chronos:\n".
+        "1. disable this job permanently\n".
+        "2. find your repository on /intern/opensource/github/repo\n".
+        "3. open workflow settings - click 'get permission now' if needed\n".
+        "4. tick the 'ShipIt Chronos Job' box\n".
+        "5. A secure Chronos job will be created for you within 24 hours."
+      );
+    }
+    print('--- Starting '.static::class."\n");
+    $config = static::getBaseConfig();
+
+    $runner = new ShipItPhaseRunner($config, static::getPhases());
+    try {
+      $runner->run();
+    } catch (ShipItShellCommandException $e) {
+      $retry_causes = ImmSet {
+        'abort: unknown compression type',
+        'abort: abandoned transaction found!',
+      };
+      foreach ($retry_causes as $cause) {
+        if (strpos($e->getError(), $cause) !== false) {
+          // Recover by restarting; the init phase will detect the bad state
+          // fix it by deleting and re-cloning the repo.
+          fwrite(STDERR, "**** HG: TRANSACTION ABORT (t12066068) ****\n");
+          fwrite(STDERR, $e->getError()."\n");
+          fwrite(STDERR, "**** RESTARTING ****\n");
+          $runner->run();
+          return;
+        }
+      }
+      throw $e;
+    }
+  }
+}
