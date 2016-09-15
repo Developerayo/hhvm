@@ -20,7 +20,10 @@ final class ShipItWatchman extends FBShipItCLI {
       // Unlike most projects in fbcode, Watchman publishes its build files.
       |> FBCommonFilters::applyAll(
         $$,
-        shape('stripCommonFiles/exceptions' => ImmVector{'@/TARGETS$@'}))
+        shape('stripCommonFiles/exceptions' => ImmVector{
+          '@/TARGETS$@',
+          '@/BUCK$@',
+        }))
       |> ShipItPathFilters::moveDirectories(
           $$,
           ImmMap {
