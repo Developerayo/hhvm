@@ -60,7 +60,9 @@ final class ShipItChefCookbooks extends FBShipItCLI{
   };
 
   public static function getDirs(): ImmSet<string> {
-    return self::$cookbooks->map($cookbook ==> self::BASE_DIR.'/'.$cookbook);
+    return self::$cookbooks->map(
+        $cookbook ==> self::BASE_DIR.'/'.$cookbook
+      )->concat(['chef/github'])->toImmSet();
   }
 
   public static function rewriteEmails(
@@ -89,6 +91,8 @@ final class ShipItChefCookbooks extends FBShipItCLI{
         # test require our crazy hacked up chefspec... but allow
         # pure rspec tests.
         '@^.*/spec/(?!public_).*@',
+        '@README.facebook@',
+        '@(^|/)OWNERS$@',
       },
     );
 
@@ -97,6 +101,7 @@ final class ShipItChefCookbooks extends FBShipItCLI{
       $changeset,
       ImmMap {
         'chef/cookbooks/core/' => 'cookbooks/',
+        'chef/github/' => '',
       },
     );
     return $changeset;
