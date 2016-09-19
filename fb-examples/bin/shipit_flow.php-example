@@ -55,6 +55,8 @@ final class ShipItFlow extends FBShipItCLI {
             '@fbcode/hphp/hack/src/typing(/|$)@',
             '@fbcode/hphp/hack/src/utils/errors.mli?$@',
             '@fbcode/hphp/hack/src/utils/lint.mli?$@',
+            '@fbcode/flow/kpm.lock$@',
+            '@fbcode/flow/.npmrc$@',
           },
         )
       |> ShipItPathFilters::moveDirectories(
