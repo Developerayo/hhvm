@@ -21,6 +21,8 @@ final class ShipItChefCookbooks extends FBShipItCLI{
     'fb_apcupsd',
     'fb_apache',
     'fb_apt',
+    'fb_apt_cacher',
+    'fb_collectd',
     'fb_cron',
     'fb_dnsmasq',
     'fb_dracut',
@@ -38,6 +40,7 @@ final class ShipItChefCookbooks extends FBShipItCLI{
     'fb_modprobe',
     'fb_motd',
     'fb_nsswitch',
+    'fb_reprepro',
     'fb_securetty',
     'fb_swap',
     'fb_sysctl',
@@ -46,6 +49,7 @@ final class ShipItChefCookbooks extends FBShipItCLI{
     'fb_systemd',
     'fb_timers',
     'fb_tmpclean',
+    'fb_vsftpd',
     'fb_zfs',
   };
 
