@@ -1,0 +1,67 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItMySQL56 extends FBShipItCLI {
+  const string ROOT = '';
+
+  // There needs to be an entry for this name in ~/fbcode/opensource/shipit/
+  // src/fb-specific-but-public/FBRepoInitPhase.php. AFAIU this name has no
+  // relationship with the project name ("mysql") or repository name
+  // ("mysql-5.6") for the particular project.
+  const string INTERNAL_REPO_NAME = 'mysql-fb';
+
+  // This is the branch under internal repository. Please note that there's no
+  // "origin" prefix here. Whatever you add here should return a valid Git hash
+  // after "git rev-parse origin/branch_name". NB! If you change it here then
+  // you'll need to modify FBRepoInitPhase.php as well.
+  const string SOURCE_BRANCH = 'new-webscalesql-5.6.27.75';
+
+  // This is the actual GitHub destination branch where changes will be pushed
+  // to. It should be accessible from under the project URI:
+  // https://github.com/facebook/mysql-5.6
+  const string DESTINATION_BRANCH = 'webscalesql-5.6.27.75';
+
+  <<__Override>>
+  protected static function projectFilterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return $changeset
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::moveDirectories($$, ImmMap { self::ROOT => '' });
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => self::INTERNAL_REPO_NAME,
+      'githubOrg' => 'facebook',
+      'githubProject' => 'mysql-5.6',
+      'sourceRoots' => ImmSet { self::ROOT },
+    );
+  }
+
+  <<__Override>>
+  protected static function getBaseConfig(): ShipItBaseConfig {
+    // Given that MySQL is "special" and doesn't use "master" for neither source
+    // or destination branches then this is the custom configuration we need to
+    // expose for the import work.
+    return parent::getBaseConfig()
+      ->withSourceBranch(self::SOURCE_BRANCH)
+      ->withDestinationBranch(self::DESTINATION_BRANCH);
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItMySQL56::cliMain();
+}

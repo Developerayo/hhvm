@@ -160,6 +160,16 @@ final class FBRepoInitPhase extends ShipItPhase {
           'ssh://git.vip.facebook.com/data/gitrepos/yocto/meta-openbmc.git',
           'meta-openbmc',
         };
+      case 'mysql-fb':
+        return ImmVector {
+          '/usr/bin/git',
+          'clone',
+          '-b',
+          'new-webscalesql-5.6.27.75',
+          'ssh://projects.git.vip.facebook.com/data/gitrepos/mysql-5.6.git',
+          'mysql-fb',
+        };
+        break;
     }
     invariant_violation(
       "Unsupported repository '%s' - add support in %s::%s()",
