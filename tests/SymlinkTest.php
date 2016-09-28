@@ -106,14 +106,8 @@ final class SymlinkTest extends BaseTest {
   ): void {
     // make sure we don't pick up any user configs in git
     $home_dir = new ShipItTempDir('fake-home-for-git');
-    file_put_contents(
-      $home_dir->getPath().'/.hgrc',
-      "[ui]\nusername = FBShipit <fbshipit@example.com>\n"
-    );
-    file_put_contents(
-      $home_dir->getPath().'/.gitconfig',
-      "[user]\nname = FBShipit\nemail = fbshipit@example.com\n"
-    );
+    $name = 'FBShipIt';
+    $email = 'fbshipit@example.com';
     $temp_dir = new ShipItTempDir('symlink-test');
     foreach ($steps as $step) {
       (new ShipItShellCommand($temp_dir->getPath(), ...$step))
@@ -121,6 +115,11 @@ final class SymlinkTest extends BaseTest {
           'HG_PLAIN' => '1',
           'GIT_CONFIG_NOSYSTEM' => '1',
           'HOME' => $home_dir->getPath(),
+          'GIT_AUTHOR_NAME' => $name,
+          'GIT_AUTHOR_EMAIL' => $email,
+          'GIT_COMMITTER_NAME' => $name,
+          'GIT_COMMITTER_EMAIL' => $email,
+          'HGUSER' => $name.' <'.$email.'>',
         })
         ->runSynchronously();
     }
