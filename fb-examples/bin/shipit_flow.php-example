@@ -32,6 +32,7 @@ final class ShipItFlow extends FBShipItCLI {
             '@fbcode/hphp/hack/src/hh_single_parse.ml$@',
             '@fbcode/hphp/hack/src/hh_single_type_check.ml$@',
             '@fbcode/hphp/hack/src/full_fidelity_parse.ml$@',
+            '@fbcode/hphp/hack/src/generate_full_fidelity.ml$@',
             '@fbcode/hphp/hack/src/Makefile$@',
             '@fbcode/hphp/hack/src/client(/|$)@',
             '@fbcode/hphp/hack/src/decl(/|$)@',
