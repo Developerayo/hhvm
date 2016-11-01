@@ -21,6 +21,7 @@ final class FlowTest extends FBPublicProjectBaseTest {
   protected function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/flow/foo' => 'foo',
+      'fbcode/flow/github/foo' => 'foo',
       'fbcode/hphp/hack/src/foo' => 'hack/foo',
       'fbcode/somethingelse/foo' => null,
     };

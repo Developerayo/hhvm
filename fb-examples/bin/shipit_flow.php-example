@@ -64,6 +64,8 @@ final class ShipItFlow extends FBShipItCLI {
       |> ShipItPathFilters::moveDirectories(
           $$,
           ImmMap {
+            // order matters!
+            'fbcode/flow/github/' => '',
             'fbcode/flow/' => '',
             'fbcode/hphp/hack/src/' => 'hack/',
           }
