@@ -65,6 +65,7 @@ final class ShipItFlow extends FBShipItCLI {
           $$,
           ImmMap {
             // order matters!
+            'fbcode/flow/github/_gitattributes' => '.gitattributes',
             'fbcode/flow/github/' => '',
             'fbcode/flow/' => '',
             'fbcode/hphp/hack/src/' => 'hack/',

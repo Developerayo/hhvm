@@ -22,6 +22,7 @@ final class FlowTest extends FBPublicProjectBaseTest {
     return ImmMap {
       'fbcode/flow/foo' => 'foo',
       'fbcode/flow/github/foo' => 'foo',
+      'fbcode/flow/github/_gitattributes' => '.gitattributes',
       'fbcode/hphp/hack/src/foo' => 'hack/foo',
       'fbcode/somethingelse/foo' => null,
     };
