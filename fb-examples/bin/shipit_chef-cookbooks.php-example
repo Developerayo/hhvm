@@ -53,39 +53,10 @@ final class ShipItChefCookbooks extends FBShipItCLI{
     'fb_zfs',
   };
 
-  /*
-   * !!!!!!!!!!!!!!!!!!!!!! READ THIS !!!!!!!!!!!!!!!!!!!!!!
-   * If you add yourself to this list, make sure that your GH account is
-   * linked to your internal profile so that FB can track copyright and commit
-   * stats correctly.
-   */
-  static ImmMap<string, string> $emailMap = ImmMap{
-    'Phil Dibowitz <phild@fb.com>' => 'Phil Dibowitz <phil@ipom.com>',
-    'Marcin Sawicki <odcinek@fb.com>' => 'Marcin Sawicki <odcinek@gmail.com>',
-    'Bryan Wann <bwann@fb.com>' => 'Bryan Wann <bwann@wann.net>',
-    'Pat Cox <pcox@fb.com>' => 'Pat Cox <pat@patcox.net>',
-    'Joshua Miller <joshmiller@fb.com>' =>
-      'Joshua Miller <joshuamiller01@gmail.com>',
-    'KC Braunschweig <kcb@fb.com>' =>
-      'KC Braunschweig <kcbraunschweig@gmail.com>',
-  };
-
   public static function getDirs(): ImmSet<string> {
     return self::$cookbooks->map(
         $cookbook ==> self::BASE_DIR.'/'.$cookbook
       )->concat(['chef/github'])->toImmSet();
-  }
-
-  public static function rewriteEmails(
-    ShipItChangeset $changeset
-  ): ShipItChangeset {
-    $author = $changeset->getAuthor();
-    foreach (self::$emailMap as $internal => $external) {
-      if ($author === $internal) {
-        return $changeset->withAuthor($external);
-      }
-    }
-    return $changeset;
   }
 
   <<__Override>>
@@ -93,7 +64,7 @@ final class ShipItChefCookbooks extends FBShipItCLI{
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     $changeset = FBCommonFilters::applyAll($changeset);
-    $changeset = ShipItChefCookbooks::rewriteEmails($changeset);
+    $changeset = OSTeamFilters::rewriteEmails($changeset);
 
     $changeset = ShipItPathFilters::stripPaths(
       $changeset,
