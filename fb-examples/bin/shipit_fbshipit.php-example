@@ -141,14 +141,56 @@ final class ShipItFBShipIt extends FBShipItCLI {
 
   <<__Memoize>>
   private static function getPublicProjects(): ImmSet<string> {
+    $sanity_checks = ImmVector {
+      // facebook/
+      'hhvm',
+      'buck',
+      'react-native',
+      'relay',
+      // facebookincubator/
+      'CommunityCellularManager',
+    };
+    $orgs = ImmVector {
+      'facebook',
+      'facebookincubator',
+    };
     $credentials = FBGitHubUtils::getCredentialsForProject(
       'facebook',
       'shipit',
     );
-    $responses = \HH\Asio\join(ShipItGitHubUtils::makeAPIRequest(
-      $credentials,
-      '/orgs/facebook/repos?type=public',
+    $org_projects = \HH\Asio\join(\HH\Asio\m(
+      $orgs->map(
+        async $org ==> await self::getPublicProjectsForOrg(
+          $credentials,
+          $org,
+        ),
+      ),
     ));
+    $all_projects = Set { };
+    foreach ($org_projects as $projects) {
+      $all_projects->addAll($projects);
+    }
+    $all_projects = $all_projects->immutable();
+
+    foreach ($sanity_checks as $sanity_check) {
+      invariant(
+        $all_projects->contains($sanity_check),
+        'Expected %s to be in the list of public repos - got %s',
+        $sanity_check,
+        implode(', ', $all_projects),
+      );
+    }
+    return $all_projects;
+  }
+
+  private static async function getPublicProjectsForOrg(
+    ShipItGitHubCredentials $credentials,
+    string $org,
+  ): Awaitable<ImmSet<string>> {
+    $responses = await ShipItGitHubUtils::makeAPIRequest(
+      $credentials,
+      '/orgs/'.$org.'/repos?type=public',
+    );
     $repos = Vector { };
     foreach ($responses as $response) {
       $partial_repos = json_decode($response, /* as array = */ true);
@@ -167,14 +209,6 @@ final class ShipItFBShipIt extends FBShipItCLI {
       ->filter($repo ==> $repo['private'] === false)
       ->map($repo ==> $repo['name'])
       ->toImmSet();
-    foreach (['hhvm', 'buck', 'react-native', 'relay'] as $sanity_check) {
-      invariant(
-        $repos->contains($sanity_check),
-        'Expected %s to be in the list of public repos - got %s',
-        $sanity_check,
-        implode(', ', $repos),
-      );
-    }
     return $repos;
   }
 }
