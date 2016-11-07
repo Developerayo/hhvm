@@ -1,0 +1,47 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class RelayTest extends FBPublicProjectBaseTest {
+  <<__Override>>
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItRelay::filterChangeset(
+      $changeset,
+    );
+  }
+
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      // TODO remove this once the directory is moved
+      'fbobjc/Libraries/FBReactKit/js/node_modules/babel-relay-plugin/XYZ.js' =>
+        'scripts/babel-relay-plugin/XYZ.js',
+
+      'fbobjc/Libraries/FBReactKit/js/server/fb-transforms/babel-relay-plugin/XYZ.js' =>
+        'scripts/babel-relay-plugin/XYZ.js',
+      'fbobjc/Libraries/FBReactKit/js/RKJSModules/Libraries/Relay/relay/__github__/eslintrc' =>
+        '.eslintrc',
+      'fbobjc/Libraries/FBReactKit/js/RKJSModules/Libraries/Relay/relay/__github__/src/flowconfig' =>
+        'src/.flowconfig',
+      'fbobjc/Libraries/FBReactKit/js/RKJSModules/Libraries/Relay/relay/__github__/XYZ.js' =>
+        'XYZ.js',
+      'fbobjc/Libraries/FBReactKit/js/RKJSModules/Libraries/Relay/relay/XYZ.js' =>
+        'src/XYZ.js',
+    };
+  }
+
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return true;
+  }
+}

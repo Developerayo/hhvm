@@ -14,8 +14,10 @@ require_once(__DIR__.'/../autoload.php');
 final class ShipItRelay extends FBShipItCLI {
   const RELAY_ROOT =
     'fbobjc/Libraries/FBReactKit/js/RKJSModules/Libraries/Relay/relay';
-  const PLUGIN_ROOT =
+  const OLD_PLUGIN_ROOT =
     'fbobjc/Libraries/FBReactKit/js/node_modules/babel-relay-plugin';
+  const NEW_PLUGIN_ROOT =
+    'fbobjc/Libraries/FBReactKit/js/server/fb-transforms/babel-relay-plugin';
 
   <<__Override>>
   protected static function projectFilterChangeset(
@@ -40,7 +42,8 @@ final class ShipItRelay extends FBShipItCLI {
       ImmMap {
         'static_upstream/draft-js/__github__/' => '',
         'static_upstream/draft-js/' => 'src/',
-        self::PLUGIN_ROOT.'/' => 'scripts/babel-relay-plugin/',
+        self::OLD_PLUGIN_ROOT.'/' => 'scripts/babel-relay-plugin/',
+        self::NEW_PLUGIN_ROOT.'/' => 'scripts/babel-relay-plugin/',
         self::RELAY_ROOT.'/__github__/eslintrc' => '.eslintrc',
         self::RELAY_ROOT.'/__github__/src/flowconfig' => 'src/.flowconfig',
         self::RELAY_ROOT.'/__github__/' => '',
@@ -59,7 +62,8 @@ final class ShipItRelay extends FBShipItCLI {
       'githubProject' => 'relay',
       'sourceRoots' => ImmSet {
         self::RELAY_ROOT,
-        self::PLUGIN_ROOT,
+        self::OLD_PLUGIN_ROOT,
+        self::NEW_PLUGIN_ROOT,
       },
     );
   }
