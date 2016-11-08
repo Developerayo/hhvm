@@ -18,8 +18,16 @@ final class ShipItFlow extends FBShipItCLI {
   ): ShipItChangeset {
     $subject = self::getNewSubject($changeset);
 
+    static $exceptions = ImmVector {
+      '@fbcode/flow/github/@',
+    };
+
     return $changeset
-      |> FBCommonFilters::applyAll($$)
+      |> FBCommonFilters::applyAll(
+          $$,
+          shape(
+            'stripCommonFiles/exceptions' => $exceptions,
+          ))
       |> $$->withSubject($subject)
       |> ShipItPathFilters::stripPaths(
           $$,
@@ -57,9 +65,10 @@ final class ShipItFlow extends FBShipItCLI {
             '@fbcode/hphp/hack/src/utils/errors.mli?$@',
             '@fbcode/hphp/hack/src/utils/lint.mli?$@',
             '@fbcode/flow/kpm.lock$@',
-            '@fbcode/flow/yarn.lock$@',
+            '@fbcode/flow/(?:.+/)*yarn.lock$@',
             '@fbcode/flow/.npmrc$@',
           },
+          $exceptions,
         )
       |> ShipItPathFilters::moveDirectories(
           $$,
