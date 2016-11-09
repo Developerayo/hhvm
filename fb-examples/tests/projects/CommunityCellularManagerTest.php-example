@@ -1,0 +1,46 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class CommunityCellularManagerTest extends FBPublicProjectBaseTest {
+  <<__Override>>
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItCommunityCellularManager::filterChangeset(
+      $changeset,
+    );
+  }
+
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string>{
+    return ImmMap {
+      'fbcode/endaga/README.md' => 'README.md',
+      'fbcode/endaga/cloud/README.md' => 'cloud/README.md',
+      'fbcode/endaga/client/README.md' => 'client/README.md',
+      'fbcode/endaga/common/README.md' => 'common/README.md',
+      'fbcode/endaga/osmocom-python/README.md' => 'osmocom-python/README.md',
+      'fbcode/endaga/openbts-python/readme.md' => 'openbts-python/readme.md',
+      'fbcode/endaga/sms_utilities/readme.md' => 'sms_utilities/readme.md',
+      'fbcode/endaga/fbonly' => null,
+      'fbcode/endaga/cloud/fbonly' => null,
+      'fbcode/endaga/client/fbonly' => null,
+      'fbcode/endaga/client/conf/registration/etage-bundle.crt' => null,
+      'fbcode/endaga/client/BUCK' => null,
+      'fbcode/endaga/client/TARGETS' => null,
+      'fbcode/endaga/client/TARGETS.txt' => 'client/TARGETS.txt',
+    };
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+}
