@@ -24,10 +24,6 @@ final class RelayTest extends FBPublicProjectBaseTest {
   <<__Override>>
   protected function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
-      // TODO remove this once the directory is moved
-      self::FBRK.'/js/node_modules/babel-relay-plugin/XYZ.js' =>
-        'scripts/babel-relay-plugin/XYZ.js',
-
       self::FBRK.'/js/server/fb-transforms/babel-relay-plugin/XYZ.js' =>
         'scripts/babel-relay-plugin/XYZ.js',
       self::FBRK.'/js/server/fb-transforms/babel-relay-plugin/.github.flowconfig' =>
