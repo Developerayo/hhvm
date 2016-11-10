@@ -37,6 +37,12 @@ final class ShipItRelay extends FBShipItCLI {
       },
     );
 
+    $changeset = ShipItPathFilters::rewritePaths(
+      $changeset,
+      $path ==> preg_replace('@/\.github\.flowconfig$@',
+        '/.flowconfig', $path),
+    );
+
     $changeset = ShipItPathFilters::moveDirectories(
       $changeset,
       ImmMap {

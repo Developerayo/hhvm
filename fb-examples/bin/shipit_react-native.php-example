@@ -40,6 +40,11 @@ final class ShipItReactNative extends FBShipItCLI {
             '@(^|/)packager/react-packager/src/packager_experimental/@',
           },
         )
+      |> ShipItPathFilters::rewritePaths(
+          $$,
+          $path ==> preg_replace('@/\.github\.flowconfig$@',
+            '/.flowconfig', $path),
+        )
       |> ShipItPathFilters::moveDirectories(
           $$,
           ImmMap {
