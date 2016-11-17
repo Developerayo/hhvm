@@ -27,6 +27,8 @@ final class RocksDBTest extends FBPublicProjectBaseTest {
       'db/db_impl.cc' => 'db/db_impl.cc',
       'da/da/da' => 'da/da/da',
       '.sandcastle' => null,
+      'src.mk' => 'src.mk',
+      'koko.mk' => 'koko.mk',
     };
   }
 
