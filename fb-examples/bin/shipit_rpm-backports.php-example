@@ -25,6 +25,7 @@ final class ShipItRpmBackports extends FBShipItCLI{
     'python34-cssselect',
     'python34-lxml',
     'systemd',
+    'initscripts',
   };
 
   public static function getDirs(): ImmSet<string> {
