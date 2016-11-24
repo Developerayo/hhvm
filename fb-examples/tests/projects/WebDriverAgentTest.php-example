@@ -25,6 +25,7 @@ final class WebDriverAgentTest extends FBPublicProjectBaseTest {
     return ImmMap {
       self::ROOT.'/magicDir/File.foo' => 'magicDir/File.foo',
       self::ROOT.'/file.foo' => 'file.foo',
+      self::ROOT.'Inspector/yarn.lock' => null,
     };
   }
 

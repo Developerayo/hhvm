@@ -22,7 +22,7 @@ final class ShipItWebDriverAgent extends FBShipItCLI{
       |> ShipItPathFilters::stripPaths(
           $$,
           ImmVector {
-            '@^'.self::ROOT.'Pods@',
+            '@^'.self::ROOT.'Inspector/yarn.lock@',
           },
         )
       |> ShipItPathFilters::moveDirectories($$, ImmMap { self::ROOT => ''});
