@@ -1,0 +1,43 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+
+final class YogaTest extends FBPublicProjectBaseTest {
+  const string ROOT = 'fbobjc/xplat/Yoga';
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+
+  <<__Override>>
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItYoga::filterChangeset(
+      $changeset,
+    );
+  }
+
+  <<__Override>>
+  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      self::ROOT.'/BUCK' => 'BUCK',
+      self::ROOT.'/YOGA_DEFS' => 'YOGA_DEFS',
+      self::ROOT.'/.gitignore' => '.gitignore',
+      self::ROOT.'/lib/gtest/BUCK' => 'lib/gtest/BUCK',
+      'fbobjc/YOGA_DEFS' => null,
+      'fbandroid/xplat/Yoga/BUCK' => null,
+      'fbobjc/Libraries/FBReactKit/js/react-native-github'.
+        '/React/Yoga/Yoga.c' => null,
+    };
+  }
+}
