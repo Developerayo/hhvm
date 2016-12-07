@@ -12,6 +12,7 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItRelay extends FBShipItCLI {
+  const FBRK_ROOT = 'fbobjc/Libraries/FBReactKit';
   const RELAY_ROOT =
     'fbobjc/Libraries/FBReactKit/js/RKJSModules/Libraries/Relay/relay';
   const PLUGIN_ROOT =
@@ -32,6 +33,9 @@ final class ShipItRelay extends FBShipItCLI {
         '@^'.self::RELAY_ROOT.'/__forks__/@',
         // The public project uses different Flow configs than we do internally
         '@^'.self::RELAY_ROOT.'/\.flowconfig$@',
+        // The yarn.lock uses the offline-cache internally which makes it
+        // useless externally.
+        '@/yarn\.lock$@',
       },
     );
 
