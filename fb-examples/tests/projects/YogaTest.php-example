@@ -11,7 +11,7 @@ namespace Facebook\ShipIt;
 
 
 final class YogaTest extends FBPublicProjectBaseTest {
-  const string ROOT = 'fbobjc/xplat/Yoga';
+  const string ROOT = 'fbobjc/xplat/yoga';
 
   <<__Override>>
   protected function removesSummariesByDefault(): bool {
@@ -35,9 +35,9 @@ final class YogaTest extends FBPublicProjectBaseTest {
       self::ROOT.'/.gitignore' => '.gitignore',
       self::ROOT.'/lib/gtest/BUCK' => 'lib/gtest/BUCK',
       'fbobjc/YOGA_DEFS' => null,
-      'fbandroid/xplat/Yoga/BUCK' => null,
+      'fbandroid/xplat/yoga/BUCK' => null,
       'fbobjc/Libraries/FBReactKit/js/react-native-github'.
-        '/React/Yoga/Yoga.c' => null,
+        '/React/CSSLayout/Yoga.c' => null,
     };
   }
 }
