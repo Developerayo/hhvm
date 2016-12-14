@@ -28,8 +28,8 @@ final class FBGitHubUtilsTest extends BaseTest {
         ),
         'facebook',
         'hhvm',
-        '/^hhvm-bot$/',
-        '/^hhvm.+@fb.com$/',
+        'hhvm-bot',
+        'hhvm-bot@users.noreply.github.com',
       ),
       tuple(
         array(
@@ -41,8 +41,8 @@ final class FBGitHubUtilsTest extends BaseTest {
         ),
         'facebook',
         'not-a-real-project',
-        '/^facebook-github-bot-*\d*$/',
-        '/^facebook-github-bot.*@fb.com$/',
+        'facebook-github-bot',
+        'facebook-github-bot@users.noreply.github.com',
       ),
     ];
   }
@@ -68,8 +68,8 @@ final class FBGitHubUtilsTest extends BaseTest {
     FBGitHubUtils::TAllCredentials $credentials,
     string $organization,
     string $project,
-    string $user_regexp,
-    string $email_regexp,
+    string $user,
+    string $email,
   ): void {
     $credentials = self::getCredentialsForProjectFrom(
       $credentials,
@@ -77,13 +77,13 @@ final class FBGitHubUtilsTest extends BaseTest {
       $project,
     );
 
-    $this->assertRegExp(
-      $user_regexp,
+    $this->assertSame(
+      $user,
       $credentials['user'],
     );
 
-    $this->assertRegExp(
-      $email_regexp,
+    $this->assertSame(
+      $email,
       $credentials['email'],
     );
 
