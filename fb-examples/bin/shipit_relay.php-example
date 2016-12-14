@@ -13,6 +13,8 @@ require_once(__DIR__.'/../autoload.php');
 
 final class ShipItRelay extends FBShipItCLI {
   const FBRK_ROOT = 'fbobjc/Libraries/FBReactKit';
+  const NEW_PLUGIN_ROOT =
+    'fbobjc/Libraries/FBReactKit/js/RKJSModules/Libraries/Relay/babel-plugin-graphql';
   const RELAY_ROOT =
     'fbobjc/Libraries/FBReactKit/js/RKJSModules/Libraries/Relay/relay';
   const PLUGIN_ROOT =
@@ -48,8 +50,7 @@ final class ShipItRelay extends FBShipItCLI {
     $changeset = ShipItPathFilters::moveDirectories(
       $changeset,
       ImmMap {
-        'static_upstream/draft-js/__github__/' => '',
-        'static_upstream/draft-js/' => 'src/',
+        self::NEW_PLUGIN_ROOT.'/' => 'src/babel-plugin-graphql/',
         self::PLUGIN_ROOT.'/' => 'scripts/babel-relay-plugin/',
         self::RELAY_ROOT.'/__github__/eslintrc' => '.eslintrc',
         self::RELAY_ROOT.'/__github__/src/flowconfig' => 'src/.flowconfig',
@@ -68,6 +69,7 @@ final class ShipItRelay extends FBShipItCLI {
       'githubOrg' => 'facebook',
       'githubProject' => 'relay',
       'sourceRoots' => ImmSet {
+        self::NEW_PLUGIN_ROOT,
         self::RELAY_ROOT,
         self::PLUGIN_ROOT,
       },

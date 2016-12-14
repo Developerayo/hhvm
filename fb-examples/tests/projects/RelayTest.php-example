@@ -30,6 +30,8 @@ final class RelayTest extends FBPublicProjectBaseTest {
         'scripts/babel-relay-plugin/.flowconfig',
       self::FBRK.'/js/server/fb-transforms/babel-relay-plugin/foo.github.flowconfig' =>
         'scripts/babel-relay-plugin/foo.github.flowconfig',
+      self::FBRK.'/js/RKJSModules/Libraries/Relay/babel-plugin-graphql/XYZ.js' =>
+        'src/babel-plugin-graphql/XYZ.js',
       self::FBRK.'/js/RKJSModules/Libraries/Relay/relay/__github__/eslintrc' =>
         '.eslintrc',
       self::FBRK.'/js/RKJSModules/Libraries/Relay/relay/__github__/src/flowconfig' =>
