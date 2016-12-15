@@ -20,32 +20,37 @@ final class PathFiltersTest extends BaseTest {
       'No change' => tuple(
         ImmVector {},
         ImmVector {},
-        ImmSet { 'foo', 'bar', 'herp/derp', 'derp' },
+        ImmSet { 'foo', 'bar', 'herp/derp', 'herp/derp-derp', 'derp' },
       ),
       'Remove top level file' => tuple(
         ImmVector { '@^bar$@' },
         ImmVector {},
-        ImmSet { 'foo', 'herp/derp', 'derp' },
+        ImmSet { 'foo', 'herp/derp', 'herp/derp-derp', 'derp' },
       ),
       'Remove directory ' => tuple(
         ImmVector { '@^herp/@' },
         ImmVector { },
         ImmSet { 'foo', 'bar', 'derp' },
       ),
+      'Remove directory contents except one file ' => tuple(
+        ImmVector { '@^herp/@' },
+        ImmVector { '@^herp/derp-derp@' },
+        ImmSet { 'foo', 'bar', 'herp/derp-derp', 'derp' },
+      ),
       'Remove file' => tuple (
         ImmVector { '@(^|/)derp(/|$)@' },
         ImmVector { },
-        ImmSet { 'foo', 'bar' },
+        ImmSet { 'foo', 'bar', 'herp/derp-derp' },
       ),
       'Remove file, except if parent directory has specific name' => tuple(
         ImmVector { '@(^|/)derp(/|$)@' },
         ImmVector { '@(^|/)herp/derp$@' },
-        ImmSet { 'foo', 'bar', 'herp/derp' },
+        ImmSet { 'foo', 'bar', 'herp/derp', 'herp/derp-derp' },
       ),
       'Multiple patterns' => tuple(
         ImmVector { '@^foo$@', '@^bar$@' },
         ImmVector {},
-        ImmSet { 'herp/derp', 'derp' },
+        ImmSet { 'herp/derp', 'herp/derp-derp', 'derp' },
       ),
       'Multiple exceptions' => tuple(
         ImmVector { '@@' },
@@ -68,6 +73,7 @@ final class PathFiltersTest extends BaseTest {
         'foo' => 'placeholder',
         'bar' => 'placeholder',
         'herp/derp' => 'placeholder',
+        'herp/derp-derp' => 'placeholder',
         'derp' => 'placeholder',
       }),
     );

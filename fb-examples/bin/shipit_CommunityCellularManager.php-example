@@ -20,23 +20,30 @@ final class ShipItCommunityCellularManager extends FBShipItCLI {
     return $changeset
       |> FBCommonFilters::applyAll($$)
       |> ShipItPathFilters::stripPaths(
-          $$,
-          ImmVector {
-            '@^(?!fbcode/endaga/)@',
-            '@^fbcode/endaga/cloud/ansible/files/freeswitch/etc/freeswitch/dialplan/bts/11_globe_outbound.xml@',
-            '@^fbcode/endaga/cloud/ansible/files/freeswitch/etc/freeswitch/sip_profiles/globe@',
-            '@^fbcode/endaga/cloud/ansible/hosts$@',
-            '@^fbcode/endaga/cloud/ansible/prod_conf.ini@',
-            '@^fbcode/endaga/cloud/ansible/files/openvpn/etc/openvpn/server.key.enc@',
-            '@^fbcode/endaga/cloud/endagaweb/migrations@',
-            '@^fbcode/endaga/cloud/certifier/pki@',
-            '@^fbcode/endaga/client/commands/fb_shipping.py@',
-            '@^fbcode/endaga/magma@',
-            '@.*\.crt$@',
-            '@.*\.pem$@',
-              },
+        $$,
+        ImmVector {
+          '@^(?!fbcode/endaga/)@',
+          '@^fbcode/endaga/cloud/ansible/files/freeswitch/etc/freeswitch'
+            . '/dialplan/bts/11_globe_outbound.xml@',
+          '@^fbcode/endaga/cloud/ansible/files/freeswitch/etc/freeswitch'
+            . '/sip_profiles/globe@',
+          '@^fbcode/endaga/cloud/ansible/hosts$@',
+          '@^fbcode/endaga/cloud/ansible/prod_conf.ini@',
+          '@^fbcode/endaga/cloud/ansible/files/openvpn/etc/openvpn'
+            . '/server.key.enc@',
+          '@^fbcode/endaga/cloud/endagaweb/migrations@',
+          '@^fbcode/endaga/cloud/certifier/pki@',
+          '@^fbcode/endaga/client/commands/fb_shipping.py@',
+          '@^fbcode/endaga/magma@',
+          '@.*\.crt$@',
+          '@.*\.pem$@',
+        },
+        /* exceptions to directories to be stripped */
+        ImmVector {
+          '@^fbcode/endaga/cloud/endagaweb/migrations/__init__.py@',
+        },
       )
-    |> ShipItPathFilters::moveDirectories(
+      |> ShipItPathFilters::moveDirectories(
         $$,
         ImmMap {
           'fbcode/endaga/' => '',
