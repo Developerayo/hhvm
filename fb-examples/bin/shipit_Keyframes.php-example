@@ -12,7 +12,7 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItKeyframes extends FBShipItCLI {
-  const string ROOT = 'xplat/Keyframes/src';
+  const string ROOT = 'xplat/Keyframes/src/';
 
   <<__Override>>
   protected static function projectFilterChangeset(
