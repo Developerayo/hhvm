@@ -41,7 +41,7 @@ final class ShipItTransform360 extends FBShipItCLI {
   public static function getStaticConfig(): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => 'fbsource',
-      'githubOrg' => 'facebookincubator',
+      'githubOrg' => 'facebook',
       'githubProject' => 'Transform360',
       'sourceRoots' => ImmSet { self::ROOT },
     );
