@@ -14,7 +14,7 @@ final class OpenBMCTest extends FBPublicProjectBaseTest {
   protected static function map(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    return ShipItOpenBMC::filterChangeset(
+    return ShipItOpenBMCFido::filterChangeset(
       $changeset,
     );
   }

@@ -11,7 +11,7 @@ namespace Facebook\ShipIt;
 
 require_once(__DIR__.'/../autoload.php');
 
-final class ShipItOpenBMC extends FBShipItCLI {
+abstract class ShipItOpenBMC extends FBShipItCLI {
   <<__Override>>
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
@@ -30,8 +30,7 @@ final class ShipItOpenBMC extends FBShipItCLI {
         '@^meta-aspeed/recipes-kernel/linux/linux-.*@',
         '@^meta-aspeed/recipes-bsp/u-boot/files/u-boot.*@',
         '@^meta-aspeed/recipes-bsp/u-boot/u-boot.*@',
-        '@^meta-facebook/meta-galaxy.*@',
-        '@^meta-facebook/meta-cmm.*@',
+        '@^meta-facebook/meta-fby2.*@',
         # Anything marked 'private' should not be synced.
         '@^.*private@',
       },
@@ -58,14 +57,26 @@ final class ShipItOpenBMC extends FBShipItCLI {
       'sourceRoots' => ImmSet { '' },
     );
   }
+}
 
+final class ShipItOpenBMCFido extends ShipItOpenBMC {
   <<__Override>>
   protected static function getBaseConfig(): ShipItBaseConfig {
     return parent::getBaseConfig()->withSourceBranch('fido');
   }
 }
 
+final class ShipItOpenBMCHelium extends ShipItOpenBMC {
+  <<__Override>>
+  protected static function getBaseConfig(): ShipItBaseConfig {
+    return parent::getBaseConfig()
+      ->withSourceBranch('helium')
+      ->withDestinationBranch('helium');
+  }
+}
+
 // Allow require() from unit test
 if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItOpenBMC::cliMain();
+  ShipItOpenBMCFido::cliMain();
+  ShipItOpenBMCHelium::cliMain();
 }
