@@ -10,6 +10,8 @@
 namespace Facebook\ShipIt;
 
 final class ShipItFilterSanityCheckPhase extends ShipItPhase {
+  const TEST_FILE_NAME = 'shipit_test_file.txt';
+
   public function __construct(
     private (function(ShipItChangeset):ShipItChangeset) $filter,
     private ImmSet<string> $sourceRoots,
@@ -35,7 +37,7 @@ final class ShipItFilterSanityCheckPhase extends ShipItPhase {
     $filter = $this->filter;
     $allows_all = false;
     foreach ($this->sourceRoots as $root) {
-      $test_file = $root.'/shipit_test_file.txt';
+      $test_file = $root.'/'.self::TEST_FILE_NAME;
       $test_file = str_replace('//', '/', $test_file);
       $changeset = (new ShipItChangeset())
         ->withDiffs(ImmVector {

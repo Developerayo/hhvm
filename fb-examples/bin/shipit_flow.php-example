@@ -22,6 +22,8 @@ final class ShipItFlow extends FBShipItCLI {
       '@fbcode/flow/github/@',
     };
 
+    static $test_file_name = ShipItFilterSanityCheckPhase::TEST_FILE_NAME;
+
     return $changeset
       |> FBCommonFilters::applyAll(
           $$,
@@ -32,42 +34,55 @@ final class ShipItFlow extends FBShipItCLI {
       |> ShipItPathFilters::stripPaths(
           $$,
           ImmVector {
-            '@fbcode/hphp/hack/src/hh_client.ml$@',
-            '@fbcode/hphp/hack/src/hh_emitter.ml$@',
-            '@fbcode/hphp/hack/src/hh_format.ml$@',
-            '@fbcode/hphp/hack/src/hh_match.ml$@',
-            '@fbcode/hphp/hack/src/hh_server.ml$@',
-            '@fbcode/hphp/hack/src/hh_single_parse.ml$@',
-            '@fbcode/hphp/hack/src/hh_single_type_check.ml$@',
-            '@fbcode/hphp/hack/src/full_fidelity_parse.ml$@',
-            '@fbcode/hphp/hack/src/generate_full_fidelity.ml$@',
-            '@fbcode/hphp/hack/src/Makefile$@',
-            '@fbcode/hphp/hack/src/client(/|$)@',
-            '@fbcode/hphp/hack/src/decl(/|$)@',
-            '@fbcode/hphp/hack/src/deps(/|$)@',
-            '@fbcode/hphp/hack/src/emitter(/|$)@',
-            '@fbcode/hphp/hack/src/format(/|$)@',
-            '@fbcode/hphp/hack/src/full_fidelity(/|$)@',
-            '@fbcode/hphp/hack/src/full_fidelity_perf(/|$)@',
-            '@fbcode/hphp/hack/src/globals(/|$)@',
-            '@fbcode/hphp/hack/src/h2tp(/|$)@',
-            '@fbcode/hphp/hack/src/hh_matcher(/|$)@',
-            '@fbcode/hphp/hack/src/hhas(/|$)@',
-            '@fbcode/hphp/hack/src/js(/|$)@',
-            '@fbcode/hphp/hack/src/naming(/|$)@',
-            '@fbcode/hphp/hack/src/options(/|$)@',
-            '@fbcode/hphp/hack/src/parsing(/|$)@',
-            '@fbcode/hphp/hack/src/search(/|$)@',
-            '@fbcode/hphp/hack/src/server(/|$)@',
-            '@fbcode/hphp/hack/src/stubs/(ai|ai_options|buildMain|clientMessages|debug|filesToIgnore|formatEventLogger|hackEventLogger|linting_service|prolog|prologMain).ml$@',
-            '@fbcode/hphp/hack/src/typing(/|$)@',
-            '@fbcode/hphp/hack/src/utils/errors.mli?$@',
-            '@fbcode/hphp/hack/src/utils/lint.mli?$@',
+            '@fbcode/hphp/hack/src/@',
             '@fbcode/flow/kpm.lock$@',
             '@fbcode/flow/(?:.+/)*yarn.lock$@',
             '@fbcode/flow/.npmrc$@',
           },
-          $exceptions,
+          $exceptions->concat(ImmVector {
+            // ShipItFilterSanityCheckPhase doesn't like that we filter the
+            // root, except for a whitelist. So whitelist the file the test
+            // tests for...
+            '@fbcode/hphp/hack/src/'.$test_file_name.'@',
+
+            // Stuff used in open source that isn't used internally
+            '@fbcode/hphp/hack/src/\.gitignore$@',
+            '@fbcode/hphp/hack/src/\.ocp-indent$@',
+            '@fbcode/hphp/hack/src/_tags$@',
+            '@fbcode/hphp/hack/src/fsevents/@',
+            '@fbcode/hphp/hack/src/fsnotify_darwin/@',
+            '@fbcode/hphp/hack/src/fsnotify_win/@',
+            '@fbcode/hphp/hack/src/injection/injector_config.mli@',
+            '@fbcode/hphp/hack/src/stubs/eventLogger\.ml$@',
+
+            // Stuff that is currently unused, but not Hack-specific and we
+            // will probably want to use some day
+
+            '@fbcode/hphp/hack/src/libancillary/@',
+            '@fbcode/hphp/hack/src/monitor/@',
+            '@fbcode/hphp/hack/src/third-party/libancillary/@',
+            '@fbcode/hphp/hack/src/watchman/@',
+
+            //
+            // keep these in sync with fbcode/flow/facebook/dep_test.py!
+            //
+            '@fbcode/hphp/hack/src/dfind/@',
+            '@fbcode/hphp/hack/src/find/@',
+            '@fbcode/hphp/hack/src/fsnotify_linux/@',
+            '@fbcode/hphp/hack/src/heap/@',
+            '@fbcode/hphp/hack/src/hhi/@',
+            '@fbcode/hphp/hack/src/injection/default_injector/@',
+            '@fbcode/hphp/hack/src/procs/@',
+            '@fbcode/hphp/hack/src/socket/@',
+            '@fbcode/hphp/hack/src/third-party/avl/@',
+            '@fbcode/hphp/hack/src/third-party/core/@',
+            '@fbcode/hphp/hack/src/third-party/inotify/@',
+            // allow all utils except errors.ml(i) and lint.ml(i)
+            '@fbcode/hphp/hack/src/utils/(?!(?:errors|lint)\.mli?)@',
+            '@fbcode/hphp/hack/src/utils/collections/@',
+            '@fbcode/hphp/hack/src/utils/disk/@',
+            '@fbcode/hphp/hack/src/utils/hh_json/@',
+          }),
         )
       |> ShipItPathFilters::moveDirectories(
           $$,
