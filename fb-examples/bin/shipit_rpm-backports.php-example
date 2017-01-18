@@ -18,13 +18,16 @@ final class ShipItRpmBackports extends FBShipItCLI{
   # Add new open-source rpms here. Be sure to get sign-off
   # from the OpenSource team (opensource@fb.com).
   static ImmSet<string> $rpms = ImmSet{
+    # BEGIN systemd-related stuff
     # new packages
     'mkosi',
     # modified packages from rawhide
     'dbus',
     'python34-cssselect',
     'python34-lxml',
+    'util-linux',
     'systemd',
+    # END systemd-related stuff
     'initscripts',
   };
 
