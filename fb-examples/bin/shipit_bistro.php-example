@@ -17,8 +17,8 @@ final class ShipItBistro extends FBShipItCLI {
     'fbcode/bistro/public_tld/' => '',
     'fbcode/bistro/bistro' => 'bistro',
     'fbcode/opensource/fbcode_builder' => 'bistro/build/ci/fbcode_builder',
-    'fbcode/opensource/project_hashes/facebook' =>
-      'bistro/build/ci/github_hashes',
+    # Put this in the TLD so that `git log bistro` is sane.
+    'fbcode/opensource/project_hashes/facebook' => '.fb_dep_github_hashes',
   };
 
   <<__Override>>
@@ -45,15 +45,14 @@ final class ShipItBistro extends FBShipItCLI {
         /* strip = */ ImmVector {
           '@(^|/)facebook[-_].*$@',
           '@(^|/)README.facebook$@',
-          '@^bistro/build/ci/github_hashes@',
+          '@^.fb_dep_github_hashes@',
         },
         /* exceptions = */ ImmVector {
           // Keep just the Github hashes of Bistro's dependencies.
-          '@^bistro/build/ci/github_hashes$@',
-          '@^bistro/build/ci/github_hashes/'.
-            '(folly|wangle|proxygen|fbthrift)-rev.txt$@',
+          '@^.fb_dep_github_hashes$@',
+          '@^.fb_dep_github_hashes/(folly|wangle|proxygen|fbthrift)-rev.txt$@',
           // This is just to appease ShipItFilterSanityCheckPhase
-          '@^bistro/build/ci/github_hashes/shipit_test_file.txt$@',
+          '@^.fb_dep_github_hashes/shipit_test_file.txt$@',
         }
       );
   }

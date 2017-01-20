@@ -34,7 +34,7 @@ final class BistroTest extends FBPublicProjectBaseTest {
         'bistro/build/ci/fbcode_builder/fbcode_builder.py',
       // Bistro is only interested in the Github revisions its dependencies.
       'fbcode/opensource/project_hashes/facebook/wangle-rev.txt' =>
-        'bistro/build/ci/github_hashes/wangle-rev.txt',
+        '.fb_dep_github_hashes/wangle-rev.txt',
       'fbcode/opensource/project_hashes/facebook/yoga-rev.txt' => null,
     };
   }
