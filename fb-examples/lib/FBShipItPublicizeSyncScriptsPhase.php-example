@@ -72,7 +72,7 @@ final class FBShipItPublicizeSyncScriptsPhase extends ShipItPhase {
     foreach ($files as $file) {
       invariant(
         substr($file, 0, strlen($export_root)) === $export_root,
-        'file %s is not inside %',
+        'file %s is not inside %s',
         $file,
         $export_root,
       );
