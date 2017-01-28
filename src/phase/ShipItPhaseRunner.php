@@ -111,13 +111,14 @@ final class ShipItPhaseRunner {
       $name = $arg['long_name'];
 
       invariant(
-        !($description && $replacement),
+        !($description !== null && $replacement !== null),
         '--%s is documented and deprecated',
         $name,
       );
 
       invariant(
-        !($handler && !($description || $replacement)),
+        !($handler !== null
+          && !($description !== null || $replacement !== null)),
         '--%s does something, and is undocumented',
         $name,
       );
@@ -185,7 +186,7 @@ final class ShipItPhaseRunner {
       }
 
       $replacement = Shapes::idx($opt, 'replacement');
-      if ($replacement) {
+      if ($replacement !== null) {
         fprintf(
           STDERR,
           "%s %s, use %s instead\n",
@@ -218,7 +219,7 @@ final class ShipItPhaseRunner {
       $description = Shapes::idx($opt, 'description');
       if ($description === null) {
         $replacement = Shapes::idx($opt, 'replacement');
-        if ($replacement) {
+        if ($replacement !== null) {
           continue;
         } else {
           invariant(
