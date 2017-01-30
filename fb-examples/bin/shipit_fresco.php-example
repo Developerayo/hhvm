@@ -19,14 +19,6 @@ final class ShipItFresco extends FBShipItCLI {
     // Strip summary if it is not marked as @public
     $changeset = FBCommonFilters::stripSummariesByDefault($changeset);
 
-    // Move Fresco files in other directories
-    $changeset = ShipItPathFilters::moveDirectories(
-      $changeset,
-      ImmMap {
-        'fbandroid/libraries/fbcore/' => 'fbandroid/libraries/fresco/fbcore/',
-      },
-    );
-
     // Strip files that are not in the Fresco directory
     $changeset = ShipItPathFilters::stripPaths(
       $changeset,
@@ -48,15 +40,22 @@ final class ShipItFresco extends FBShipItCLI {
       ),
     );
 
-    // Move the Fresco files
     $changeset = ShipItPathFilters::moveDirectories(
       $changeset,
-      ImmMap {
-        'fbandroid/libraries/fresco/' => '',
-      },
+      static::getPathMappings(),
     );
 
     return $changeset;
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      // Move the Fresco files
+      'fbandroid/libraries/fresco/' => '',
+      // Move Fresco files in other directories
+      'fbandroid/libraries/fbcore/' => 'fbcore/',
+    };
   }
 
   <<__Override>>

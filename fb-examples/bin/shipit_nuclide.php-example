@@ -29,12 +29,14 @@ class ShipItNuclide extends FBShipItCLI {
             '@(^|/)fb_[^/]*(/|$)@',
           },
         )
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap {
-            'fbobjc/Tools/Nuclide/' => '',
-          },
-        );
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'fbobjc/Tools/Nuclide/' => '',
+    };
   }
 
   <<__Override>>

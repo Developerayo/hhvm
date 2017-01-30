@@ -43,12 +43,14 @@ final class ShipItCommunityCellularManager extends FBShipItCLI {
           '@^fbcode/endaga/cloud/endagaweb/migrations/__init__.py@',
         },
       )
-      |> ShipItPathFilters::moveDirectories(
-        $$,
-        ImmMap {
-          'fbcode/endaga/' => '',
-        },
-      );
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'fbcode/endaga/' => '',
+    };
   }
 
   <<__Override>>

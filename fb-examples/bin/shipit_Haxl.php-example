@@ -29,12 +29,14 @@ final class ShipItHaxl extends FBShipItCLI {
             '@^'.self::ROOT.'tests/Main.hs$@' // FB-internal test runner
           },
         )
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap {
-            self::ROOT => '',
-          },
-        );
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT => '',
+    };
   }
 
   <<__Override>>

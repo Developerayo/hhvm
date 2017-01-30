@@ -45,22 +45,21 @@ final class ShipItFBShipIt extends FBShipItCLI {
         $$,
         $path ==> str_replace('/public_tld/dot_', '/public_tld/.', $path),
       )
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap {
-            'fbcode/opensource/shipit/public_tld/' => '',
-            'fbcode/opensource/shipit/' => '',
-          },
-        )
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap {
-            'bin/' => 'fb-examples/bin/',
-            'src/fb-specific-but-public/' => 'fb-examples/lib/',
-            'tests/fb-specific-but-public/' => 'fb-examples/tests/',
-          },
-        )
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings())
       |> self::changeExampleExtensions($$);
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'fbcode/opensource/shipit/public_tld/' => '',
+      'fbcode/opensource/shipit/bin/' => 'fb-examples/bin/',
+      'fbcode/opensource/shipit/src/fb-specific-but-public/' =>
+        'fb-examples/lib/',
+      'fbcode/opensource/shipit/tests/fb-specific-but-public/' =>
+        'fb-examples/tests/',
+      'fbcode/opensource/shipit/' => '',
+    };
   }
 
   <<__Override>>

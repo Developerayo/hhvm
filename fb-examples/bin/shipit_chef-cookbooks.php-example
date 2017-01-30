@@ -81,12 +81,17 @@ final class ShipItChefCookbooks extends FBShipItCLI{
     // Strip the parent directories from the commit paths
     $changeset = ShipItPathFilters::moveDirectories(
       $changeset,
-      ImmMap {
-        'chef/cookbooks/core/' => 'cookbooks/',
-        'chef/github/' => '',
-      },
+      static::getPathMappings(),
     );
     return $changeset;
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'chef/cookbooks/core/' => 'cookbooks/',
+      'chef/github/' => '',
+    };
   }
 
   <<__Override>>

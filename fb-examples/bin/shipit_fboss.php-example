@@ -21,14 +21,19 @@ final class ShipItFboss extends FBShipItCLI {
 
     $changeset = ShipItPathFilters::moveDirectories(
       $changeset,
-      ImmMap {
-        'fbcode/fboss/github/' => '',
-        'fbcode/fboss/common/' => 'common/',
-        'fbcode/fboss/' => 'fboss/',
-      },
+      static::getPathMappings(),
     );
 
     return $changeset;
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'fbcode/fboss/github/' => '',
+      'fbcode/fboss/common/' => 'common/',
+      'fbcode/fboss/' => 'fboss/',
+    };
   }
 
   <<__Override>>

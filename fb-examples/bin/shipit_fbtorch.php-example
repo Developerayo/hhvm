@@ -25,7 +25,14 @@ final class ShipItFBTorch extends FBShipItCLI {
           shape( 'stripCommonFiles/exceptions' => ImmVector { '@/fb/@' } ),
         )
       |> ShipItPathFilters::stripPaths( $$, ImmVector { '@/TARGETS$@' })
-      |> ShipItPathFilters::moveDirectories($$, ImmMap { self::ROOT => '' });
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT => '',
+    };
   }
 
   <<__Override>>

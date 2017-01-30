@@ -30,7 +30,14 @@ final class ShipItSurround360 extends FBShipItCLI {
         $path ==> str_replace('/surround360_camera_ctl/dot_',
           '/surround360_camera_ctl/.', $path),
       )
-      |> ShipItPathFilters::moveDirectories($$, ImmMap { self::ROOT => '' });
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT => '',
+    };
   }
 
   <<__Override>>

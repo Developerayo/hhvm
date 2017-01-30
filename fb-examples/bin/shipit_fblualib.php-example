@@ -27,13 +27,15 @@ final class ShipItFBLualib extends FBShipItCLI {
             },
           ),
         )
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap {
-            self::ROOT.'public_tld/' => '',
-            self::ROOT => 'fblualib/',
-          },
-        );
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT.'public_tld/' => '',
+      self::ROOT => 'fblualib/',
+    };
   }
 
   <<__Override>>

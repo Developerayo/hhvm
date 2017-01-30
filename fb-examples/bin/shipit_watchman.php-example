@@ -24,11 +24,14 @@ final class ShipItWatchman extends FBShipItCLI {
           '@/TARGETS$@',
           '@/BUCK$@',
         }))
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap {
-            'fbcode/watchman/' => '',
-          });
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'fbcode/watchman/' => '',
+    };
   }
 
   <<__Override>>

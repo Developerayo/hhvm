@@ -42,7 +42,14 @@ final class ShipItMySQL56 extends FBShipItCLI {
           'stripCommonFiles/exceptions' => ImmVector { '@\.mk$@', },
         ),
       )
-      |> ShipItPathFilters::moveDirectories($$, ImmMap { self::ROOT => '' });
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT => '',
+    };
   }
 
   <<__Override>>

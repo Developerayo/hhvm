@@ -49,17 +49,22 @@ final class ShipItRelay extends FBShipItCLI {
 
     $changeset = ShipItPathFilters::moveDirectories(
       $changeset,
-      ImmMap {
-        self::NEW_PLUGIN_ROOT.'/' => 'src/babel-plugin-graphql/',
-        self::PLUGIN_ROOT.'/' => 'scripts/babel-relay-plugin/',
-        self::RELAY_ROOT.'/__github__/eslintrc' => '.eslintrc',
-        self::RELAY_ROOT.'/__github__/src/flowconfig' => 'src/.flowconfig',
-        self::RELAY_ROOT.'/__github__/' => '',
-        self::RELAY_ROOT.'/' => 'src/',
-      },
+      static::getPathMappings(),
     );
 
     return $changeset;
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::NEW_PLUGIN_ROOT.'/' => 'src/babel-plugin-graphql/',
+      self::PLUGIN_ROOT.'/' => 'scripts/babel-relay-plugin/',
+      self::RELAY_ROOT.'/__github__/eslintrc' => '.eslintrc',
+      self::RELAY_ROOT.'/__github__/src/flowconfig' => 'src/.flowconfig',
+      self::RELAY_ROOT.'/__github__/' => '',
+      self::RELAY_ROOT.'/' => 'src/',
+    };
   }
 
   <<__Override>>

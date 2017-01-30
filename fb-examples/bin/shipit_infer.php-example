@@ -35,6 +35,13 @@ final class ShipItInfer extends FBShipItCLI {
   }
 
   <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      '' => '',
+    };
+  }
+
+  <<__Override>>
   public static function getStaticConfig(
   ): FBShipItCLIStaticConfig {
     return shape(

@@ -21,10 +21,17 @@ final class ShipItTreadmill extends FBShipItCLI {
     $changeset = FBCommonFilters::applyAll($changeset);
     $changeset = ShipItPathFilters::moveDirectories(
       $changeset,
-      ImmMap { self::ROOT => '' },
+      static::getPathMappings(),
     );
 
     return $changeset;
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT => '',
+    };
   }
 
   <<__Override>>

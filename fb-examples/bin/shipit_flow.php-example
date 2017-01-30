@@ -84,16 +84,18 @@ final class ShipItFlow extends FBShipItCLI {
             '@fbcode/hphp/hack/src/utils/hh_json/@',
           }),
         )
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap {
-            // order matters!
-            'fbcode/flow/github/_gitattributes' => '.gitattributes',
-            'fbcode/flow/github/' => '',
-            'fbcode/flow/' => '',
-            'fbcode/hphp/hack/src/' => 'hack/',
-          }
-        );
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      // order matters!
+      'fbcode/flow/github/_gitattributes' => '.gitattributes',
+      'fbcode/flow/github/' => '',
+      'fbcode/flow/' => '',
+      'fbcode/hphp/hack/src/' => 'hack/',
+    };
   }
 
   <<__Override>>

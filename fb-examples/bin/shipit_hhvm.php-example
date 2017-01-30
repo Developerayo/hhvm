@@ -39,13 +39,15 @@ final class ShipItHHVM extends FBShipItCLI {
           'fbcode/hphp/facebook/third-party-rev.txt',
           'third-party',
         )
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap {
-            'fbcode/hphp/public_tld/' => '',
-            'fbcode/hphp/' => 'hphp/',
-          },
-        );
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'fbcode/hphp/public_tld/' => '',
+      'fbcode/hphp/' => 'hphp/',
+    };
   }
 
   <<__Override>>

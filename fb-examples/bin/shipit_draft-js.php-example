@@ -26,13 +26,15 @@ final class ShipItDraftJs extends FBShipItCLI {
             '@^static_upstream/draft-js/examples/@',
           },
         )
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap {
-            'static_upstream/draft-js/__github__/' => '',
-            'static_upstream/draft-js/' => 'src/',
-          },
-        );
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'static_upstream/draft-js/__github__/' => '',
+      'static_upstream/draft-js/' => 'src/',
+    };
   }
 
   <<__Override>>

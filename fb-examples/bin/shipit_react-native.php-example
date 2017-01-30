@@ -45,12 +45,14 @@ final class ShipItReactNative extends FBShipItCLI {
           $path ==> preg_replace('@/\.github\.flowconfig$@',
             '/.flowconfig', $path),
         )
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap {
-            'fbobjc/Libraries/FBReactKit/js/react-native-github/' => '',
-          },
-        );
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'fbobjc/Libraries/FBReactKit/js/react-native-github/' => '',
+    };
   }
 
   <<__Override>>

@@ -19,13 +19,15 @@ final class ShipItFBThrift extends FBShipItCLI {
             '@^fbcode/thrift/perf/loadtest.py$@',
           },
         )
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap {
-            'fbcode/thrift/public_tld/' => '',
-            'fbcode/thrift/' => 'thrift/',
-          },
-        );
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'fbcode/thrift/public_tld/' => '',
+      'fbcode/thrift/' => 'thrift/',
+    };
   }
 
   <<__Override>>

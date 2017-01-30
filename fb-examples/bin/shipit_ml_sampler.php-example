@@ -23,7 +23,14 @@ final class ShipItMLSampler extends FBShipItCLI {
       |> ShipItPathFilters::stripPaths($$, ImmVector {
         "@fbcode/analytics/ml_sampler/.*data$@",
       })
-      |> ShipItPathFilters::moveDirectories($$, ImmMap { self::ROOT => '' });
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT => '',
+    };
   }
 
   <<__Override>>

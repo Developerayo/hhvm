@@ -28,6 +28,12 @@ abstract class FBShipItCLI {
   <<__Override>>
   public abstract static function getStaticConfig(): FBShipItCLIStaticConfig;
 
+  /**
+   * A map from directory paths in the source repository to paths in the
+   * destination repository. The first matching mapping is used.
+   */
+  public abstract static function getPathMappings(): ImmMap<string, string>;
+
   protected abstract static function projectFilterChangeset(
     ShipItChangeset $changeset
   ): ShipItChangeset;

@@ -13,14 +13,6 @@ require_once(__DIR__.'/../autoload.php');
 
 final class ShipItBistro extends FBShipItCLI {
 
-  private static $move_directories = ImmMap {
-    'fbcode/bistro/public_tld/' => '',
-    'fbcode/bistro/bistro' => 'bistro',
-    'fbcode/opensource/fbcode_builder' => 'bistro/build/ci/fbcode_builder',
-    # Put this in the TLD so that `git log bistro` is sane.
-    'fbcode/opensource/project_hashes/facebook' => '.fb_dep_github_hashes',
-  };
-
   <<__Override>>
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
@@ -39,7 +31,7 @@ final class ShipItBistro extends FBShipItCLI {
       |> ShipItPathFilters::stripPaths($$, ImmVector {
         '@^fbcode/bistro/bistro/build/ci/fbcode_builder$@',
       })
-      |> ShipItPathFilters::moveDirectories($$, self::$move_directories)
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings())
       |> ShipItPathFilters::stripPaths(
         $$,
         /* strip = */ ImmVector {
@@ -58,13 +50,24 @@ final class ShipItBistro extends FBShipItCLI {
   }
 
   <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'fbcode/bistro/public_tld/' => '',
+      'fbcode/bistro/bistro' => 'bistro',
+      'fbcode/opensource/fbcode_builder' => 'bistro/build/ci/fbcode_builder',
+      # Put this in the TLD so that `git log bistro` is sane.
+      'fbcode/opensource/project_hashes/facebook' => '.fb_dep_github_hashes',
+    };
+  }
+
+  <<__Override>>
   public static function getStaticConfig(
   ): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'bistro',
-      'sourceRoots' => new ImmSet(self::$move_directories->keys()),
+      'sourceRoots' => new ImmSet(self::getPathMappings()->keys()),
     );
   }
 }
