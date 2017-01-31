@@ -165,7 +165,7 @@ final class FBRepoInitPhase extends ShipItPhase {
           '/usr/bin/git',
           'clone',
           '-b',
-          'new-webscalesql-5.6.27.75',
+          'fb-mysql-5.6.35',
           'ssh://projects.git.vip.facebook.com/data/gitrepos/mysql-5.6.git',
           'mysql-fb',
         };

@@ -24,12 +24,12 @@ final class ShipItMySQL56 extends FBShipItCLI {
   // "origin" prefix here. Whatever you add here should return a valid Git hash
   // after "git rev-parse origin/branch_name". NB! If you change it here then
   // you'll need to modify FBRepoInitPhase.php as well.
-  const string SOURCE_BRANCH = 'new-webscalesql-5.6.27.75';
+  const string SOURCE_BRANCH = 'fb-mysql-5.6.35';
 
   // This is the actual GitHub destination branch where changes will be pushed
   // to. It should be accessible from under the project URI:
   // https://github.com/facebook/mysql-5.6
-  const string DESTINATION_BRANCH = 'webscalesql-5.6.27.75';
+  const string DESTINATION_BRANCH = 'fb-mysql-5.6.35';
 
   <<__Override>>
   protected static function projectFilterChangeset(
