@@ -20,7 +20,7 @@ final class RedexTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbandroid/native/redex/foo' => 'foo',
       'fbandroid/not_redex/foo' => null,

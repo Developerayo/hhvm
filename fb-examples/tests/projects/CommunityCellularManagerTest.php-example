@@ -20,7 +20,7 @@ final class CommunityCellularManagerTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string>{
+  public static function getExamplePathMappings(): ImmMap<string, ?string>{
     return ImmMap {
       'fbcode/endaga/README.md' => 'README.md',
       'fbcode/endaga/cloud/README.md' => 'cloud/README.md',

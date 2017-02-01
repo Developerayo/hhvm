@@ -16,7 +16,7 @@ final class KeyframesTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'xplat/Keyframes/src/LICENSE' => 'LICENSE',
       'xplat/SomeOtherProject/Foo' => null,

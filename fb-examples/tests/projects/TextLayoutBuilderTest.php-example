@@ -29,7 +29,7 @@ final class TextLayoutBuilderTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       // Test files that should exist and are mapped to the root
       self::ROOT.'main/AndroidManifest.xml' =>

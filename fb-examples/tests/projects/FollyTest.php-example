@@ -16,7 +16,7 @@ final class FollyTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/folly/NormalFile.h' => 'folly/NormalFile.h',
       'fbcode/folly/public_tld/TLDFile.txt' => 'TLDFile.txt',

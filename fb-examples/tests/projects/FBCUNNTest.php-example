@@ -20,7 +20,7 @@ final class FBCUNNTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/torch/fb/fbcunn/foo' => 'foo',
       'fbcode/torch/fb/fbcunn/facebook/secret' => null,

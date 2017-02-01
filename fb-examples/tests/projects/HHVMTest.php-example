@@ -56,7 +56,7 @@ final class HHVMTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/hphp/foo' => 'hphp/foo',
       'fbcode/hphp/public_tld/foo' => 'foo',

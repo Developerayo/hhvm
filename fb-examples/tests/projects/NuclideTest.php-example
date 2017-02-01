@@ -20,7 +20,7 @@ final class NuclideTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  public function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbobjc/Tools/Nuclide/foo' => 'foo',
       'fbobjc/Tools/Nuclide/fb-only/foo' => null,

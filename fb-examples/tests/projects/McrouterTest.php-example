@@ -20,7 +20,7 @@ final class McrouterTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  public function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/mcrouter/Proxy.h' => 'mcrouter/Proxy.h',
       'fbcode/mcrouter/lib' => 'mcrouter/lib',

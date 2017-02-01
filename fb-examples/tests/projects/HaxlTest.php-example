@@ -21,7 +21,7 @@ final class HaxlTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/haxl/core/foo' => 'foo',
       'fbcode/haxl/core/foo/bar' => 'foo/bar',

@@ -21,7 +21,7 @@ final class WebDriverAgentTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       self::ROOT.'/magicDir/File.foo' => 'magicDir/File.foo',
       self::ROOT.'/file.foo' => 'file.foo',

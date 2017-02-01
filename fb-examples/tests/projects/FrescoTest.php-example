@@ -24,7 +24,7 @@ final class FrescoTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string>{
+  public static function getExamplePathMappings(): ImmMap<string, ?string>{
     return ImmMap {
       // Basic folder test
       self::FRESCO.'/foo' => 'foo',

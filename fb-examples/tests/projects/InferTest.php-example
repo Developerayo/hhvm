@@ -37,7 +37,7 @@ final class InferTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  public function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     # Example things that *should* make it through
     $keep = ImmVector {
       '.buckconfig',

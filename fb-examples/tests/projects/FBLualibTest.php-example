@@ -20,7 +20,7 @@ final class FBLualibTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/fblualib/foo' => 'fblualib/foo',
       'fbcode/fblualib/public_tld/INSTALL.md' => 'INSTALL.md',

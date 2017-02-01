@@ -16,7 +16,7 @@ final class WangleTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/wangle/ssl/SSLUtil.h' => 'wangle/ssl/SSLUtil.h',
       'fbcode/wangle/public_tld/README.md' => 'README.md',

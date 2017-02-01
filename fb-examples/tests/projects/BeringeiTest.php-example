@@ -20,7 +20,7 @@ final class BeringeiTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       // Example things that *should* make it through.
       'fbcode/beringei/some_file_name_we_want.thrift'

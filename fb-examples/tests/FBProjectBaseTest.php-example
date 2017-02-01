@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -26,7 +26,7 @@ abstract class FBProjectBaseTest extends BaseTest {
    *   changes to the specified internal path should be removed from the
    *   destination repository.
    */
-  protected abstract function getExamplePathMappings(
+  public static abstract function getExamplePathMappings(
   ): ImmMap<string, ?string>;
 
   protected abstract static function map(
@@ -291,7 +291,7 @@ abstract class FBProjectBaseTest extends BaseTest {
 
   final public function examplePathMappings(
   ): array<string, (string, ?string)> {
-    return $this->getExamplePathMappings()
+    return static::getExamplePathMappings()
       ->mapWithKey(($k, $v) ==> tuple($k, $v))
       ->toArray();
   }
@@ -315,7 +315,7 @@ abstract class FBProjectBaseTest extends BaseTest {
   }
 
   final protected function getExamplePublicPath(): string {
-    foreach ($this->getExamplePathMappings() as $source => $dest) {
+    foreach (static::getExamplePathMappings() as $source => $dest) {
       if ($dest !== null) {
         return $source;
       }

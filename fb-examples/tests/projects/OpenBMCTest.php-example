@@ -25,7 +25,7 @@ final class OpenBMCTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'meta-facebook/meta-yosemite/conf/layer.conf'
         => 'meta-facebook/meta-yosemite/conf/layer.conf',

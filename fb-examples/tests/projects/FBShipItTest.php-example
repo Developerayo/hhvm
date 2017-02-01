@@ -30,7 +30,7 @@ final class FBShipItTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       // simple public
       self::ROOT.'/src/ShipItRepoHG.php' => 'src/ShipItRepoHG.php',

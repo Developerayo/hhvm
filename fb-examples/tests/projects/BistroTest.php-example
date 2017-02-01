@@ -16,7 +16,7 @@ final class BistroTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/bistro/bistro/config/Job.h' => 'bistro/config/Job.h',
       'fbcode/bistro/bistro/server/TARGETS' => 'bistro/server/TARGETS',

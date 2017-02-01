@@ -8,7 +8,7 @@ final class FBThriftTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string>{
+  public static function getExamplePathMappings(): ImmMap<string, ?string>{
     return ImmMap {
       'fbcode/thrift/doc/Cpp2.md' => 'thrift/doc/Cpp2.md',
       'fbcode/thrift/NormalFile.h' => 'thrift/NormalFile.h',

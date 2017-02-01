@@ -28,7 +28,7 @@ final class YogaTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       self::ROOT.'/BUCK' => 'BUCK',
       self::ROOT.'/YOGA_DEFS' => 'YOGA_DEFS',

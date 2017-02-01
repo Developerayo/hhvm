@@ -20,7 +20,7 @@ final class iTorchTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/torch/oss/itorch/itorch/foo' => 'foo',
       'fbcode/torch/oss/itorch/itorch/TARGETS' => null,

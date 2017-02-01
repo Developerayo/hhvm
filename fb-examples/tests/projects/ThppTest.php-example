@@ -20,7 +20,7 @@ final class ThppTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/thpp/foo' => 'thpp/foo',
       'fbcode/thpp/public_tld/foo' => 'foo',

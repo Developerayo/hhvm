@@ -23,7 +23,7 @@ final class DhcpLbTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       // Test that a valid file of the project has the base dir stripped off
       self::ROOT.'/lib/dhcp_server.go' => 'lib/dhcp_server.go',

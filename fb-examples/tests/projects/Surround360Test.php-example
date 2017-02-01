@@ -16,7 +16,7 @@ final class Surround360Test extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/surround360/README.md' => 'README.md',
       'fbcode/surround360/surround360_camera_ctl/README.md'

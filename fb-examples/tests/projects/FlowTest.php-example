@@ -18,7 +18,7 @@ final class FlowTest extends FBPublicProjectBaseTest {
   }
 
   <<__Override>>
-  protected function getExamplePathMappings(): ImmMap<string, ?string> {
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
     $test_file_name = ShipItFilterSanityCheckPhase::TEST_FILE_NAME;
     return ImmMap {
       'fbcode/flow/foo' => 'foo',
