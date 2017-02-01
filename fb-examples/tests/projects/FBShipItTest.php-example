@@ -40,11 +40,17 @@ final class FBShipItTest extends FBPublicProjectBaseTest {
         => 'fb-examples/lib/FBShipItCLI.php-example',
       self::ROOT.'/tests/fb-specific-but-public/FBProjectBaseTest.php'
         => 'fb-examples/tests/FBProjectBaseTest.php-example',
+      self::ROOT.'/src/shipit/fb-specific-but-public/FBShipItCLI.php'
+        => 'fb-examples/lib/shipit/FBShipItCLI.php-example',
+      self::ROOT.'/tests/shipit/fb-specific-but-public/FBProjectBaseTest.php'
+        => 'fb-examples/tests/shipit/FBProjectBaseTest.php-example',
       // public project example
       self::ROOT.'/bin/shipit_hhvm.php'
         => 'fb-examples/bin/shipit_hhvm.php-example',
       self::ROOT.'/tests/fb-specific-but-public/projects/HHVMTest.php'
         => 'fb-examples/tests/projects/HHVMTest.php-example',
+      self::ROOT.'/tests/shipit/fb-specific-but-public/projects/HHVMTest.php'
+        => 'fb-examples/tests/shipit/projects/HHVMTest.php-example',
       // public-only
       self::ROOT.'/public_tld/composer.json' => 'composer.json',
       self::ROOT.'/public_tld/dot_gitignore' => '.gitignore',
@@ -52,9 +58,13 @@ final class FBShipItTest extends FBPublicProjectBaseTest {
       // github interface implementations
       self::ROOT.'/src/fb-private/FBToGitHubUserInfo.php' => null,
       self::ROOT.'/src/fb-private/FBGitHubUtils.php' => null,
+      self::ROOT.'/src/shipit/fb-private/FBToGitHubUserInfo.php' => null,
+      self::ROOT.'/src/shipit/fb-private/FBGitHubUtils.php' => null,
       // private projects
       self::ROOT.'/bin/shipit_NOT_A_REAL_PROJECT.php' => null,
       self::ROOT.'/tests/fb-public/projects/NotARealProjectTest.php' => null,
+      self::ROOT.'/tests/shipit/fb-public/projects/NotARealProjectTest.php' =>
+        null,
       // fb infra
       self::ROOT.'/fb_runtests.sh' => null, // Wrapper around PHPUnit
       self::ROOT.'/composer.json' => null, // OSS has a different one
