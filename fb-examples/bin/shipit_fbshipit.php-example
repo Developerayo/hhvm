@@ -150,11 +150,14 @@ final class ShipItFBShipIt extends FBShipItCLI {
       'buck',
       'react-native',
       'relay',
+      // facebookarchive/
+      'squangle',
       // facebookincubator/
       'CommunityCellularManager',
     };
     $orgs = ImmVector {
       'facebook',
+      'facebookarchive',
       'facebookincubator',
     };
     $credentials = FBGitHubUtils::getCredentialsForProject(
