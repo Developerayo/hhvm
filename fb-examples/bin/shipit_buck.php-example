@@ -10,7 +10,9 @@
 namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
-class ShipItBuck {
+class ShipItBuck
+  implements \Facebook\ImportIt\ImportItPathMappings {
+
   const NOT_A_TEST_PLAN = 'Imported from GitHub, without a `Test Plan:` line.';
   const BUCK_SHIPIT_CONFIG_FILE = 'opensource.json';
   const STRIPPED_FILE_PATHS_KEY = 'paths_to_strip';
@@ -83,6 +85,12 @@ class ShipItBuck {
               'test plan',
             },
           ));
+  }
+
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      '' => '',
+    };
   }
 
   private static function rewriteMessage(

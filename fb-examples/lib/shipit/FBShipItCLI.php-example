@@ -22,17 +22,13 @@ type FBShipItCLIStaticConfig = shape(
  * If you need more flexibility than this provides, use the classes
  * directly (eg shipit_hhvm.php and shipit_buck.php)
  */
-abstract class FBShipItCLI {
+abstract class FBShipItCLI
+  implements \Facebook\ImportIt\ImportItPathMappings {
+
   use FBShipItCLITrait;
 
   <<__Override>>
   public abstract static function getStaticConfig(): FBShipItCLIStaticConfig;
-
-  /**
-   * A map from directory paths in the source repository to paths in the
-   * destination repository. The first matching mapping is used.
-   */
-  public abstract static function getPathMappings(): ImmMap<string, string>;
 
   protected abstract static function projectFilterChangeset(
     ShipItChangeset $changeset
