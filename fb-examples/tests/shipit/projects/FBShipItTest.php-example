@@ -36,11 +36,19 @@ final class FBShipItTest extends FBPublicProjectBaseTest {
       self::ROOT.'/src/ShipItRepoHG.php' => 'src/ShipItRepoHG.php',
       self::ROOT.'/tests/PathFiltersTest.php' => 'tests/PathFiltersTest.php',
       // fb examples
+      self::ROOT.'/src/importit/fb-specific-but-public/FBImportItCLI.php'
+        => 'fb-examples/lib/importit/FBImportItCLI.php-example',
+      self::ROOT.'/tests/importit/fb-specific-but-public/FBProjectBaseTest.php'
+        => 'fb-examples/tests/importit/FBProjectBaseTest.php-example',
       self::ROOT.'/src/shipit/fb-specific-but-public/FBShipItCLI.php'
         => 'fb-examples/lib/shipit/FBShipItCLI.php-example',
       self::ROOT.'/tests/shipit/fb-specific-but-public/FBProjectBaseTest.php'
         => 'fb-examples/tests/shipit/FBProjectBaseTest.php-example',
       // public project example
+      self::ROOT.'/bin/importit_hhvm.php'
+        => 'fb-examples/bin/importit_hhvm.php-example',
+      self::ROOT.'/tests/importit/fb-specific-but-public/projects/HHVMTest.php'
+        => 'fb-examples/tests/importit/projects/HHVMTest.php-example',
       self::ROOT.'/bin/shipit_hhvm.php'
         => 'fb-examples/bin/shipit_hhvm.php-example',
       self::ROOT.'/tests/shipit/fb-specific-but-public/projects/HHVMTest.php'
@@ -53,9 +61,12 @@ final class FBShipItTest extends FBPublicProjectBaseTest {
       self::ROOT.'/src/shipit/fb-private/FBToGitHubUserInfo.php' => null,
       self::ROOT.'/src/shipit/fb-private/FBGitHubUtils.php' => null,
       // private projects
+      self::ROOT.'/bin/importit_NOT_A_REAL_PROJECT.php' => null,
+      self::ROOT.'/tests/importit/fb-public/projects/NotARealProjectTest.php'
+        => null,
       self::ROOT.'/bin/shipit_NOT_A_REAL_PROJECT.php' => null,
-      self::ROOT.'/tests/shipit/fb-public/projects/NotARealProjectTest.php' =>
-        null,
+      self::ROOT.'/tests/shipit/fb-public/projects/NotARealProjectTest.php'
+        => null,
       // fb infra
       self::ROOT.'/fb_runtests.sh' => null, // Wrapper around PHPUnit
       self::ROOT.'/composer.json' => null, // OSS has a different one

@@ -54,6 +54,10 @@ final class ShipItFBShipIt extends FBShipItCLI {
     return ImmMap {
       'fbcode/opensource/shipit/public_tld/' => '',
       'fbcode/opensource/shipit/bin/' => 'fb-examples/bin/',
+      'fbcode/opensource/shipit/src/importit/fb-specific-but-public/' =>
+        'fb-examples/lib/importit/',
+      'fbcode/opensource/shipit/tests/importit/fb-specific-but-public/' =>
+        'fb-examples/tests/importit/',
       'fbcode/opensource/shipit/src/shipit/fb-specific-but-public/' =>
         'fb-examples/lib/shipit/',
       'fbcode/opensource/shipit/tests/shipit/fb-specific-but-public/' =>
@@ -120,6 +124,7 @@ final class ShipItFBShipIt extends FBShipItCLI {
 
   private static function getProjectFilePatterns(): ImmSet<string> {
     return ImmSet {
+      '@(^|/)bin/importit_(?<project>[^/]+)\.php$@',
       '@(^|/)bin/shipit_(?<project>[^/]+)\.php$@',
       '@(^|/)tests(/[^/]+)*/projects/(?<project>[^/]+)Test\.php$@',
     };
