@@ -113,7 +113,7 @@ final class UnicodeTest extends BaseTest {
 
     (new ShipItShellCommand(
       $path,
-      'git', 'aawefawfdd', 'foo',
+      'git', 'add', 'foo',
     ))->runSynchronously();
     (new ShipItShellCommand(
       $path,
