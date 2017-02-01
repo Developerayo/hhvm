@@ -32,7 +32,7 @@ final class ShipItSquangle extends FBShipItCLI {
   ): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => 'fbsource',
-      'githubOrg' => 'facebook',
+      'githubOrg' => 'facebookarchive',
       'githubProject' => 'squangle',
       'sourceRoots' => ImmSet { 'fbcode/squangle/' },
     );
