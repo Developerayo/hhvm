@@ -14,7 +14,8 @@ class ShipItRepoHGException extends ShipItRepoException {}
 /**
  * HG specialization of ShipItRepo
  */
-class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
+class ShipItRepoHG extends ShipItRepo
+  implements ShipItDestinationRepo, ShipItSourceRepo {
   private ?string $branch;
 
   public function __construct(
@@ -91,6 +92,68 @@ class ShipItRepoHG extends ShipItRepo implements ShipItSourceRepo {
                                             " hg changeset id");
     }
     return $log;
+  }
+
+  public function findLastSourceCommit(
+    ImmSet<string> $roots,
+  ): ?string {
+    $log = $this->hgCommand(
+      'log',
+      '--limit',
+      '1',
+      '--keyword',
+      'fbshipit-source-id: ',
+      '--template',
+      '{desc}',
+      ...$roots,
+    );
+    $log = trim($log);
+    $matches = null;
+    if (
+      !preg_match(
+        '/^ *fbshipit-source-id: (?<commit>[a-z0-9]+)$/m',
+        $log,
+        $matches,
+      )
+    ) {
+      return null;
+    }
+    if (!is_array($matches)) {
+      return null;
+    }
+    if (!array_key_exists('commit', $matches)) {
+      return null;
+    }
+    return $matches['commit'];
+  }
+
+  public function commitPatch(ShipItChangeset $patch): string {
+    $diff = $this->renderPatch($patch);
+    $this->hgPipeCommand($diff, 'patch', '-');
+    $id = $this->getChangesetFromID('.')?->getID();
+    invariant($id !== null, 'Unexpeceted null SHA!');
+    return $id;
+  }
+
+  public function renderPatch(ShipItChangeset $patch): string {
+    $ret = "From {$patch->getID()} ".
+           date('D M d H:i:s Y', $patch->getTimestamp())."\n".
+           "From: {$patch->getAuthor()}\n".
+           "Date: ".date('r', $patch->getTimestamp())."\n".
+           "Subject: [PATCH] {$patch->getSubject()}\n\n".
+           "{$patch->getMessage()}\n---\n\n";
+    foreach($patch->getDiffs() as $diff) {
+      $path = $diff['path'];
+      $body = $diff['body'];
+
+      $ret .= "diff --git a/{$path} b/{$path}\n{$body}";
+    }
+    $ret .= "--\n1.7.9.5\n";
+    return $ret;
+  }
+
+  public function push(): void {
+    $this->hgCommand('push', '--branch', $this->branch);
   }
 
   /*

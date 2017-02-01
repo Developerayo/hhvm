@@ -10,7 +10,7 @@
 namespace Facebook\ShipIt;
 
 final class SyncTrackingTest extends BaseTest {
-  public function testLastSourceCommit(): void {
+  public function testLastSourceCommitWithGit(): void {
     $tempdir = new ShipItTempDir('git-sync-test');
     $path = $tempdir->getPath();
 
@@ -36,6 +36,28 @@ final class SyncTrackingTest extends BaseTest {
     ))->runSynchronously();
 
     $repo = new ShipItRepoGIT($path, 'master');
+    $this->assertSame($fake_commit_id, $repo->findLastSourceCommit(ImmSet { }));
+  }
+
+  public function testLastSourceCommitWithMercurial(): void {
+    $tempdir = new ShipItTempDir('hg-sync-test');
+    $path = $tempdir->getPath();
+
+    // Prepare an empty repo
+    (new ShipItShellCommand($path, 'hg', 'init'))->runSynchronously();
+
+    // Add a tracked commit
+    $fake_commit_id = bin2hex(random_bytes(16));
+    $message = ShipItSync::addTrackingData(
+      (new ShipItChangeset())->withID($fake_commit_id)
+    )->getMessage();
+    (new ShipItShellCommand($path, 'touch', 'testfile',))->runSynchronously();
+    (new ShipItShellCommand(
+      $path,
+      'hg', 'commit', '-A', '-m', $message,
+    ))->runSynchronously();
+
+    $repo = new ShipItRepoHG($path, 'master');
     $this->assertSame($fake_commit_id, $repo->findLastSourceCommit(ImmSet { }));
   }
 }

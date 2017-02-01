@@ -68,16 +68,34 @@ final class UnicodeTest extends BaseTest {
     );
   }
 
-  public function testCreatedFile(): void {
+  public function testCreatedFileWithGit(): void {
     $changeset = ShipItRepoGIT::getChangesetFromExportedPatch(
       file_get_contents(__DIR__.'/git-diffs/unicode.patch')
     );
     assert($changeset !== null);
 
-    $tempdir = new ShipItTempDir('unicode-test');
+    $tempdir = new ShipItTempDir('unicode-test-git');
     $this->initGitRepo($tempdir);
 
     $repo = new ShipItRepoGIT($tempdir->getPath(), 'master');
+    $repo->commitPatch($changeset);
+
+    $this->assertSame(
+      $this->getExpectedContent(),
+      file_get_contents($tempdir->getPath().'/unicode-example.txt'),
+    );
+  }
+
+  public function testCreatedFileWithMercurial(): void {
+    $changeset = ShipItRepoGIT::getChangesetFromExportedPatch(
+      file_get_contents(__DIR__.'/git-diffs/unicode.patch')
+    );
+    assert($changeset !== null);
+
+    $tempdir = new ShipItTempDir('unicode-test-hg');
+    $this->initMercurialRepo($tempdir);
+
+    $repo = new ShipItRepoHG($tempdir->getPath(), 'master');
     $repo->commitPatch($changeset);
 
     $this->assertSame(
@@ -115,8 +133,7 @@ final class UnicodeTest extends BaseTest {
   public function testCreatingCommitWithHG(): void {
     $tempdir = new ShipItTempDir('unicode-test');
     $path = $tempdir->getPath();
-
-    (new ShipItShellCommand($path, 'hg', 'init'))->runSynchronously();
+    $this->initMercurialRepo($tempdir);
 
     file_put_contents($tempdir->getPath().'/foo', 'bar');
 
@@ -150,5 +167,10 @@ final class UnicodeTest extends BaseTest {
       $path,
       'git', 'commit', '--allow-empty', '-m', 'initial commit',
     ))->runSynchronously();
+  }
+
+  private function initMercurialRepo(ShipItTempDir $tempdir): void {
+    $path = $tempdir->getPath();
+    (new ShipItShellCommand($path, 'hg', 'init'))->runSynchronously();
   }
 }

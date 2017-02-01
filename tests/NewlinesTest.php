@@ -40,7 +40,7 @@ final class NewlinesTest extends BaseTest {
   }
 
   public function testGitSource(): void {
-    $temp_dir = new ShipItTempDir('mercurial-newline-test');
+    $temp_dir = new ShipItTempDir('git-newline-test');
 
     $this->createTestFiles($temp_dir);
     $this->initGitRepo($temp_dir);
@@ -95,24 +95,44 @@ final class NewlinesTest extends BaseTest {
     $this->configureGit($temp_dir);
   }
 
+  private function initMercurialRepo(ShipItTempDir $temp_dir): void {
+    $this->execSteps(
+      $temp_dir->getPath(),
+      [ 'hg', 'init' ],
+    );
+  }
+
   private function assertCreatesCorrectNewLines(
     ShipItChangeset $changeset,
   ): void {
-    $temp_dir = new ShipItTempDir('newline-output-test');
-    $this->initGitRepo($temp_dir);
+    $git_dir = new ShipItTempDir('newline-output-test-git');
+    $this->initGitRepo($git_dir);
+    $hg_dir = new ShipItTempDir('newline-output-test-hg');
+    $this->initMercurialRepo($hg_dir);
+    $repos = ImmVector {
+      new ShipItRepoGIT(
+        $git_dir->getPath(),
+        '--orphan=master',
+      ),
+      new ShipItRepoHG(
+        $hg_dir->getPath(),
+        'master',
+      ),
+    };
 
-    $repo = new ShipItRepoGIT($temp_dir->getPath(), '--orphan=master');
-    $repo->commitPatch($changeset);
+    foreach ($repos as $repo) {
+      $repo->commitPatch($changeset);
 
-    $this->assertSame(
-      self::UNIX_TXT,
-      file_get_contents($temp_dir->getPath().'/unix.txt'),
-      'Unix test file',
-    );
-    $this->assertSame(
-      self::WINDOWS_TXT,
-      file_get_contents($temp_dir->getPath().'/windows.txt'),
-      'Windows text file',
-    );
+      $this->assertSame(
+        self::UNIX_TXT,
+        file_get_contents($repo->getPath().'/unix.txt'),
+        'Unix test file',
+      );
+      $this->assertSame(
+        self::WINDOWS_TXT,
+        file_get_contents($repo->getPath().'/windows.txt'),
+        'Windows text file',
+      );
+    }
   }
 }
