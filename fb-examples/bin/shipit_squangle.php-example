@@ -18,17 +18,19 @@ final class ShipItSquangle extends FBShipItCLI {
   ): ShipItChangeset {
     return $changeset
       |> FBCommonFilters::applyAll($$)
-      |> ShipItPathFilters::moveDirectories(
-          $$,
-          ImmMap {
-            'fbcode/squangle/public_tld/' => '',
-            'fbcode/squangle' => 'squangle',
-          },
-        );
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
   }
 
   <<__Override>>
-  protected static function getStaticConfig(
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'fbcode/squangle/public_tld/' => '',
+      'fbcode/squangle' => 'squangle',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(
   ): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => 'fbsource',
