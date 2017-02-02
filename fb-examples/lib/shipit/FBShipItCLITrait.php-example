@@ -10,7 +10,8 @@
 namespace Facebook\ShipIt;
 
 trait FBShipItCLITrait {
-  public abstract static function getStaticConfig(): FBShipItCLIStaticConfig;
+  require implements IHasFBShipItCLIStaticConfig;
+
   protected abstract static function getBaseConfig(): ShipItBaseConfig;
   protected abstract static function getPhases(): ImmVector<ShipItPhase>;
 

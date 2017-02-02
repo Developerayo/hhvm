@@ -9,21 +9,15 @@
  */
 namespace Facebook\ShipIt;
 
-type FBShipItCLIStaticConfig = shape(
-  'internalRepo' => string,
-  'githubOrg' => string,
-  'githubProject' => string,
-  'sourceRoots' => ImmSet<string>,
-  'destDirName' => ?string, // defaults to githubProject
-);
-
 /** Base class for projects that have no special requirements.
  *
  * If you need more flexibility than this provides, use the classes
  * directly (eg shipit_hhvm.php and shipit_buck.php)
  */
 abstract class FBShipItCLI
-  implements \Facebook\ImportIt\ImportItPathMappings {
+  implements
+    IHasFBShipItCLIStaticConfig,
+    \Facebook\ImportIt\ImportItPathMappings {
 
   use FBShipItCLITrait;
 

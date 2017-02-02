@@ -11,7 +11,9 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 class ShipItBuck
-  implements \Facebook\ImportIt\ImportItPathMappings {
+  implements
+    IHasFBShipItCLIStaticConfig,
+    \Facebook\ImportIt\ImportItPathMappings {
 
   const NOT_A_TEST_PLAN = 'Imported from GitHub, without a `Test Plan:` line.';
   const BUCK_SHIPIT_CONFIG_FILE = 'opensource.json';
@@ -23,11 +25,8 @@ class ShipItBuck
   );
 
   public static function cliMain(): void {
-    $config = new ShipItBaseConfig(
-      '/tmp/oss_sync_and_push',
-      /* source dir = */ 'buck_internal',
-      /* dest dir = */ 'buck',
-    );
+    $static_config = static::getStaticConfig();
+    $config = self::getBaseConfig();
 
     $phases = ImmVector {
       new BuckEnvironmentCheckPhase(),
@@ -35,11 +34,11 @@ class ShipItBuck
       new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::DESTINATION),
       new FBRepoInitPhase(
         ShipItRepoSide::SOURCE,
-        'buck_internal',
+        $static_config['internalRepo'],
       ),
       new ShipItGitHubInitPhase(
-        'facebook',
-        'buck',
+        $static_config['githubOrg'],
+        $static_config['githubProject'],
         ShipItRepoSide::DESTINATION,
         ShipItTransport::HTTPS,
         FBGitHubUtils::class,
@@ -53,7 +52,7 @@ class ShipItBuck
           $config->getSourcePath(),
           $changeset,
         ),
-        /* paths in source repo */ ImmSet { '.' },
+        $static_config['sourceRoots'],
       ),
       new BuckBuildAndTestPhase(),
       new ShipItPushPhase(),
@@ -91,6 +90,24 @@ class ShipItBuck
     return ImmMap {
       '' => '',
     };
+  }
+
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'buck_internal',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'buck',
+      'sourceRoots' => ImmSet {},
+    );
+  }
+
+  private static function getBaseConfig(): ShipItBaseConfig {
+    $static_config = static::getStaticConfig();
+    return new ShipItBaseConfig(
+      '/tmp/oss_sync_and_push',
+      /* source_dir = */ $static_config['internalRepo'],
+      /* dest dir = */ $static_config['githubProject'],
+    );
   }
 
   private static function rewriteMessage(
