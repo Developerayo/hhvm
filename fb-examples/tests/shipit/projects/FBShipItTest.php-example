@@ -33,6 +33,7 @@ final class FBShipItTest extends FBPublicProjectBaseTest {
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       // simple public
+      self::ROOT.'/.hhconfig' => '.hhconfig',
       self::ROOT.'/src/ShipItRepoHG.php' => 'src/ShipItRepoHG.php',
       self::ROOT.'/tests/PathFiltersTest.php' => 'tests/PathFiltersTest.php',
       // fb examples
@@ -57,6 +58,12 @@ final class FBShipItTest extends FBPublicProjectBaseTest {
       self::ROOT.'/public_tld/composer.json' => 'composer.json',
       self::ROOT.'/public_tld/dot_gitignore' => '.gitignore',
       self::ROOT.'/tests/dot_foo' => 'tests/dot_foo', // just in case
+      self::ROOT.'/public_tld/CONTRIBUTING.md' => 'CONTRIBUTING.md',
+      self::ROOT.'/public_tld/DEBUGGING.md' => 'DEBUGGING.md',
+      self::ROOT.'/public_tld/LICENSE' => 'LICENSE',
+      self::ROOT.'/public_tld/PATENTS' => 'PATENTS',
+      self::ROOT.'/public_tld/README.md' => 'README.md',
+      self::ROOT.'/public_tld/TESTING.md' => 'TESTING.md',
       // github interface implementations
       self::ROOT.'/src/shipit/fb-private/FBToGitHubUserInfo.php' => null,
       self::ROOT.'/src/shipit/fb-private/FBGitHubUtils.php' => null,

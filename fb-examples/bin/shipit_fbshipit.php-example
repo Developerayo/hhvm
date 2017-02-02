@@ -62,7 +62,9 @@ final class ShipItFBShipIt extends FBShipItCLI {
         'fb-examples/lib/shipit/',
       'fbcode/opensource/shipit/tests/shipit/fb-specific-but-public/' =>
         'fb-examples/tests/shipit/',
-      'fbcode/opensource/shipit/' => '',
+      'fbcode/opensource/shipit/src/' => 'src/',
+      'fbcode/opensource/shipit/tests/' => 'tests/',
+      'fbcode/opensource/shipit/.hhconfig' => '.hhconfig',
     };
   }
 
