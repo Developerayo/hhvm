@@ -1,0 +1,137 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ImportIt;
+
+use \Facebook\ShipIt\ {
+  FBGitHubUtils,
+  IHasFBShipItCLIStaticConfig,
+  ShipItBaseConfig,
+  ShipItChangeset,
+  ShipItCleanPhase,
+  ShipItDeleteCorruptedRepoPhase,
+  ShipItPullPhase,
+  ShipItRepoSide,
+  ShipItTransport
+};
+
+/** Base class for projects that have no special requirements.
+ *
+ * If you need more flexibility than this provides, use the classes
+ * directly (eg tagit_buck.php)
+ */
+abstract class FBImportItCLI implements IHasFBShipItCLIStaticConfig {
+
+  use \Facebook\ShipIt\FBShipItCLITrait;
+
+  abstract const type TShipIt as ISupportsFBImportIt;
+
+  <<__Override>>
+  final public static function getStaticConfig(
+  ): \Facebook\ShipIt\FBShipItCLIStaticConfig {
+    $shipit_class = static::getShipItClass();
+    return $shipit_class::getStaticConfig();
+  }
+
+  /**
+   * By default, ImportIt will just update paths.  If a project wants to do
+   * something more complicated, they can override this method.
+   */
+  protected static function projectFilterChangeset(
+    ShipItChangeset $changeset
+  ): ShipItChangeset {
+    $shipit_class = static::getShipItClass();
+    return $changeset
+      |> ImportItPathFilters::moveDirectories(
+        $$,
+        $shipit_class::getPathMappings(),
+      );
+  }
+
+  // Public so that you can add a unit test
+  final public static function filterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return $changeset
+      |> static::projectFilterChangeset($$);
+  }
+
+
+  <<__Override>>
+  protected static function getBaseConfig(
+  ): ShipItBaseConfig {
+    $static_config = static::getStaticConfig();
+    return new ShipItBaseConfig(
+      /* base_dir = */ '/var/tmp/fbimportit',
+      /* source_dir */ Shapes::idx(
+        $static_config,
+        'destDirName',
+        $static_config['githubProject'],
+      ),
+      /* dest_dir = */ $static_config['internalRepo'],
+    );
+  }
+
+  <<__Override>>
+  protected static function getPhases(
+  ): ImmVector<\Facebook\ShipIt\ShipItPhase> {
+    $static_config = static::getStaticConfig();
+    $config = static::getBaseConfig();
+
+    // The repository state will be updated and modified, so we need to use a
+    // consistent destination repository for all ImportIt phases.
+    $source_repo_getter = () ==> {
+      return new ImportItRepoGIT(
+        $config->getSourcePath(),
+        $config->getSourceBranch(),
+      );
+    };
+
+    return ImmVector {
+      new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::SOURCE),
+      new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::DESTINATION),
+      new \Facebook\ShipIt\ShipItGitHubInitPhase(
+        $static_config['githubOrg'],
+        $static_config['githubProject'],
+        ShipItRepoSide::SOURCE,
+        ShipItTransport::HTTPS,
+        FBGitHubUtils::class,
+      ),
+      // Clean prior to pulling to remove any untracked files at the current
+      // revision that may conflict with updates.
+      new ShipItCleanPhase(ShipItRepoSide::SOURCE),
+      new ShipItPullPhase(ShipItRepoSide::SOURCE),
+      new FBRepoInitPhase(
+        ShipItRepoSide::DESTINATION,
+        $static_config['internalRepo'],
+      ),
+      // Clean prior to pulling to remove any untracked files at the current
+      // revision that may conflict with updates.
+      new ShipItCleanPhase(ShipItRepoSide::DESTINATION),
+      new ShipItPullPhase(ShipItRepoSide::DESTINATION),
+      new ImportItCheckoutBaseRevisionPhase($source_repo_getter),
+      new ImportItApplyPatchPhase(
+        $source_repo_getter,
+        ShipItRepoSide::SOURCE,
+      ),
+      new ImportItApplyPatchPhase(
+        $source_repo_getter,
+        ShipItRepoSide::DESTINATION,
+        $changeset ==> self::filterChangeset($changeset),
+      ),
+    };
+  }
+
+  final protected static function getShipItClass(
+  ): classname<ISupportsFBImportIt> {
+    $ts = type_structure(static::class, 'TShipIt');
+    invariant($ts['kind'] === TypeStructureKind::OF_CLASS, 'unexpected type');
+    return $ts['classname'];
+  }
+}

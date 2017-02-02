@@ -1,0 +1,85 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ImportIt;
+
+abstract class FBProjectBaseTest extends \Facebook\ShipIt\BaseTest {
+  abstract const type TImportIt as FBImportItCLI;
+  abstract const type TShipItTest as \Facebook\ShipIt\FBProjectBaseTest;
+
+  /**
+   * Example input/output paths for filter.
+   *
+   * Projects can override this, but by default, it uses the inverse of the
+   * ShipIt test.
+   *
+   * @returns a map from source path to either a destination path, or null if
+   *   changes to the specified internal path should be removed from the
+   *   destination repository.
+   */
+  protected static function getExamplePathMappings(
+  ): ImmMap<string, string> {
+    $shipit_test_class = static::getShipItTestClass();
+    $shipit_examples = $shipit_test_class::getExamplePathMappings();
+    $mapping = Map {};
+    foreach ($shipit_examples as $dest_path => $src_path) {
+      if ($src_path === null) {
+        continue;
+      }
+      $mapping[$src_path] = $dest_path;
+    }
+    return $mapping->toImmMap();
+  }
+
+  protected static function map(
+    \Facebook\ShipIt\ShipItChangeset $changeset,
+  ): \Facebook\ShipIt\ShipItChangeset {
+    $importit_class = static::getImportItClass();
+    return $importit_class::filterChangeset($changeset);
+  }
+
+  final public function examplePathMappings(
+  ): array<string, (string, ?string)> {
+    return static::getExamplePathMappings()
+      ->mapWithKey(($k, $v) ==> tuple($k, $v))
+      ->toArray();
+  }
+
+  /**
+   * @dataProvider examplePathMappings
+   */
+  final public function testPathMapping(
+    string $path_in,
+    ?string $path_expected,
+  ): void {
+    $diffs = ImmVector { shape('path' => $path_in, 'body' => 'junk') };
+    $changeset = (new \Facebook\ShipIt\ShipItChangeset())->withDiffs($diffs);
+    $changeset = static::map($changeset);
+
+    $expected_paths = $path_expected === null ? [] : [$path_expected];
+    $this->assertEquals(
+      $expected_paths,
+      $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray(),
+    );
+  }
+
+  final protected static function getImportItClass(
+  ): classname<FBImportItCLI> {
+    $ts = type_structure(static::class, 'TImportIt');
+    invariant($ts['kind'] === TypeStructureKind::OF_CLASS, 'unexpected type');
+    return $ts['classname'];
+  }
+
+  final protected static function getShipItTestClass(
+  ): classname<\Facebook\ShipIt\FBProjectBaseTest> {
+    $ts = type_structure(static::class, 'TShipItTest');
+    invariant($ts['kind'] === TypeStructureKind::OF_CLASS, 'unexpected type');
+    return $ts['classname'];
+  }
+}

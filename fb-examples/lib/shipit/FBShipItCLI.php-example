@@ -15,9 +15,7 @@ namespace Facebook\ShipIt;
  * directly (eg shipit_hhvm.php and shipit_buck.php)
  */
 abstract class FBShipItCLI
-  implements
-    IHasFBShipItCLIStaticConfig,
-    \Facebook\ImportIt\ImportItPathMappings {
+  implements \Facebook\ImportIt\ISupportsFBImportIt {
 
   use FBShipItCLITrait;
 

@@ -1,0 +1,121 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ImportIt;
+
+use \Facebook\ShipIt\ {
+  ShipItShellCommand
+};
+
+final class FBRepoInitPhase extends \Facebook\ShipIt\ShipItPhase {
+  private bool $allowNuke = false;
+
+  public function __construct(
+    private \Facebook\ShipIt\ShipItRepoSide $side,
+    private string $name,
+  ) {
+  }
+
+  <<__Override>>
+  protected function isProjectSpecific(): bool {
+    return false;
+  }
+
+  <<__Override>>
+  public function getReadableName(): string {
+    return 'Initialize '.$this->side.' '.$this->name.' repository';
+  }
+
+  <<__Override>>
+  public function getCLIArguments(
+  ): ImmVector<\Facebook\ShipIt\ShipItCLIArgument> {
+    return ImmVector {
+      shape(
+        'long_name' => 'skip-'.$this->side.'-init',
+        'description' => "Don't initialize the repository",
+        'write' => $_ ==> $this->skip(),
+      ),
+      shape( // Removed; specified in code instead.
+        'long_name' => $this->side.'-repo::',
+      ),
+      shape( // Removed; specified in code instead.
+        'long_name' => 'src-repo::',
+      ),
+    };
+  }
+
+  <<__Override>>
+  public function runImpl(
+    \Facebook\ShipIt\ShipItBaseConfig $config,
+  ): void {
+    $local_path =
+      $this->side === \Facebook\ShipIt\ShipItRepoSide::SOURCE
+      ? $config->getSourcePath()
+      : $config->getDestinationPath();
+
+    $sh_lock = \Facebook\ShipIt\ShipItRepo::createSharedLockForPath(
+      $local_path,
+    );
+
+    if (is_dir($local_path)) {
+      return;
+    }
+
+    $ex_lock = $sh_lock->getExclusive();
+
+    // In case the src repo dir was specified by hand
+    if (basename($local_path) !== $this->name) {
+      fprintf(
+        STDERR,
+        'Facebook clone scripts require directory names to match repo names: '.
+        "got '%s', expected '%s'\n",
+        basename($local_path),
+        $this->name,
+      );
+      exit(1);
+    }
+
+    $command = $this->getCloneCommand();
+    $local_parent_path = dirname($local_path);
+    if (!is_dir($local_parent_path)) {
+      mkdir($local_parent_path, 0755, /* recursive = */ true);
+    }
+    // Make sure that "remove stale temp file" jobs don't clean this up
+    touch($local_parent_path);
+
+    (new ShipItShellCommand($local_parent_path, ...$command))
+      ->setRetries(2)
+      ->setFailureHandler(
+        $_ ==> (new ShipItShellCommand(
+          $local_parent_path,
+          'rm',
+          '-rf',
+          '--preserve-root',
+          $local_path,
+        ))->runSynchronously()
+      )
+      ->runSynchronously();
+  }
+
+  private function getCloneCommand(): ImmVector<string> {
+    switch ($this->name) {
+      case 'fbsource':
+        return ImmVector {
+          '/usr/local/bin/hg-clone-fbsource',
+          '--simple',
+        };
+    }
+    invariant_violation(
+      "Unsupported repository '%s' - add support in %s::%s()",
+      $this->name,
+      __CLASS__,
+      __FUNCTION__,
+    );
+  }
+}

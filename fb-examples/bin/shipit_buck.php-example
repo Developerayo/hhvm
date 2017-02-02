@@ -11,9 +11,7 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 class ShipItBuck
-  implements
-    IHasFBShipItCLIStaticConfig,
-    \Facebook\ImportIt\ImportItPathMappings {
+  implements \Facebook\ImportIt\ISupportsFBImportIt {
 
   const NOT_A_TEST_PLAN = 'Imported from GitHub, without a `Test Plan:` line.';
   const BUCK_SHIPIT_CONFIG_FILE = 'opensource.json';
