@@ -49,7 +49,7 @@ final class ImportItCheckoutBaseRevisionPhase extends ImportItPhase {
       $revision !== null,
       '--source-base-id or --skip-checkout-base must be set!',
     );
-    $this->getSourceRepo()->checkoutNewBranchAt(
+    $this->getSourceRepo($config)->checkoutNewBranchAt(
       'importit-applied-patch',
       $revision,
     );

@@ -9,24 +9,30 @@
  */
 namespace Facebook\ImportIt;
 
+use \Facebook\ShipIt\ {
+  ShipItBaseConfig
+};
+
 abstract class ImportItPhase extends \Facebook\ShipIt\ShipItPhase {
 
   private static ?ImportItRepoGIT $repo;
 
   public function __construct(
-    private (function(): ImportItRepoGIT) $repoGetter,
+    private (function(ShipItBaseConfig): ImportItRepoGIT) $repoGetter,
   ) {}
 
   /**
    * Used to obtain the one and only ImportItRepoGIT to be used by all phases
    * that are ImportIt specific.
    */
-  protected function getSourceRepo(): ImportItRepoGIT {
+  protected function getSourceRepo(
+    ShipItBaseConfig $config,
+  ): ImportItRepoGIT {
     if (self::$repo !== null) {
       return self::$repo;
     }
     $getter = $this->repoGetter;
-    self::$repo = $getter();
+    self::$repo = $getter($config);
     invariant(
       self::$repo !== null,
       'Expecting to get a non-null ImportItRepoGIT from function.',

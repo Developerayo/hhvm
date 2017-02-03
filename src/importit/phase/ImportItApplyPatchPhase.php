@@ -10,6 +10,7 @@
 namespace Facebook\ImportIt;
 
 use \Facebook\ShipIt\ {
+  ShipItBaseConfig,
   ShipItChangeset,
   ShipItRepoSide
 };
@@ -20,7 +21,7 @@ final class ImportItApplyPatchPhase extends ImportItPhase {
 
   <<__Override>>
   public function __construct(
-    (function(): ImportItRepoGIT) $repoGetter,
+    (function(ShipItBaseConfig): ImportItRepoGIT) $repoGetter,
     private ShipItRepoSide $side,
     private ?(function(ShipItChangeset): ShipItChangeset) $filter = null,
   ) {
@@ -54,7 +55,7 @@ final class ImportItApplyPatchPhase extends ImportItPhase {
 
   <<__Override>>
   final protected function runImpl(
-    \Facebook\ShipIt\ShipItBaseConfig $config,
+    ShipItBaseConfig $config,
   ): void {
     switch ($this->side) {
       case ShipItRepoSide::SOURCE:
@@ -64,7 +65,7 @@ final class ImportItApplyPatchPhase extends ImportItPhase {
           '--patch-file must be set!',
         );
         printf("  Importing...\n",);
-        $this->getSourceRepo()->importPatch($patch_file);
+        $this->getSourceRepo($config)->importPatch($patch_file);
         break;
       case ShipItRepoSide::DESTINATION:
         $filter_fn = $this->filter;
@@ -72,7 +73,7 @@ final class ImportItApplyPatchPhase extends ImportItPhase {
           $filter_fn !== null,
           'No filter function provided!',
         );
-        $changeset = $this->getSourceRepo()->getChangesetFromID('HEAD');
+        $changeset = $this->getSourceRepo($config)->getChangesetFromID('HEAD');
         invariant(
           $changeset !== null,
           'No changset found in source repo!',
