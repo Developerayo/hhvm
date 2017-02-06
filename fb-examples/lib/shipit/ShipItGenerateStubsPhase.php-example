@@ -1,0 +1,250 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class ShipItGenerateStubsPhase extends ShipItPhase {
+  private ?string $gitHubProject;
+  private bool $skipShipIt = false;
+
+  <<__Override>>
+  protected function isProjectSpecific(): bool {
+    return false;
+  }
+
+  <<__Override>>
+  final public function getReadableName(): string {
+    return 'Generating files for new project';
+  }
+
+  <<__Override>>
+  final public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
+    return ImmVector {
+      shape(
+        'long_name' => 'github-project::',
+        'description' => 'The name of the GitHub project to generate files for',
+        'write' => $v ==> $this->gitHubProject = $v,
+      ),
+      shape(
+        'long_name' => 'skip-shipit-files',
+        'description' =>
+          'Do not generate the files for ShipIt.  Useful if you are adding '.
+          'project files for ImportIt.',
+        'write' => $_ ==> $this->skipShipIt = true,
+      ),
+    };
+  }
+
+  <<__Override>>
+  final protected function runImpl(ShipItBaseConfig $config): void {
+    $github_project = $this->gitHubProject;
+    invariant($github_project !== null, 'You must pass --github-project!');
+    $license_year = date('Y');
+    $project_class_name = ucfirst(preg_replace_callback(
+      '/-([a-zA-Z])/',
+      $matches ==> strtoupper($matches[1]),
+      $github_project,
+    ));
+    $test_class_name = $project_class_name.'Test';
+    $user = getenv('USER');
+
+    if (!$this->skipShipIt) {
+      // Create ShipIt files (exectuable and test).
+      $bin_contents = <<<EOF
+<?hh
+/**
+ * Copyright (c) $license_year-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipIt$project_class_name extends FBShipItCLI {
+  // TODO($user): Define the root path for your project.  If you have more
+  // than one, you will need to update getPathMappings and remove this instead.
+  const string ROOT = '';
+
+  <<__Override>>
+  protected static function projectFilterChangeset(
+    ShipItChangeset \$changeset,
+  ): ShipItChangeset {
+    return \$changeset
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT => '',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      // TODO($user): Update the internal repository if fbsource is not right
+      'internalRepo' => 'fbsource',
+      // TODO($user): add the organization your project belongs to
+      'githubOrg' => null,
+      'githubProject' => '$github_project',
+      'sourceRoots' => ImmSet { self::ROOT },
+    );
+  }
+}
+
+// Allow require() from unit test
+if (isset(\$argv) && realpath(\$argv[0]) === realpath(__FILE__)) {
+  ShipIt$project_class_name::cliMain();
+}
+
+EOF;
+      $bin_path = $config->getBaseDirectory().
+        '/bin/shipit_'.$github_project.'.php';
+      printf("  Generating %s\n", $bin_path);
+      file_put_contents($bin_path, $bin_contents);
+      (new ShipItShellCommand(
+        $config->getBaseDirectory(),
+        'hg',
+        'add',
+        $bin_path,
+      ))
+        ->runSynchronously();
+
+      $test_contents = <<<EOF
+<?hh // strict
+/**
+ * Copyright (c) $license_year-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class $test_class_name extends FBPublicProjectBaseTest {
+  <<__Override>>
+  protected static function map(ShipItChangeset \$changeset): ShipItChangeset {
+    return ShipIt$project_class_name::filterChangeset(\$changeset);
+  }
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      // TODO($user): add example path mappings to test that your ShipIt code
+      // works correctly.  If a path should be omitted from open source, map it
+      // to null.
+    };
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+}
+
+EOF;
+      $test_path = $config->getBaseDirectory().
+        '/tests/shipit/fb-specific-but-public/projects/'.$test_class_name.
+        '.php';
+      printf("  Generating %s\n", $test_path);
+      file_put_contents($test_path, $test_contents);
+      (new ShipItShellCommand(
+        $config->getBaseDirectory(),
+        'hg',
+        'add',
+        $test_path,
+      ))
+        ->runSynchronously();
+    }
+
+    // Create ImportIt files (exectuable and test).
+    $bin_contents = <<<EOF
+<?hh
+/**
+ * Copyright (c) $license_year-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ImportIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ImportIt$project_class_name extends FBImportItCLI {
+  const type TShipIt = \Facebook\ShipIt\ShipIt$project_class_name;
+}
+
+// Allow require() from unit test
+if (isset(\$argv) && realpath(\$argv[0]) === realpath(__FILE__)) {
+  ImportIt$project_class_name::cliMain();
+}
+
+EOF;
+    $bin_path = $config->getBaseDirectory().
+      '/bin/importit_'.$github_project.'.php';
+    printf("  Generating %s\n", $bin_path);
+    file_put_contents($bin_path, $bin_contents);
+    (new ShipItShellCommand(
+      $config->getBaseDirectory(),
+      'hg',
+      'add',
+      $bin_path,
+    ))
+      ->runSynchronously();
+
+    $test_contents = <<<EOF
+<?hh // strict
+/**
+ * Copyright (c) $license_year-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ImportIt;
+
+final class $test_class_name extends FBProjectBaseTest {
+  const type TImportIt = ImportIt$project_class_name;
+  const type TShipItTest = \Facebook\ShipIt\\$test_class_name;
+}
+
+EOF;
+    $test_path = $config->getBaseDirectory().
+      '/tests/importit/fb-specific-but-public/projects/'.$test_class_name.
+      '.php';
+    printf("  Generating %s\n", $test_path);
+    file_put_contents($test_path, $test_contents);
+    (new ShipItShellCommand(
+      $config->getBaseDirectory(),
+      'hg',
+      'add',
+      $test_path,
+    ))
+      ->runSynchronously();
+
+    // Finally, update the autoload map.
+    printf("  Updating autoload.php\n");
+    (new ShipItShellCommand(
+      $config->getBaseDirectory(),
+      'php',
+      'bin/generate-autoload-map.php',
+    ))
+      ->runSynchronously();
+  }
+}
