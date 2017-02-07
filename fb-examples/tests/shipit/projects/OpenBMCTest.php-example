@@ -14,7 +14,7 @@ final class OpenBMCTest extends FBPublicProjectBaseTest {
   protected static function map(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    return ShipItOpenBMCFido::filterChangeset(
+    return ShipItOpenBMC::filterChangeset(
       $changeset,
     );
   }
@@ -29,6 +29,7 @@ final class OpenBMCTest extends FBPublicProjectBaseTest {
     return ImmMap {
       'meta-facebook/meta-yosemite/conf/layer.conf'
         => 'meta-facebook/meta-yosemite/conf/layer.conf',
+      'github/somefile.patch' => 'somefile.patch',
       'facebook/arcanist/__phutil_library_init__.php' => null,
       'source_mirror/bash-4.3.tar.gz' => null,
     };

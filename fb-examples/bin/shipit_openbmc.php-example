@@ -47,10 +47,10 @@ abstract class ShipItOpenBMC extends FBShipItCLI {
   <<__Override>>
   public static function getPathMappings(): ImmMap<string, string> {
     return ImmMap {
-      '' => '',
       # Provide an overlay to keep patches locally, but 'replace' the source
       # checkouts that exists for u-boot and Linux.
       'github/' => '',
+      '' => '',
     };
   }
 
