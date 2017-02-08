@@ -9,6 +9,10 @@
  */
 namespace Facebook\ShipIt;
 
+use \Facebook\ImportIt\ {
+  ImportItPathMappings
+};
+
 abstract class FBProjectBaseTest extends BaseTest {
   /**
    * Whether or not the filter removes summaries that don't include "@public".
@@ -312,6 +316,37 @@ abstract class FBProjectBaseTest extends BaseTest {
       $expected_paths,
       $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray(),
     );
+  }
+
+  final public function testPathMappingsHaveExamples(): void {
+    $shipit_class = preg_replace(
+      '/([a-zA-Z0-9]+)Test$/',
+      'ShipIt\1',
+      static::class,
+    );
+    $shipit_class = ((): classname<ImportItPathMappings> ==> {
+      invariant(
+        class_exists($shipit_class, false),
+        '%s does not exist.  Test and ShipIt class are not named consistently.',
+        $shipit_class,
+      );
+      return $shipit_class;
+    })();
+    $examples = static::getExamplePathMappings()->keys();
+    foreach ($shipit_class::getPathMappings()->keys() as $source_path) {
+      $found = false;
+      foreach ($examples as $example) {
+        if (strncmp($example, $source_path, strlen($source_path)) === 0) {
+          $found = true;
+          break;
+        }
+      }
+      if (!$found) {
+        $this->fail(
+          'Source path "'.$source_path.'" has no examples defined in tests.',
+        );
+      }
+    };
   }
 
   final protected function getExamplePublicPath(): string {
