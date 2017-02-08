@@ -12,9 +12,20 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItBistro extends FBShipItCLI {
+  use FBCodeBuilderTrait;
 
   <<__Override>>
-  protected static function projectFilterChangeset(
+  protected static function getFBCodeBuilderDependencies(): ImmSet<string> {
+    return ImmSet {
+      'fbthrift',
+      'folly',
+      'proxygen',
+      'wangle',
+    };
+  }
+
+  <<__Override>>
+  protected static function projectFilterChangesetNonFBCodeBuilder(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     return $changeset
@@ -23,40 +34,17 @@ final class ShipItBistro extends FBShipItCLI {
             # bistro/build/build.sh transforms these to CMakeLists.txt, so
             # we want to let external contributors change TARGETS.
             '@/TARGETS$@',
-            # We want some of these revs for consistent builds, see the
-            # github_hashes filters below.
-            '@^fbcode/opensource/project_hashes/facebook@',
           },
         ))
-      |> ShipItPathFilters::stripPaths($$, ImmVector {
-        '@^fbcode/bistro/bistro/build/ci/fbcode_builder$@',
-      })
-      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings())
-      |> ShipItPathFilters::stripPaths(
-        $$,
-        /* strip = */ ImmVector {
-          '@(^|/)facebook[-_].*$@',
-          '@(^|/)README.facebook$@',
-          '@^.fb_dep_github_hashes@',
-        },
-        /* exceptions = */ ImmVector {
-          // Keep just the Github hashes of Bistro's dependencies.
-          '@^.fb_dep_github_hashes$@',
-          '@^.fb_dep_github_hashes/(folly|wangle|proxygen|fbthrift)-rev.txt$@',
-          // This is just to appease ShipItFilterSanityCheckPhase
-          '@^.fb_dep_github_hashes/shipit_test_file.txt$@',
-        }
-      );
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
   }
 
   <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  public static function getPathMappingsNonFBCodeBuilder(
+  ): ImmMap<string, string> {
     return ImmMap {
       'fbcode/bistro/public_tld/' => '',
       'fbcode/bistro/bistro' => 'bistro',
-      'fbcode/opensource/fbcode_builder' => 'bistro/build/ci/fbcode_builder',
-      # Put this in the TLD so that `git log bistro` is sane.
-      'fbcode/opensource/project_hashes/facebook' => '.fb_dep_github_hashes',
     };
   }
 
@@ -67,7 +55,7 @@ final class ShipItBistro extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'bistro',
-      'sourceRoots' => new ImmSet(self::getPathMappings()->keys()),
+      'sourceRoots' => static::getPathMappings()->keys()->toImmSet(),
     );
   }
 }

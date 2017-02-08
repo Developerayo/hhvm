@@ -24,18 +24,15 @@ final class BistroTest extends FBPublicProjectBaseTest {
       'fbcode/cat/fish' => null,
       'fbcode/bistro/fry' => null,
       'fbcode/bistro/public_tld/LICENSE' => 'LICENSE',
-      'fbcode/bistro/bistro/README.facebook' => null,
-      'fbcode/bistro/bistro/build/ci/facebook-script.sh' => null,
-      // This is an in-repo symlink internally.
-      'fbcode/bistro/bistro/build/ci/fbcode_builder' => null,
       // fbcode_builder is shared between several projects, but it's easiest
       // to just copy it into each project's Github repo.
-      'fbcode/opensource/fbcode_builder/fbcode_builder.py' =>
-        'bistro/build/ci/fbcode_builder/fbcode_builder.py',
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'/fbcode_builder.py' =>
+        FBCodeBuilder::DEST_FBCODE_BUILDER.'/fbcode_builder.py',
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'/travis.yml' => '.travis.yml',
       // Bistro is only interested in the Github revisions its dependencies.
-      'fbcode/opensource/project_hashes/facebook/wangle-rev.txt' =>
-        '.fb_dep_github_hashes/wangle-rev.txt',
-      'fbcode/opensource/project_hashes/facebook/yoga-rev.txt' => null,
+      FBCodeBuilder::SRC_GITHUB_HASHES.'/wangle-rev.txt' =>
+        FBCodeBuilder::DEST_GITHUB_HASHES.'/wangle-rev.txt',
+      FBCodeBuilder::SRC_GITHUB_HASHES.'/yoga-rev.txt' => null,
     };
   }
 

@@ -1,0 +1,151 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+class FBCodeBuilder {
+  const string SRC_FBCODE_BUILDER = 'fbcode/opensource/fbcode_builder';
+  const string DEST_FBCODE_BUILDER = 'build/fbcode_builder';
+
+  const string SRC_TRAVIS_YML = self::SRC_FBCODE_BUILDER.'/travis.yml';
+
+  // IMPORTANT: The next two paths have hard-coded exceptions in
+  // FBCommonFilters::stripCommonFiles() so they don't get filtered out on
+  // account of containing `/facebook/`.  Upon a thorough discussion with
+  // @sdwilsh, this was the lesser of many other evils.
+  //
+  // It is critical that neither of these paths have trailing slashes.
+  //
+  // The github hashes change frequently. We keep them under build/ so that
+  // `git log projectname/` stays relatively un-spammy.  Then, nest under
+  // `facebook` for a future-proof pattern of `<github user>/<github repo>`.
+  const string SRC_GITHUB_HASHES = 'fbcode/opensource/project_hashes/facebook';
+  const string DEST_GITHUB_HASHES = 'build/deps/github_hashes/facebook';
+}
+
+/**
+ * Use this trait in your FBShipItCLI implementation to enable
+ * opensource/fbcode_builder/README* for your project.
+ *
+ * You will need to:
+ *  - Define the abstract methods this trait needs,
+ *  - Ensure your `sourceRoots` include the files added by this trait,
+ *    either by calling `static::getPathMappings()->keys()->toImmSet()` or
+ *    by wrapping with `static::addSourceRoots(your roots)`.
+ *  - Use this in your filter chain:
+ *      ShipItPathFilters::moveDirectories($$, static::getPathMappings())
+ *
+ * This copies `opensource/fbcode_builder` into `build/fbcode_builder` in
+ * your Github repo, and also copies the Github hashes of your fbcode
+ * dependencies into `build/deps/github_hashes/facebook`.
+ *
+ * It will also copy the generic `opensource/fbcode_builder/travis.yml` into
+ * `.travis.yml` on Github -- but if necessary, you can replace it with a
+ * custom one in your projectFilterChangesetNonFBCodeBuilder().
+ *
+ * Once your ShipIt diff is committed and pushed, you can task the Open
+ * Source oncall to enable Travis builds for your repo.
+ *
+ * Why a trait? -- This awkward form of composition ensures that
+ * `fbcode_builder` modifications to your changeset can be made in the
+ * appropriate parts of the filter chain.
+ */
+trait FBCodeBuilderTrait {
+  require extends FBShipItCLI;  // The trait accesses getStaticConfig()
+
+  // Implement the same as you would write a vanilla projectFilterChangeset()
+  abstract protected static function projectFilterChangesetNonFBCodeBuilder(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset;
+  // Implement the same as you would write a vanilla getPathMappings()
+  abstract public static function getPathMappingsNonFBCodeBuilder(
+  ): ImmMap<string, string>;
+  // Pick project names from fbcode/opensource/project_hashes/facebook.  If
+  // your dependency isn't there, you need to enable TagIt for it.
+  abstract protected static function getFBCodeBuilderDependencies(
+  ): ImmSet<string>;
+
+  private static function getFBCodeBuilderPathMappings(
+  ): ImmMap<string, string>  {
+    return ImmMap {
+      FBCodeBuilder::SRC_FBCODE_BUILDER => FBCodeBuilder::DEST_FBCODE_BUILDER,
+      FBCodeBuilder::SRC_GITHUB_HASHES => FBCodeBuilder::DEST_GITHUB_HASHES,
+    };
+  }
+
+  // If you cannot set your `sourceRoots` automatically via
+  // `static::getPathMappings()->keys()->toImmSet()`, use this to wrap them.
+  // Will be deleted by sdwilsh@ whenever `sourceRoots` disappears.
+  final public static function addSourceRoots(
+    ImmSet<string> $r,
+  ): ImmSet<string> {
+    return $r->concat(self::getFBCodeBuilderPathMappings()->keys())
+      ->toImmSet();
+  }
+
+  // Adds fbcode_builder's path mappings to the per-project path mappings.
+  // `projectFilterChangesetNonFBCodeBuilder` will `moveDirectories` for us.
+  <<__Override>>
+  final public static function getPathMappings(
+  ): ImmMap<string, string> {
+    return ImmMap::fromItems(
+      static::getPathMappingsNonFBCodeBuilder()->items()->concat(
+        self::getFBCodeBuilderPathMappings()->items()
+      )
+    );
+  }
+
+  final protected static function projectFilterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $static_config = static::getStaticConfig();
+    invariant(
+      $static_config['sourceRoots']
+        ->contains(FBCodeBuilder::SRC_FBCODE_BUILDER) &&
+          $static_config['sourceRoots']
+            ->contains(FBCodeBuilder::SRC_GITHUB_HASHES),
+      'Either declare your sourceRoots as static::getPathMappings()->keys()'.
+      '->toImmSet(), or wrap them with FBCodeBuilder::addSourceRoots(),',
+    );
+    return $changeset
+      // Going first means that projectFilterChangesetNonFBCodeBuilder can
+      // overwrite our .travis.yml with a custom one, if it needs to.
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==>  preg_replace(
+          '@^'.preg_quote(FBCodeBuilder::SRC_TRAVIS_YML, '@').'$@',
+          '.travis.yml',
+          $path
+        ),
+      )
+      // We are counting on this to call
+      //   ShipItPathFilters::moveDirectories($$, static::getPathMappings())
+      |> static::projectFilterChangesetNonFBCodeBuilder($$)
+      // Strip all project_hashes except those of our dependencies.
+      // Strip code specific to Facebook's internal continuous integration.
+      |> ShipItPathFilters::stripPaths(
+        $$,
+        /* strip = */ ImmVector {
+          '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'@',
+          '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'/facebook_@',
+          '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'/README.facebook$@',
+        },
+        /* exceptions = */ ImmVector {
+          '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'$@',
+          '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'/('.implode(
+              '|',
+              static::getFBCodeBuilderDependencies()
+                ->map($d ==> preg_quote($d, '@'))
+            ).')-rev.txt$@',
+          // This is just to appease ShipItFilterSanityCheckPhase
+          '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'/shipit_test_file.txt$@',
+        },
+      );
+  }
+}

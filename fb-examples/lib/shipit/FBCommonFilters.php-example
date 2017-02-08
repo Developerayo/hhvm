@@ -98,7 +98,7 @@ final class FBCommonFilters {
 
   public static function stripCommonFiles(
     ShipItChangeset $changeset,
-    ImmVector<string> $exception_patterns = ImmVector { },
+    ImmVector<string> $exception_patterns = ImmVector {},
   ): ShipItChangeset {
     return ShipItPathFilters::stripPaths(
       $changeset,
@@ -115,7 +115,13 @@ final class FBCommonFilters {
         '@/BUILD_MODE$@',
         '@\.mk$@',
       },
-      $exception_patterns,
+      $exception_patterns->concat(ImmVector {
+        // Without these exceptions, FBCodeBuilderTrait would be difficult
+        // to use correctly, since the project-invoked FBCommonFilters would
+        // strip out these /facebook/-containing paths.
+        '@^'.preg_quote(FBCodeBuilder::SRC_GITHUB_HASHES, '@').'($|/)@',
+        '@^'.preg_quote(FBCodeBuilder::DEST_GITHUB_HASHES, '@').'($|/)@',
+      }),
     );
   }
 
