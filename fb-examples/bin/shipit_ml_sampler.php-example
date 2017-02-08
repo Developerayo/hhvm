@@ -22,6 +22,7 @@ final class ShipItMLSampler extends FBShipItCLI {
       |> FBCommonFilters::applyAll($$)
       |> ShipItPathFilters::stripPaths($$, ImmVector {
         "@fbcode/analytics/ml_sampler/.*data$@",
+        "@fbcode/analytics/ml_sampler/ml_sampler/ml_sampler.py@",
       })
       |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
   }
