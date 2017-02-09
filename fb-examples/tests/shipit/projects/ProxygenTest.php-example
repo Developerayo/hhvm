@@ -27,6 +27,8 @@ final class ProxygenTest extends FBPublicProjectBaseTest {
       'fbcode/not_proxygen/lib' => null,
       'fbcode/proxygen/lib/http/codec/HTTPCodec.h'
         => 'proxygen/lib/http/codec/HTTPCodec.h',
+      // Don't bother Github users with code only relevant internally.
+      'build/facebook_cheesecake.py' => null,
       // fbcode_builder is shared between several projects, but it's easiest
       // to just copy it into each project's Github repo.
       FBCodeBuilder::SRC_FBCODE_BUILDER.'/fbcode_builder.py' =>

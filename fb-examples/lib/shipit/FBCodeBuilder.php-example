@@ -132,6 +132,8 @@ trait FBCodeBuilderTrait {
       |> ShipItPathFilters::stripPaths(
         $$,
         /* strip = */ ImmVector {
+          // Don't bother Github users with code only relevant internally.
+          '@^build/facebook_.*@',
           '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'@',
           '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'/facebook_@',
           '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'/README.facebook$@',
