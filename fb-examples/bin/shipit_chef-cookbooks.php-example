@@ -89,8 +89,9 @@ final class ShipItChefCookbooks extends FBShipItCLI{
   <<__Override>>
   public static function getPathMappings(): ImmMap<string, string> {
     return ImmMap {
-      'chef/cookbooks/core/' => 'cookbooks/',
       'chef/github/' => '',
+      'chef/cookbooks/core/' => 'cookbooks/',
+      'chef/github/cookbooks/fb_init_sample' => 'cookbooks/fb_init_sample',
     };
   }
 
