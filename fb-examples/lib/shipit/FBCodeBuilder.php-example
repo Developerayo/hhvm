@@ -13,8 +13,6 @@ class FBCodeBuilder {
   const string SRC_FBCODE_BUILDER = 'fbcode/opensource/fbcode_builder';
   const string DEST_FBCODE_BUILDER = 'build/fbcode_builder';
 
-  const string SRC_TRAVIS_YML = self::SRC_FBCODE_BUILDER.'/travis.yml';
-
   // IMPORTANT: The next two paths have hard-coded exceptions in
   // FBCommonFilters::stripCommonFiles() so they don't get filtered out on
   // account of containing `/facebook/`.  Upon a thorough discussion with
@@ -74,6 +72,7 @@ trait FBCodeBuilderTrait {
   private static function getFBCodeBuilderPathMappings(
   ): ImmMap<string, string>  {
     return ImmMap {
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'/travis.yml' => '.travis.yml',
       FBCodeBuilder::SRC_FBCODE_BUILDER => FBCodeBuilder::DEST_FBCODE_BUILDER,
       FBCodeBuilder::SRC_GITHUB_HASHES => FBCodeBuilder::DEST_GITHUB_HASHES,
     };
@@ -114,16 +113,6 @@ trait FBCodeBuilderTrait {
       '->toImmSet(), or wrap them with FBCodeBuilder::addSourceRoots(),',
     );
     return $changeset
-      // Going first means that projectFilterChangesetNonFBCodeBuilder can
-      // overwrite our .travis.yml with a custom one, if it needs to.
-      |> ShipItPathFilters::rewritePaths(
-        $$,
-        $path ==>  preg_replace(
-          '@^'.preg_quote(FBCodeBuilder::SRC_TRAVIS_YML, '@').'$@',
-          '.travis.yml',
-          $path
-        ),
-      )
       // We are counting on this to call
       //   ShipItPathFilters::moveDirectories($$, static::getPathMappings())
       |> static::projectFilterChangesetNonFBCodeBuilder($$)
