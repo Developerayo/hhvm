@@ -70,4 +70,14 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
       [ 'git', 'config', 'user.email', 'fbshipit@example.com' ],
     );
   }
+
+  protected function configureHg(
+    ShipItTempDir $temp_dir
+  ): void {
+    file_put_contents(
+      $temp_dir->getPath().'/.hg/hgrc',
+      '[ui]
+username = FBShipIt Unit Test <fbshipit@example.com>',
+    );
+  }
 }

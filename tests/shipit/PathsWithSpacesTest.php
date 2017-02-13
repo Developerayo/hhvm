@@ -60,6 +60,7 @@ final class PathsWithSpacesTest extends BaseTest {
     $temp_dir = new ShipItTempDir(__FUNCTION__);
     $path = $temp_dir->getPath();
     $this->execSteps($path, [ 'hg', 'init' ]);
+    $this->configureHg($temp_dir);
     mkdir($path.'/'.dirname(self::FILE_NAME), 0755, /* recursive = */ true);
     $this->execSteps(
       $path,
