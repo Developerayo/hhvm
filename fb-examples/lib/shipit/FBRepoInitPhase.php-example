@@ -160,6 +160,13 @@ final class FBRepoInitPhase extends ShipItPhase {
           'ssh://git.vip.facebook.com/data/gitrepos/yocto/meta-openbmc.git',
           'meta-openbmc',
         };
+      case 'meta-terragraph':
+        return ImmVector {
+          '/usr/bin/git',
+          'clone',
+          'ssh://git.vip.facebook.com/data/gitrepos/yocto/meta-terragraph.git',
+          'meta-terragraph',
+        };
       case 'mysql-fb':
         return ImmVector {
           '/usr/bin/git',
