@@ -21,15 +21,20 @@ final class RenameFileTest extends BaseTest {
    * not enough information.
    */
   public function testRenameFile(): void {
-    $temp_dir = trim(shell_exec('mktemp -d'));
+    $temp_dir = new ShipItTempDir('rename-file-test');
     file_put_contents(
-      $temp_dir.'/initial.txt',
+      $temp_dir->getPath().'/initial.txt',
       'my content here',
     );
 
     $this->execSteps(
-      $temp_dir,
+      $temp_dir->getPath(),
       ImmVector { 'hg', 'init' },
+    );
+    $this->configureHg($temp_dir);
+
+    $this->execSteps(
+      $temp_dir->getPath(),
       ImmVector { 'hg', 'commit', '-Am', 'initial commit' },
       ImmVector { 'hg', 'mv', 'initial.txt', 'moved.txt' },
       ImmVector { 'chmod', '755', 'moved.txt' },
@@ -37,12 +42,12 @@ final class RenameFileTest extends BaseTest {
     );
 
     $repo = new ShipItRepoHG(
-      $temp_dir,
+      $temp_dir->getPath(),
       'master',
     );
     $changeset = $repo->getChangesetFromID('.');
     assert($changeset !== null);
-    shell_exec('rm -rf '.escapeshellarg($temp_dir));
+    shell_exec('rm -rf '.escapeshellarg($temp_dir->getPath()));
 
     $this->assertSame('moved file', $changeset->getSubject());
 
