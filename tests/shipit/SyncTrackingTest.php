@@ -45,6 +45,7 @@ final class SyncTrackingTest extends BaseTest {
 
     // Prepare an empty repo
     (new ShipItShellCommand($path, 'hg', 'init'))->runSynchronously();
+    $this->configureHg($tempdir);
 
     // Add a tracked commit
     $fake_commit_id = bin2hex(random_bytes(16));
