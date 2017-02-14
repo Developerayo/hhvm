@@ -24,10 +24,10 @@ final class NewlinesTest extends BaseTest {
     $temp_dir = new ShipItTempDir('mercurial-newline-test');
 
     $this->createTestFiles($temp_dir);
+    $this->initMercurialRepo($temp_dir);
 
     $this->execSteps(
       $temp_dir->getPath(),
-      [ 'hg', 'init' ],
       [ 'hg', 'commit', '-Am', 'add files' ],
     );
 
@@ -100,6 +100,7 @@ final class NewlinesTest extends BaseTest {
       $temp_dir->getPath(),
       [ 'hg', 'init' ],
     );
+    $this->configureHg($temp_dir);
   }
 
   private function assertCreatesCorrectNewLines(
