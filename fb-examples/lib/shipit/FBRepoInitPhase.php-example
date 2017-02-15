@@ -82,7 +82,7 @@ final class FBRepoInitPhase extends ShipItPhase {
       exit(1);
     }
 
-    $command = $this->getCloneCommand();
+    $command = self::getCloneCommand($this->name);
     $local_parent_path = dirname($local_path);
     if (!is_dir($local_parent_path)) {
       mkdir($local_parent_path, 0755, /* recursive = */ true);
@@ -104,8 +104,10 @@ final class FBRepoInitPhase extends ShipItPhase {
       ->runSynchronously();
   }
 
-  private function getCloneCommand(): ImmVector<string> {
-    switch ($this->name) {
+  public static function getCloneCommand(
+    string $name,
+  ): ImmVector<string> {
+    switch ($name) {
       case 'fbcode':
         return ImmVector {
           '/usr/local/bin/hg-clone-fbcode',
@@ -188,7 +190,7 @@ final class FBRepoInitPhase extends ShipItPhase {
     }
     invariant_violation(
       "Unsupported repository '%s' - add support in %s::%s()",
-      $this->name,
+      $name,
       __CLASS__,
       __FUNCTION__,
     );

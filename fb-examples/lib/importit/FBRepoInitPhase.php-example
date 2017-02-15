@@ -104,18 +104,7 @@ final class FBRepoInitPhase extends \Facebook\ShipIt\ShipItPhase {
   }
 
   private function getCloneCommand(): ImmVector<string> {
-    switch ($this->name) {
-      case 'fbsource':
-        return ImmVector {
-          '/usr/local/bin/hg-clone-fbsource',
-          '--simple',
-        };
-    }
-    invariant_violation(
-      "Unsupported repository '%s' - add support in %s::%s()",
-      $this->name,
-      __CLASS__,
-      __FUNCTION__,
-    );
+    return \Facebook\ShipIt\FBRepoInitPhase::getCloneCommand($this->name)
+      ->filter($command ==> $command !== '--no-working-dir');
   }
 }
