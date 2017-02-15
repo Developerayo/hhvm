@@ -30,6 +30,10 @@ final class Surround360Test extends FBPublicProjectBaseTest {
         => 'surround360_render/README.md',
       'fbcode/surround360/surround360_render/source/util/SystemUtil.h'
         => 'surround360_render/source/util/SystemUtil.h',
+      'fbcode/surround360/surround360_render/dot_something'
+        => 'surround360_render/.something',
+      'fbcode/surround360/surround360_camera_ctl/dot_something'
+        => 'surround360_camera_ctl/.something',
     };
   }
 
