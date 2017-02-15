@@ -9,15 +9,13 @@
  */
 namespace Facebook\ShipIt;
 
-final class BuckBuildAndTestPhase extends BuildAndTestPhase {
+final class BuckVerifyNoMoeOccurrencesPhase extends BuildAndTestPhase {
   private static array<string> $testsWhitelist = array();
 
   <<__Override>>
   protected function build(ShipItBaseConfig $config): void {
     $steps = ImmMap {
       'clean' => ImmVector { 'git', 'clean', '-xffd' },
-      'lint' => ImmVector { 'ant', 'default', 'lint' },
-      'build' => ImmVector { './bin/buck', 'build', 'buck' },
     };
 
     self::runExecutableSteps($config, $steps);
@@ -39,35 +37,5 @@ final class BuckBuildAndTestPhase extends BuildAndTestPhase {
       "Grep found MOE in OSS repo:\n%s\n",
       $moe_occurrences,
     );
-
-/* HH_FIXME[4128] Use ShipItShellCommand */
-    $tests_out = ShipItUtil::shellExec(
-      $config->getDestinationPath(),
-      /* stdin = */ null,
-      ShipItUtil::RETURN_STDERR,
-      './bin/buck', 'test',
-    );
-
-    $failed_targets = array();
-    if (
-      preg_match_all(
-        '@^FAIL ([^\s]*)$@m',
-        $tests_out,
-        $failed_targets,
-        PREG_PATTERN_ORDER,
-      )
-    ) {
-      foreach ($failed_targets[1] as $failed_target) {
-        if (!in_array($failed_target, self::$testsWhitelist)) {
-          fprintf(
-            STDERR,
-            "./bin/buck test failed, testing output:\n%s\n",
-            $tests_out,
-          );
-          exit(1);
-        }
-      }
-    }
-    fwrite(STDERR, "All tests passed\n");
   }
 }

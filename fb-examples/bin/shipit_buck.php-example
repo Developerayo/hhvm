@@ -52,7 +52,7 @@ class ShipItBuck
         ),
         $static_config['sourceRoots'],
       ),
-      new BuckBuildAndTestPhase(),
+      new BuckVerifyNoMoeOccurrencesPhase(),
       new ShipItPushPhase(),
       new BuckUpdateInternalMirrorPhase(),
     };
