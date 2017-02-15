@@ -248,10 +248,7 @@ class ShipItRepoGIT
       $this->gitPipeCommand(null, 'submodule', 'update', '--recursive');
     }
 
-    $log = trim($this->gitCommand('log', '-1'));
-    list($commit) = explode("\n", $log, 2);
-    list($_,$sha)   = explode(' ', $commit, 2);
-    return (string)$sha;
+    return $this->getHEADSha();
   }
 
   protected function gitPipeCommand(?string $stdin, ...$args): string {
@@ -354,5 +351,9 @@ class ShipItRepoGIT
     ))->setStdIn($tar)->runSynchronously();
 
     return shape('tempDir' => $dest, 'revision' => $rev);
+  }
+
+  protected function getHEADSha(): string {
+    return trim($this->gitCommand('log', '-1', "--pretty=format:%H"));
   }
 }

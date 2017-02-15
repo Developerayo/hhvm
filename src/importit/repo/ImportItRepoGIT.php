@@ -27,6 +27,16 @@ class ImportItRepoGIT extends \Facebook\ShipIt\ShipItRepoGIT {
   public function importPatch(
     string $patch_file,
   ): void {
+    $lock = $this->getSharedLock()->getExclusive();
+    $base_rev = $this->getHEADSha();
+    // First, we apply our patch file.
     $this->gitCommand('am', $patch_file);
+    // Now, reset to the parent revision.
+    $this->gitCommand('reset', '--hard', $base_rev);
+    // Now squash all the commits that were after it in the tree.  HEAD@{1}
+    // points to our previous HEAD, whish is now the last applied patch.
+    $this->gitCommand('merge', '--squash', 'HEAD@{1}');
+    // Now we can safely commit our changes.
+    $this->gitCommand('commit', '--no-edit');
   }
 }
