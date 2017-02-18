@@ -58,6 +58,11 @@ final class ShipItSubmoduleFilter {
       if ($old_rev === null || $new_rev === null) {
         // Do nothing - this will lead to a 'patch does not apply' error for
         // human debugging, which seems like a reasonable error to give :)
+        printf(
+          "  Skipping change to '%s' (-> %s); this will certainly fail.\n",
+          $text_file_with_rev,
+          $submodule_path,
+        );
         $diffs[] = $diff;
         continue;
       }
