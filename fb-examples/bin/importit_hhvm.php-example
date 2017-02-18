@@ -11,8 +11,26 @@ namespace Facebook\ImportIt;
 
 require_once(__DIR__.'/../autoload.php');
 
+use \Facebook\ShipIt\ {
+  ShipItChangeset
+};
+
 final class ImportItHHVM extends FBImportItCLI {
   const type TShipIt = \Facebook\ShipIt\ShipItHHVM;
+
+  <<__Override>>
+  protected static function projectFilterChangeset(
+    ShipItChangeset $changeset
+  ): ShipItChangeset {
+    return $changeset
+      |> parent::projectFilterChangeset($$)
+      |> ImportItSubmoduleFilter::moveSubmoduleCommitToTextFile(
+          $$,
+          // This is mapped here from the previous filters.
+          'fbcode/hphp/public_tld/third-party',
+          'fbcode/hphp/facebook/third-party-rev.txt',
+        );
+  }
 }
 
 // Allow require() from unit test
