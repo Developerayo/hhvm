@@ -1,0 +1,16 @@
+From 1de4b47a57ab38607758023bedbd46cf3b1cc280 Mon Sep 17 00:00:00 2001
+From: Aaron Orenstein <aorenste@fb.com>
+Date: Mon, 6 Feb 2017 13:04:17 -0800
+Subject: [PATCH] Support for a more modular third-party folly:
+
+Update third-party
+---
+ third-party | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+diff --git a/third-party b/third-party
+index 2142ac3..d31d3a5 160000
+--- a/third-party
++++ b/third-party
+@@ -1 +1 @@
+-Subproject commit 2142ac3221e20e2f6c640cbb15019d59a9e7624d
++Subproject commit d31d3a5bcbb617bf338c8f7eb51763effa4ea227
