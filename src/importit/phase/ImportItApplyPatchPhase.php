@@ -87,9 +87,17 @@ final class ImportItApplyPatchPhase extends ImportItPhase {
           'The destination repository must implement ShipItDestinationRepo!',
         );
         printf("  Filtering...\n",);
-        $changset = $filter_fn($changeset);
+        $changeset = $filter_fn($changeset);
         printf("  Exporting...\n",);
-        $repo->commitPatch($filter_fn($changeset));
+        try {
+          $repo->commitPatch($changeset);
+        } catch (\Exception $e) {
+          printf(
+            "  Failure to apply patch:\n%s\n",
+            $repo->renderPatch($changeset),
+          );
+          throw $e;
+        }
         printf(
           "  Done.  Patched repository at %s\n",
           $repo->getPath(),
