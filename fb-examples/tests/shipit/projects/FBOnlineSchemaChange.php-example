@@ -19,7 +19,16 @@ final class OnlineSchemaChangeTest extends FBPublicProjectBaseTest {
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
         'fbcode/dba/osc/lib/constant.py' => 'osc/lib/constant.py',
-        'fbcode/dba/osc/commands/copy.py' => 'osc/lib/copy.py',
+        'fbcode/dba/osc/commands/copy.py' => 'osc/commands/copy.py',
+        'fbcode/dba/osc/__init__.py' => 'osc/__init__.py',
+        'fbcode/dba/osc/.gitignore' => '.gitignore',
+        'fbcode/dba/osc/CONTRIBUTING.md' => 'CONTRIBUTING.md',
+        'fbcode/dba/osc/LICENSE' => 'LICENSE',
+        'fbcode/dba/osc/PATENTS' => 'PATENTS',
+        'fbcode/dba/osc/README.md' => 'README.md',
+        'fbcode/dba/osc/osc_cli' => 'osc_cli',
+        'fbcode/dba/osc/setup.py' => 'setup.py',
+        'fbcode/dba/osc/test_cli' => 'test_cli',
         'fbcode/dba/osc/TARGETS' => null,
         'fbcode/dba/osc/fb_hook.py' => null,
         'fbcode/somethingelseentirely/' => null,
