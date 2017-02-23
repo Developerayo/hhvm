@@ -67,14 +67,14 @@ abstract class ShipItOpenBMC extends FBShipItCLI {
 
 final class ShipItOpenBMCFido extends ShipItOpenBMC {
   <<__Override>>
-  protected static function getBaseConfig(): ShipItBaseConfig {
+  public static function getBaseConfig(): ShipItBaseConfig {
     return parent::getBaseConfig()->withSourceBranch('fido');
   }
 }
 
 final class ShipItOpenBMCHelium extends ShipItOpenBMC {
   <<__Override>>
-  protected static function getBaseConfig(): ShipItBaseConfig {
+  public static function getBaseConfig(): ShipItBaseConfig {
     return parent::getBaseConfig()
       ->withSourceBranch('helium')
       ->withDestinationBranch('helium');

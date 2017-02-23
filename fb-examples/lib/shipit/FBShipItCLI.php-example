@@ -37,7 +37,7 @@ abstract class FBShipItCLI
   }
 
   <<__Override>>
-  protected static function getBaseConfig(): ShipItBaseConfig {
+  public static function getBaseConfig(): ShipItBaseConfig {
     $static_config = static::getStaticConfig();
     return new ShipItBaseConfig(
       '/var/tmp/fbshipit',

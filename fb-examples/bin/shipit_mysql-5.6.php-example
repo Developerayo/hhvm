@@ -63,7 +63,7 @@ final class ShipItMySQL56 extends FBShipItCLI {
   }
 
   <<__Override>>
-  protected static function getBaseConfig(): ShipItBaseConfig {
+  public static function getBaseConfig(): ShipItBaseConfig {
     // Given that MySQL is "special" and doesn't use "master" for neither source
     // or destination branches then this is the custom configuration we need to
     // expose for the import work.

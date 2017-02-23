@@ -99,7 +99,7 @@ class ShipItBuck
     );
   }
 
-  private static function getBaseConfig(): ShipItBaseConfig {
+  public static function getBaseConfig(): ShipItBaseConfig {
     $static_config = static::getStaticConfig();
     return new ShipItBaseConfig(
       '/tmp/oss_sync_and_push',
