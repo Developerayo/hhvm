@@ -79,6 +79,8 @@ final class ShipItInfer extends FBShipItCLI {
       '.deweyconfig',
       '.facebook',
       'ci_config.json',
+      'info.json',
+      'pull-request.patch',
       'setup-infer.sh',
       'setup.sh',
       'arcanist/',
