@@ -187,6 +187,22 @@ final class FBRepoInitPhase extends ShipItPhase {
           'rocksdb-fb',
         };
         break;
+      case 'phabtest1_git':
+        return ImmVector {
+          '/usr/bin/git',
+          'clone',
+          'ssh://git.vip.facebook.com/data/gitrepos/phabtest1_git.git',
+          'phabtest1_git',
+        };
+        break;
+      case 'phabtest1_hg':
+        return ImmVector {
+          '/usr/bin/hg',
+          'clone',
+          'ssh://hg.vip.facebook.com/data/scm/phabtest1_hg',
+          'phabtest1_hg',
+        };
+        break;
     }
     invariant_violation(
       "Unsupported repository '%s' - add support in %s::%s()",
