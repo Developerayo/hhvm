@@ -320,7 +320,7 @@ abstract class FBProjectBaseTest extends BaseTest {
 
   final public function testPathMappingsHaveExamples(): void {
     $shipit_class = preg_replace(
-      '/([a-zA-Z0-9]+)Test$/',
+      '/([a-zA-Z0-9_]+)Test$/',
       'ShipIt\1',
       static::class,
     );
