@@ -37,6 +37,17 @@ class ShipItRepoGIT
   }
 
   <<__Override>>
+  public function updateBranchTo(string $base_rev): void {
+    if (!$this->branch) {
+      throw new ShipItRepoGITException(
+        $this,
+        'setBranch must be called first.',
+      );
+    }
+    $this->gitCommand('checkout', '-B', $this->branch, $base_rev);
+  }
+
+  <<__Override>>
   public function getHeadChangeset(
   ): ?ShipItChangeset {
     $rev = $this->gitCommand(

@@ -92,15 +92,6 @@ abstract class FBImportItCLI
     $static_config = static::getStaticConfig();
     $config = static::getBaseConfig();
 
-    // The repository state will be updated and modified, so we need to use a
-    // consistent destination repository for all ImportIt phases.
-    $source_repo_getter = (\Facebook\ShipIt\ShipItBaseConfig $c) ==> {
-      return new ImportItRepoGIT(
-        $c->getSourcePath(),
-        $c->getSourceBranch(),
-      );
-    };
-
     return ImmVector {
       new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::SOURCE),
       new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::DESTINATION),
@@ -123,14 +114,7 @@ abstract class FBImportItCLI
       // revision that may conflict with updates.
       new ShipItCleanPhase(ShipItRepoSide::DESTINATION),
       new ShipItPullPhase(ShipItRepoSide::DESTINATION),
-      new ImportItCheckoutBaseRevisionPhase($source_repo_getter),
-      new ImportItApplyPatchPhase(
-        $source_repo_getter,
-        ShipItRepoSide::SOURCE,
-      ),
-      new ImportItApplyPatchPhase(
-        $source_repo_getter,
-        ShipItRepoSide::DESTINATION,
+      new ImportItSyncPhase(
         $changeset ==> self::filterChangeset($changeset),
       ),
     };

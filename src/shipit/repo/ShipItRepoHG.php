@@ -40,6 +40,15 @@ class ShipItRepoHG extends ShipItRepo
   }
 
   <<__Override>>
+  public function updateBranchTo(string $base_rev): void {
+    if (!$this->branch) {
+      throw new ShipItRepoHGException($this, 'setBranch must be called first.');
+    }
+    $this->hgCommand('bookmark', '--force', '--rev', $base_rev, $this->branch);
+    $this->hgCommand('update', $this->branch);
+  }
+
+  <<__Override>>
   public function getHeadChangeset(
   ): ?ShipItChangeset {
     if (!$this->branch) {

@@ -74,6 +74,8 @@ abstract class ShipItRepo {
    */
   protected abstract function setBranch(string $branch): bool;
 
+  public abstract function updateBranchTo(string $base_rev): void;
+
   /**
    * Cleans our checkout.
    */
