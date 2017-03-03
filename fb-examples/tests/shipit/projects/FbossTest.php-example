@@ -23,6 +23,7 @@ final class FbossTest extends FBPublicProjectBaseTest {
       'fbcode/fboss/Main.cpp' => 'fboss/Main.cpp',
       'fbcode/fboss/common/README.md' => 'common/README.md',
       'fbcode/fboss/TARGETS' => null,
+      'fbcode/fboss/common/fb303/if/TARGETS' => null,
       'fbcode/fboss/facebook/secret' => null,
       'fbcode/fboss/THIRD-PARTY-VERSIONS' => null,
       'fbcode/fboss/tphacks' => null,
