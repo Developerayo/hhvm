@@ -38,6 +38,7 @@ final class ShipItFlow extends FBShipItCLI {
             '@fbcode/flow/kpm.lock$@',
             '@fbcode/flow/(?:.+/)*yarn.lock$@',
             '@fbcode/flow/.npmrc$@',
+            '@fbcode/flow/hack@',
           },
           $exceptions->concat(ImmVector {
             // ShipItFilterSanityCheckPhase doesn't like that we filter the
@@ -77,8 +78,8 @@ final class ShipItFlow extends FBShipItCLI {
             '@fbcode/hphp/hack/src/third-party/avl/@',
             '@fbcode/hphp/hack/src/third-party/core/@',
             '@fbcode/hphp/hack/src/third-party/inotify/@',
-            // allow all utils except errors.ml(i) and lint.ml(i)
-            '@fbcode/hphp/hack/src/utils/(?!(?:errors|lint)\.mli?)@',
+            // allow all .ml .mli and .c files in utils
+            '@fbcode/hphp/hack/src/utils/(?!(?:errors|lint)\.mli?)[^/]*\.(mli?|c)@',
             '@fbcode/hphp/hack/src/utils/collections/@',
             '@fbcode/hphp/hack/src/utils/disk/@',
             '@fbcode/hphp/hack/src/utils/hh_json/@',

@@ -29,7 +29,7 @@ final class FlowTest extends FBPublicProjectBaseTest {
       'fbcode/flow/github/yarn.lock' => 'yarn.lock',
       'fbcode/hphp/hack/src/'.$test_file_name => 'hack/'.$test_file_name,
       'fbcode/hphp/hack/src/utils/errors.ml' => null,
-      'fbcode/hphp/hack/src/utils/foo' => 'hack/utils/foo',
+      'fbcode/hphp/hack/src/utils/foo.ml' => 'hack/utils/foo.ml',
       'fbcode/somethingelse/foo' => null,
     };
   }
