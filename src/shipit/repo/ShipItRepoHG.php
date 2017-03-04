@@ -309,11 +309,22 @@ class ShipItRepoHG extends ShipItRepo
     return $changeset->withDiffs($diffs->toImmVector());
   }
   protected function hgPipeCommand(?string $stdin, ...$args): string {
+    // Some server-side commands will inexplicitly fail, and then succeed the
+    // next time they are ran.  There are a some, however, that we never want
+    // to re-run because we'll lose error messages as a result.
+    switch ((new ImmVector($args))->firstValue() ?? '') {
+      case 'patch':
+        $retry_count = 0;
+        break;
+      default:
+        $retry_count = 1;
+    }
+
     $command = (new ShipItShellCommand($this->path, 'hg', ...$args))
       ->setEnvironmentVariables(ImmMap {
         'HGPLAIN' => '1',
       })
-      ->setRetries(1);
+      ->setRetries($retry_count);
     if ($stdin) {
       $command->setStdIn($stdin);
     }
