@@ -64,7 +64,8 @@ class ImportItRepoGIT extends \Facebook\ShipIt\ShipItRepoGIT {
       'ImportIt commit for #'.$pr_number,
     );
 
-    $changeset = $this->getChangesetFromID('HEAD');
+    $rev = trim($this->gitCommand('rev-parse', 'HEAD'));
+    $changeset = $this->getChangesetFromID($rev);
     invariant($changeset !== null, 'Impossible');
     return tuple(
       $changeset,

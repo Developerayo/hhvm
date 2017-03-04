@@ -12,13 +12,15 @@ namespace Facebook\ImportIt;
 use \Facebook\ShipIt\ {
   ShipItBaseConfig,
   ShipItChangeset,
+  ShipItDestinationRepo,
   ShipItRepo
 };
 
 final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
 
-  private ?string $pullRequestNumber;
   private ?string $expectedHeadRev;
+  private ?string $patchesDirectory;
+  private ?string $pullRequestNumber;
 
   public function __construct(
     private (function(ShipItChangeset): ShipItChangeset) $filter,
@@ -40,14 +42,20 @@ final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
   ): ImmVector<\Facebook\ShipIt\ShipItCLIArgument> {
     return ImmVector {
       shape(
+        'long_name' => 'expected-head-revision::',
+        'description' => 'The expected revision at the HEAD of the PR',
+        'write' => $x ==> $this->expectedHeadRev = $x,
+      ),
+      shape(
         'long_name' => 'pull-request-number::',
         'description' => 'The number of the Pull Request to import',
         'write' => $x ==> $this->pullRequestNumber = $x,
       ),
       shape(
-        'long_name' => 'expected-head-revision::',
-        'description' => 'The expected revision at the HEAD of the PR',
-        'write' => $x ==> $this->expectedHeadRev = $x,
+        'long_name' => 'save-patches-to::',
+        'description' => 'Directory to copy created patches to. Useful for '.
+                         'debugging',
+        'write' => $x ==> $this->patchesDirectory = $x,
       ),
     };
   }
@@ -95,25 +103,65 @@ final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
       $destination_repo->updateBranchTo($base_rev);
     }
     invariant(
-      $destination_repo instanceof \Facebook\ShipIt\ShipItDestinationRepo,
+      $destination_repo instanceof ShipItDestinationRepo,
       'The destination repository must implement ShipItDestinationRepo!',
     );
     printf("  Filtering...\n",);
     $filter_fn = $this->filter;
     $changeset = $filter_fn($changeset);
     printf("  Exporting...\n",);
+    $this->maybeSavePatch($destination_repo, $changeset);
     try {
-      $destination_repo->commitPatch($changeset);
-    } catch (\Exception $e) {
+      $rev = $destination_repo->commitPatch($changeset);
       printf(
-        "  Failure to apply patch:\n%s\n",
-        $destination_repo->renderPatch($changeset),
+        "  Done.  %s committed in %s\n",
+        $rev,
+        $destination_repo->getPath(),
       );
+    } catch (\Exception $e) {
+      if ($this->patchesDirectory !== null) {
+        printf(
+          "  Failure to apply patch at %s\n",
+          $this->getPatchLocationForChangeset($changeset),
+        );
+      } else {
+        printf(
+          "  Failure to apply patch:\n%s\n",
+          $destination_repo->renderPatch($changeset),
+        );
+      }
       throw $e;
     }
-    printf(
-      "  Done.  Patched repository at %s\n",
-      $destination_repo->getPath(),
+  }
+
+  private function maybeSavePatch(
+    ShipItDestinationRepo $destination_repo,
+    ShipItChangeset $changeset,
+  ): void {
+    if ($this->patchesDirectory === null) {
+      return;
+    }
+    if (!file_exists($this->patchesDirectory)) {
+      mkdir($this->patchesDirectory, 0755, /* recursive = */ true);
+    } elseif (!is_dir($this->patchesDirectory)) {
+      fprintf(
+        STDERR,
+        "Cannot log to %s: the path exists and is not a directory.\n",
+        $this->patchesDirectory,
+      );
+      return;
+    }
+    $file = $this->getPatchLocationForChangeset($changeset);
+    file_put_contents($file, $destination_repo->renderPatch($changeset));
+    $changeset = $changeset->withDebugMessage(
+      'Saved patch file: %s',
+      $file,
     );
+  }
+
+  private function getPatchLocationForChangeset(
+    ShipItChangeset $changeset,
+  ): string {
+    return $this->patchesDirectory.'/'.$changeset->getID().'.patch';
   }
 }
