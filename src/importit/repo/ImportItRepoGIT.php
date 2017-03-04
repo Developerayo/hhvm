@@ -56,12 +56,13 @@ class ImportItRepoGIT extends \Facebook\ShipIt\ShipItRepoGIT {
     $this->gitCommand('checkout', '-B', $branch_name, $merge_base);
     $this->setBranch($branch_name);
     $this->gitPipeCommand($diff, 'apply', '--binary', '-');
+    $this->gitCommand('add', '--all');
+    $status = trim($this->gitCommand('status'));
     $this->gitCommand(
       'commit',
-      '--all',
       '--allow-empty',
       '-m',
-      'ImportIt commit for #'.$pr_number,
+      'ImportIt commit for #'.$pr_number."\n\n".$status,
     );
 
     $rev = trim($this->gitCommand('rev-parse', 'HEAD'));
