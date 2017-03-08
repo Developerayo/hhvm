@@ -187,6 +187,11 @@ final class FBRepoInitPhase extends ShipItPhase {
           'rocksdb-fb',
         };
         break;
+      case 'si_sigma':
+        return ImmVector {
+          '/usr/local/bin/fbclone',
+          'si_sigma',
+        };
       case 'phabtest1_git':
         return ImmVector {
           '/usr/bin/git',
