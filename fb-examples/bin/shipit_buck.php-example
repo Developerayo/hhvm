@@ -80,6 +80,7 @@ class ShipItBuck
               'summary',
               'reviewed by',
               'test plan',
+              'pulled by',
             },
           ));
   }
