@@ -1,25 +1,6 @@
-From 5b5a2dbc5741b7ccba3fe63d433c87f700005a56 Mon Sep 17 00:00:00 2001
-From: Fred Emmott <fredemmott@fb.com>
-Date: Fri, 15 Apr 2016 10:03:02 -0700
-Subject: [PATCH] Unicode Test
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-Apostrophe: don’t
-Emoji: 🍺 🍻 🍷 🍸😀 😬 😁 😂 😃 😄 😅
-Russian: Все люди рождаются свободными и равными в своем достоинстве и правах.
-Japanese: すべての人間は、生まれながらにして自由であり、かつ、尊厳と権利とについて平等である。
-Arabic: يولد جميع الناس أحرارًا متساوين في الكرامة والحقوق.
-Chinese (traditional): 人人生而自由，在尊嚴和權利上一律平等。
----
- unicode-example.txt | 6 ++++++
- 1 file changed, 6 insertions(+)
- create mode 100644 unicode-example.txt
-
 diff --git a/unicode-example.txt b/unicode-example.txt
 new file mode 100644
-index 0000000..bcf505c
+index 0000000..1f60525
 --- /dev/null
 +++ b/unicode-example.txt
 @@ -0,0 +1,6 @@
@@ -30,5 +11,5 @@ index 0000000..bcf505c
 +Arabic: يولد جميع الناس أحرارًا متساوين في الكرامة والحقوق.
 +Chinese (traditional): 人人生而自由，在尊嚴和權利上一律平等。
 -- 
-2.8.0.rc2
+2.9.3
 

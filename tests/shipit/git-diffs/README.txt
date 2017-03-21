@@ -5,6 +5,8 @@ Welcome to HipHop Debugger!
 Type "help" or "?" for a complete list of commands.
 
 hphpd> require_once('./autoload.php')
-hphpd> $repo = new ShipItRepoGIT('/tmp/gittest', HH\ImmVector { '' })
-hphpd> $patch = $repo->getNativePatchFromID('f9f3f5645604ab1d95c21a7825a8f73948661f62')
-hphpd> file_put_contents('tests/git-diffs/file-to-symlink.diff', $patch)
+hphpd> $repo = new \Facebook\ShipIt\ShipItRepoGIT('/tmp/gittest', 'master')
+hphpd> $header = $repo->getNativeHeaderFromID('5ecc4b73aba8abb77f814a1fa0020e46e0327c53')
+hphpd> $patch = $repo->getNativePatchFromID('5ecc4b73aba8abb77f814a1fa0020e46e0327c53')
+hphpd> file_put_contents('tests/shipit/git-diffs/add-newline-at-eof.header', $header)
+hphpd> file_put_contents('tests/shipit/git-diffs/add-newline-at-eof.patch', $patch)

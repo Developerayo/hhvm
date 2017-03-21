@@ -27,18 +27,31 @@ interface ShipItSourceRepo {
   public function getChangesetFromID(string $revision): ?ShipItChangeset;
 
   /**
-   * Raw output of 'git show'/'hg export' or similar.
+   * Raw patch file that one might get from git show/hg export.  No header data
+   * is included.
    *
    * Useful for testing.
    */
   public function getNativePatchFromID(string $revision): string;
 
   /**
+   * Raw metadata containing information like the commit message, author, and
+   * date that one might get from git show/hg export.
+   *
+   * Useful for testing.
+   */
+  public function getNativeHeaderFromID(string $revision): string;
+
+  /**
    * Get a standardized representation of the string diff. This should be the
    * output from git format-patch, hg-export or similar. Handy for testing.
+
+   * @param $header The author, date, and message information
+   * @param $patch The code changes
    */
   public static function getChangesetFromExportedPatch(
-    string $exported_diff,
+    string $header,
+    string $patch,
   ): ?ShipItChangeset;
 
   /**

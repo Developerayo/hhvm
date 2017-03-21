@@ -14,8 +14,11 @@ final class SubmoduleTest extends BaseTest {
   public function testSubmoduleCommitFile(): void {
     $changeset = ShipItRepoHG::getChangesetFromExportedPatch(
       file_get_contents(
-        __DIR__.'/hg-diffs/submodule-hhvm-third-party.diff'
-      )
+        __DIR__.'/hg-diffs/submodule-hhvm-third-party.header',
+      ),
+      file_get_contents(
+        __DIR__.'/hg-diffs/submodule-hhvm-third-party.patch',
+      ),
     );
     $this->assertNotNull($changeset);
     assert($changeset !== null); // for typechecker

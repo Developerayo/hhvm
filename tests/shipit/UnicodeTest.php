@@ -38,14 +38,16 @@ final class UnicodeTest extends BaseTest {
   }
 
   public function getSourceRepoImplementations(
-  ): array<(classname<ShipItSourceRepo>, string)> {
+  ): array<(classname<ShipItSourceRepo>, string, string)> {
     return [
       tuple(
         ShipItRepoGIT::class,
+        __DIR__.'/git-diffs/unicode.header',
         __DIR__.'/git-diffs/unicode.patch',
       ),
       tuple(
         ShipItRepoHG::class,
+        __DIR__.'/hg-diffs/unicode.header',
         __DIR__.'/hg-diffs/unicode.patch',
       ),
     ];
@@ -56,9 +58,11 @@ final class UnicodeTest extends BaseTest {
    */
   public function testCommitMessage(
     classname<ShipItSourceRepo> $impl,
+    string $header_file,
     string $patch_file,
   ): void {
     $changeset = $impl::getChangesetFromExportedPatch(
+      file_get_contents($header_file),
       file_get_contents($patch_file),
     );
     assert($changeset !== null);
@@ -70,7 +74,8 @@ final class UnicodeTest extends BaseTest {
 
   public function testCreatedFileWithGit(): void {
     $changeset = ShipItRepoGIT::getChangesetFromExportedPatch(
-      file_get_contents(__DIR__.'/git-diffs/unicode.patch')
+      file_get_contents(__DIR__.'/git-diffs/unicode.header'),
+      file_get_contents(__DIR__.'/git-diffs/unicode.patch'),
     );
     assert($changeset !== null);
 
@@ -88,7 +93,8 @@ final class UnicodeTest extends BaseTest {
 
   public function testCreatedFileWithMercurial(): void {
     $changeset = ShipItRepoGIT::getChangesetFromExportedPatch(
-      file_get_contents(__DIR__.'/git-diffs/unicode.patch')
+      file_get_contents(__DIR__.'/git-diffs/unicode.header'),
+      file_get_contents(__DIR__.'/git-diffs/unicode.patch'),
     );
     assert($changeset !== null);
 

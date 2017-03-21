@@ -166,9 +166,7 @@ class ShipItRepoHG extends ShipItRepo
   }
 
   /*
-   * Generator yielding patch sections starting with header,
-   * then each of the diff blocks (individually)
-   * and finally the footer
+   * Generator yielding patch sections of the diff blocks (individually).
    */
   protected static function ParseHgRegions(string $patch) {
     $contents = '';
@@ -180,6 +178,7 @@ class ShipItRepoHG extends ShipItRepo
           '@^diff --git( ([ab]/(.*?)|/dev/null)){2}@',
           rtrim($line),
         )
+        && $contents !== ''
       ) {
         yield $contents;
         $contents = '';
@@ -224,24 +223,44 @@ class ShipItRepoHG extends ShipItRepo
 
   public function getNativePatchFromID(string $revision): string {
     return $this->hgCommand(
-      'export',
+      'log',
       '--git',
       '-r', $revision,
       '--encoding', 'UTF-8',
+      '--template', '{diff()}',
+    );
+  }
+
+  public function getNativeHeaderFromID(string $revision): string {
+    return $this->hgCommand(
+      'log',
+      '--git',
+      '-r', $revision,
+      '--encoding', 'UTF-8',
+      '--template', '# User {author}
+# Date {date}
+# Node ID {node}
+{desc}',
     );
   }
 
   public function getChangesetFromID(string $revision): ?ShipItChangeset {
+    $header = $this->getNativeHeaderFromID($revision);
     $patch = $this->getNativePatchFromID($revision);
-    $changeset = $this->getChangesetFromNativePatch($revision, $patch);
+    $changeset = $this->getChangesetFromNativePatch(
+      $revision,
+      $header,
+      $patch,
+    );
     return $changeset;
   }
 
   private function getChangesetFromNativePatch(
     string $revision,
+    string $header,
     string $patch,
   ): ?ShipItChangeset {
-    $changeset = self::getChangesetFromExportedPatch($patch);
+    $changeset = self::getChangesetFromExportedPatch($header, $patch);
     if ($changeset === null) {
       return $changeset;
     }
@@ -290,16 +309,13 @@ class ShipItRepoHG extends ShipItRepo
   }
 
   public static function getChangesetFromExportedPatch(
+    string $header,
     string $patch,
   ): ?ShipItChangeset {
-    $changeset = null;
+    $changeset = self::parseHeader($header);
     $diffs = Vector { };
 
     foreach(self::ParseHgRegions($patch) as $region) {
-      if ($changeset === null) {
-        $changeset = self::parseHeader($region);
-        continue;
-      }
       $diffs[] = self::parseDiffHunk($region);
     }
 
@@ -308,6 +324,7 @@ class ShipItRepoHG extends ShipItRepo
     }
     return $changeset->withDiffs($diffs->toImmVector());
   }
+
   protected function hgPipeCommand(?string $stdin, ...$args): string {
     // Some server-side commands will inexplicitly fail, and then succeed the
     // next time they are ran.  There are a some, however, that we never want

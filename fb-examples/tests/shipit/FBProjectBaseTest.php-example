@@ -206,7 +206,8 @@ abstract class FBProjectBaseTest extends BaseTest {
 
   public function testPullRequestSummariesArePublic(): void {
     $in = ShipItRepoHG::getChangesetFromExportedPatch(
-      file_get_contents(__DIR__.'/../hg-diffs/github-pull-request.diff')
+      file_get_contents(__DIR__.'/../hg-diffs/github-pull-request.header'),
+      file_get_contents(__DIR__.'/../hg-diffs/github-pull-request.patch'),
     );
     $this->assertNotNull($in);
     assert($in !== null); // for typechecker

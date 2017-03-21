@@ -1,18 +1,3 @@
-# HG changeset patch
-# User Fred Emmott <fredemmott@fb.com>
-# Date 1460740008 25200
-#      Fri Apr 15 10:06:48 2016 -0700
-# Node ID 0bf3ec65889b01ffcd1c4328ed321944d1d902b2
-# Parent  0000000000000000000000000000000000000000
-Unicode Test
-
-Apostrophe: don’t
-Emoji: 🍺 🍻 🍷 🍸😀 😬 😁 😂 😃 😄 😅
-Russian: Все люди рождаются свободными и равными в своем достоинстве и правах.
-Japanese: すべての人間は、生まれながらにして自由であり、かつ、尊厳と権利とについて平等である。
-Arabic: يولد جميع الناس أحرارًا متساوين في الكرامة والحقوق.
-Chinese (traditional): 人人生而自由，在尊嚴和權利上一律平等。
-
 diff --git a/unicode-example.txt b/unicode-example.txt
 new file mode 100644
 --- /dev/null

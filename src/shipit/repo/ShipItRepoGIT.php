@@ -113,19 +113,15 @@ class ShipItRepoGIT
   }
 
   private static function parseHeader(string $header): ShipItChangeset {
-    list($envelope, $message) = explode("\n\n", trim($header), 2);
-
-    $message = trim($message);
+    $parts = explode("\n\n", trim($header), 2);
+    $envelope = $parts[0];
+    $message = count($parts) === 2 ? trim($parts[1]) : '';
 
     $start_of_filelist = strrpos($message, "\n---\n ");
     if ($start_of_filelist !== false) {
       // Get rid of the file list when a summary is
       // included in the commit message
       $message = trim(substr($message, 0, $start_of_filelist));
-    } else if (strpos($message, "---\n ") === 0) {
-      // Git rid of the file list in the situation where there is
-      // no summary in the commit message (when it starts with "---\n").
-      $message = '';
     }
 
     $changeset = (new ShipItChangeset())->withMessage($message);
@@ -160,17 +156,47 @@ class ShipItRepoGIT
 
   public function getNativePatchFromID(string $revision): string {
     return $this->gitCommand(
-        'format-patch',
-        '--no-renames',
-        '-1',
-        $revision,
-        '--stdout',
+      'format-patch',
+      '--no-renames',
+      '--no-stat',
+      '--stdout',
+      '--format=', // Contain nothing but the code changes
+      '-1',
+      $revision,
+    );
+  }
+
+  public function getNativeHeaderFromID(string $revision): string {
+    $patch = $this->getNativePatchFromID($revision);
+    return $this->getNativeHeaderFromIDWithPatch($revision, $patch);
+  }
+
+  private function getNativeHeaderFromIDWithPatch(
+    string $revision,
+    string $patch
+  ): string {
+    $full_patch = $this->gitCommand(
+      'format-patch',
+      '--no-renames',
+      '--no-stat',
+      '--stdout',
+      '-1',
+      $revision,
+    );
+    $index = strpos($full_patch, $patch);
+    if ($index !== false) {
+      return substr($full_patch, 0, $index);
+    }
+    throw new ShipItRepoGITException(
+      $this,
+      'Could not extract patch header.',
     );
   }
 
   public function getChangesetFromID(string $revision): ?ShipItChangeset {
     $patch = $this->getNativePatchFromID($revision);
-    $changeset = self::getChangesetFromExportedPatch($patch);
+    $header =  $this->getNativeHeaderFromIDWithPatch($revision, $patch);
+    $changeset = self::getChangesetFromExportedPatch($header, $patch);
     if ($changeset !== null) {
       $changeset = $changeset->withID($revision);
     }
@@ -178,15 +204,12 @@ class ShipItRepoGIT
   }
 
   public static function getChangesetFromExportedPatch(
+    string $header,
     string $patch,
   ): ?ShipItChangeset {
-    $ret = null;
+    $ret = self::parseHeader($header);
     $diffs = Vector { };
-    foreach(ShipItUtil::parsePatchWithHeader($patch) as $hunk) {
-      if ($ret === null) {
-        $ret = self::parseHeader($hunk);
-        continue;
-      }
+    foreach(ShipItUtil::parsePatchWithoutHeader($patch) as $hunk) {
       $diffs[] = self::parseDiffHunk($hunk);
     }
     if ($ret === null) {

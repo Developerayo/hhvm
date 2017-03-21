@@ -14,8 +14,11 @@ final class SubmoduleTest extends \Facebook\ShipIt\BaseTest {
   public function testSubmoduleCommitFile(): void {
     $changeset = \Facebook\ShipIt\ShipItRepoGIT::getChangesetFromExportedPatch(
       file_get_contents(
-        __DIR__.'/git-diffs/submodule-hhvm-third-party.diff'
-      )
+        __DIR__.'/git-diffs/submodule-hhvm-third-party.header',
+      ),
+      file_get_contents(
+        __DIR__.'/git-diffs/submodule-hhvm-third-party.patch',
+      ),
     );
     $this->assertNotNull($changeset);
     assert($changeset !== null); // for typechecker
@@ -42,8 +45,8 @@ final class SubmoduleTest extends \Facebook\ShipIt\BaseTest {
       $change,
     );
 
-    $old_pos = strpos($change, '2142ac3221e20e2f6c640cbb15019d59a9e7624d');
-    $new_pos = strpos($change, 'd31d3a5bcbb617bf338c8f7eb51763effa4ea227');
+    $old_pos = strpos($change, '6d9dffd0233c53bb83e4daf5475067073df9cdca');
+    $new_pos = strpos($change, 'ae031dcc9594163f5b0c35e7026563f1c8372595');
 
     $this->assertNotFalse($old_pos);
     $this->assertNotFalse($new_pos);
