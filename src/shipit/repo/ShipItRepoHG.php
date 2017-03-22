@@ -224,7 +224,7 @@ class ShipItRepoHG extends ShipItRepo
   public function getNativePatchFromID(string $revision): string {
     return $this->hgCommand(
       'log',
-      '--git',
+      '--config', 'diff.git=True',
       '-r', $revision,
       '--encoding', 'UTF-8',
       '--template', '{diff()}',
@@ -234,7 +234,7 @@ class ShipItRepoHG extends ShipItRepo
   public function getNativeHeaderFromID(string $revision): string {
     return $this->hgCommand(
       'log',
-      '--git',
+      '--config', 'diff.git=True',
       '-r', $revision,
       '--encoding', 'UTF-8',
       '--template', '# User {author}
