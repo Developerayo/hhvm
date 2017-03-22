@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -53,7 +53,7 @@ abstract class ShipItRepo {
   // Level of verbosity for -v option
   const VERBOSE_STANDARD = 3;
 
-  static public $VERBOSE = 0;
+  static public int $VERBOSE = 0;
 
   const TYPE_GIT = 'git';
   const TYPE_HG  = 'hg';
@@ -93,9 +93,6 @@ abstract class ShipItRepo {
   ): Trepo {
     $repo = ShipItRepo::open($path, $branch);
     invariant(
-      /* HH_FIXME[4162]: Instanceof on a generic classname is now an error.
-       * Consider using different logic to avoid use of classname<Trepo>.
-       */
       $repo instanceof $interface,
       '%s is a %s, needed a %s',
       $path,
