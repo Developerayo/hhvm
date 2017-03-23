@@ -403,7 +403,7 @@ class ShipItRepoHG extends ShipItRepo
 
     $ret = Vector { };
     foreach (
-      ShipItUtil::parsePatchWithoutHeader($patch) as $hunk
+      ShipItUtil::parsePatch($patch) as $hunk
     ) {
       $ret[] = self::parseDiffHunk($hunk);
     }

@@ -209,7 +209,7 @@ class ShipItRepoGIT
   ): ?ShipItChangeset {
     $ret = self::parseHeader($header);
     $diffs = Vector { };
-    foreach(ShipItUtil::parsePatchWithoutHeader($patch) as $hunk) {
+    foreach(ShipItUtil::parsePatch($patch) as $hunk) {
       $diffs[] = self::parseDiffHunk($hunk);
     }
     if ($ret === null) {
