@@ -33,38 +33,34 @@ final class ShipItRelay extends FBShipItCLI {
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $changeset = FBCommonFilters::stripSummariesByDefault($changeset);
-    $changeset = FBCommonFilters::applyAll($changeset);
-
-    $changeset = ShipItPathFilters::stripPaths(
-      $changeset,
-      ImmVector {
-        // Don't include the README in the top directory.
-        '@^'.self::RELAY_OSS.'README.md@',
-        // Only sync out files from the Relay project
-        // Ignore __forks__ (but permit __github__/__forks__/)
-        '@^'.self::RELAY_OSS.'(?!__github__).+?/__forks__/@',
-        '@^'.self::RELAY_ROOT.'__forks__/@',
-        // The public project uses different Flow configs than we do internally
-        '@^'.self::RELAY_ROOT.'\.flowconfig$@',
-        // The yarn.lock uses the offline-cache internally which makes it
-        // useless externally.
-        '@/yarn\.lock$@',
-      },
-    );
-
-    $changeset = ShipItPathFilters::rewritePaths(
-      $changeset,
-      $path ==> preg_replace('@/\.github\.flowconfig$@',
-        '/.flowconfig', $path),
-    );
-
-    $changeset = ShipItPathFilters::moveDirectories(
-      $changeset,
-      static::getPathMappings(),
-    );
-
-    return $changeset;
+    return $changeset
+      |> FBCommonFilters::stripSummariesByDefault($$)
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::stripPaths(
+          $$,
+          ImmVector {
+            // Don't include the README in the top directory.
+            '@^'.self::RELAY_OSS.'README.md@',
+            // Only sync out files from the Relay project
+            // Ignore __forks__ (but permit __github__/__forks__/)
+            '@^'.self::RELAY_OSS.'(?!__github__).+?/__forks__/@',
+            '@^'.self::RELAY_ROOT.'__forks__/@',
+            // The public project uses different Flow configs than we do internally
+            '@^'.self::RELAY_ROOT.'\.flowconfig$@',
+            // The yarn.lock uses the offline-cache internally which makes it
+            // useless externally.
+            '@/yarn\.lock$@',
+          },
+        )
+      |> ShipItPathFilters::rewritePaths(
+          $$,
+          $path ==> preg_replace('@/\.github\.flowconfig$@',
+            '/.flowconfig', $path),
+        )
+      |> ShipItPathFilters::moveDirectories(
+        $$,
+        static::getPathMappings(),
+      );
   }
 
   <<__Override>>
