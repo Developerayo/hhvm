@@ -48,7 +48,7 @@ final class ShipItSaveConfigPhase extends ShipItPhase {
     }
 
     $data = ImmMap {
-      'desinationBranch' => $config->getDestinationBranch(),
+      'destinationBranch' => $config->getDestinationBranch(),
       'owner' => $this->owner,
       'project' => $this->project,
       'sourceBranch' => $config->getSourceBranch(),
