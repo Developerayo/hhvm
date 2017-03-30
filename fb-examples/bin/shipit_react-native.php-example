@@ -51,7 +51,7 @@ final class ShipItReactNative extends FBShipItCLI {
   <<__Override>>
   public static function getPathMappings(): ImmMap<string, string> {
     return ImmMap {
-      'fbobjc/Libraries/FBReactKit/js/react-native-github/' => '',
+      'xplat/js/react-native-github/' => '',
     };
   }
 
@@ -62,7 +62,7 @@ final class ShipItReactNative extends FBShipItCLI {
       'githubOrg' => 'facebook',
       'githubProject' => 'react-native',
       'sourceRoots' => ImmSet {
-        'fbobjc/Libraries/FBReactKit/js/react-native-github',
+        'xplat/js/react-native-github',
       },
     );
   }

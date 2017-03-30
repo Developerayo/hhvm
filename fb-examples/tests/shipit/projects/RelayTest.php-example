@@ -10,7 +10,7 @@
 namespace Facebook\ShipIt;
 
 final class RelayTest extends FBPublicProjectBaseTest {
-  const string FBRK = 'fbobjc/Libraries/FBReactKit';
+  const string JS = 'xplat/js';
 
   <<__Override>>
   protected static function map(
@@ -25,53 +25,53 @@ final class RelayTest extends FBPublicProjectBaseTest {
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       // Open source modules.
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/oss/__github__/XYZ.js' =>
+      self::JS.'/RKJSModules/Libraries/Relay/oss/__github__/XYZ.js' =>
         'XYZ.js',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/oss/babel-plugin-relay/XYZ.js' =>
+      self::JS.'/RKJSModules/Libraries/Relay/oss/babel-plugin-relay/XYZ.js' =>
         'packages/babel-plugin-relay/XYZ.js',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/oss/react-relay/XYZ.js' =>
+      self::JS.'/RKJSModules/Libraries/Relay/oss/react-relay/XYZ.js' =>
         'packages/react-relay/XYZ.js',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/oss/react-relay/compat/XYZ.js' =>
+      self::JS.'/RKJSModules/Libraries/Relay/oss/react-relay/compat/XYZ.js' =>
         'packages/react-relay/compat/XYZ.js',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/oss/react-relay/legacy/XYZ.js' =>
+      self::JS.'/RKJSModules/Libraries/Relay/oss/react-relay/legacy/XYZ.js' =>
         'packages/react-relay/legacy/XYZ.js',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/oss/relay-compiler/XYZ.js' =>
+      self::JS.'/RKJSModules/Libraries/Relay/oss/relay-compiler/XYZ.js' =>
         'packages/relay-compiler/XYZ.js',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/oss/relay-runtime/XYZ.js' =>
+      self::JS.'/RKJSModules/Libraries/Relay/oss/relay-runtime/XYZ.js' =>
         'packages/relay-runtime/XYZ.js',
       // Special cases
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/oss/__github__/eslintrc' =>
+      self::JS.'/RKJSModules/Libraries/Relay/oss/__github__/eslintrc' =>
         '.eslintrc',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/oss/__github__/src/flowconfig' =>
+      self::JS.'/RKJSModules/Libraries/Relay/oss/__github__/src/flowconfig' =>
         'src/.flowconfig',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/oss/__github__/src/__forks__/XYZ.js' =>
+      self::JS.'/RKJSModules/Libraries/Relay/oss/__github__/src/__forks__/XYZ.js' =>
         'src/__forks__/XYZ.js',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/oss/react-relay/legacy/__forks__/XYZ.js' =>
+      self::JS.'/RKJSModules/Libraries/Relay/oss/react-relay/legacy/__forks__/XYZ.js' =>
         null,
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/oss/README.md' =>
+      self::JS.'/RKJSModules/Libraries/Relay/oss/README.md' =>
         null,
       // Directories which will be removed in the future.
-      self::FBRK.'/js/server/fb-transforms/babel-relay-plugin/XYZ.js' =>
+      self::JS.'/server/fb-transforms/babel-relay-plugin/XYZ.js' =>
         'scripts/babel-relay-plugin/XYZ.js',
-      self::FBRK.'/js/server/fb-transforms/babel-relay-plugin/.github.flowconfig' =>
+      self::JS.'/server/fb-transforms/babel-relay-plugin/.github.flowconfig' =>
         'scripts/babel-relay-plugin/.flowconfig',
-      self::FBRK.'/js/server/fb-transforms/babel-relay-plugin/foo.github.flowconfig' =>
+      self::JS.'/server/fb-transforms/babel-relay-plugin/foo.github.flowconfig' =>
         'scripts/babel-relay-plugin/foo.github.flowconfig',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/babel-plugin-graphql/XYZ.js' =>
+      self::JS.'/RKJSModules/Libraries/Relay/babel-plugin-graphql/XYZ.js' =>
         'src/babel-plugin-graphql/XYZ.js',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/relay/__github__/eslintrc' =>
+      self::JS.'/RKJSModules/Libraries/Relay/relay/__github__/eslintrc' =>
         '.eslintrc',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/relay/__github__/src/flowconfig' =>
+      self::JS.'/RKJSModules/Libraries/Relay/relay/__github__/src/flowconfig' =>
         'src/.flowconfig',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/relay/__github__/XYZ.js' =>
+      self::JS.'/RKJSModules/Libraries/Relay/relay/__github__/XYZ.js' =>
         'XYZ.js',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/relay/XYZ.js' =>
+      self::JS.'/RKJSModules/Libraries/Relay/relay/XYZ.js' =>
         'src/XYZ.js',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/relay/.github.flowconfig' =>
+      self::JS.'/RKJSModules/Libraries/Relay/relay/.github.flowconfig' =>
         'src/.flowconfig',
-      self::FBRK.'/js/RKJSModules/Libraries/Relay/relay2/query/Relay2QL.js' =>
+      self::JS.'/RKJSModules/Libraries/Relay/relay2/query/Relay2QL.js' =>
         null,
-      self::FBRK.'/js/server/fb-transforms/babel-relay-plugin/yarn.lock' =>
+      self::JS.'/server/fb-transforms/babel-relay-plugin/yarn.lock' =>
         null,
     };
   }

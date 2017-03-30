@@ -12,8 +12,8 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItRelay extends FBShipItCLI {
-  const FBRK_ROOT = 'fbobjc/Libraries/FBReactKit/';
-  const RELAY_OSS = self::FBRK_ROOT.'js/RKJSModules/Libraries/Relay/oss/';
+  const JS_ROOT = 'xplat/js/';
+  const RELAY_OSS = self::JS_ROOT.'RKJSModules/Libraries/Relay/oss/';
 
   // Open source modules.
   const GITHUB_ROOT = self::RELAY_OSS.'__github__/';
@@ -24,10 +24,10 @@ final class ShipItRelay extends FBShipItCLI {
 
   // Directories which will be removed in the future.
   const NEW_PLUGIN_ROOT =
-    self::FBRK_ROOT.'js/RKJSModules/Libraries/Relay/babel-plugin-graphql/';
-  const RELAY_ROOT = self::FBRK_ROOT.'js/RKJSModules/Libraries/Relay/relay/';
+    self::JS_ROOT.'RKJSModules/Libraries/Relay/babel-plugin-graphql/';
+  const RELAY_ROOT = self::JS_ROOT.'RKJSModules/Libraries/Relay/relay/';
   const PLUGIN_ROOT =
-    self::FBRK_ROOT.'js/server/fb-transforms/babel-relay-plugin/';
+    self::JS_ROOT.'server/fb-transforms/babel-relay-plugin/';
 
   <<__Override>>
   protected static function projectFilterChangeset(
