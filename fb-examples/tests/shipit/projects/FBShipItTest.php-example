@@ -76,6 +76,7 @@ final class FBShipItTest extends FBPublicProjectBaseTest {
         => null,
       // fb infra
       self::ROOT.'/fb_runtests.sh' => null, // Wrapper around PHPUnit
+      self::ROOT.'/fb_deploy_new_fbpkg.py' => null, // Wrapper around PHPUnit
       self::ROOT.'/composer.json' => null, // OSS has a different one
       self::ROOT.'/autoload.php' => null, // OSS generates with composer
       self::ROOT.'/bin/generate-autoload-map.php' => null, // OSS uses composer

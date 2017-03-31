@@ -37,6 +37,7 @@ final class ShipItFBShipIt extends FBShipItCLI {
             '@(^|/)autoload.php$@',
             '@(^|fbcode/opensource/shipit/)composer.json$@',
             '@(^|/)fb_.+\.sh$@',
+            '@(^|/)fb_.+\.py$@',
             '@(^|/)bin/generate-autoload-map.php@',
           },
         )
