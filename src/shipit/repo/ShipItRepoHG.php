@@ -147,8 +147,9 @@ class ShipItRepoHG extends ShipItRepo
   }
 
   public function renderPatch(ShipItChangeset $patch): string {
-    $ret = "From {$patch->getID()} ".
-           date('D M d H:i:s Y', $patch->getTimestamp())."\n".
+    // Mon Sep 17 is a magic date used by format-patch to distinguish from real
+    // mailboxes. cf. https://git-scm.com/docs/git-format-patch
+    $ret = "From {$patch->getID()} Mon Sep 17 00:00:00 2001\n".
            "From: {$patch->getAuthor()}\n".
            "Date: ".date('r', $patch->getTimestamp())."\n".
            "Subject: [PATCH] {$patch->getSubject()}\n\n".
