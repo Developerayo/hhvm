@@ -36,7 +36,6 @@ final class ShipItFbTftp extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'fbtftp',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

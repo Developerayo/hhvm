@@ -99,7 +99,6 @@ final class ShipIt$project_class_name extends FBShipItCLI {
       // TODO($user): add the organization your project belongs to
       'githubOrg' => null,
       'githubProject' => '$github_project',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

@@ -41,7 +41,6 @@ final class ShipItWebDriverAgent extends FBShipItCLI{
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'webdriveragent',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

@@ -36,6 +36,31 @@ abstract class FBShipItCLI
       |> FBConfidentialFilter::applyAll($$);
   }
 
+  private static function getSourceRoots(): ImmSet<string> {
+    $paths = static::getPathMappings();
+    if ($paths->keys()->toImmSet()->contains('')) {
+      // All paths are included.
+      return ImmSet {};
+    }
+    $paths = $paths->toKeysArray();
+    // Sort least specific to most specific.
+    sort($paths);
+    $roots = Set {};
+    foreach ($paths as $path) {
+      // If this path starts with any elements in the set of roots we have
+      // already computed, we do not need to add this as it would be redundant.
+      $root_match = false;
+      foreach ($roots as $root) {
+        $root_match = $root_match || strncmp($path, $root, strlen($root)) === 0;
+      }
+      if ($root_match) {
+        continue;
+      }
+      $roots->add($path);
+    }
+    return $roots->toImmSet();
+  }
+
   <<__Override>>
   public static function getBaseConfig(): ShipItBaseConfig {
     $static_config = static::getStaticConfig();
@@ -47,7 +72,7 @@ abstract class FBShipItCLI
         'destDirName',
         $static_config['githubProject'],
       ),
-      $static_config['sourceRoots'],
+      self::getSourceRoots(),
     );
   }
 

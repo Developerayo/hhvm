@@ -50,7 +50,6 @@ final class ShipItFBNN extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'fbnn',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

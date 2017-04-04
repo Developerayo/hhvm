@@ -36,7 +36,6 @@ final class ShipItTextLayoutBuilder extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebookincubator',
       'githubProject' => 'TextLayoutBuilder',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

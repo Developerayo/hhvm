@@ -60,7 +60,6 @@ abstract class ShipItOpenBMC extends FBShipItCLI {
       'internalRepo' => 'meta-openbmc',
       'githubOrg' => 'facebook',
       'githubProject' => 'openbmc',
-      'sourceRoots' => ImmSet {},
     );
   }
 }

@@ -44,7 +44,6 @@ final class ShipItFBLualib extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'fblualib',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

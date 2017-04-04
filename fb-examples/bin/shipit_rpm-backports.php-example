@@ -73,7 +73,6 @@ final class ShipItRpmBackports extends FBShipItCLI{
       'internalRepo' => 'opsfiles',
       'githubOrg' => 'facebookincubator',
       'githubProject' => 'rpm-backports',
-      'sourceRoots' => self::getPathMappings()->keys()->toImmSet(),
     );
   }
 }

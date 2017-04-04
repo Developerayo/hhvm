@@ -36,7 +36,6 @@ final class ShipItBootstrapped extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebookincubator',
       'githubProject' => 'bootstrapped',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

@@ -26,9 +26,6 @@ class FBCodeBuilder {
  *
  * You will need to:
  *  - Define the abstract methods this trait needs,
- *  - Ensure your `sourceRoots` include the files added by this trait,
- *    either by calling `static::getPathMappings()->keys()->toImmSet()` or
- *    by wrapping with `static::addSourceRoots(your roots)`.
  *  - Use this in your filter chain:
  *      ShipItPathFilters::moveDirectories($$, static::getPathMappings())
  *
@@ -71,17 +68,6 @@ trait FBCodeBuilderTrait {
     };
   }
 
-  // If you cannot set your `sourceRoots` automatically via
-  // `static::getPathMappings()->keys()->toImmSet()`, use this to wrap them.
-  // Will be deleted by sdwilsh@ whenever `sourceRoots` disappears.
-  final public static function addSourceRoots(
-    ImmSet<string> $r,
-  ): ImmSet<string> {
-    return $r->concat(self::getFBCodeBuilderPathMappings()->keys())
-      ->filter($path ==> substr($path, -1) === '/')
-      ->toImmSet();
-  }
-
   // Adds fbcode_builder's path mappings to the per-project path mappings.
   // `projectFilterChangesetNonFBCodeBuilder` will `moveDirectories` for us.
   <<__Override>>
@@ -97,14 +83,6 @@ trait FBCodeBuilderTrait {
   final protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    // TODO(sdwilsh): source roots can be computed from path mappings
-    $roots = static::getBaseConfig()->getSourceRoots();
-    invariant(
-      $roots->contains(FBCodeBuilder::SRC_FBCODE_BUILDER) &&
-        $roots->contains(FBCodeBuilder::SRC_GITHUB_HASHES),
-      'Either declare your sourceRoots as static::getPathMappings()->keys()'.
-      '->toImmSet(), or wrap them with FBCodeBuilder::addSourceRoots(),',
-    );
     return $changeset
       // We are counting on this to call
       //   ShipItPathFilters::moveDirectories($$, static::getPathMappings())

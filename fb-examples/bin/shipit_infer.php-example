@@ -48,7 +48,6 @@ final class ShipItInfer extends FBShipItCLI {
       'internalRepo' => 'infer-fb',
       'githubOrg' => 'facebook',
       'githubProject' => 'infer',
-      'sourceRoots' => ImmSet { },
     );
   }
 

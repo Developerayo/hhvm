@@ -13,7 +13,6 @@ type FBShipItCLIStaticConfig = shape(
   'internalRepo' => string,
   'githubOrg' => string,
   'githubProject' => string,
-  'sourceRoots' => ImmSet<string>,
   'destDirName' => ?string, // defaults to githubProject
 );
 

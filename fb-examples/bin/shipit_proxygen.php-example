@@ -47,9 +47,6 @@ final class ShipItProxygen extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'proxygen',
-      'sourceRoots' => FBCodeBuilderTrait::addSourceRoots(ImmSet {
-        'fbcode/proxygen/',
-      }),
     );
   }
 }

@@ -45,7 +45,6 @@ final class ShipItHaxl extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'Haxl',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

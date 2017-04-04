@@ -103,8 +103,13 @@ final class ShipItChefCookbooks extends FBShipItCLI{
       'internalRepo' => 'opsfiles',
       'githubOrg' => 'facebook',
       'githubProject' => 'chef-cookbooks',
-      'sourceRoots' => self::getDirs(),
     );
+  }
+
+  <<__Override>>
+  public static function getBaseConfig(): ShipItBaseConfig {
+    return parent::getBaseConfig()
+      ->withSourceRoots(self::getDirs());
   }
 }
 

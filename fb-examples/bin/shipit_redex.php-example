@@ -36,7 +36,6 @@ final class ShipItRedex extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'redex',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

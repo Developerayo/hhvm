@@ -37,7 +37,6 @@ final class ShipItThpp extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'thpp',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

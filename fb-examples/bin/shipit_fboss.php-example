@@ -42,7 +42,6 @@ final class ShipItFboss extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'fboss',
-      'sourceRoots' => ImmSet { 'fbcode/fboss/' },
     );
   }
 }

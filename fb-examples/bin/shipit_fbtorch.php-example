@@ -41,7 +41,6 @@ final class ShipItFBTorch extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'fbtorch',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

@@ -42,9 +42,6 @@ final class ShipItYoga extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'yoga',
-      'sourceRoots' => ImmSet {
-        self::ROOT,
-      },
     );
   }
 }

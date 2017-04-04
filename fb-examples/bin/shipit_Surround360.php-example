@@ -46,7 +46,6 @@ final class ShipItSurround360 extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'Surround360',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

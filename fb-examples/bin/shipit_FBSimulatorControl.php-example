@@ -34,7 +34,6 @@ final class ShipItFBSimulatorControl extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'FBSimulatorControl',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

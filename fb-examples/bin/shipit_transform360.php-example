@@ -47,7 +47,6 @@ final class ShipItTransform360 extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'Transform360',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

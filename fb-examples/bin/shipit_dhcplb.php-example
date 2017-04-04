@@ -37,7 +37,6 @@ final class ShipItDhcpLb extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebookincubator',
       'githubProject' => 'dhcplb',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

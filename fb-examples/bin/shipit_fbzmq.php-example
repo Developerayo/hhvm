@@ -36,7 +36,6 @@ final class ShipItFbzmq extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebookincubator',
       'githubProject' => 'fbzmq',
-      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }
