@@ -23,9 +23,6 @@ final class ShipItRelay extends FBShipItCLI {
   const RELAY_RUNTIME = self::RELAY_OSS.'relay-runtime/';
 
   // Directories which will be removed in the future.
-  const NEW_PLUGIN_ROOT =
-    self::JS_ROOT.'RKJSModules/Libraries/Relay/babel-plugin-graphql/';
-  const RELAY_ROOT = self::JS_ROOT.'RKJSModules/Libraries/Relay/relay/';
   const PLUGIN_ROOT =
     self::JS_ROOT.'server/fb-transforms/babel-relay-plugin/';
 
@@ -44,9 +41,6 @@ final class ShipItRelay extends FBShipItCLI {
             // Only sync out files from the Relay project
             // Ignore __forks__ (but permit __github__/__forks__/)
             '@^'.self::RELAY_OSS.'(?!__github__).+?/__forks__/@',
-            '@^'.self::RELAY_ROOT.'__forks__/@',
-            // The public project uses different Flow configs than we do internally
-            '@^'.self::RELAY_ROOT.'\.flowconfig$@',
             // The yarn.lock uses the offline-cache internally which makes it
             // useless externally.
             '@/yarn\.lock$@',
@@ -66,10 +60,6 @@ final class ShipItRelay extends FBShipItCLI {
   <<__Override>>
   public static function getPathMappings(): ImmMap<string, string> {
     return ImmMap {
-      // Special cases
-      self::GITHUB_ROOT.'eslintrc' => '.eslintrc',
-      self::GITHUB_ROOT.'src/flowconfig' => 'src/.flowconfig',
-
       // Modules
       self::GITHUB_ROOT => '',
       self::BABEL_PLUGIN_RELAY => 'packages/babel-plugin-relay/',
@@ -78,12 +68,7 @@ final class ShipItRelay extends FBShipItCLI {
       self::RELAY_RUNTIME => 'packages/relay-runtime/',
 
       // Directories which will be removed in the future.
-      self::NEW_PLUGIN_ROOT => 'src/babel-plugin-graphql/',
       self::PLUGIN_ROOT => 'scripts/babel-relay-plugin/',
-      self::RELAY_ROOT.'__github__/eslintrc' => '.eslintrc',
-      self::RELAY_ROOT.'__github__/src/flowconfig' => 'src/.flowconfig',
-      self::RELAY_ROOT.'__github__/' => '',
-      self::RELAY_ROOT => 'src/',
     };
   }
 

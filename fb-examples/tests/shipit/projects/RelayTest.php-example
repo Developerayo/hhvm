@@ -40,10 +40,6 @@ final class RelayTest extends FBPublicProjectBaseTest {
       self::JS.'/RKJSModules/Libraries/Relay/oss/relay-runtime/XYZ.js' =>
         'packages/relay-runtime/XYZ.js',
       // Special cases
-      self::JS.'/RKJSModules/Libraries/Relay/oss/__github__/eslintrc' =>
-        '.eslintrc',
-      self::JS.'/RKJSModules/Libraries/Relay/oss/__github__/src/flowconfig' =>
-        'src/.flowconfig',
       self::JS.'/RKJSModules/Libraries/Relay/oss/__github__/src/__forks__/XYZ.js' =>
         'src/__forks__/XYZ.js',
       self::JS.'/RKJSModules/Libraries/Relay/oss/react-relay/legacy/__forks__/XYZ.js' =>
@@ -57,20 +53,6 @@ final class RelayTest extends FBPublicProjectBaseTest {
         'scripts/babel-relay-plugin/.flowconfig',
       self::JS.'/server/fb-transforms/babel-relay-plugin/foo.github.flowconfig' =>
         'scripts/babel-relay-plugin/foo.github.flowconfig',
-      self::JS.'/RKJSModules/Libraries/Relay/babel-plugin-graphql/XYZ.js' =>
-        'src/babel-plugin-graphql/XYZ.js',
-      self::JS.'/RKJSModules/Libraries/Relay/relay/__github__/eslintrc' =>
-        '.eslintrc',
-      self::JS.'/RKJSModules/Libraries/Relay/relay/__github__/src/flowconfig' =>
-        'src/.flowconfig',
-      self::JS.'/RKJSModules/Libraries/Relay/relay/__github__/XYZ.js' =>
-        'XYZ.js',
-      self::JS.'/RKJSModules/Libraries/Relay/relay/XYZ.js' =>
-        'src/XYZ.js',
-      self::JS.'/RKJSModules/Libraries/Relay/relay/.github.flowconfig' =>
-        'src/.flowconfig',
-      self::JS.'/RKJSModules/Libraries/Relay/relay2/query/Relay2QL.js' =>
-        null,
       self::JS.'/server/fb-transforms/babel-relay-plugin/yarn.lock' =>
         null,
     };
