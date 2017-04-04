@@ -14,7 +14,6 @@ final class ShipItFilterSanityCheckPhase extends ShipItPhase {
 
   public function __construct(
     private (function(ShipItChangeset):ShipItChangeset) $filter,
-    private ImmSet<string> $sourceRoots,
   ) {}
 
   <<__Override>>
@@ -28,15 +27,15 @@ final class ShipItFilterSanityCheckPhase extends ShipItPhase {
   }
 
   <<__Override>>
-  protected function runImpl(ShipItBaseConfig $_): void {
-    $this->assertValid();
+  protected function runImpl(ShipItBaseConfig $config): void {
+    $this->assertValid($config->getSourceRoots());
   }
 
   // Public for testing
-  public function assertValid(): void {
+  public function assertValid(ImmSet<string> $sourceRoots): void {
     $filter = $this->filter;
     $allows_all = false;
-    foreach ($this->sourceRoots as $root) {
+    foreach ($sourceRoots as $root) {
       $test_file = $root.'/'.self::TEST_FILE_NAME;
       $test_file = str_replace('//', '/', $test_file);
       $changeset = (new ShipItChangeset())
@@ -57,7 +56,7 @@ final class ShipItFilterSanityCheckPhase extends ShipItPhase {
       }
     }
 
-    if ($allows_all || $this->sourceRoots->count() === 0) {
+    if ($allows_all || $sourceRoots->count() === 0) {
       return;
     }
 

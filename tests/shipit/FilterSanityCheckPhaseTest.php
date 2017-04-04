@@ -17,9 +17,8 @@ final class FilterSanityCheckPhaseTest extends BaseTest {
           $diff ==> substr($diff['path'], 0, 4) === 'foo/',
         ),
       ),
-      ImmSet { 'foo/' },
     );
-    $phase->assertValid();
+    $phase->assertValid(ImmSet { 'foo/' });
     // no exception thrown :)
   }
 
@@ -40,9 +39,8 @@ final class FilterSanityCheckPhaseTest extends BaseTest {
   ): void {
     $phase = new ShipItFilterSanityCheckPhase(
       $changeset ==> $changeset,
-      $roots,
     );
-    $phase->assertValid();
+    $phase->assertValid($roots);
     // no exception thrown :)
   }
 
@@ -52,9 +50,8 @@ final class FilterSanityCheckPhaseTest extends BaseTest {
   public function testThrowsForIdentityFunctionWithRoots(): void {
     $phase = new ShipItFilterSanityCheckPhase(
       $changeset ==> $changeset, // stuff outside of 'foo' should be removed
-      ImmSet { 'foo/' },
     );
-    $phase->assertValid();
+    $phase->assertValid(ImmSet { 'foo/' });
   }
 
   /**
@@ -63,9 +60,8 @@ final class FilterSanityCheckPhaseTest extends BaseTest {
   public function testThrowsForEmptyChangeset(): void {
     $phase = new ShipItFilterSanityCheckPhase(
       $changeset ==> (new ShipItChangeset()),
-      ImmSet { 'foo/' },
     );
-    $phase->assertValid();
+    $phase->assertValid(ImmSet { 'foo/' });
   }
 
   /**
@@ -78,8 +74,7 @@ final class FilterSanityCheckPhaseTest extends BaseTest {
           $diff ==> substr($diff['path'], 0, 3) === 'foo',
         )
       ),
-      ImmSet { 'foo/', 'herp/' },
     );
-    $phase->assertValid();
+    $phase->assertValid(ImmSet { 'foo/', 'herp/' });
   }
 }

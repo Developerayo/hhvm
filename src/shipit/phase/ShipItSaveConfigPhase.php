@@ -15,7 +15,6 @@ final class ShipItSaveConfigPhase extends ShipItPhase {
   public function __construct(
     private string $owner,
     private string $project,
-    private ImmSet<string> $sourceRoots,
   ) {}
 
   <<__Override>>
@@ -52,7 +51,7 @@ final class ShipItSaveConfigPhase extends ShipItPhase {
       'owner' => $this->owner,
       'project' => $this->project,
       'sourceBranch' => $config->getSourceBranch(),
-      'sourceRoots' => $this->sourceRoots,
+      'sourceRoots' => $config->getSourceRoots(),
     };
     file_put_contents($this->outputFile, json_encode($data, JSON_PRETTY_PRINT));
     printf("Finished phase: %s\n", $this->getReadableName());

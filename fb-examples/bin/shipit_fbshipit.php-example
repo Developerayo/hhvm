@@ -76,7 +76,6 @@ final class ShipItFBShipIt extends FBShipItCLI {
     foreach ($original_phases as $phase) {
       if ($phase instanceof ShipItSyncPhase) {
         $phases[] = new FBShipItPublicizeSyncScriptsPhase(
-          self::getStaticConfig()['sourceRoots'],
           $changeset ==> self::filterChangeset($changeset),
         );
       }

@@ -21,7 +21,6 @@ final class ShipItSyncPhase extends ShipItPhase {
         ShipItBaseConfig,
         ShipItChangeset,
       ): ShipItChangeset) $filter,
-    private ImmSet<string> $sourceRoots,
     private ImmSet<string> $destinationRoots = ImmSet { },
   ) {}
 
@@ -84,7 +83,7 @@ final class ShipItSyncPhase extends ShipItPhase {
   protected function runImpl(
     ShipItBaseConfig $base,
   ): void {
-    $sync = (new ShipItSyncConfig($this->sourceRoots, $this->filter))
+    $sync = (new ShipItSyncConfig($base->getSourceRoots(), $this->filter))
      ->withDestinationRoots($this->destinationRoots)
      ->withFirstCommit($this->firstCommit)
      ->withSkippedSourceCommits($this->skippedSourceCommits)

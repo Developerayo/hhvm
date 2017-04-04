@@ -6,7 +6,6 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
   private ?string $sourceCommit = null;
 
   public function __construct(
-    private ImmSet<string> $roots,
     private (function(ShipItChangeset):ShipItChangeset) $filter,
     private shape('name' => string, 'email' => string) $committer,
   ) {
@@ -54,7 +53,6 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
   ): void {
     $temp_dir = self::createNewGitRepo(
       $config,
-      $this->roots,
       $this->filter,
       $this->committer,
       $this->sourceCommit,
@@ -81,7 +79,6 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
 
   public static function createNewGitRepo(
     ShipItBaseConfig $config,
-    ImmSet<string> $roots,
     (function(ShipItChangeset):ShipItChangeset) $filter,
     shape('name' => string, 'email' => string) $committer,
     ?string $revision = null,
@@ -93,7 +90,7 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     );
 
     print("  Exporting...\n");
-    $export = $source->export($roots, $revision);
+    $export = $source->export($config->getSourceRoots(), $revision);
     $export_dir = $export['tempDir'];
     $rev = $export['revision'];
 

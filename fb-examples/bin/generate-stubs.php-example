@@ -19,6 +19,7 @@ final class FBShipItGenerateStubsCLI {
         dirname(__DIR__),
         'shipit',
         'shipit',
+        ImmSet {},
       ),
       ImmVector {
         new ShipItGenerateStubsPhase(),

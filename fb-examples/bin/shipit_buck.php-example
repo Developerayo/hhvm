@@ -30,7 +30,6 @@ class ShipItBuck
       new ShipItSaveConfigPhase(
         $static_config['githubOrg'],
         $static_config['githubProject'],
-        $static_config['sourceRoots'],
       ),
       new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::SOURCE),
       new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::DESTINATION),
@@ -54,7 +53,6 @@ class ShipItBuck
           $config->getSourcePath(),
           $changeset,
         ),
-        $static_config['sourceRoots'],
       ),
       new BuckVerifyNoMoeOccurrencesPhase(),
       new ShipItPushPhase(),
@@ -110,6 +108,7 @@ class ShipItBuck
       '/tmp/oss_sync_and_push',
       /* source_dir = */ $static_config['internalRepo'],
       /* dest dir = */ $static_config['githubProject'],
+      /* source_roots = */ $static_config['sourceRoots'],
     );
   }
 

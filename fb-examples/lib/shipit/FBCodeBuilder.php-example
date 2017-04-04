@@ -103,12 +103,11 @@ trait FBCodeBuilderTrait {
   final protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $static_config = static::getStaticConfig();
+    // TODO(sdwilsh): source roots can be computed from path mappings
+    $roots = static::getBaseConfig()->getSourceRoots();
     invariant(
-      $static_config['sourceRoots']
-        ->contains(FBCodeBuilder::SRC_FBCODE_BUILDER) &&
-          $static_config['sourceRoots']
-            ->contains(FBCodeBuilder::SRC_GITHUB_HASHES),
+      $roots->contains(FBCodeBuilder::SRC_FBCODE_BUILDER) &&
+        $roots->contains(FBCodeBuilder::SRC_GITHUB_HASHES),
       'Either declare your sourceRoots as static::getPathMappings()->keys()'.
       '->toImmSet(), or wrap them with FBCodeBuilder::addSourceRoots(),',
     );

@@ -17,7 +17,6 @@ namespace Facebook\ShipIt;
  */
 final class FBShipItPublicizeSyncScriptsPhase extends ShipItPhase {
   public function __construct(
-    private ImmSet<string> $sourceRoots,
     private (function(ShipItChangeset):ShipItChangeset) $filter,
   ) {
   }
@@ -47,7 +46,6 @@ final class FBShipItPublicizeSyncScriptsPhase extends ShipItPhase {
 
     $export = ShipItCreateNewRepoPhase::createNewGitRepo(
       $config,
-      $this->sourceRoots,
       $this->filter,
       shape(
         'name' => 'FBShipIt Internal Commit',

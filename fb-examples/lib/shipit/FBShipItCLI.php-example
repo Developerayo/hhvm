@@ -47,13 +47,14 @@ abstract class FBShipItCLI
         'destDirName',
         $static_config['githubProject'],
       ),
+      $static_config['sourceRoots'],
     );
   }
 
   final protected static function stripExceptSourceRoots(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $roots = static::getStaticConfig()['sourceRoots']
+    $roots = static::getBaseConfig()->getSourceRoots()
       ->filter($root ==> $root !== '');
     if (count($roots) === 0) {
       return $changeset;
@@ -73,12 +74,10 @@ abstract class FBShipItCLI
     return ImmVector {
       new ShipItFilterSanityCheckPhase(
         $changeset ==> self::filterChangeset($changeset),
-        $static_config['sourceRoots'],
       ),
       new ShipItSaveConfigPhase(
         $static_config['githubOrg'],
         $static_config['githubProject'],
-        $static_config['sourceRoots'],
       ),
       new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::SOURCE),
       new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::DESTINATION),
@@ -91,7 +90,6 @@ abstract class FBShipItCLI
       new ShipItCleanPhase(ShipItRepoSide::SOURCE),
       new ShipItPullPhase(ShipItRepoSide::SOURCE),
       new ShipItCreateNewRepoPhase(
-        $static_config['sourceRoots'],
         $changeset ==> self::filterChangeset($changeset),
         shape(
           'name' => 'FBShipIt',
@@ -111,10 +109,8 @@ abstract class FBShipItCLI
       new ShipItPullPhase(ShipItRepoSide::DESTINATION),
       new ShipItSyncPhase(
         ($config, $changeset) ==> self::filterChangeset($changeset),
-        $static_config['sourceRoots'],
       ),
       new ShipItVerifyRepoPhase(
-        $static_config['sourceRoots'],
         $changeset ==> self::filterChangeset($changeset),
       ),
       new ShipItPushPhase(),

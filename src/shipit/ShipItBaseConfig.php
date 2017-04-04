@@ -14,6 +14,7 @@ final class ShipItBaseConfig {
     private string $baseDirectoryPath,
     private string $defaultSourceDirectoryName,
     private string $defaultDestinationDirectoryName,
+    private ImmSet<string> $sourceRoots,
   ) { }
 
   public function getBaseDirectory(): string {
@@ -70,6 +71,14 @@ final class ShipItBaseConfig {
 
   public function withSourceBranch(string $branch): this {
     return $this->modified($ret ==> $ret->sourceBranch = $branch);
+  }
+
+  public function getSourceRoots(): ImmSet<string> {
+    return $this->sourceRoots;
+  }
+
+  public function withSourceRoots(ImmSet<string> $roots): this {
+    return $this->modified($ret ==> $ret->sourceRoots = $roots);
   }
 
   private string $destinationBranch = 'master';

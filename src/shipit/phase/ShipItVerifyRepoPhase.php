@@ -6,7 +6,6 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
   private bool $createPatch = false;
 
   public function __construct(
-    private ImmSet<string> $roots,
     private (function(ShipItChangeset):ShipItChangeset) $filter,
   ) {
     $this->skip();
@@ -46,7 +45,6 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
   ): void {
     $clean_dir = ShipItCreateNewRepoPhase::createNewGitRepo(
       $config,
-      $this->roots,
       $this->filter,
       shape(
         'name' => 'FBShipIt Internal User',
