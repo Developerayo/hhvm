@@ -120,11 +120,9 @@ final class FBCommonFilters {
         '@\.mk$@',
       },
       $exception_patterns->concat(ImmVector {
-        // Without these exceptions, FBCodeBuilderTrait would be difficult
-        // to use correctly, since the project-invoked FBCommonFilters would
-        // strip out these /facebook/-containing paths.
-        '@^'.preg_quote(FBCodeBuilder::SRC_GITHUB_HASHES, '@').'($|/)@',
-        '@^'.preg_quote(FBCodeBuilder::DEST_GITHUB_HASHES, '@').'($|/)@',
+        // Various Facebook projects depend on this project hashes to update
+        // submodules in GitHub.
+        '@^fbcode/opensource/project_hashes/.*$@',
       }),
     );
   }

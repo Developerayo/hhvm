@@ -48,7 +48,7 @@ class ShipItNuclide extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'nuclide',
-      'sourceRoots' => ImmSet { 'fbobjc/Tools/Nuclide' },
+      'sourceRoots' => ImmSet { 'fbobjc/Tools/Nuclide/' },
     );
   }
 }

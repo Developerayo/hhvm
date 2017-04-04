@@ -55,7 +55,7 @@ final class ShipItRocksDB extends FBShipItCLI {
       'internalRepo' => self::INTERNAL_REPO_NAME,
       'githubOrg' => 'facebook',
       'githubProject' => 'rocksdb',
-      'sourceRoots' => ImmSet { self::ROOT },
+      'sourceRoots' => ImmSet {},
     );
   }
 }

@@ -36,7 +36,7 @@ final class ShipItFBThrift extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'fbthrift',
-      'sourceRoots' => ImmSet { 'fbcode/thrift' },
+      'sourceRoots' => ImmSet { 'fbcode/thrift/' },
     );
   }
 }

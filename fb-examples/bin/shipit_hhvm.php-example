@@ -56,7 +56,7 @@ final class ShipItHHVM extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'hhvm',
-      'sourceRoots' => ImmSet { 'fbcode/hphp' },
+      'sourceRoots' => ImmSet { 'fbcode/hphp/' },
     );
   }
 

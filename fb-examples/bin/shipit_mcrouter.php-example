@@ -36,7 +36,7 @@ final class ShipItMcrouter extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'mcrouter',
-      'sourceRoots' => ImmSet { 'fbcode/mcrouter' },
+      'sourceRoots' => ImmSet { 'fbcode/mcrouter/' },
     );
   }
 }

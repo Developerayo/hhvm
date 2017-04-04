@@ -374,6 +374,21 @@ abstract class FBProjectBaseTest extends BaseTest {
     );
   }
 
+  final public function testSourceRootsAreDirectories(): void {
+    $shipit_class = self::getShipItClass();
+    $config = $shipit_class::getBaseConfig();
+    $roots = $config->getSourceRoots();
+    foreach ($roots as $root) {
+      $this->assertTrue(
+        substr($root, -1) === '/',
+        sprintf(
+          'Expected `%s` to end in `/` (source roots must be a folder).',
+          $root,
+        ),
+      );
+    }
+  }
+
   final protected static function getShipItClass(
   ): classname<\Facebook\ImportIt\ISupportsFBImportIt> {
     $shipit_class = preg_replace(

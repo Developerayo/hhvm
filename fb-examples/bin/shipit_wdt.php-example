@@ -43,7 +43,7 @@ final class ShipItWDT extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'wdt',
-      'sourceRoots' => ImmSet { 'fbcode/wdt' },
+      'sourceRoots' => ImmSet { self::ROOT },
     );
   }
 }

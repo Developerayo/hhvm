@@ -10,21 +10,14 @@
 namespace Facebook\ShipIt;
 
 class FBCodeBuilder {
-  const string SRC_FBCODE_BUILDER = 'fbcode/opensource/fbcode_builder';
-  const string DEST_FBCODE_BUILDER = 'build/fbcode_builder';
+  const string SRC_FBCODE_BUILDER = 'fbcode/opensource/fbcode_builder/';
+  const string DEST_FBCODE_BUILDER = 'build/fbcode_builder/';
 
-  // IMPORTANT: The next two paths have hard-coded exceptions in
-  // FBCommonFilters::stripCommonFiles() so they don't get filtered out on
-  // account of containing `/facebook/`.  Upon a thorough discussion with
-  // @sdwilsh, this was the lesser of many other evils.
-  //
-  // It is critical that neither of these paths have trailing slashes.
-  //
   // The github hashes change frequently. We keep them under build/ so that
   // `git log projectname/` stays relatively un-spammy.  Then, nest under
   // `facebook` for a future-proof pattern of `<github user>/<github repo>`.
-  const string SRC_GITHUB_HASHES = 'fbcode/opensource/project_hashes/facebook';
-  const string DEST_GITHUB_HASHES = 'build/deps/github_hashes/facebook';
+  const string SRC_GITHUB_HASHES = 'fbcode/opensource/project_hashes/facebook/';
+  const string DEST_GITHUB_HASHES = 'build/deps/github_hashes/facebook/';
 }
 
 /**
@@ -72,7 +65,7 @@ trait FBCodeBuilderTrait {
   private static function getFBCodeBuilderPathMappings(
   ): ImmMap<string, string>  {
     return ImmMap {
-      FBCodeBuilder::SRC_FBCODE_BUILDER.'/travis.yml' => '.travis.yml',
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'travis.yml' => '.travis.yml',
       FBCodeBuilder::SRC_FBCODE_BUILDER => FBCodeBuilder::DEST_FBCODE_BUILDER,
       FBCodeBuilder::SRC_GITHUB_HASHES => FBCodeBuilder::DEST_GITHUB_HASHES,
     };
@@ -85,6 +78,7 @@ trait FBCodeBuilderTrait {
     ImmSet<string> $r,
   ): ImmSet<string> {
     return $r->concat(self::getFBCodeBuilderPathMappings()->keys())
+      ->filter($path ==> substr($path, -1) === '/')
       ->toImmSet();
   }
 
@@ -123,19 +117,19 @@ trait FBCodeBuilderTrait {
           // Don't bother Github users with code only relevant internally.
           '@^build/facebook_.*@',
           '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'@',
-          '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'/facebook_@',
-          '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'/README.facebook$@',
-          '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'/TARGETS@',
+          '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'facebook_@',
+          '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'README.facebook$@',
+          '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'TARGETS@',
         },
         /* exceptions = */ ImmVector {
           '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'$@',
-          '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'/('.implode(
+          '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'('.implode(
               '|',
               static::getFBCodeBuilderDependencies()
                 ->map($d ==> preg_quote($d, '@'))
             ).')-rev.txt$@',
           // This is just to appease ShipItFilterSanityCheckPhase
-          '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'/shipit_test_file.txt$@',
+          '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'shipit_test_file.txt$@',
         },
       );
   }

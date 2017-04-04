@@ -66,8 +66,8 @@ final class ShipItFresco extends FBShipItCLI {
       'githubOrg' => 'facebook',
       'githubProject' => 'fresco',
       'sourceRoots' => ImmSet {
-        'fbandroid/libraries/fresco',
-        'fbandroid/libraries/fbcore',
+        'fbandroid/libraries/fresco/',
+        'fbandroid/libraries/fbcore/',
       },
     );
   }

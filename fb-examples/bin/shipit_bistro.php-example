@@ -44,7 +44,7 @@ final class ShipItBistro extends FBShipItCLI {
   ): ImmMap<string, string> {
     return ImmMap {
       'fbcode/bistro/public_tld/' => '',
-      'fbcode/bistro/bistro' => 'bistro',
+      'fbcode/bistro/bistro/' => 'bistro/',
     };
   }
 
@@ -55,7 +55,10 @@ final class ShipItBistro extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'bistro',
-      'sourceRoots' => static::getPathMappings()->keys()->toImmSet(),
+      'sourceRoots' => static::getPathMappings()
+        ->keys()
+        ->filter($path ==> substr($path, -1) === '/')
+        ->toImmSet(),
     );
   }
 }

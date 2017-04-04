@@ -60,7 +60,7 @@ final class ShipItCommunityCellularManager extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebookincubator',
       'githubProject' => 'communitycellularmanager',
-      'sourceRoots' => ImmSet { 'fbcode/endaga' },
+      'sourceRoots' => ImmSet { 'fbcode/endaga/' },
     );
   }
 }

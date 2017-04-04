@@ -36,7 +36,7 @@ final class ShipItProxygen extends FBShipItCLI {
   ): ImmMap<string, string> {
     return ImmMap {
       'fbcode/proxygen/public_tld/' => '',
-      'fbcode/proxygen' => 'proxygen',
+      'fbcode/proxygen/' => 'proxygen/',
     };
   }
 
@@ -48,7 +48,7 @@ final class ShipItProxygen extends FBShipItCLI {
       'githubOrg' => 'facebook',
       'githubProject' => 'proxygen',
       'sourceRoots' => FBCodeBuilderTrait::addSourceRoots(ImmSet {
-        'fbcode/proxygen',
+        'fbcode/proxygen/',
       }),
     );
   }

@@ -26,13 +26,13 @@ final class BistroTest extends FBPublicProjectBaseTest {
       'fbcode/bistro/public_tld/LICENSE' => 'LICENSE',
       // fbcode_builder is shared between several projects, but it's easiest
       // to just copy it into each project's Github repo.
-      FBCodeBuilder::SRC_FBCODE_BUILDER.'/fbcode_builder.py' =>
-        FBCodeBuilder::DEST_FBCODE_BUILDER.'/fbcode_builder.py',
-      FBCodeBuilder::SRC_FBCODE_BUILDER.'/travis.yml' => '.travis.yml',
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'fbcode_builder.py' =>
+        FBCodeBuilder::DEST_FBCODE_BUILDER.'fbcode_builder.py',
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'travis.yml' => '.travis.yml',
       // Bistro is only interested in the Github revisions its dependencies.
-      FBCodeBuilder::SRC_GITHUB_HASHES.'/wangle-rev.txt' =>
-        FBCodeBuilder::DEST_GITHUB_HASHES.'/wangle-rev.txt',
-      FBCodeBuilder::SRC_GITHUB_HASHES.'/yoga-rev.txt' => null,
+      FBCodeBuilder::SRC_GITHUB_HASHES.'wangle-rev.txt' =>
+        FBCodeBuilder::DEST_GITHUB_HASHES.'wangle-rev.txt',
+      FBCodeBuilder::SRC_GITHUB_HASHES.'yoga-rev.txt' => null,
     };
   }
 

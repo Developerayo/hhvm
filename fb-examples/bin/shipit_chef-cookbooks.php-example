@@ -13,7 +13,7 @@ require_once(__DIR__.'/../autoload.php');
 
 final class ShipItChefCookbooks extends FBShipItCLI{
 
-  const string BASE_DIR = 'chef/cookbooks/core';
+  const string BASE_DIR = 'chef/cookbooks/core/';
 
   # Add new open-source cookbooks here. Be sure to get sign-off
   # from the OpenSource team.
@@ -55,8 +55,10 @@ final class ShipItChefCookbooks extends FBShipItCLI{
 
   public static function getDirs(): ImmSet<string> {
     return self::$cookbooks->map(
-        $cookbook ==> self::BASE_DIR.'/'.$cookbook
-      )->concat(['chef/github'])->toImmSet();
+        $cookbook ==> self::BASE_DIR.$cookbook.'/',
+      )
+        ->concat(['chef/github/'])
+        ->toImmSet();
   }
 
   <<__Override>>

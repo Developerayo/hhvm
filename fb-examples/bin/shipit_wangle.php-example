@@ -27,7 +27,7 @@ final class ShipItWangle extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'wangle',
-      'sourceRoots' => ImmSet { 'fbcode/wangle' },
+      'sourceRoots' => ImmSet { 'fbcode/wangle/' },
     );
   }
 }

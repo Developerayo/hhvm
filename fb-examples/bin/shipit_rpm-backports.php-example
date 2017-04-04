@@ -13,8 +13,8 @@ require_once(__DIR__.'/../autoload.php');
 
 final class ShipItRpmBackports extends FBShipItCLI{
 
-  const string BASE_DIR = 'rpms';
-  const string GITHUB_ONLY_BASE_DIR = 'rpms-github';
+  const string BASE_DIR = 'rpms/';
+  const string GITHUB_ONLY_BASE_DIR = 'rpms-github/';
 
   # Add new open-source rpms here. Be sure to get sign-off
   # from the OpenSource team (opensource@fb.com).
@@ -59,10 +59,10 @@ final class ShipItRpmBackports extends FBShipItCLI{
   <<__Override>>
   public static function getPathMappings(): ImmMap<string, string> {
     $mapping = Map {
-      self::GITHUB_ONLY_BASE_DIR.'/' => '',
+      self::GITHUB_ONLY_BASE_DIR => '',
     };
     foreach (static::$rpms as $rpm) {
-      $mapping[self::BASE_DIR.'/'.$rpm] = self::BASE_DIR.'/'.$rpm;
+      $mapping[self::BASE_DIR.$rpm.'/'] = self::BASE_DIR.$rpm.'/';
     }
     return $mapping->toImmMap();
   }

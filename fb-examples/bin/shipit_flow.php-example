@@ -106,7 +106,7 @@ final class ShipItFlow extends FBShipItCLI {
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'flow',
-      'sourceRoots' => ImmSet { 'fbcode/flow', 'fbcode/hphp/hack/src' },
+      'sourceRoots' => ImmSet { 'fbcode/flow/', 'fbcode/hphp/hack/src/' },
     );
   }
 

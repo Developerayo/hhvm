@@ -31,13 +31,13 @@ final class ProxygenTest extends FBPublicProjectBaseTest {
       'build/facebook_cheesecake.py' => null,
       // fbcode_builder is shared between several projects, but it's easiest
       // to just copy it into each project's Github repo.
-      FBCodeBuilder::SRC_FBCODE_BUILDER.'/fbcode_builder.py' =>
-        FBCodeBuilder::DEST_FBCODE_BUILDER.'/fbcode_builder.py',
-      FBCodeBuilder::SRC_FBCODE_BUILDER.'/travis.yml' => '.travis.yml',
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'fbcode_builder.py' =>
+        FBCodeBuilder::DEST_FBCODE_BUILDER.'fbcode_builder.py',
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'travis.yml' => '.travis.yml',
       // Proxygen is only interested in the Github revisions its dependencies.
-      FBCodeBuilder::SRC_GITHUB_HASHES.'/wangle-rev.txt' =>
-        FBCodeBuilder::DEST_GITHUB_HASHES.'/wangle-rev.txt',
-      FBCodeBuilder::SRC_GITHUB_HASHES.'/fbthrift-rev.txt' => null,
+      FBCodeBuilder::SRC_GITHUB_HASHES.'wangle-rev.txt' =>
+        FBCodeBuilder::DEST_GITHUB_HASHES.'wangle-rev.txt',
+      FBCodeBuilder::SRC_GITHUB_HASHES.'fbthrift-rev.txt' => null,
     };
   }
 
