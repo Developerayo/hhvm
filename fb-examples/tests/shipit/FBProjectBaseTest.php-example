@@ -388,4 +388,15 @@ abstract class FBProjectBaseTest extends BaseTest {
     );
     return $shipit_class;
   }
+
+  /*
+   * Check for stripping the auto-generated Test Plan by ImportIt
+   */
+  public function testEmptyImportTestPlan(): void {
+    $in = (new ShipItChangeset())
+      ->withMessage('Test Plan:'.
+      FBCommonFilters::NOT_A_TEST_PLAN);
+    $out = static::map($in);
+    $this->assertNotContains('Test Plan:', $out->getMessage());
+  }
 }

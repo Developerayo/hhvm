@@ -13,7 +13,6 @@ require_once(__DIR__.'/../autoload.php');
 class ShipItBuck
   implements \Facebook\ImportIt\ISupportsFBImportIt {
 
-  const NOT_A_TEST_PLAN = 'Imported from GitHub, without a `Test Plan:` line.';
   const BUCK_SHIPIT_CONFIG_FILE = 'opensource.json';
   const STRIPPED_FILE_PATHS_KEY = 'paths_to_strip';
   const FILE_NOT_TO_STRIP_RE = (
@@ -124,9 +123,6 @@ class ShipItBuck
     $reviewers = Set { };
     if ($sections->containsKey('reviewed by')) {
       $reviewers = new Set(explode(', ', $sections['reviewed by']));
-    }
-    if (($sections['test plan'] ?? null) === self::NOT_A_TEST_PLAN) {
-      $sections->removeKey('test plan');
     }
 
     // superclass behavior is to add 'Pulled By' - we'd rather have them as

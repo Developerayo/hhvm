@@ -10,6 +10,9 @@
 namespace Facebook\ShipIt;
 
 final class FBCommonFilters {
+
+  const NOT_A_TEST_PLAN = 'Imported from GitHub, without a `Test Plan:` line.';
+
   public static function applyAll(
     ShipItChangeset $changeset,
     shape(
@@ -24,6 +27,7 @@ final class FBCommonFilters {
           $config['stripCommonFiles/exceptions'] ?? ImmVector {},
         )
       |> self::stripSubjectTags($$)
+      |> self::stripEmptyTestPlans($$)
       |> self::stripCommands($$)
       |> self::delinkifyDifferentialURLs($$)
       |> self::restoreGitHubAuthor($$)
@@ -134,6 +138,28 @@ final class FBCommonFilters {
         '',
         $changeset->getMessage(),
       )
+    );
+  }
+
+  /*
+   * Strip the auto-generated Test Plan by ImportIt
+   */
+  public static function stripEmptyTestPlans(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+
+    $sections = ShipItMessageSections::getSections(
+      $changeset,
+      self::getSupportedMessageSectionNames(),
+    );
+
+    // If No test plan, remove "test plan" from Summary
+    if (($sections['test plan'] ?? null) === self::NOT_A_TEST_PLAN) {
+      $sections->removeKey('test plan');
+    }
+
+    return $changeset->withMessage(
+      ShipItMessageSections::buildMessage($sections->toImmMap())
     );
   }
 
