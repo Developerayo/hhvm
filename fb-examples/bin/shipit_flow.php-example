@@ -37,6 +37,7 @@ final class ShipItFlow extends FBShipItCLI {
             '@fbcode/hphp/hack/src/@',
             '@fbcode/flow/kpm.lock$@',
             '@fbcode/flow/(?:.+/)*yarn.lock$@',
+            '@fbcode/flow/.merlin@',
             '@fbcode/flow/.npmrc$@',
             '@fbcode/flow/hack@',
           },

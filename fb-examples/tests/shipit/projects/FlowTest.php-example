@@ -24,6 +24,7 @@ final class FlowTest extends FBPublicProjectBaseTest {
       'fbcode/flow/foo' => 'foo',
       'fbcode/flow/github/.merlin' => '.merlin',
       'fbcode/flow/github/_gitattributes' => '.gitattributes',
+      'fbcode/flow/.merlin' => null,
       'fbcode/flow/yarn.lock' => null,
       'fbcode/flow/foo/yarn.lock' => null,
       'fbcode/flow/github/website/yarn.lock' => 'website/yarn.lock',
