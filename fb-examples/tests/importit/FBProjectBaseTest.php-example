@@ -62,10 +62,25 @@ abstract class FBProjectBaseTest extends \Facebook\ShipIt\BaseTest {
     $changeset = (new \Facebook\ShipIt\ShipItChangeset())->withDiffs($diffs);
     $changeset = static::map($changeset);
 
-    $expected_paths = $path_expected === null ? [] : [$path_expected];
+    if ($path_expected === null) {
+      $expected_paths = [];
+      $message = sprintf('Expected `%s` to be stripped', $path_in);
+    } else {
+      $expected_paths = [$path_expected];
+      $message = sprintf(
+        'Expected `%s` to map to `%s`',
+        $path_in,
+        $path_expected,
+      );
+    }
     $this->assertEquals(
       $expected_paths,
       $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray(),
+      sprintf(
+        "%s.  Debug messages follow:\n%s",
+        $message,
+        implode("\n", $changeset->getDebugMessages()),
+      ),
     );
   }
 
