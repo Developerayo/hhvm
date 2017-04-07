@@ -27,6 +27,17 @@ final class ShipItFilterSanityCheckPhase extends ShipItPhase {
   }
 
   <<__Override>>
+  public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
+    return ImmVector {
+      shape(
+        'long_name' => 'skip-filter-sanity-check',
+        'description' => 'Skip the filter sanity check.',
+        'write' => $x ==> $this->skip(),
+      ),
+    };
+  }
+
+  <<__Override>>
   protected function runImpl(ShipItBaseConfig $config): void {
     $this->assertValid($config->getSourceRoots());
   }
