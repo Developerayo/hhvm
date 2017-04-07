@@ -12,11 +12,7 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItRocksDB extends FBShipItCLI {
-  const string ROOT = '';
-
-  // rocksdb-fb is defined in
-  // fbcode/opensource/shipit/src/fb-specific-but-public/FBRepoInitPhase.php
-  const string INTERNAL_REPO_NAME = 'rocksdb-fb';
+  const string INTERNAL_REPO_PATH = 'fbcode/internal_repo_rocksdb/repo/';
 
   <<__Override>>
   protected static function projectFilterChangeset(
@@ -33,10 +29,10 @@ final class ShipItRocksDB extends FBShipItCLI {
         $$,
         ImmVector {
           // Ignore file containing sandcastle token
-          '@^.sandcastle$@',
+          '@^' . self::INTERNAL_REPO_PATH . '.sandcastle$@',
           // Arcanist, only used internally
-          '@^arcanist_util/@',
-          '@^.arcconfig$@',
+          '@^' . self::INTERNAL_REPO_PATH . 'arcanist_util/@',
+          '@^' . self::INTERNAL_REPO_PATH . '.arcconfig$@',
         },
       )
       |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
@@ -45,14 +41,14 @@ final class ShipItRocksDB extends FBShipItCLI {
   <<__Override>>
   public static function getPathMappings(): ImmMap<string, string> {
     return ImmMap {
-      self::ROOT => '',
+      self::INTERNAL_REPO_PATH => '',
     };
   }
 
   <<__Override>>
   public static function getStaticConfig(): FBShipItCLIStaticConfig {
     return shape(
-      'internalRepo' => self::INTERNAL_REPO_NAME,
+      'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'rocksdb',
     );

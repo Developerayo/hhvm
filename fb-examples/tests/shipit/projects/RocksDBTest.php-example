@@ -23,12 +23,14 @@ final class RocksDBTest extends FBPublicProjectBaseTest {
   <<__Override>>
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
-      'include/rocksdb' => 'include/rocksdb',
-      'db/db_impl.cc' => 'db/db_impl.cc',
-      'da/da/da' => 'da/da/da',
-      '.sandcastle' => null,
-      'src.mk' => 'src.mk',
-      'koko.mk' => 'koko.mk',
+      'fbcode/internal_repo_rocksdb/repo/include/rocksdb' => 'include/rocksdb',
+      'fbcode/internal_repo_rocksdb/repo/db/db_impl.cc' => 'db/db_impl.cc',
+      'fbcode/internal_repo_rocksdb/repo/da/da/da' => 'da/da/da',
+      'fbcode/internal_repo_rocksdb/repo/.sandcastle' => null,
+      'fbcode/internal_repo_rocksdb/repo/src.mk' => 'src.mk',
+      'fbcode/internal_repo_rocksdb/repo/koko.mk' => 'koko.mk',
+      'fbcode/internal_repo_rocksdb/repo/arcanist_util/abc' => null,
+      'fbcode/internal_repo_rocksdb/repo/.arcconfig' => null,
     };
   }
 
