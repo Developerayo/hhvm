@@ -15,7 +15,9 @@ final class ShipItSaveConfigPhase extends ShipItPhase {
   public function __construct(
     private string $owner,
     private string $project,
-  ) {}
+  ) {
+    $this->skip();
+  }
 
   <<__Override>>
   protected function isProjectSpecific(): bool {
@@ -34,17 +36,17 @@ final class ShipItSaveConfigPhase extends ShipItPhase {
         'long_name' => 'save-config-to::',
         'description' =>
           'Save configuration data for this project here and exit.',
-        'write' => $x ==> $this->outputFile = $x,
+        'write' => $x ==> {
+          $this->unskip();
+          $this->outputFile = $x;
+        },
       ),
     };
   }
 
   <<__Override>>
   protected function runImpl(ShipItBaseConfig $config): void {
-    if ($this->outputFile === null) {
-      // Nothing to do here; carry on!
-      return;
-    }
+    invariant($this->outputFile !== null, 'impossible');
 
     $data = ImmMap {
       'destinationBranch' => $config->getDestinationBranch(),
