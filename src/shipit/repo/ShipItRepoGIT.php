@@ -358,6 +358,11 @@ class ShipItRepoGIT
     $this->gitCommand('reset', '--hard', 'origin/'.$this->branch);
   }
 
+  <<__Override>>
+  public function getOrigin(): string {
+    return trim($this->gitCommand('remote', 'get-url', 'origin'));
+  }
+
   public function push(): void {
     $this->gitCommand('push', 'origin', 'HEAD:'.$this->branch);
   }

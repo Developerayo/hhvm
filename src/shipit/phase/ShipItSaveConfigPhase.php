@@ -48,12 +48,21 @@ final class ShipItSaveConfigPhase extends ShipItPhase {
   protected function runImpl(ShipItBaseConfig $config): void {
     invariant($this->outputFile !== null, 'impossible');
 
+    $source_repo = ShipItRepo::open(
+      $config->getSourcePath(),
+      $config->getSourceBranch(),
+    );
     $data = ImmMap {
-      'destinationBranch' => $config->getDestinationBranch(),
-      'owner' => $this->owner,
-      'project' => $this->project,
-      'sourceBranch' => $config->getSourceBranch(),
-      'sourceRoots' => $config->getSourceRoots(),
+      'destination' => ImmMap {
+        'branch' => $config->getDestinationBranch(),
+        'owner' => $this->owner,
+        'project' => $this->project,
+      },
+      'source' => ImmMap {
+        'branch' => $config->getSourceBranch(),
+        'origin' => $source_repo->getOrigin(),
+        'roots' => $config->getSourceRoots(),
+      },
     };
     file_put_contents($this->outputFile, json_encode($data, JSON_PRETTY_PRINT));
     printf("Finished phase: %s\n", $this->getReadableName());

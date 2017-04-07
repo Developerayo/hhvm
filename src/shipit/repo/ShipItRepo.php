@@ -86,6 +86,11 @@ abstract class ShipItRepo {
    */
   public abstract function pull(): void;
 
+  /**
+   * Get the origin of the checkout.
+   */
+  public abstract function getOrigin(): string;
+
   public static function typedOpen<Trepo as ShipItRepo>(
     classname<Trepo> $interface,
     string $path,

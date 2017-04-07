@@ -374,6 +374,11 @@ class ShipItRepoHG extends ShipItRepo
     $this->hgCommand('pull');
   }
 
+  <<__Override>>
+  public function getOrigin(): string {
+    return trim($this->hgCommand('config', 'paths.default'));
+  }
+
   private function makeDiffsUsingGit(
     string $rev,
     ImmSet<string> $files,
