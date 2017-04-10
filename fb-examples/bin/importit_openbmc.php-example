@@ -1,0 +1,75 @@
+<?hh
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ImportIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ImportItOpenbmc extends FBImportItCLI {
+  const type TShipIt = \Facebook\ShipIt\ShipItOpenBMC;
+
+  public static function getUnsupportedPaths(): ImmVector<string> {
+    return ImmVector {
+      '@^meta-facebook/classes/fb-only-network.bbclass@',
+      '@^meta-aspeed/recipes-bsp/u-boot/u-boot_2013.07.bb@',
+      '@^meta-aspeed/recipes-bsp/u-boot/u-boot_2016.07.bb@',
+      '@^meta-aspeed/recipes-bsp/u-boot/u-boot-fw-utils_2013.07.bb@',
+      '@^meta-aspeed/recipes-bsp/u-boot/u-boot-fw-utils_2016.07.bb@',
+      '@^meta-aspeed/recipes-bsp/u-boot/u-boot.inc@',
+      '@^meta-aspeed/recipes-bsp/u-boot/u-boot-mkimage_2016.07.bb@',
+      '@^meta-aspeed/recipes-bsp/u-boot/verified-boot.inc@',
+      '@^meta-aspeed/recipes-kernel/linux/linux-aspeed_2.6.28.9.bb@',
+      '@^meta-aspeed/recipes-kernel/linux/linux-aspeed_4.1.bb@',
+      '@^meta-aspeed/recipes-kernel/linux/linux-aspeed.inc@',
+    };
+  }
+
+  <<__Override>>
+  protected static function projectFilterChangeset(
+    \Facebook\ShipIt\ShipItChangeset $changeset,
+  ): \Facebook\ShipIt\ShipItChangeset {
+    return $changeset
+      // These files are replaced by GitHub specific versions
+      // at shipit time and should never come back to us on import
+      // with modifications.
+      |> self::errorOnPaths(
+        $$,
+        static::getUnsupportedPaths(),
+      );
+  }
+
+  <<TestsBypassVisibility>>
+  protected static function errorOnPaths(
+    \Facebook\ShipIt\ShipItChangeset $changeset,
+    ImmVector<string> $unsupported_path_patterns,
+  ): \Facebook\ShipIt\ShipItChangeset {
+    foreach ($changeset->getDiffs() as $diff) {
+      $path = $diff['path'];
+
+      $match = \Facebook\ShipIt\ShipItUtil::matchesAnyPattern(
+        $path,
+        $unsupported_path_patterns,
+      );
+
+      if ($match !== null) {
+        // This could be handled more gracefully in the future.
+        throw new \Facebook\ShipIt\ShipItException(
+          "Importing changes unsupported: ".$path
+        );
+      }
+    }
+
+    return $changeset;
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ImportItOpenbmc::cliMain();
+}
