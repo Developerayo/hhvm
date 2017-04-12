@@ -200,6 +200,14 @@ final class FBRepoInitPhase extends ShipItPhase {
           'phabtest1_hg',
         };
         break;
+      case 'oculus-webvr':
+        return ImmVector {
+          '/usr/bin/git',
+          'clone',
+          'ssh://git-fusion.vip.facebook.com/data/scm/oculus-web-vr-main',
+          'oculus-webvr',
+        };
+        break;
     }
     invariant_violation(
       "Unsupported repository '%s' - add support in %s::%s()",
