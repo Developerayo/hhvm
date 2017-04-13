@@ -21,8 +21,11 @@ final class ShipItRocksDB extends FBShipItCLI {
     return $changeset
       |> FBCommonFilters::applyAll($$,
         shape(
-          // We want to keep .mk files for native code
-          'stripCommonFiles/exceptions' => ImmVector { '@\.mk$@', },
+          // We want to keep .mk and TARGETS files for native code
+          'stripCommonFiles/exceptions' => ImmVector {
+            '@\.mk$@',
+            '@TARGETS$@',
+          },
         ),
       )
       |> ShipItPathFilters::stripPaths(
