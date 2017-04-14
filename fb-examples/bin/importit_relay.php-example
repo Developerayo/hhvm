@@ -17,22 +17,6 @@ use \Facebook\ShipIt\ {
 
 final class ImportItRelay extends FBImportItCLI {
   const type TShipIt = \Facebook\ShipIt\ShipItRelay;
-
-  <<__Override>>
-  protected static function projectFilterChangeset(
-    ShipItChangeset $changeset,
-  ): ShipItChangeset {
-    return $changeset
-      |> \Facebook\ShipIt\ShipItPathFilters::rewritePaths(
-          $$,
-          $path ==> preg_replace(
-            '@(babel-relay-plugin/)\\.flowconfig$@',
-            '\\1.github.flowconfig',
-            $path,
-          ),
-        )
-      |> parent::projectFilterChangeset($$);
-  }
 }
 
 // Allow require() from unit test
