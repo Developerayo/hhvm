@@ -28,6 +28,8 @@ final class OSTeamFilters {
         'Joshua Miller <joshuamiller01@gmail.com>',
       'KC Braunschweig <kcb@fb.com>' =>
         'KC Braunschweig <kcbraunschweig@gmail.com>',
+      'Naomi Reeves <nreeves@fb.com>' =>
+        'Naomi Reeves <naomi.c.reeves@gmail.com>',
     };
 
     $author = $changeset->getAuthor();
