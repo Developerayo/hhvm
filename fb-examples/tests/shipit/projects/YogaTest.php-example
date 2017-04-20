@@ -33,6 +33,7 @@ final class YogaTest extends FBPublicProjectBaseTest {
       self::ROOT.'/BUCK' => 'BUCK',
       self::ROOT.'/YOGA_DEFS' => 'YOGA_DEFS',
       self::ROOT.'/.gitignore' => '.gitignore',
+      self::ROOT.'/lib/fb/README' => 'lib/fb/README',
       self::ROOT.'/lib/gtest/BUCK' => 'lib/gtest/BUCK',
       'fbobjc/YOGA_DEFS' => null,
       'fbandroid/xplat/yoga/BUCK' => null,

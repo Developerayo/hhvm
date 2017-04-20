@@ -23,6 +23,7 @@ final class ShipItYoga extends FBShipItCLI {
       |> FBCommonFilters::applyAll($$, shape(
             'stripCommonFiles/exceptions' => ImmVector {
               '/BUCK/',
+              '/fb/',
             },
           ),
         )
