@@ -93,7 +93,12 @@ final class PathFiltersTest extends BaseTest {
   public function examplesForMoveDirectories(
   ): array<
     string,
-    (ImmMap<string,string>, ImmVector<string>, ImmVector<string>)
+    (
+      ImmMap<string, string>,
+      ImmVector<string>,
+      ImmVector<string>,
+      ImmVector<string>,
+    )
   > {
     return [
       'first takes precedence (first is more specific)' => tuple(
@@ -103,6 +108,7 @@ final class PathFiltersTest extends BaseTest {
         },
         ImmVector { 'foo/orig_root_file', 'foo/public_tld/public_root_file' },
         ImmVector { 'orig_root_file', 'public_root_file' },
+        ImmVector {},
       ),
       // this mapping doesn't make sense given the behavior, just using it to
       // check that order matters
@@ -113,6 +119,7 @@ final class PathFiltersTest extends BaseTest {
         },
         ImmVector { 'foo/orig_root_file', 'foo/public_tld/public_root_file' },
         ImmVector { 'orig_root_file', 'public_tld/public_root_file' },
+        ImmVector {},
       ),
       'only one rule applied' => tuple(
         ImmMap {
@@ -124,7 +131,16 @@ final class PathFiltersTest extends BaseTest {
           'bar/part of project foo',
           'project_bar/part of project bar',
         },
+        ImmVector {},
       ),
+      'skipped file is not moved despite match' => tuple(
+        ImmMap {
+          'foo/' => '',
+        },
+        ImmVector { 'foo/bar', 'foo/car' },
+        ImmVector { 'foo/bar', 'car' },
+        ImmVector { '@^foo/bar$@' },
+      )
     ];
   }
 
@@ -135,10 +151,15 @@ final class PathFiltersTest extends BaseTest {
     ImmMap<string, string> $map,
     ImmVector<string> $in,
     ImmVector<string> $expected,
+    ImmVector<string> $skip_patterns,
   ): void {
     $changeset = (new ShipItChangeset())
       ->withDiffs($in->map($path ==> shape('path' => $path, 'body' => 'junk')));
-    $changeset = ShipItPathFilters::moveDirectories($changeset, $map);
+    $changeset = ShipItPathFilters::moveDirectories(
+      $changeset,
+      $map,
+      $skip_patterns,
+    );
     $this->assertEquals(
       $expected->toArray(),
       $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray(),

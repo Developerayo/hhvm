@@ -58,14 +58,23 @@ abstract final class ShipItPathFilters {
    *
    * @param $mapping a map from directory paths in the source repository to
    *   paths in the destination repository. The first matching mapping is used.
+   * @param $skip_patterns a set of patterns of paths that shouldn't be touched.
    */
   public static function moveDirectories(
     ShipItChangeset $changeset,
     ImmMap<string, string> $mapping,
+    ImmVector<string> $skip_patterns = ImmVector {},
   ): ShipItChangeset {
     return self::rewritePaths(
       $changeset,
-      function (string $path): string use ($mapping) {
+      $path ==> {
+        $match = ShipItUtil::matchesAnyPattern(
+          $path,
+          $skip_patterns,
+        );
+        if ($match !== null) {
+          return $path;
+        }
         foreach ($mapping as $src => $dest) {
           if (strncmp($path, $src, strlen($src)) !== 0) {
             continue;
