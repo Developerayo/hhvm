@@ -18,6 +18,12 @@ class ShipItRepoGIT
   extends ShipItRepo
   implements ShipItSourceRepo, ShipItDestinationRepo {
 
+  const type TSubmoduleSpec = shape(
+    'name' => string,
+    'path' => string,
+    'url' => string,
+  );
+
   private string $branch = 'master';
   private ShipItTempDir $fakeHome;
 
@@ -273,15 +279,55 @@ class ShipItRepoGIT
       throw $e;
     }
 
-    // If a submodule has changed, then we need to actually update to the
-    // new version. + before commit hash represents changed submdoule. Make
-    // sure there is no leading whitespace that comes back when we get the
-    // status since the first character will tell us whether submodule
-    // changed.
-    $sm_status = ltrim($this->gitPipeCommand(null, 'submodule', 'status'));
-    if ($sm_status !== '' && $sm_status[0] === '+') {
-      $this->gitPipeCommand(null, 'submodule', 'update', '--recursive');
+    $submodules = $this->getSubmodules();
+    foreach($submodules as $submodule) {
+      // If a submodule has changed, then we need to actually update to the
+      // new version. + before commit hash represents changed submdoule. Make
+      // sure there is no leading whitespace that comes back when we get the
+      // status since the first character will tell us whether submodule
+      // changed.
+      $sm_status = ltrim($this->gitCommand(
+        'submodule',
+        'status',
+        $submodule['path'],
+      ));
+      if ($sm_status === '') {
+        // If the path exists, we know we are adding a submodule.
+        $full_path = $this->getPath().'/'.$submodule['path'];
+        $sha = trim(substr(
+          file_get_contents($full_path),
+          strlen('Subproject commit '),
+        ));
+        $this->gitCommand('rm', $submodule['path']);
+        $this->gitCommand(
+          'submodule',
+          'add',
+          '--name', $submodule['name'],
+          $submodule['url'],
+          $submodule['path'],
+        );
+        (new ShipItShellCommand(
+          $full_path,
+          'git',
+          'checkout',
+          $sha,
+        ))
+          ->runSynchronously();
+        $this->gitCommand('add', $submodule['path']);
+        // Preserve any whitespace in the .gitmodules file.
+        $this->gitCommand('checkout', 'HEAD', '.gitmodules');
+        $this->gitCommand('commit', '--amend', '--no-edit');
+      } else if ($sm_status[0] === '+') {
+        $this->gitCommand(
+          'submodule',
+          'update',
+          '--recursive',
+          $submodule['path'],
+        );
+      }
     }
+    // DANGER ZONE!  Cleanup any removed submodules.
+    $this->gitCommand('clean', '-f', '-f', '-d');
 
     return $this->getHEADSha();
   }
@@ -395,5 +441,29 @@ class ShipItRepoGIT
 
   protected function getHEADSha(): string {
     return trim($this->gitCommand('log', '-1', "--pretty=format:%H"));
+  }
+
+  private function getSubmodules(): ImmVector<self::TSubmoduleSpec> {
+    if (!file_exists($this->getPath().'/.gitmodules')) {
+      return ImmVector {};
+    }
+    $configs = $this->gitCommand('config', '-f', '.gitmodules', '--list');
+    $configs = (new Map(parse_ini_string($configs)))
+      ->filterWithKey(($key, $_) ==> {
+        return substr($key, 0, 10) === 'submodule.' &&
+          (substr($key, -5) === '.path' || substr($key, -4) === '.url');
+      });
+    $names = $configs->keys()
+      ->filter($key ==> substr($key, -4) === '.url')
+      ->map($key ==> substr($key, 10, strlen($key) - 10 - 4))
+      ->toImmSet();
+    return $names->values()
+      ->map($name ==> shape(
+          'name' => $name,
+          'path' => $configs['submodule.'.$name.'.path'],
+          'url' => $configs['submodule.'.$name.'.url'],
+      ))
+      ->filter($config ==> file_exists($this->getPath().'/'.$config['path']))
+      ->toImmVector();
   }
 }
