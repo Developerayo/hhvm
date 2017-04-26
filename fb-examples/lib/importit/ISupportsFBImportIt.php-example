@@ -11,6 +11,7 @@ namespace Facebook\ImportIt;
 
 interface ISupportsFBImportIt
   extends
+    ImportItSubmoduleMappings,
     ImportItPathMappings,
     \Facebook\ShipIt\IHasFBShipItCLIStaticConfig,
     \Facebook\ShipIt\IHasFBShipItCLIBaseConfig {

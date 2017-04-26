@@ -52,9 +52,13 @@ abstract class FBImportItCLI
   ): ShipItChangeset {
     $shipit_class = static::getShipItClass();
     return $changeset
+      |> self::filterSubmodules($$)
       |> ImportItPathFilters::moveDirectories(
         $$,
         $shipit_class::getPathMappings(),
+        $shipit_class::getSubmoduleMappings()
+          ->keys()
+          ->map($path ==> '@^'.$path.'$@')
       );
   }
 
@@ -86,6 +90,20 @@ abstract class FBImportItCLI
     ))
       ->withSourceBranch($shipit_base_config->getDestinationBranch())
       ->withDestinationBranch($shipit_base_config->getSourceBranch());
+  }
+
+  final protected static function filterSubmodules(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $shipit_class = static::getShipItClass();
+    foreach ($shipit_class::getSubmoduleMappings() as $dest => $source) {
+      $changeset = ImportItSubmoduleFilter::moveSubmoduleCommitToTextFile(
+          $changeset,
+          $source,
+          $dest,
+        );
+    }
+    return $changeset;
   }
 
   <<__Override>>

@@ -14,6 +14,7 @@ use \Facebook\ShipIt\ {
 };
 
 final class ImportItSubmoduleFilter {
+  <<TestsBypassVisibility>>
   private static function makeSubmoduleDiff(
     string $path,
     string $old_rev,

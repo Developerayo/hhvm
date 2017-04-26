@@ -20,8 +20,6 @@ final class ShipItHHVM extends FBShipItCLI {
           $$,
           shape(
             'stripCommonFiles/exceptions' => ImmVector {
-              // HHVM will rewrite this SHA file into something publicly usable
-              '@^fbcode/hphp/facebook/third-party-rev.txt@',
               // HHVM has an extension named "fb" which is public
               '@^fbcode/hphp/runtime/ext/fb/@',
             },
@@ -33,11 +31,10 @@ final class ShipItHHVM extends FBShipItCLI {
             '@^(?!fbcode/hphp)@',
             '@^fbcode/hphp/(?!hack).*Makefile$@',
           },
-        )
-      |> ShipItSubmoduleFilter::useSubmoduleCommitFromTextFile(
-          $$,
-          'fbcode/hphp/facebook/third-party-rev.txt',
-          'third-party',
+          // Do not strip any submodules that have already been written out.
+          self::getSubmoduleMappings()
+            ->values()
+            ->map($path ==> '@^'.$path.'$@'),
         )
       |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
   }
@@ -47,6 +44,13 @@ final class ShipItHHVM extends FBShipItCLI {
     return ImmMap {
       'fbcode/hphp/public_tld/' => '',
       'fbcode/hphp/' => 'hphp/',
+    };
+  }
+
+  <<__Override>>
+  public static function getSubmoduleMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'fbcode/hphp/facebook/third-party-rev.txt' => 'third-party',
     };
   }
 

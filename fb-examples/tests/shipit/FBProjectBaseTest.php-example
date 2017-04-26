@@ -310,6 +310,14 @@ abstract class FBProjectBaseTest extends BaseTest {
   ): void {
     $diffs = ImmVector { shape('path' => $path_in, 'body' => 'junk') };
     $changeset = (new ShipItChangeset())->withDiffs($diffs);
+    $this->pathMappingCheck($changeset, $path_in, $path_expected);
+  }
+
+  final protected function pathMappingCheck(
+    ShipItChangeset $changeset,
+    string $path_in,
+    ?string $path_expected,
+  ): void {
     $changeset = static::map($changeset);
 
     if ($path_expected === null) {
@@ -386,6 +394,31 @@ abstract class FBProjectBaseTest extends BaseTest {
           $root,
         ),
       );
+    }
+  }
+
+  final public function testSubmodulesAreFilteredCorrectly(): void {
+    $shipit_class = self::getShipItClass();
+    $parents = new Set(class_parents($shipit_class));
+    if (!$parents->contains(FBShipItCLI::class)) {
+      $this->markTestSkipped();
+    }
+
+    foreach ($shipit_class::getSubmoduleMappings() as $rev_file => $dest) {
+      $changeset = (new ShipItChangeset())
+        ->withDiffs(ImmVector {
+          shape(
+            'path' => $rev_file,
+            'body' => (string) self::invoke_static_bypass_visibility(
+              ShipItSubmoduleFilter::class,
+              'makeSubmoduleDiff',
+              $rev_file,
+              'deadbeef1',
+              'deadbeef2',
+            ),
+          ),
+        });
+      $this->pathMappingCheck($changeset, $rev_file, $dest);
     }
   }
 

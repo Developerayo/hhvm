@@ -17,10 +17,12 @@ abstract final class ImportItPathFilters {
    *
    * @param $mapping a map from directory paths in the destination repository to
    *   paths in the source repository. The last matching mapping is used.
+   * @param $skip_patterns a set of patterns of paths that shouldn't be touched.
    */
   public static function moveDirectories(
     \Facebook\ShipIt\ShipItChangeset $changeset,
     ImmMap<string, string> $shipit_mapping,
+    ImmVector<string> $skip_patterns = ImmVector {},
   ): \Facebook\ShipIt\ShipItChangeset {
     $ordered_mapping = Vector {};
     foreach ($shipit_mapping as $dest_path => $src_path) {
@@ -41,6 +43,7 @@ abstract final class ImportItPathFilters {
     return \Facebook\ShipIt\ShipItPathFilters::moveDirectories(
       $changeset,
       $mapping->toImmMap(),
+      $skip_patterns,
     );
   }
 }

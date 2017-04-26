@@ -9,6 +9,10 @@
  */
 namespace Facebook\ImportIt;
 
+use \Facebook\ShipIt\ {
+  ShipItChangeset
+};
+
 abstract class FBProjectBaseTest extends \Facebook\ShipIt\BaseTest {
   abstract const type TImportIt as FBImportItCLI;
   abstract const type TShipItTest as \Facebook\ShipIt\FBProjectBaseTest;
@@ -59,7 +63,15 @@ abstract class FBProjectBaseTest extends \Facebook\ShipIt\BaseTest {
     ?string $path_expected,
   ): void {
     $diffs = ImmVector { shape('path' => $path_in, 'body' => 'junk') };
-    $changeset = (new \Facebook\ShipIt\ShipItChangeset())->withDiffs($diffs);
+    $changeset = (new ShipItChangeset())->withDiffs($diffs);
+    $this->pathMappingCheck($changeset, $path_in, $path_expected);
+  }
+
+  final protected function pathMappingCheck(
+    ShipItChangeset $changeset,
+    string $path_in,
+    ?string $path_expected,
+  ): void {
     $changeset = static::map($changeset);
 
     if ($path_expected === null) {
@@ -110,6 +122,31 @@ abstract class FBProjectBaseTest extends \Facebook\ShipIt\BaseTest {
       'ShipIt repo names match and `getStaticConfig` has not set '.
         '`destDirName` to something unique for the destination repository!',
     );
+  }
+
+  final public function testSubmodulesAreImportedCorrectly(): void {
+    $shipit_class = self::getShipItClass();
+    $parents = new Set(class_parents($shipit_class));
+    if (!$parents->contains(\Facebook\ShipIt\FBShipItCLI::class)) {
+      $this->markTestSkipped();
+    }
+
+    foreach ($shipit_class::getSubmoduleMappings() as $rev_file => $dest) {
+      $changeset = (new ShipItChangeset())
+        ->withDiffs(ImmVector {
+          shape(
+            'path' => $rev_file,
+            'body' => (string) self::invoke_static_bypass_visibility(
+              ImportItSubmoduleFilter::class,
+              'makeSubmoduleDiff',
+              $rev_file,
+              'deadbeef1',
+              'deadbeef2',
+            ),
+          ),
+        });
+      $this->pathMappingCheck($changeset, $dest, $rev_file);
+    }
   }
 
   final protected static function getImportItClass(

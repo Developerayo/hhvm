@@ -20,6 +20,8 @@ class FBCodeBuilder {
   const string DEST_GITHUB_HASHES = 'build/deps/github_hashes/facebook/';
 }
 
+interface ISupportsFBCodeBuilder {};
+
 /**
  * Use this trait in your FBShipItCLI implementation to enable
  * opensource/fbcode_builder/README* for your project.
@@ -44,7 +46,7 @@ class FBCodeBuilder {
  * `fbcode_builder` modifications to your changeset can be made in the
  * appropriate parts of the filter chain.
  */
-trait FBCodeBuilderTrait {
+trait FBCodeBuilderTrait implements ISupportsFBCodeBuilder {
   require extends FBShipItCLI;  // The trait accesses getStaticConfig()
 
   // Implement the same as you would write a vanilla projectFilterChangeset()

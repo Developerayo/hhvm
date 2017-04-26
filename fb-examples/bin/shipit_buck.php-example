@@ -111,6 +111,10 @@ class ShipItBuck
     );
   }
 
+  public static function getSubmoduleMappings(): ImmMap<string, string> {
+    return ImmMap {};
+  }
+
   private static function rewriteMessage(
     ShipItChangeset $changeset,
   ): ShipItChangeset {

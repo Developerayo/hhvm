@@ -32,17 +32,28 @@ abstract class FBShipItCLI
   ): ShipItChangeset {
     return $changeset
       |> self::stripExceptSourceRoots($$)
+      |> self::filterSubmodules($$)
       |> static::projectFilterChangeset($$)
       |> FBConfidentialFilter::applyAll($$);
   }
 
+  <<__Override>>
+  public static function getSubmoduleMappings(): ImmMap<string, string> {
+    return ImmMap {};
+  }
+
   private static function getSourceRoots(): ImmSet<string> {
-    $paths = static::getPathMappings();
-    if ($paths->keys()->toImmSet()->contains('')) {
+    $paths = static::getPathMappings()
+      ->keys()
+      ->toSet()
+      // Add the default project hashes folder.  This is stripped after we add
+      // any submodules.
+      ->add('fbcode/opensource/project_hashes/');
+    if ($paths->contains('')) {
       // All paths are included.
       return ImmSet {};
     }
-    $paths = $paths->toKeysArray();
+    $paths = $paths->toArray();
     // Sort least specific to most specific.
     sort($paths);
     $roots = Set {};
@@ -89,6 +100,33 @@ abstract class FBShipItCLI
       $changeset,
       $roots,
     );
+  }
+
+  final protected static function filterSubmodules(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    foreach (static::getSubmoduleMappings() as $source => $dest) {
+      $changeset = ShipItSubmoduleFilter::useSubmoduleCommitFromTextFile(
+          $changeset,
+          $source,
+          $dest,
+        );
+    }
+    $interfaces = new Set(class_implements(static::class));
+    if ($interfaces->contains(ISupportsFBCodeBuilder::class)) {
+      // FBCodeBuilder needs these hashes, but doesn't use them as submodules.
+      return $changeset;
+    }
+    return $changeset |>
+      ShipItPathFilters::stripPaths(
+        $$,
+        ImmVector {
+          '@^fbcode/opensource/project_hashes/@',
+        },
+        ImmVector {
+          '@^fbcode/opensource/project_hashes/facebook/shipit_test_file.txt$@',
+        },
+      );
   }
 
   <<__Override>>
