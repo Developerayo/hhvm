@@ -43,11 +43,15 @@ abstract class FBShipItCLI
   }
 
   private static function getSourceRoots(): ImmSet<string> {
+    $config = static::getStaticConfig();
     $paths = static::getPathMappings()
       ->keys()
       ->toSet();
     $interfaces = new Set(class_implements(static::class));
-    if (!$interfaces->contains(ISupportsFBCodeBuilder::class)) {
+    if (
+      !$interfaces->contains(ISupportsFBCodeBuilder::class) &&
+      $config['internalRepo'] === 'fbsource'
+    ) {
       // Add the default project hashes folder.  This is stripped after we add
       // any submodules.
       $paths->add('fbcode/opensource/project_hashes/');
