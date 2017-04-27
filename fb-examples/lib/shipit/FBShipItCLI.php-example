@@ -124,7 +124,7 @@ abstract class FBShipItCLI
           '@^fbcode/opensource/project_hashes/@',
         },
         ImmVector {
-          '@^fbcode/opensource/project_hashes/facebook/shipit_test_file.txt$@',
+          '@^fbcode/opensource/project_hashes/shipit_test_file.txt$@',
         },
       );
   }
