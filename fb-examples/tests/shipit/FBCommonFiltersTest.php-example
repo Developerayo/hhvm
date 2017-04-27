@@ -140,4 +140,36 @@ final class FBCommonFiltersTest extends BaseTest {
       $out->getMessage(),
     );
   }
+
+  public function testAccept2ShipStripped(): void {
+    $in = (new ShipItChangeset())
+      ->withMessage('Summary: #accept2ship');
+    $out = FBCommonFilters::applyAll($in);
+    $this->assertSame(
+      '',
+      $out->getMessage(),
+    );
+
+    // testing multi-line strings
+    $in = (new ShipItChangeset())
+      ->withMessage(
+    'some_prefix
+    #accept2ship
+    some_suffix');
+    $out = FBCommonFilters::stripAccept2Ship($in);
+    $this->assertSame(
+    'some_prefix
+        some_suffix',
+      $out->getMessage(),
+    );
+
+    $in = (new ShipItChangeset())
+      ->withMessage("some_prefix\n#accept2ship\nsome_suffix");
+    $out = FBCommonFilters::stripAccept2Ship($in);
+    $this->assertSame(
+      "some_prefix\nsome_suffix",
+      $out->getMessage(),
+    );
+  }
+
 }

@@ -29,6 +29,7 @@ final class FBCommonFilters {
       |> self::stripSubjectTags($$)
       |> self::stripEmptyTestPlans($$)
       |> self::stripCommands($$)
+      |> self::stripAccept2Ship($$)
       |> self::delinkifyDifferentialURLs($$)
       |> self::restoreGitHubAuthor($$)
       |> ShipItUserFilters::rewriteSVNAuthor(
@@ -189,6 +190,17 @@ final class FBCommonFilters {
     );
   }
 
+  public static function stripAccept2Ship(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return $changeset->withMessage(
+      preg_replace(
+        "/#accept2ship\n?/",
+        '',
+        $changeset->getMessage(),
+      ),
+    );
+  }
   public static function getDefaultMessageSectionNames(): ImmSet<string> {
     return ImmSet {
       'summary',
