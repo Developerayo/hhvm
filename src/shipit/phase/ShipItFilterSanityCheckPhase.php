@@ -47,6 +47,9 @@ final class ShipItFilterSanityCheckPhase extends ShipItPhase {
     $filter = $this->filter;
     $allows_all = false;
     foreach ($sourceRoots as $root) {
+      if ($root === 'fbcode/opensource/project_hashes/') {
+        continue;
+      }
       $test_file = $root.'/'.self::TEST_FILE_NAME;
       $test_file = str_replace('//', '/', $test_file);
       $changeset = (new ShipItChangeset())
