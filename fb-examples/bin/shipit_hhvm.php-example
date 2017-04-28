@@ -34,7 +34,11 @@ final class ShipItHHVM extends FBShipItCLI {
           // Do not strip any submodules that have already been written out.
           self::getSubmoduleMappings()
             ->values()
-            ->map($path ==> '@^'.$path.'$@'),
+            ->map($path ==> '@^'.$path.'$@')
+            // Nor the test file used by the sanity check filter.
+            ->toVector()
+            ->add('@.*'.ShipItFilterSanityCheckPhase::TEST_FILE_NAME.'$@')
+            ->toImmVector(),
         )
       |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
   }
