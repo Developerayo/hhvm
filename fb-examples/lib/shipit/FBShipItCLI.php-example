@@ -50,7 +50,8 @@ abstract class FBShipItCLI
     $interfaces = new Set(class_implements(static::class));
     if (
       !$interfaces->contains(ISupportsFBCodeBuilder::class) &&
-      $config['internalRepo'] === 'fbsource'
+      $config['internalRepo'] === 'fbsource' &&
+      !static::getSubmoduleMappings()->isEmpty()
     ) {
       // Add the default project hashes folder.  This is stripped after we add
       // any submodules.
@@ -113,6 +114,9 @@ abstract class FBShipItCLI
   final protected static function filterSubmodules(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
+    if (static::getSubmoduleMappings()->isEmpty()) {
+      return $changeset;
+    }
     foreach (static::getSubmoduleMappings() as $source => $dest) {
       $changeset = ShipItSubmoduleFilter::useSubmoduleCommitFromTextFile(
           $changeset,
