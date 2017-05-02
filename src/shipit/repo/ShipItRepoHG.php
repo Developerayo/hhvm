@@ -139,8 +139,19 @@ class ShipItRepoHG extends ShipItRepo
   }
 
   public function commitPatch(ShipItChangeset $patch): string {
-    $diff = $this->renderPatch($patch);
-    $this->hgPipeCommand($diff, 'patch', '-');
+    if ($patch->getDiffs()->count() === 0) {
+      // This is an empty commit, which `hg patch` does not handle properly.
+      $this->hgCommand(
+        '--config', 'ui.allowemptycommit=True',
+        'commit',
+        '--user', $patch->getAuthor(),
+        '--date', date('c', $patch->getTimestamp()),
+        '-m', $patch->getSubject()."\n\n".$patch->getMessage(),
+      );
+    } else {
+      $diff = $this->renderPatch($patch);
+      $this->hgPipeCommand($diff, 'patch', '-');
+    }
     $id = $this->getChangesetFromID('.')?->getID();
     invariant($id !== null, 'Unexpeceted null SHA!');
     return $id;
@@ -323,7 +334,10 @@ class ShipItRepoHG extends ShipItRepo
     $diffs = Vector { };
 
     foreach(self::ParseHgRegions($patch) as $region) {
-      $diffs[] = self::parseDiffHunk($region);
+      $diff = self::parseDiffHunk($region);
+      if ($diff !== null) {
+        $diffs[] = $diff;
+      }
     }
 
     if ($changeset === null) {
@@ -407,13 +421,14 @@ class ShipItRepoHG extends ShipItRepo
     );
     $patch = $result->getStdOut();
 
-    $ret = Vector { };
-    foreach (
-      ShipItUtil::parsePatch($patch) as $hunk
-    ) {
-      $ret[] = self::parseDiffHunk($hunk);
+    $diffs = Vector { };
+    foreach (ShipItUtil::parsePatch($patch) as $hunk) {
+      $diff = self::parseDiffHunk($hunk);
+      if ($diff !== null) {
+        $diffs[] = $diff;
+      }
     }
-    return $ret->toImmVector();
+    return $diffs->toImmVector();
   }
 
   private function checkoutFilesAtRevToPath(

@@ -132,10 +132,13 @@ abstract class ShipItRepo {
   /**
    * Convert a hunk to a ShipItDiff shape
    */
-  protected static function parseDiffHunk(string $hunk): ShipItDiff {
+  protected static function parseDiffHunk(string $hunk): ?ShipItDiff {
     list($header, $body) = explode("\n", $hunk, 2);
     $matches = array();
     preg_match('@^diff --git [ab]/(.*?) [ab]/(.*?)$@', trim($header), $matches);
+    if (count($matches) === 0) {
+      return null;
+    }
     return shape(
       'path' => $matches[1],
       'body' => $body,

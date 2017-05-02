@@ -179,16 +179,21 @@ class ShipItRepoGIT
 
   private function getNativeHeaderFromIDWithPatch(
     string $revision,
-    string $patch
+    string $patch,
   ): string {
     $full_patch = $this->gitCommand(
       'format-patch',
+      '--always',
       '--no-renames',
       '--no-stat',
       '--stdout',
       '-1',
       $revision,
     );
+    if (strlen($patch) === 0) {
+      // This is an empty commit, so everything is the header.
+      return $full_patch;
+    }
     $index = strpos($full_patch, $patch);
     if ($index !== false) {
       return substr($full_patch, 0, $index);
@@ -216,7 +221,10 @@ class ShipItRepoGIT
     $ret = self::parseHeader($header);
     $diffs = Vector { };
     foreach(ShipItUtil::parsePatch($patch) as $hunk) {
-      $diffs[] = self::parseDiffHunk($hunk);
+      $diff = self::parseDiffHunk($hunk);
+      if ($diff !== null) {
+        $diffs[] = $diff;
+      }
     }
     if ($ret === null) {
       return $ret;
@@ -264,6 +272,18 @@ class ShipItRepoGIT
    * Commit a standardized patch to the repo
    */
   public function commitPatch(ShipItChangeset $patch): string {
+    if ($patch->getDiffs()->count() === 0) {
+      // This is an empty commit, which `git am` does not handle properly.
+      $this->gitCommand(
+        'commit',
+        '--allow-empty',
+        '--author', $patch->getAuthor(),
+        '--date', (string) $patch->getTimestamp(),
+        '-m', $patch->getSubject()."\n\n".$patch->getMessage(),
+      );
+      return $this->getHEADSha();
+    }
+
     $diff = $this->renderPatch($patch);
     try {
       $this->gitPipeCommand($diff, 'am', '--keep-non-patch', '--keep-cr');
