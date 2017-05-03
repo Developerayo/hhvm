@@ -10,7 +10,7 @@
 namespace Facebook\ShipIt;
 
 final class HHVMEnvironmentCheckPhase extends EnvironmentCheckPhase {
-  const string REQUIRED_GCC_VERSION = '4.8';
+  const string REQUIRED_GCC_VERSION = '4.9';
 
   <<__Override>>
   public function runImpl(ShipItBaseConfig $config): void {
