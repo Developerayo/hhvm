@@ -12,7 +12,7 @@ namespace Facebook\ImportIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ImportItOpenbmc extends FBImportItCLI {
-  const type TShipIt = \Facebook\ShipIt\ShipItOpenBMC;
+  const type TShipIt = \Facebook\ShipIt\ShipItOpenBMCHelium;
 
   public static function getUnsupportedPaths(): ImmVector<string> {
     return ImmVector {
