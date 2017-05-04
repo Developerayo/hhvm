@@ -70,6 +70,15 @@ final class ImportItSubmoduleFilter {
         continue;
       }
 
+      $changeset = $changeset
+        ->withDebugMessage(
+          'Updating submodule at %s (external path %s) to %s (from %s)',
+          $text_file_with_rev,
+          $submodule_path,
+          $new_rev,
+          $old_rev,
+        );
+
       $diffs[] = shape(
         'path' => $text_file_with_rev,
         'body' => self::makeSubmoduleDiff(
