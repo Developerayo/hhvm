@@ -55,7 +55,15 @@ class ImportItRepoGIT extends \Facebook\ShipIt\ShipItRepoGIT {
     $branch_name = 'ImportIt-patch-for-'.$pr_number;
     $this->gitCommand('checkout', '-B', $branch_name, $merge_base);
     $this->setBranch($branch_name);
-    $this->gitPipeCommand($diff, 'apply', '--binary', '-');
+    $this->gitPipeCommand(
+      $diff,
+      'apply',
+      '--binary',
+      // Ensure that submodule hashes are updated.
+      '--index',
+      // Read from stdin.
+      '-',
+    );
     $this->gitCommand('add', '--all');
     $status = trim($this->gitCommand('status'));
     $this->gitCommand(
