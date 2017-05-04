@@ -109,6 +109,9 @@ final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
     printf("  Filtering...\n",);
     $filter_fn = $this->filter;
     $changeset = $filter_fn($changeset);
+    if ($config->isVerboseEnabled()) {
+      $changeset->dumpDebugMessages();
+    }
     printf("  Exporting...\n",);
     $this->maybeSavePatch($destination_repo, $changeset);
     try {
