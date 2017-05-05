@@ -37,9 +37,6 @@ final class ShipItRelay extends FBShipItCLI {
             // Only sync out files from the Relay project
             // Ignore __forks__ (but permit __github__/__forks__/)
             '@^'.self::RELAY_OSS.'(?!__github__).+?/__forks__/@',
-            // The yarn.lock uses the offline-cache internally which makes it
-            // useless externally.
-            '@/yarn\.lock$@',
           },
         )
       |> ShipItPathFilters::moveDirectories(

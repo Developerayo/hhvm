@@ -26,8 +26,8 @@ final class RelayTest extends FBPublicProjectBaseTest {
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       // Open source modules.
-      self::RELAY_OSS.'/__github__/XYZ.js' =>
-        'XYZ.js',
+      self::RELAY_OSS.'/__github__/yarn.lock' => 'yarn.lock',
+      self::RELAY_OSS.'/__github__/XYZ.js' => 'XYZ.js',
       self::RELAY_OSS.'/__github__/.flowconfig' => '.flowconfig',
       self::RELAY_OSS.'/babel-plugin-relay/XYZ.js' =>
         'packages/babel-plugin-relay/XYZ.js',
