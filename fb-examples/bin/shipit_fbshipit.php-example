@@ -163,9 +163,12 @@ final class ShipItFBShipIt extends FBShipItCLI {
       'CommunityCellularManager',
     };
     $orgs = ImmVector {
+      'caffe2',
       'facebook',
       'facebookarchive',
+      'facebookexperimental',
       'facebookincubator',
+      'instagram',
     };
     $credentials = FBGitHubUtils::getCredentialsForProject(
       'facebook',
