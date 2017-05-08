@@ -1,0 +1,81 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItCaffe2 extends FBShipItCLI {
+  const string ROOT = 'fbcode/caffe2/';
+
+  <<__Override>>
+  protected static function projectFilterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return $changeset
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::stripPaths(
+        $$,
+        ImmVector {
+          '@\.facebook$@',
+          '@(^|/)rsync_exclude.txt@',
+          '@(^|/)fb_protobuf.sh@',
+        }
+      )
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT => '',
+    };
+  }
+
+  <<__Override>>
+  public static function getSubmoduleMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT.'submodules/NNPACK-rev.txt' => 'third_party/NNPACK',
+      self::ROOT.'submodules/NNPACK_deps/FP16-rev.txt' =>
+        'third_party/NNPACK_deps/FP16',
+      self::ROOT.'submodules/NNPACK_deps/FXdiv-rev.txt' =>
+        'third_party/NNPACK_deps/FXdiv',
+      self::ROOT.'submodules/NNPACK_deps/psimd-rev.txt' =>
+        'third_party/NNPACK_deps/psimd',
+      self::ROOT.'submodules/NNPACK_deps/pthreadpool-rev.txt' =>
+        'third_party/NNPACK_deps/pthreadpool',
+      self::ROOT.'submodules/android-cmake-rev.txt' =>
+        'third_party/android-cmake',
+      self::ROOT.'submodules/benchmark-rev.txt' => 'third_party/benchmark',
+      self::ROOT.'submodules/cnmem-rev.txt' => 'third_party/cnmem',
+      self::ROOT.'submodules/cub-rev.txt' => 'third_party/cub',
+      self::ROOT.'submodules/eigen-rev.txt' => 'third_party/eigen',
+      self::ROOT.'submodules/gloo-rev.txt' => 'third_party/gloo',
+      self::ROOT.'submodules/googletest-rev.txt' => 'third_party/googletest',
+      self::ROOT.'submodules/ios-cmake-rev.txt' => 'third_party/ios-cmake',
+      self::ROOT.'submodules/nccl-rev.txt' => 'third_party/nccl',
+      self::ROOT.'submodules/nervanagpu-rev.txt' => 'third_party/nervanagpu',
+      self::ROOT.'submodules/protobuf-rev.txt' => 'third_party/protobuf',
+      self::ROOT.'submodules/pybind11-rev.txt' => 'third_party/pybind11',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'caffe2',
+      'githubProject' => 'caffe2',
+    );
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItCaffe2::cliMain();
+}
