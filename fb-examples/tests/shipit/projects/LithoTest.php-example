@@ -44,6 +44,7 @@ final class LithoTest extends FBPublicProjectBaseTest {
       self::COMPONENTS_ROOT.'/lib/fb/include/fb/ALog.h'
         => 'lib/fb/include/fb/ALog.h',
       // Test for excluding other folders
+      self::COMPONENTS_ROOT.'/facebook/README.fb' => null,
       'fbandroid/java/com/facebook/components' => null,
       'fbandroid/java/com/facebook/components/FbComponentsSystrace.java'
         => null,

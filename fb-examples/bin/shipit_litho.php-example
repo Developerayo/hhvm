@@ -21,8 +21,8 @@ final class ShipItLitho extends FBShipItCLI {
     return $changeset
       |> FBCommonFilters::applyAll($$, shape(
             'stripCommonFiles/exceptions' => ImmVector {
-              '/BUCK/',
-              '/fb/',
+              '@BUCK@',
+              '@(^|/)fb(/|$)@',
             },
           ),
         )
