@@ -1,0 +1,59 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class LithoTest extends FBPublicProjectBaseTest {
+  const string COMPONENTS_ROOT = 'fbandroid/libraries/components';
+
+  <<__Override>>
+  protected static function map(ShipItChangeset $changeset): ShipItChangeset {
+    return ShipItLitho::filterChangeset($changeset);
+  }
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      // Basic folder test
+      self::COMPONENTS_ROOT.'/foo' => 'foo',
+      // Test for base level files
+      self::COMPONENTS_ROOT.'/LICENCE' => 'LICENCE',
+      self::COMPONENTS_ROOT.'/README.md' => 'README.md',
+      self::COMPONENTS_ROOT.'/.gitignore' => '.gitignore',
+      // Basic class test
+      self::COMPONENTS_ROOT.'/litho-core/src/main/'.
+        'java/com/facebook/components/InternalNode.java'
+        => 'litho-core/src/main/java/com/facebook/components/InternalNode.java',
+      // Buck files
+      self::COMPONENTS_ROOT.'/BUCK' => 'BUCK',
+      self::COMPONENTS_ROOT.'/litho-core/src/debug/java/com/facebook/components/BUCK'
+        => 'litho-core/src/debug/java/com/facebook/components/BUCK',
+      self::COMPONENTS_ROOT.'/litho-core/src/main/java/com/facebook/components/BUCK'
+        => 'litho-core/src/main/java/com/facebook/components/BUCK',
+      // Folders containing 'fb' in their name
+      self::COMPONENTS_ROOT.'/lib/fb/BUCK'
+        => 'lib/fb/BUCK',
+      self::COMPONENTS_ROOT.'/lib/fb'
+        => 'lib/fb',
+      self::COMPONENTS_ROOT.'/lib/fb/include/fb/ALog.h'
+        => 'lib/fb/include/fb/ALog.h',
+      // Test for excluding other folders
+      'fbandroid/java/com/facebook/components' => null,
+      'fbandroid/java/com/facebook/components/FbComponentsSystrace.java'
+        => null,
+      'fbandroid/components/foo' => null,
+      'fbandroid/abc/components/foo' => null
+    };
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+}
