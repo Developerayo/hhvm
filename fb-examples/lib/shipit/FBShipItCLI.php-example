@@ -167,8 +167,8 @@ abstract class FBShipItCLI
       new ShipItCreateNewRepoPhase(
         $changeset ==> self::filterChangeset($changeset),
         shape(
-          'name' => 'FBShipIt',
-          'email' => 'opensource+fbshipit@facebook.com',
+          'name' => 'facebook-github-bot',
+          'email' => 'facebook-github-bot@users.noreply.github.com',
         ),
       ),
       new ShipItGitHubInitPhase(
