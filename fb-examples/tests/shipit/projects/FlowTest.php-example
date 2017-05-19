@@ -88,6 +88,11 @@ final class FlowTest extends FBPublicProjectBaseTest {
         'foo bar',
         ImmVector { 'something/foo' }, // should be an empty commit
       ),
+      tuple(
+        'foo merging 32194ec6f5dadff3cf0d560727fc07844562ae80 | bar | [flow][foo] foo bar',
+        '[foo] foo bar',
+        ImmVector { 'fbcode/flow/foo', 'fbcode/flow/bar' },
+      ),
     ];
   }
 
