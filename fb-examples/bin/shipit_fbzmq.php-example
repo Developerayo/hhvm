@@ -12,7 +12,6 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItFbzmq extends FBShipItCLI {
-  const string ROOT = 'fbcode/fbzmq/';
 
   <<__Override>>
   protected static function projectFilterChangeset(
@@ -26,7 +25,8 @@ final class ShipItFbzmq extends FBShipItCLI {
   <<__Override>>
   public static function getPathMappings(): ImmMap<string, string> {
     return ImmMap {
-      self::ROOT => '',
+      'fbcode/fbzmq/public_tld/' => '',
+      'fbcode/fbzmq/' => 'fbzmq/',
     };
   }
 
