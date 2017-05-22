@@ -1,0 +1,53 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+
+final class IGListKitTest extends FBPublicProjectBaseTest {
+  const string ROOT = 'fbobjc/VendorLib/IGListKit/src';
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+
+  <<__Override>>
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItIGListKit::filterChangeset(
+      $changeset,
+    );
+  }
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      // Test files that should exist and are mapped to the root
+      self::ROOT.'/Podfile' => 'Podfile',
+      self::ROOT.'/IGListKit.podspec' => 'IGListKit.podspec',
+      self::ROOT.'/Source/IGListKit.h' => 'Source/IGListKit.h',
+      self::ROOT.'/Source/IGListDiff.mm' => 'Source/IGListDiff.mm',
+      self::ROOT.'/Source/Internal/UICollectionView+IGListBatchUpdateData.h' => 'Source/Internal/UICollectionView+IGListBatchUpdateData.h',
+      self::ROOT.'/Tests/IGListAdapterTests.m' => 'Tests/IGListAdapterTests.m',
+
+      // Test internal files in the parent of the root are not included
+      'fbobjc/VendorLib/IGListKit/BUCK' => null,
+      'fbobjc/VendorLib/IGListKit/IGListAssert.h' => null,
+
+      // Test neighbor dirs are not included
+      'fbobjc/VendorLib/IGListKit/IGListKitPerformanceTests/IGListDiffPerformanceTests.m' => null,
+
+      // Test changes made to Instagram are not included
+      'fbobjc/Apps/Instagram/Instagram/BUCK' => null,
+      'fbobjc/Apps/Instagram/Instagram/Classes/AppDelegate.h' => null,
+    };
+  }
+}

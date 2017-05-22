@@ -25,19 +25,13 @@ final class FlowTest extends FBPublicProjectBaseTest {
       'fbcode/flow/github/.merlin' => '.merlin',
       'fbcode/flow/github/_gitattributes' => '.gitattributes',
       'fbcode/flow/.merlin' => null,
-      'fbcode/flow/yarn.lock' => null,
-      'fbcode/flow/foo/yarn.lock' => null,
-      'fbcode/flow/github/website/yarn.lock' => 'website/yarn.lock',
+      'fbcode/flow/yarn.lock' => 'yarn.lock',
+      'fbcode/flow/website/yarn.lock' => 'website/yarn.lock',
       'fbcode/hphp/hack/src/'.$test_file_name => 'hack/'.$test_file_name,
       'fbcode/hphp/hack/src/utils/errors.ml' => null,
       'fbcode/hphp/hack/src/utils/foo.ml' => 'hack/utils/foo.ml',
       'fbcode/somethingelse/foo' => null,
     };
-  }
-
-  <<__Override>>
-  public function testWithAlreadyOnGitHub(): void {
-    // @already-on-github is not supported by flow scrubber
   }
 
   public function examplesForSummaryHandling(

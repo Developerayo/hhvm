@@ -1,0 +1,71 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class EdenTest extends FBPublicProjectBaseTest {
+  <<__Override>>
+  protected static function map(
+    ShipItChangeset $changeset
+  ): ShipItChangeset {
+    return ShipItEden::filterChangeset(
+      $changeset,
+    );
+  }
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      # Example things that *should* make it through.
+      'fbcode/eden/DEFS'
+        => 'eden/DEFS',
+      'fbcode/eden/fs/store/test/LocalStoreTest.cpp'
+        => 'eden/fs/store/test/LocalStoreTest.cpp',
+
+      # Unlike most projects in fbcode, we publish our build files:
+      'fbcode/eden/fs/config/test/TARGETS'
+        => 'eden/fs/config/test/TARGETS',
+
+      # README.facebook should be excluded.
+      'fbcode/eden/oss/README.facebook' => null,
+
+      # Contents of facebook/ directories should also be excluded.
+      'fbcode/eden/fs/service/facebook/EdenServer.cpp' => null,
+      'fbcode/eden/facebook/packaging' => null,
+
+      # Code under fbcode/eden/hg/eden/ should be excluded because it should be
+      # exported to https://github.com/facebookexperimental/eden-hg instead.
+      'fbcode/eden/hg/LICENSE' => null,
+      'fbcode/eden/hg/README.md' => null,
+      'fbcode/eden/hg/eden/__init__.py' => null,
+      'fbcode/eden/hg/eden/FILE_WITH_NO_EXTENSION' => null,
+
+      # Other contents of eden/oss should end up in the root.
+      'fbcode/eden/oss/README.md' => 'README.md',
+      'fbcode/eden/oss/.buckconfig' => '.buckconfig',
+
+      # We use the same common/ stub files as fboss, and publish them
+      # from the fboss directory.
+      'fbcode/fboss/common/fb303/if/fb303.thrift'
+        => 'common/fb303/if/fb303.thrift',
+      # Other fboss files should be excluded.
+      'fbcode/fboss/agent/Constants.h'
+        => null,
+
+      # external/TARGETS.oss should be renamed to external/TARGETS
+      'fbcode/eden/oss/external/TARGETS.oss'
+        => 'external/TARGETS',
+    };
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+}
