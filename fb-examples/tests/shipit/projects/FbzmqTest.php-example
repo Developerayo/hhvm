@@ -18,10 +18,11 @@ final class FbzmqTest extends FBPublicProjectBaseTest {
   <<__Override>>
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
+      'fbcode/fbzmq/README' => 'README',
       'fbcode/fbzmq/async/TARGETS' => null,
       'fbcode/fbzmq/async/tests/ZmqEventLoopTest.cpp' =>
-          'fbzmq/async/tests/ZmqEventLoopTest.cpp',
-      'fbcode/fbzmq/zmq/ZmqSocket.h' => 'fbzmq/zmq/ZmqSocket.h',
+          'async/tests/ZmqEventLoopTest.cpp',
+      'fbcode/fbzmq/zmq/ZmqSocket.h' => 'zmq/ZmqSocket.h',
     };
   }
 
