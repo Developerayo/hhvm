@@ -24,7 +24,7 @@ final class FBCommonFilters {
       |> self::skipIfAlreadyOnGitHub($$)
       |> self::stripCommonFiles(
           $$,
-          Shapes::idx($config, 'stripCommonFiles/exceptions', ImmVector {}),
+          $config['stripCommonFiles/exceptions'] ?? ImmVector {},
         )
       |> self::stripSubjectTags($$)
       |> self::stripEmptyTestPlans($$)
@@ -38,11 +38,8 @@ final class FBCommonFilters {
         )
       |> self::filterMessageSections(
           $$,
-          Shapes::idx(
-            $config,
-            'filterMessageSections/keepFields',
-            self::getDefaultMessageSectionNames(),
-          )
+          $config['filterMessageSections/keepFields']
+            ?? self::getDefaultMessageSectionNames(),
         )
       |> self::rewriteMentions($$)
       |> self::rewriteReviewers($$)
