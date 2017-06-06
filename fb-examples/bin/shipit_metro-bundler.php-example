@@ -31,20 +31,13 @@ final class ShipItMetroBundler extends FBShipItCLI {
             },
           ),
         )
-      |> ShipItPathFilters::stripPaths(
-          $$,
-          ImmVector {
-            '@(^|/)node_modules/@',
-          },
-        )
       |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
   }
 
   <<__Override>>
   public static function getPathMappings(): ImmMap<string, string> {
     return ImmMap {
-      'xplat/js/react-native-github/packager/' =>
-        'packages/metro-bundler/',
+      'xplat/js/metro-bundler/' => '',
     };
   }
 
