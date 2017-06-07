@@ -208,6 +208,14 @@ final class FBRepoInitPhase extends ShipItPhase {
           'oculus-webvr',
         };
         break;
+      case 'facebook-spaces':
+        return ImmVector {
+          '/usr/bin/git',
+          'clone',
+          'ssh://git.vip.facebook.com/data/gitrepos/spaces.git',
+          'facebook-spaces',
+        };
+        break;
     }
     invariant_violation(
       "Unsupported repository '%s' - add support in %s::%s()",
