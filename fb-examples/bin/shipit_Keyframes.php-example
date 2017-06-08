@@ -12,7 +12,6 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItKeyframes extends FBShipItCLI {
-  const string ROOT = 'xplat/Keyframes/src/';
 
   <<__Override>>
   protected static function projectFilterChangeset(
@@ -26,7 +25,8 @@ final class ShipItKeyframes extends FBShipItCLI {
   <<__Override>>
   public static function getPathMappings(): ImmMap<string, string> {
     return ImmMap {
-      self::ROOT => '',
+      'xplat/Keyframes/src/' => '',
+      'fbandroid/libraries/keyframes/src/' => 'android/',
     };
   }
 

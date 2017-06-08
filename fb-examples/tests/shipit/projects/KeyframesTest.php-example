@@ -19,6 +19,11 @@ final class KeyframesTest extends FBPublicProjectBaseTest {
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'xplat/Keyframes/src/LICENSE' => 'LICENSE',
+      'xplat/Keyframes/src/js/package.json' => 'js/package.json',
+      'xplat/Keyframes/src/scripts/package.json' => 'scripts/package.json',
+      'fbandroid/libraries/keyframes/src/.gitignore'
+        => 'android/.gitignore',
+      'xplat/Keyframes/src/ios/.gitignore' => 'ios/.gitignore',
       'xplat/SomeOtherProject/Foo' => null,
     };
   }
