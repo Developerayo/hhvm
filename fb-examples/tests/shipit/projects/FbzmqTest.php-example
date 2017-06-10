@@ -23,6 +23,15 @@ final class FbzmqTest extends FBPublicProjectBaseTest {
           'fbzmq/async/tests/ZmqEventLoopTest.cpp',
       'fbcode/fbzmq/zmq/ZmqSocket.h' => 'fbzmq/zmq/ZmqSocket.h',
       'fbcode/fbzmq/public_tld/PATENTS' => 'PATENTS',
+      // fbcode_builder is shared between several projects, but it's easiest
+      // to just copy it into each project's Github repo.
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'fbcode_builder.py' =>
+        FBCodeBuilder::DEST_FBCODE_BUILDER.'fbcode_builder.py',
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'travis.yml' => '.travis.yml',
+      // fbzmq is only interested in the Github revisions its dependencies.
+      FBCodeBuilder::SRC_GITHUB_HASHES.'folly-rev.txt' =>
+        FBCodeBuilder::DEST_GITHUB_HASHES.'folly-rev.txt',
+      FBCodeBuilder::SRC_GITHUB_HASHES.'yoga-rev.txt' => null,
     };
   }
 
