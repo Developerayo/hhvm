@@ -19,6 +19,7 @@ final class ShipItFbzmq extends FBShipItCLI {
     return ImmSet {
       'folly',
       'fbthrift',
+      'wangle',
     };
   }
 
@@ -29,6 +30,12 @@ final class ShipItFbzmq extends FBShipItCLI {
     return $changeset
       |> FBCommonFilters::applyAll($$)
       |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  protected static function getFBCodeBuilderTravisConfig(
+  ): string {
+    return 'fbcode/fbzmq/public_tld/.travis.yml';
   }
 
   <<__Override>>

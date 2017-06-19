@@ -61,10 +61,15 @@ trait FBCodeBuilderTrait implements ISupportsFBCodeBuilder {
   abstract protected static function getFBCodeBuilderDependencies(
   ): ImmSet<string>;
 
+  protected static function getFBCodeBuilderTravisConfig(
+  ): string {
+    return FBCodeBuilder::SRC_FBCODE_BUILDER.'travis.yml';
+  }
+
   private static function getFBCodeBuilderPathMappings(
   ): ImmMap<string, string>  {
     return ImmMap {
-      FBCodeBuilder::SRC_FBCODE_BUILDER.'travis.yml' => '.travis.yml',
+      static::getFBCodeBuilderTravisConfig() => '.travis.yml',
       FBCodeBuilder::SRC_FBCODE_BUILDER => FBCodeBuilder::DEST_FBCODE_BUILDER,
       FBCodeBuilder::SRC_GITHUB_HASHES => FBCodeBuilder::DEST_GITHUB_HASHES,
     };
