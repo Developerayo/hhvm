@@ -79,33 +79,33 @@ final class FBGitHubUtilsTest extends BaseTest {
     );
 
     $this->assertSame(
-      $user,
-      $credentials['user'],
-    );
-
-    $this->assertSame(
       $email,
       $credentials['email'],
     );
 
-    $this->assertLooksLikeAPIToken($credentials['password']);
+    // We're using tokens exclusively.
+    $this->assertNull($credentials['user']);
+    $this->assertNull($credentials['password']);
+
+    $this->assertLooksLikeAPIToken($credentials['access_token']);
 
     // nameof('facebook-github-bot-1') === 'Facebook Github Bot 1'
     $this->assertSame(
-      ucwords(strtr($credentials['user'], '-', ' ')),
+      ucwords(strtr($user, '-', ' ')),
       $credentials['name'],
     );
   }
 
   private function assertLooksLikeAPIToken(
-    string $password,
+    ?string $token,
   ): void {
+    $this->assertNotNull($token, 'Token should not be null');
     $this->assertTrue(
-      strlen($password) === 40,
-      'Password field has unexpected length: '.strlen($password),
+      strlen($token) === 40,
+      'Password field has unexpected length: '.strlen($token),
     );
     $this->assertTrue(
-      ctype_xdigit($password),
+      ctype_xdigit($token),
       'Password field is not hex-like',
     );
   }

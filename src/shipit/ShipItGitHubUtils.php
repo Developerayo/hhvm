@@ -11,9 +11,10 @@ namespace Facebook\ShipIt;
 
 type ShipItGitHubCredentials = shape(
   'name' => string,
-  'user' => string,
+  'user' => ?string,
   'email' => string,
-  'password' => string,
+  'password' => ?string,
+  'access_token' => ?string,
 );
 
 abstract class ShipItGitHubUtils {
@@ -75,10 +76,19 @@ abstract class ShipItGitHubUtils {
           self::cloneAndVerifyRepo($origin, $local_path);
           break;
         }
+
+        $access_token = Shapes::idx($credentials, 'access_token');
+        $auth_user = $access_token !== null
+          ? $access_token
+          : sprintf(
+              '%s:%s',
+              urlencode($credentials['user']),
+              urlencode($credentials['password']),
+            );
+
         $origin = sprintf(
-          'https://%s:%s@github.com/%s/%s.git',
-          urlencode($credentials['user']),
-          urlencode($credentials['password']),
+          'https://%s@github.com/%s/%s.git',
+          $auth_user,
           $organization,
           $project,
         );
@@ -120,18 +130,32 @@ abstract class ShipItGitHubUtils {
     string $path,
   ): Awaitable<ImmVector<string>> {
     $results = Vector { };
-    $request_headers = Vector { 'Accept: application/vnd.github.v3.patch' };
+    $request_headers = Vector {
+      'Accept: application/vnd.github.v3.patch'
+    };
 
-    $url = sprintf(
-      'https://%s:%s@api.github.com%s',
-      urlencode($credentials['user']),
-      urlencode($credentials['password']),
-      $path,
-    );
+    $access_token = Shapes::idx($credentials, 'access_token');
+    $use_oauth = $access_token !== null;
+
+    if ($use_oauth) {
+      $request_headers->add(
+        sprintf('Authorization: token %s', $access_token),
+      );
+    }
+
+    $url = sprintf('https://api.github.com%s', $path);
+
     while ($url !== null) {
       $ch = curl_init($url);
       curl_setopt($ch, CURLOPT_USERAGENT, 'Facebook/ShipIt');
       curl_setopt($ch, CURLOPT_HTTPHEADER, $request_headers);
+      if (!$use_oauth) {
+        curl_setopt(
+          $ch,
+          CURLOPT_USERPWD,
+          sprintf('%s:%s', $credentials['user'], $credentials['password']),
+        );
+      }
       curl_setopt($ch, CURLOPT_HEADER, 1);
       $response = await \HH\Asio\curl_exec($ch);
       $header_len = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
