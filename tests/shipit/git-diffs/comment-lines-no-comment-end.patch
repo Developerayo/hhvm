@@ -1,0 +1,14 @@
+diff --git a/foo b/foo
+index 1fa2ce4..499116a 100644
+--- a/foo
++++ b/foo
+@@ -1,5 +1,5 @@
+ foo // @oss-disable
+ bar // @oss-disable
++baz // @oss-disable
+ 
+   herp // @oss-disable
+-  derp // @oss-disable
+-- 
+2.9.3
+
