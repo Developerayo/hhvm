@@ -111,10 +111,9 @@ final class ShipItFlow extends FBShipItCLI {
   private static function getNewSubject(
     ShipItChangeset $changeset,
   ): string {
-    $subject = $changeset->getSubject();
+    $changeset = FBCommonFilters::stripSubjectMergePrefix($changeset);
 
-    // remove junk added when merging
-    $subject = preg_replace('/^\w+ merging \w+ \| \w+ \| /', '', $subject);
+    $subject = $changeset->getSubject();
 
     if (stripos($subject, '[flow]') !== false) {
       // Remove flow, preserve other sections

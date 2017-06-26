@@ -26,6 +26,7 @@ final class FBCommonFilters {
           $$,
           $config['stripCommonFiles/exceptions'] ?? ImmVector {},
         )
+      |> self::stripSubjectMergePrefix($$)
       |> self::stripSubjectTags($$)
       |> self::stripEmptyTestPlans($$)
       |> self::stripCommands($$)
@@ -159,6 +160,22 @@ final class FBCommonFilters {
 
     return $changeset->withMessage(
       ShipItMessageSections::buildMessage($sections->toImmMap())
+    );
+  }
+
+  public static function stripSubjectMergePrefix(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    // remove junk added when merging that looks like:
+    //
+    //   unixname merging SHA1 | unixname | ...
+    //
+    return $changeset->withSubject(
+      preg_replace(
+        '/^\w+ merging \w+ \| \w+ \| /',
+        '',
+        $changeset->getSubject(),
+      ),
     );
   }
 

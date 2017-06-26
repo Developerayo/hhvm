@@ -87,6 +87,11 @@ final class FlowTest extends FBPublicProjectBaseTest {
         '[foo] foo bar',
         ImmVector { 'fbcode/flow/foo', 'fbcode/flow/bar' },
       ),
+      tuple(
+        'foo merging 32194ec6f5dadff3cf0d560727fc07844562ae80 | bar | foo bar',
+        'foo bar',
+        ImmVector { 'fbcode/flow/foo', 'fbcode/flow/bar' },
+      ),
     ];
   }
 
