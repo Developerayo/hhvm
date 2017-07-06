@@ -146,6 +146,14 @@ final class FBRepoInitPhase extends ShipItPhase {
           'infer-fb',
         };
         break;
+      case 'tianocore-edk2':
+        return ImmVector {
+          '/usr/bin/git',
+          'clone',
+          'ssh://git.vip.facebook.com/data/gitrepos/aosp/abl/tianocore/edk2',
+          'tianocore-edk2',
+        };
+        break;
       case 'buck_internal':
         return ImmVector {
           '/usr/bin/git',
