@@ -146,14 +146,6 @@ final class FBRepoInitPhase extends ShipItPhase {
           'infer-fb',
         };
         break;
-      case 'tianocore-edk2':
-        return ImmVector {
-          '/usr/bin/git',
-          'clone',
-          'ssh://git.vip.facebook.com/data/gitrepos/aosp/abl/tianocore/edk2',
-          'tianocore-edk2',
-        };
-        break;
       case 'buck_internal':
         return ImmVector {
           '/usr/bin/git',
@@ -224,6 +216,10 @@ final class FBRepoInitPhase extends ShipItPhase {
           'facebook-spaces',
         };
         break;
+    }
+    $config = FBRepoCloneCommand::get($name);
+    if ($config !== null) {
+      return $config;
     }
     invariant_violation(
       "Unsupported repository '%s' - add support in %s::%s()",
