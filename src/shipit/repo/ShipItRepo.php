@@ -63,10 +63,17 @@ abstract class ShipItRepo {
   }
 
   public static function createSharedLockForPath(
-    string $repo_path
+    string $repo_path,
   ): ShipItScopedFlock {
-    $lock_path = dirname($repo_path).'/'.basename($repo_path).'.fbshipit-lock';
-    return ShipItScopedFlock::createShared($lock_path);
+    return ShipItScopedFlock::createShared(
+      self::getLockFilePathForRepoPath($repo_path),
+    );
+  }
+
+  public static function getLockFilePathForRepoPath(
+    string $repo_path,
+  ): string {
+    return dirname($repo_path).'/'.basename($repo_path).'.fbshipit-lock';
   }
 
   /**

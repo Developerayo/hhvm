@@ -4,6 +4,7 @@ namespace Facebook\ShipIt;
 
 final class ShipItCreateNewRepoPhase extends ShipItPhase {
   private ?string $sourceCommit = null;
+  private ?string $outputPath = null;
 
   public function __construct(
     private (function(ShipItChangeset):ShipItChangeset) $filter,
@@ -40,6 +41,13 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
             $this->unskip();
         },
       ),
+      shape(
+        'long_name' => 'create-new-repo-output-path::',
+        'description' =>
+          'When using --create-new-repo or --create-new-repo-from-commit, '.
+          'create the new repository in this directory',
+        'write' => $path ==> $this->outputPath = $path,
+      ),
       shape( // deprecated, renamed for consistency with verify
         'long_name' => 'special-create-new-repo',
         'replacement' => 'create-new-repo',
@@ -51,15 +59,39 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
   public function runImpl(
     ShipItBaseConfig $config,
   ): void {
+    $output = $this->outputPath;
+    if ($output !== null && file_exists($output)) {
+      fwrite(STDERR, "  Path '%s' already exists\n", $output);
+      exit(1);
+    }
+
     $temp_dir = self::createNewGitRepo(
       $config,
       $this->filter,
       $this->committer,
       $this->sourceCommit,
     );
+    // We're either keeping it, or renaming it; either way, we don't want it
+    // automatically deleted on exit
     $temp_dir->keep();
 
-    print('  New repository created at '.$temp_dir->getPath()."\n");
+    // Clean up is safe, as the temp dir is unique and not returned yet
+    $lock_file = ShipItRepo::getLockFilePathForRepoPath($temp_dir->getPath());
+    if (file_exists($lock_file)) {
+      unlink($lock_file);
+    }
+
+    if ($output === null) {
+      $output = $temp_dir->getPath();
+    } else {
+      $parent = dirname($output);
+      if (!file_exists($parent)) {
+        mkdir($parent, 0755, /* recursive = */ true);
+      }
+      rename($temp_dir->getPath(), $output);
+    }
+
+    print('  New repository created at '.$output."\n");
     exit(0);
   }
 
