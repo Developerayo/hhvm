@@ -75,12 +75,6 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     // automatically deleted on exit
     $temp_dir->keep();
 
-    // Clean up is safe, as the temp dir is unique and not returned yet
-    $lock_file = ShipItRepo::getLockFilePathForRepoPath($temp_dir->getPath());
-    if (file_exists($lock_file)) {
-      unlink($lock_file);
-    }
-
     if ($output === null) {
       $output = $temp_dir->getPath();
     } else {
@@ -168,6 +162,16 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
       '--orphan='.$config->getDestinationBranch(),
     );
     $filtered_repo->commitPatch($changeset);
+
+    print("  Cleaning up...\n");
+    // As we're done with these and nothing else has the random paths, the lock
+    // files aren't needed
+    foreach ([$export_dir, $filtered_dir] as $repo) {
+      $lock_file = ShipItRepo::getLockFilePathForRepoPath($repo->getPath());
+      if (file_exists($lock_file)) {
+        unlink($lock_file);
+      }
+    }
 
     return $filtered_dir;
   }
