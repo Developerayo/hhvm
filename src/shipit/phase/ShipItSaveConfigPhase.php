@@ -48,10 +48,6 @@ final class ShipItSaveConfigPhase extends ShipItPhase {
   protected function runImpl(ShipItBaseConfig $config): void {
     invariant($this->outputFile !== null, 'impossible');
 
-    $source_repo = ShipItRepo::open(
-      $config->getSourcePath(),
-      $config->getSourceBranch(),
-    );
     $data = ImmMap {
       'destination' => ImmMap {
         'branch' => $config->getDestinationBranch(),
@@ -60,7 +56,6 @@ final class ShipItSaveConfigPhase extends ShipItPhase {
       },
       'source' => ImmMap {
         'branch' => $config->getSourceBranch(),
-        'origin' => $source_repo->getOrigin(),
         'roots' => $config->getSourceRoots(),
       },
     };

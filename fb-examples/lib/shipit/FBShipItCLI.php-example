@@ -150,15 +150,15 @@ abstract class FBShipItCLI
       new ShipItFilterSanityCheckPhase(
         $changeset ==> self::filterChangeset($changeset),
       ),
+      new ShipItSaveConfigPhase(
+        $static_config['githubOrg'],
+        $static_config['githubProject'],
+      ),
       new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::SOURCE),
       new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::DESTINATION),
       new FBRepoInitPhase(
         ShipItRepoSide::SOURCE,
         $static_config['internalRepo'],
-      ),
-      new ShipItSaveConfigPhase(
-        $static_config['githubOrg'],
-        $static_config['githubProject'],
       ),
       // Clean prior to pulling to remove any untracked files at the current
       // revision that may conflict with updates.
