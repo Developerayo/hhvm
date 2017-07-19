@@ -46,11 +46,13 @@ final class ShipItGenerateStubsPhase extends ShipItPhase {
     $github_project = $this->gitHubProject;
     invariant($github_project !== null, 'You must pass --github-project!');
     $license_year = date('Y');
-    $project_class_name = ucfirst(preg_replace_callback(
-      '/-([a-zA-Z])/',
-      $matches ==> strtoupper($matches[1]),
-      $github_project,
-    ));
+    $project_class_name = $github_project
+      |> preg_replace('/\./', '_', $$)
+      |> preg_replace_callback(
+        '/-([a-zA-Z])/',
+        $matches ==> strtoupper($matches[1]),
+        $$,
+      );
     $test_class_name = $project_class_name.'Test';
     $user = getenv('USER');
 
