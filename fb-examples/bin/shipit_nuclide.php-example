@@ -21,10 +21,6 @@ class ShipItNuclide extends FBShipItCLI {
       |> ShipItPathFilters::stripPaths(
           $$,
           ImmVector {
-            // Our internal npm config
-            '@^fbobjc/Tools/Nuclide/\.npmrc$@',
-            '@^fbobjc/Tools/Nuclide/\.yarnrc$@',
-            '@^fbobjc/Tools/Nuclide/yarn\.lock$@',
             // This goes beyond the common case, it covers fb-* and fb_*
             // e.g.: fb-package/index.js and fb-config.js
             '@(^|/)fb-[^/]*(/|$)@',
