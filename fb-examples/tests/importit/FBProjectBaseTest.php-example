@@ -48,6 +48,18 @@ abstract class FBProjectBaseTest extends \Facebook\ShipIt\BaseTest {
     return $importit_class::filterChangeset($changeset);
   }
 
+  public function testFileNameMatchesRepo(): void {
+    $importit_class = self::getImportItClass();
+    $config = $importit_class::getStaticConfig();
+    $reflector = new \ReflectionClass($importit_class);
+
+    $this->assertEquals(
+      'importit_'.$config['githubProject'].'.php',
+      basename($reflector->getFileName()),
+      'ImportIt executable must match GitHub Repo: '.$importit_class,
+    );
+  }
+
   final public function examplePathMappings(
   ): array<string, (string, ?string)> {
     return static::getExamplePathMappings()

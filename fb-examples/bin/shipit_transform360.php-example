@@ -46,7 +46,7 @@ final class ShipItTransform360 extends FBShipItCLI {
     return shape(
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
-      'githubProject' => 'Transform360',
+      'githubProject' => 'transform360',
     );
   }
 }

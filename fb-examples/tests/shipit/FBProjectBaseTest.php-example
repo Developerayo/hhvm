@@ -294,6 +294,18 @@ abstract class FBProjectBaseTest extends BaseTest {
     // assertion is the @expectedException
   }
 
+  public function testFileNameMatchesRepo(): void {
+    $shipit_class = self::getShipItClass();
+    $config = $shipit_class::getStaticConfig();
+    $reflector = new \ReflectionClass($shipit_class);
+
+    $this->assertEquals(
+      'shipit_'.$config['githubProject'].'.php',
+      basename($reflector->getFileName()),
+      'ShipIt executable must match GitHub Repo: '.$shipit_class
+    );
+  }
+
   final public function examplePathMappings(
   ): array<string, (string, ?string)> {
     return static::getExamplePathMappings()

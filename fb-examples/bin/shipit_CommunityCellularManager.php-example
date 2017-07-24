@@ -59,7 +59,7 @@ final class ShipItCommunityCellularManager extends FBShipItCLI {
     return shape(
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebookincubator',
-      'githubProject' => 'communitycellularmanager',
+      'githubProject' => 'CommunityCellularManager',
     );
   }
 }

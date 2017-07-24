@@ -40,7 +40,7 @@ final class ShipItWebDriverAgent extends FBShipItCLI{
     return shape(
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
-      'githubProject' => 'webdriveragent',
+      'githubProject' => 'WebDriverAgent',
     );
   }
 }
