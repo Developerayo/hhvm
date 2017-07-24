@@ -239,6 +239,7 @@ final class FBCommonFilters {
       'cc',
       'differential revision',
       'blame revision',
+      'tags',
       'task id',
       'tasks',
       'subscribers',

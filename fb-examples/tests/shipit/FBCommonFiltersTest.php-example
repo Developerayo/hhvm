@@ -172,4 +172,22 @@ final class FBCommonFiltersTest extends BaseTest {
     );
   }
 
+  public function testFilterMessageSections(): void {
+    foreach (FBCommonFilters::getSupportedMessageSectionNames() as $section) {
+      $changeset = (new ShipItChangeset())
+        ->withMessage(sprintf("%s:\n some text", $section));
+      $this->assertEquals(
+        '',
+        FBCommonFilters::filterMessageSections($changeset, ImmSet {})
+          ->getMessage(),
+        "Strips section '".$section."'",
+      );
+      $this->assertEquals(
+        sprintf("%s: some text", ucwords($section)),
+        FBCommonFilters::filterMessageSections($changeset, ImmSet {$section})
+          ->getMessage(),
+        "Keeps section '".$section."'",
+      );
+    }
+  }
 }
