@@ -13,6 +13,22 @@ require_once(__DIR__.'/../autoload.php');
 
 final class ImportItRustPartialIo extends FBImportItCLI {
   const type TShipIt = \Facebook\ShipIt\ShipItRustPartialIo;
+
+  <<__Override>>
+  protected static function projectFilterChangeset(
+    \Facebook\ShipIt\ShipItChangeset $changeset,
+  ): \Facebook\ShipIt\ShipItChangeset {
+    $shipit_class = static::getShipItClass();
+    return $changeset
+      |> self::filterSubmodules($$)
+      |> ImportItRustPathFilters::moveDirectories(
+        $$,
+        $shipit_class::getPathMappings(),
+        $shipit_class::getSubmoduleMappings()
+          ->keys()
+          ->map($path ==> '@^'.$path.'$@'),
+      );
+  }
 }
 
 // Allow require() from unit test

@@ -9,6 +9,8 @@
  */
 namespace Facebook\ShipIt;
 
+use Facebook\ImportIt\ImportItRustPathFilters;
+
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItRustPartialIo extends FBShipItCLI {
@@ -27,6 +29,7 @@ final class ShipItRustPartialIo extends FBShipItCLI {
   public static function getPathMappings(): ImmMap<string, string> {
     return ImmMap {
       self::ROOT => '',
+      ImportItRustPathFilters::RUST_OSS_CONFIGS => '',
     };
   }
 
