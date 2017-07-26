@@ -24,6 +24,22 @@ abstract final class ImportItPathFilters {
     ImmMap<string, string> $shipit_mapping,
     ImmVector<string> $skip_patterns = ImmVector {},
   ): \Facebook\ShipIt\ShipItChangeset {
+    $mapping = self::invertShipIt($shipit_mapping);
+    return \Facebook\ShipIt\ShipItPathFilters::moveDirectories(
+      $changeset,
+      $mapping,
+      $skip_patterns,
+    );
+  }
+
+  /**
+   * Invert this ShipIt map, throwing on any keys that would be duplicated.
+   *
+   * @param $shipit_mapping the mapping to invert
+   */
+  public static function invertShipIt(
+    ImmMap<string, string> $shipit_mapping,
+  ): ImmMap<string, string> {
     $ordered_mapping = Vector {};
     foreach ($shipit_mapping as $dest_path => $src_path) {
       $ordered_mapping->add(tuple($src_path, $dest_path));
@@ -40,10 +56,7 @@ abstract final class ImportItPathFilters {
       );
       $mapping[$src_path] = $dest_path;
     }
-    return \Facebook\ShipIt\ShipItPathFilters::moveDirectories(
-      $changeset,
-      $mapping->toImmMap(),
-      $skip_patterns,
-    );
+
+    return $mapping->toImmMap();
   }
 }
