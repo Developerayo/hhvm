@@ -61,6 +61,18 @@ final class ShipItChefCookbooks extends FBShipItCLI{
         ->toImmSet();
   }
 
+  public static function stripChefTestHostsHeader(
+    ShipItChangeset $changeset
+  ): ShipItChangeset {
+    return $changeset->withMessage(
+      preg_replace(
+        "/^\s*chef_test_hosts:.*$/m",
+        '',
+        $changeset->getMessage(),
+      ),
+    );
+  }
+
   <<__Override>>
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
@@ -79,6 +91,8 @@ final class ShipItChefCookbooks extends FBShipItCLI{
         '@(^|/)OWNERS$@',
       },
     );
+
+    $changeset = ShipItChefCookbooks::stripChefTestHostsHeader($changeset);
 
     // Strip the parent directories from the commit paths
     $changeset = ShipItPathFilters::moveDirectories(
