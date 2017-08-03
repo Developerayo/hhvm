@@ -1,0 +1,35 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class MononokeTest extends FBPublicProjectBaseTest {
+  <<__Override>>
+  protected static function map(ShipItChangeset $changeset): ShipItChangeset {
+    return ShipItMononoke::filterChangeset($changeset);
+  }
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/scm/mononoke/README.md' => 'README.md',
+      'fbcode/common/rust/async-compression/src/lib.rs' =>
+        'async-compression/src/lib.rs',
+      'fbcode/common/rust/asyncmemo/src/lib.rs' => 'asyncmemo/src/lib.rs',
+      'fbcode/common/rust/futures-ext/src/lib.rs' => 'futures-ext/src/lib.rs',
+      'fbcode/common/rust/scribe/src/lib.rs' => null,
+      'fbcode/common/rust/ossconfigs/rustfmt.toml' => 'rustfmt.toml',
+    };
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+}
