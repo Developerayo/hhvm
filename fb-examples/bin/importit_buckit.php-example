@@ -13,6 +13,33 @@ require_once(__DIR__.'/../autoload.php');
 
 final class ImportItBuckit extends FBImportItCLI {
   const type TShipIt = \Facebook\ShipIt\ShipItBuckit;
+
+  <<__Override>>
+  protected static function projectFilterChangeset(
+    \Facebook\ShipIt\ShipItChangeset $changeset,
+  ): \Facebook\ShipIt\ShipItChangeset {
+    $shipit_class = static::getShipItClass();
+    return $changeset
+      |> static::addOssExtension($$)
+      |> ImportItPathFilters::moveDirectories(
+        $$,
+        $shipit_class::getPathMappings(),
+      );
+  }
+
+  private static function addOssExtension(
+    \Facebook\ShipIt\ShipItChangeset $changeset) {
+      return \Facebook\ShipIt\ShipItPathFilters::rewritePaths(
+        $changeset,
+        $path ==> {
+          if(\Facebook\ShipIt\ShipItBuckit::$FilesWithOssExtension->contains(
+              $path)) {
+            return $path . '.oss';
+          } else {
+            return $path;
+          }
+        });
+    }
 }
 
 // Allow require() from unit test

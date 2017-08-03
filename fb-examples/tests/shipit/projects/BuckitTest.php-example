@@ -28,6 +28,10 @@ final class BuckitTest extends FBPublicProjectBaseTest {
         'infra_macros/macros.py',
       'fbcode/tools/build/buck/infra_macros/macro_lib/' =>
         'infra_macros/macro_lib/',
+      'fbcode/tools/build/buck/infra_macros/.buckconfig.oss' =>
+        'infra_macros/.buckconfig',
+      'fbcode/tools/build/buck/infra_macros/package.json.oss' =>
+        'infra_macros/package.json',
       'fbcode/tools/build/buck/infra_macros/macro_lib_tests/' =>
         'infra_macros/macro_lib_tests/',
       'fbcode/tools/build/buck/infra_macros/macro_lib/convert/javafoundations.py' =>

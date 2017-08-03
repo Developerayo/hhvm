@@ -20,11 +20,31 @@ final class ShipItBuckit extends FBShipItCLI {
       $changeset
         |> FBCommonFilters::applyAll($$)
         |> ShipItPathFilters::moveDirectories($$, static::getPathMappings())
+        |> static::removeOssExtension($$)
         |> ShipItPathFilters::stripPaths(
             $$,
             ImmVector {
               '@infra_macros/macro_lib/convert/java.*\.py@',
             });
+  }
+
+  public static ImmSet<string> $FilesWithOssExtension = ImmSet {
+    "infra_macros/package.json",
+    "infra_macros/.buckconfig",
+  };
+
+  private static function removeOssExtension(
+      \Facebook\ShipIt\ShipItChangeset $changeset) {
+    return \Facebook\ShipIt\ShipItPathFilters::rewritePaths(
+      $changeset,
+      $path ==> {
+        $stripped = preg_replace('@(.*)\.oss$@', '\1', $path);
+        if(static::$FilesWithOssExtension->contains($stripped)) {
+          return $stripped;
+        } else {
+          return $path;
+        }
+      });
   }
 
   <<__Override>>
