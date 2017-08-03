@@ -80,6 +80,7 @@ final class ShipItFlow extends FBShipItCLI {
             '@fbcode/hphp/hack/src/third-party/inotify/@',
             // allow all .ml .mli and .c files in utils
             '@fbcode/hphp/hack/src/utils/(?!(?:errors|lint)\.mli?)[^/]*\.(mli?|c)@',
+            '@fbcode/hphp/hack/src/utils/build_mode/@',
             '@fbcode/hphp/hack/src/utils/collections/@',
             '@fbcode/hphp/hack/src/utils/disk/@',
             '@fbcode/hphp/hack/src/utils/hh_json/@',
