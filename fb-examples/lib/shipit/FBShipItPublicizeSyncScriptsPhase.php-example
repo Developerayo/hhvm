@@ -58,8 +58,10 @@ final class FBShipItPublicizeSyncScriptsPhase extends ShipItPhase {
     $dest_root = realpath($config->getDestinationPath());
 
     $globs = ImmSet {
+      '/fb-examples/bin/importit_*.php-example',
       '/fb-examples/bin/shipit_*.php-example',
-      '/fb-examples/tests/projects/*.php-example',
+      '/fb-examples/tests/importit/projects/*.php-example',
+      '/fb-examples/tests/shipit/projects/*.php-example',
     };
     $files = Set { };
     foreach ($globs as $glob) {
