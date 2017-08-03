@@ -52,7 +52,8 @@ final class ShipItGenerateStubsPhase extends ShipItPhase {
         '/-([a-zA-Z])/',
         $matches ==> strtoupper($matches[1]),
         $$,
-      );
+      )
+      |> ucfirst($$);
     $test_class_name = $project_class_name.'Test';
     $user = getenv('USER');
 
