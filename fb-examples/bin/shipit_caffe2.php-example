@@ -24,6 +24,7 @@ final class ShipItCaffe2 extends FBShipItCLI {
         ImmVector {
           '@\.facebook$@',
           '@/C2_BUCK_DEFS$@', /** Caffe2 mobile buck defs **/
+          '@(^|/)opengl@',
           '@(^|/)fb_protobuf.sh@',
         }
       )
