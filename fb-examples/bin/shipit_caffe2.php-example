@@ -24,8 +24,9 @@ final class ShipItCaffe2 extends FBShipItCLI {
         ImmVector {
           '@\.facebook$@',
           '@/C2_BUCK_DEFS$@', /** Caffe2 mobile buck defs **/
-          '@(^|/)opengl@',
-          '@(^|/)fb_protobuf.sh@',
+          '@(^|/)fb_protobuf.sh@', /** Caffe2 fb protobuf script **/
+          '@\.hgsparse-caffe2-dev@', /** Caffe2 hg sparse configs **/
+          '@\.hgsparse-caffe2-xplat@', /** Caffe2 hg sparse configs **/
         }
       )
       |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
