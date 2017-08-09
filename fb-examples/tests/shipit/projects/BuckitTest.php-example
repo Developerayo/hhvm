@@ -32,6 +32,8 @@ final class BuckitTest extends FBPublicProjectBaseTest {
         'infra_macros/.buckconfig',
       'fbcode/tools/build/buck/infra_macros/package.json.oss' =>
         'infra_macros/package.json',
+      'fbcode/tools/build/buck/infra_macros/TARGETS' =>
+        'infra_macros/BUCK',
       'fbcode/tools/build/buck/infra_macros/macro_lib_tests/' =>
         'infra_macros/macro_lib_tests/',
       'fbcode/tools/build/buck/infra_macros/macro_lib/convert/javafoundations.py' =>
@@ -42,6 +44,8 @@ final class BuckitTest extends FBPublicProjectBaseTest {
         null,
       'fbcode/experimental/pjameson/buckit/buckit/' => 'buckit/',
       'fbcode/experimental/pjameson/buckit/specs/' => 'specs/',
+      'fbcode/experimental/pjameson/buckit/specs/glog/glog/BUCK' =>
+        'specs/glog/glog/BUCK',
     };
   }
 

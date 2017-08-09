@@ -21,10 +21,15 @@ final class ImportItBuckit extends FBImportItCLI {
     $shipit_class = static::getShipItClass();
     return $changeset
       |> static::addOssExtension($$)
+      |> \Facebook\ShipIt\ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> preg_replace(
+          \Facebook\ShipIt\ShipItBuckit::BuckFilesToRewrite,
+          '\1/TARGETS',
+          $path))
       |> ImportItPathFilters::moveDirectories(
         $$,
-        $shipit_class::getPathMappings(),
-      );
+        $shipit_class::getPathMappings());
   }
 
   private static function addOssExtension(
