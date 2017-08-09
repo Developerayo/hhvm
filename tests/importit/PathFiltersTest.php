@@ -24,19 +24,6 @@ final class PathFiltersTest extends \Facebook\ShipIt\BaseTest {
         ImmVector { 'root_file', 'bar/bar_file' },
         ImmVector { 'foo/public_tld/root_file', 'foo/bar_file' },
       ),
-      // this mapping doesn't make sense given the behavior, just using it to
-      // check that order matters
-      'second takes precedence (second is more specific)' => tuple(
-        ImmMap {
-          'foo/' => 'bar/',
-          'foo/public_tld/' => '',
-        },
-        ImmVector { 'root_file', 'bar/bar_file' },
-        ImmVector {
-          'foo/public_tld/root_file',
-          'foo/public_tld/bar/bar_file',
-        },
-      ),
       'only one rule applied' => tuple(
         ImmMap {
           'foo/' => '',
@@ -47,6 +34,14 @@ final class PathFiltersTest extends \Facebook\ShipIt\BaseTest {
           'project_bar/part of project bar',
         },
         ImmVector { 'foo/bar/part of project foo', 'bar/part of project bar' },
+      ),
+      'subdirectories' => tuple(
+        ImmMap {
+          'foo/test/' => 'testing/',
+          'foo/' => '',
+        },
+        ImmVector { 'testing/README', 'src.c', },
+        ImmVector { 'foo/test/README', 'foo/src.c', },
       ),
     ];
   }

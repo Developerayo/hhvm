@@ -40,23 +40,23 @@ abstract final class ImportItPathFilters {
   public static function invertShipIt(
     ImmMap<string, string> $shipit_mapping,
   ): ImmMap<string, string> {
-    $ordered_mapping = Vector {};
+    $reverse_mapping = Map {};
     foreach ($shipit_mapping as $dest_path => $src_path) {
-      $ordered_mapping->add(tuple($src_path, $dest_path));
-    }
-    $mapping = Map {};
-    for ($i = $ordered_mapping->count() - 1; $i >= 0; $i--) {
-      list($src_path, $dest_path) = $ordered_mapping[$i];
       invariant(
-        !$mapping->containsKey($src_path),
+        !$reverse_mapping->containsKey($src_path),
         'Mulitiple paths map from "%s" ("%s" and "%s")!',
         $src_path,
         $dest_path,
-        $mapping[$src_path],
+        $reverse_mapping[$src_path],
       );
-      $mapping[$src_path] = $dest_path;
+      $reverse_mapping[$src_path] = $dest_path;
     }
+    // Sort the mapping in reverse order.  The purpose of this is to make sure
+    // that if two src path entries exist such that one of them is a prefix of
+    // the other, the prefix always appears last.  This ensures that mappings
+    // for subdirectories always take precedence over less-specific mappings.
+    krsort($reverse_mapping);
 
-    return $mapping->toImmMap();
+    return $reverse_mapping->toImmMap();
   }
 }
