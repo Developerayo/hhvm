@@ -54,6 +54,12 @@ class ShipItBuck
           $changeset,
         ),
       ),
+      new ShipItVerifyRepoPhase(
+        $changeset ==> self::filterChangeset(
+          $config->getSourcePath(),
+          $changeset,
+        ),
+      ),
       new BuckVerifyNoMoeOccurrencesPhase(),
       new ShipItPushPhase(),
       new BuckUpdateInternalMirrorPhase(),
