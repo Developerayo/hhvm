@@ -26,6 +26,7 @@ final class ShipItFresco extends FBShipItCLI {
         '@/whitelist_for_modules$@',
         '@/local.properties$@',
         '@dep_test.py$@',
+        '@^fbandroid/libraries/fresco/fbcore$@',
       },
     );
 

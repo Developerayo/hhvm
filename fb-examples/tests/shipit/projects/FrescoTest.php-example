@@ -47,6 +47,7 @@ final class FrescoTest extends FBPublicProjectBaseTest {
       self::FRESCO.'/foo1' => 'foo1',
       'fbandroid/libraries/drawee/foo2' => null,
       'fbandroid/libraries/fbcore/foo3' => 'fbcore/foo3',
+      'fbandroid/libraries/fresco/fbcore' => null,
       'fbandroid/libraries/imagepipeline/foo4' => null,
       // Test for including Fresco files
       self::FRESCO.'/.gitignore' => '.gitignore',
