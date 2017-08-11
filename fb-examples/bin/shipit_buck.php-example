@@ -26,7 +26,6 @@ class ShipItBuck
     $config = self::getBaseConfig();
 
     $phases = ImmVector {
-      new BuckEnvironmentCheckPhase(),
       new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::SOURCE),
       new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::DESTINATION),
       new FBRepoInitPhase(
