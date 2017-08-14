@@ -126,7 +126,7 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     self::execSteps(
       $export_dir->getPath(),
       ImmVector {
-        ImmVector { 'git', 'add', '.' },
+        ImmVector { 'git', 'add', '.' , '-f'},
         ImmVector {
           'git',
           'commit',
