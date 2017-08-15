@@ -53,6 +53,14 @@ final class ShipItMySQL56 extends FBShipItCLI {
   }
 
   <<__Override>>
+  public static function getSubmoduleMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'rocksdb' => 'rocksdb',
+      'rqg'=> 'rqg',
+    };
+  }
+
+  <<__Override>>
   public static function getStaticConfig(): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => self::INTERNAL_REPO_NAME,
