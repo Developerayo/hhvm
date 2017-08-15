@@ -456,6 +456,22 @@ class ShipItRepoGIT
       'x',
     ))->setStdIn($tar)->runSynchronously();
 
+    // If we have any submodules, we'll need to set them up manually.
+    foreach ($this->getSubmodules() as $submodule) {
+      $status = $this->gitCommand('submodule', 'status', $submodule['path']);
+      $sha = $status
+        // Strip any -, +, or U at the start of the status (see the man page for
+        // git-submodule).
+        |> preg_replace('@^[\-\+U]@', '', $$)
+        |> explode(' ', $$)[0];
+      $dest_submodule_path = $dest->getPath().'/'.$submodule['path'];
+      // This removes the empty directory for the submodule that gets created
+      // by the git-archive command.
+      rmdir($dest_submodule_path);
+      // This will setup a file that looks just like how git stores submodules.
+      file_put_contents($dest_submodule_path, 'Subproject commit '.$sha);
+    }
+
     return shape('tempDir' => $dest, 'revision' => $rev);
   }
 
