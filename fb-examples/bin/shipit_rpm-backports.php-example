@@ -22,8 +22,11 @@ final class ShipItRpmBackports extends FBShipItCLI{
     # BEGIN systemd-related stuff
     # new packages
     'mkosi',
+    'systemd-compat-libs',
     # modified packages from rawhide
     'dbus',
+    'meson',
+    'ninja-build',
     'python34-cssselect',
     'python34-lxml',
     'util-linux',
