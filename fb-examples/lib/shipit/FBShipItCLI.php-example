@@ -89,9 +89,8 @@ abstract class FBShipItCLI
       /* source_dir = */ $static_config['internalRepo'],
       Shapes::idx(
         $static_config,
-        'destDirName',
-        $static_config['githubProject'],
-      ),
+        'destDirName'
+      ) ?? $static_config['githubProject'],
       self::getSourceRoots(),
     );
   }
