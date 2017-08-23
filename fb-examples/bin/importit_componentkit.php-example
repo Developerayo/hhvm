@@ -7,34 +7,13 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
 namespace Facebook\ImportIt;
 
 require_once(__DIR__.'/../autoload.php');
 
-use Facebook\ShipIt\{
-  ShipItChangeset,
-  FBCommonFilters
-};
-
 final class ImportItComponentkit extends FBImportItCLI {
   const type TShipIt = \Facebook\ShipIt\ShipItComponentkit;
-
-    <<__Override>>
-    protected static function projectFilterChangeset(
-      ShipItChangeset $changeset,
-    ): ShipItChangeset {
-      $shipit_class = static::getShipItClass();
-      return $changeset
-        |> FBCommonFilters::applyAll($$, shape(
-          'stripCommonFiles/exceptions' => ImmVector {
-            '@Carthage@',
-          },
-          ),
-        )
-        |> ImportItPathFilters::moveDirectories(
-          $$,
-          $shipit_class::getPathMappings());
-    }
 }
 
 // Allow require() from unit test

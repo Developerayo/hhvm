@@ -31,6 +31,17 @@ final class ShipItComponentkit extends FBShipItCLI {
   }
 
   <<__Override>>
+  public static function getSubmoduleMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT.'submodules/ios-snapshot-test-case.txt' =>
+        'Carthage/Checkouts/ios-snapshot-test-case',
+      self::ROOT.'submodules/ocmock.txt' => 'Carthage/Checkouts/ocmock',
+      self::ROOT.'submodules/xcconfigs.txt' => 'Carthage/Checkouts/xcconfigs',
+      self::ROOT.'submodules/yoga.txt' => 'Carthage/Checkouts/yoga'
+    };
+  }
+
+  <<__Override>>
   public static function getStaticConfig(): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => 'fbsource',
