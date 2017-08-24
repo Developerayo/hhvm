@@ -29,8 +29,6 @@ final class RocksDBTest extends FBPublicProjectBaseTest {
       'fbcode/internal_repo_rocksdb/repo/.sandcastle' => null,
       'fbcode/internal_repo_rocksdb/repo/src.mk' => 'src.mk',
       'fbcode/internal_repo_rocksdb/repo/koko.mk' => 'koko.mk',
-      'fbcode/internal_repo_rocksdb/repo/arcanist_util/abc' => null,
-      'fbcode/internal_repo_rocksdb/repo/.arcconfig' => null,
       'fbcode/internal_repo_rocksdb/repo/TARGETS' => 'TARGETS',
     };
   }

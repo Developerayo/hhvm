@@ -33,9 +33,6 @@ final class ShipItRocksDB extends FBShipItCLI {
         ImmVector {
           // Ignore file containing sandcastle token
           '@^' . self::INTERNAL_REPO_PATH . '.sandcastle$@',
-          // Arcanist, only used internally
-          '@^' . self::INTERNAL_REPO_PATH . 'arcanist_util/@',
-          '@^' . self::INTERNAL_REPO_PATH . '.arcconfig$@',
         },
       )
       |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
