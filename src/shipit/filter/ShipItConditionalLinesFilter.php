@@ -38,7 +38,7 @@ final class ShipItConditionalLinesFilter {
       ' '.
       preg_quote($marker, '/').
       ($comment_end === null ? '' : (' '.preg_quote($comment_end, '/'))).
-      '$/m';
+      '$/';
 
     $replacement = '\\1'.$comment_start.' '.$marker.': \\2';
     if ($comment_end !== null) {
@@ -61,7 +61,7 @@ final class ShipItConditionalLinesFilter {
       preg_quote($marker, '/').
       ': (.+)'.
       ($comment_end === null ? '' : (' '.preg_quote($comment_end, '/'))).
-      '$/m';
+      '$/';
     $replacement = '\\1\\2 '.$comment_start.' '.$marker;
     if ($comment_end !== null) {
       $replacement .= ' '.$comment_end;
@@ -76,12 +76,11 @@ final class ShipItConditionalLinesFilter {
     string $replacement,
   ): ShipItChangeset {
     $diffs = Vector { };
+    //var_dump($pattern, $replacement);
     foreach ($changeset->getDiffs() as $diff) {
-      $diff['body'] = preg_replace(
-        $pattern,
-        $replacement,
-        $diff['body'],
-      );
+      $diff['body'] = (new ImmVector(explode("\n", $diff['body'])))
+        ->map($line ==> preg_replace($pattern, $replacement, $line))
+        |> implode("\n", $$);
       $diffs[] = $diff;
     }
     return $changeset->withDiffs($diffs->toImmVector());
