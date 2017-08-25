@@ -27,7 +27,7 @@ final class ImportItReactNative extends FBImportItCLI {
       |> \Facebook\ShipIt\ShipItPathFilters::rewritePaths(
           $$,
           $path ==> preg_replace(
-            '@(^|/).flowconfig$@',
+            '@(^|/)\.flowconfig$@',
             '\1.github.flowconfig',
             $path,
           ),
