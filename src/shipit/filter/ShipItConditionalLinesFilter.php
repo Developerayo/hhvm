@@ -76,7 +76,6 @@ final class ShipItConditionalLinesFilter {
     string $replacement,
   ): ShipItChangeset {
     $diffs = Vector { };
-    //var_dump($pattern, $replacement);
     foreach ($changeset->getDiffs() as $diff) {
       $diff['body'] = (new ImmVector(explode("\n", $diff['body'])))
         ->map($line ==> preg_replace($pattern, $replacement, $line))
