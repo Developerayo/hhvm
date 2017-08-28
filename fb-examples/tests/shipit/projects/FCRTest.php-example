@@ -1,0 +1,46 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class FCRTest extends FBPublicProjectBaseTest {
+  const string ROOT = 'fbcode/nettools/fb_command_runner/oss/';
+
+  <<__Override>>
+  protected static function map(ShipItChangeset $changeset): ShipItChangeset {
+    return ShipItFCR::filterChangeset($changeset);
+  }
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+        self::ROOT . 'fbnet/command_runner/base_service.py'
+          => 'fbnet/command_runner/base_service.py',
+        self::ROOT . 'fbnet/command_runner/counters.py'
+          => 'fbnet/command_runner/counters.py',
+
+        self::ROOT . 'external/common/fb303/py/Makefile'
+          => 'external/common/fb303/py/Makefile',
+        self::ROOT . 'external/common/fb303/py/gen-py/__init__.py'
+          => 'external/common/fb303/py/gen-py/__init__.py',
+
+        self::ROOT . 'TARGETS' => null,
+        self::ROOT . 'tests/TARGETS' => null,
+
+        self::ROOT . 'README.md' => 'README.md',
+        self::ROOT . 'LICENSE' => 'LICENSE',
+        self::ROOT . 'CONTRIBUTING.md' => 'CONTRIBUTING.md',
+  };
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+}
