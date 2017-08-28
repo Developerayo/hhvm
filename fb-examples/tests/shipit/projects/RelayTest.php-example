@@ -43,10 +43,6 @@ final class RelayTest extends FBPublicProjectBaseTest {
         'packages/relay-runtime/XYZ.js',
 
       // Special cases
-      self::RELAY_OSS.'/__github__/src/__forks__/XYZ.js' =>
-        'src/__forks__/XYZ.js',
-      self::RELAY_OSS.'/react-relay/legacy/__forks__/XYZ.js' =>
-        null,
       self::RELAY_OSS.'/README.md' =>
         null,
     };

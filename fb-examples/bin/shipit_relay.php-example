@@ -34,9 +34,6 @@ final class ShipItRelay extends FBShipItCLI {
           ImmVector {
             // Don't include the README in the top directory.
             '@^'.self::RELAY_OSS.'README.md@',
-            // Only sync out files from the Relay project
-            // Ignore __forks__ (but permit __github__/__forks__/)
-            '@^'.self::RELAY_OSS.'(?!__github__).+?/__forks__/@',
           },
         )
       |> ShipItPathFilters::moveDirectories(
