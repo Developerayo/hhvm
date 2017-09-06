@@ -4,8 +4,18 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItFBThrift extends FBShipItCLI {
+  use FBCodeBuilderTrait;
+
   <<__Override>>
-  protected static function projectFilterChangeset(
+  protected static function getFBCodeBuilderDependencies(): ImmSet<string> {
+    return ImmSet {
+      'folly',
+      'wangle',
+    };
+  }
+
+  <<__Override>>
+  protected static function projectFilterChangesetNonFBCodeBuilder(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     return $changeset
@@ -23,7 +33,8 @@ final class ShipItFBThrift extends FBShipItCLI {
   }
 
   <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  public static function getPathMappingsNonFBCodeBuilder(
+  ): ImmMap<string, string> {
     return ImmMap {
       'fbcode/thrift/public_tld/' => '',
       'fbcode/thrift/' => 'thrift/',

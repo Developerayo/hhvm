@@ -16,6 +16,18 @@ final class FBThriftTest extends FBPublicProjectBaseTest {
       'fbcode/thrift/compiler/main.h' => 'thrift/compiler/main.h',
       'fbcode/thrift/thrift-config.h' => null,
       'fbcode/thrift/facebook/secret' => null,
+
+      // fbcode_builder is shared between several projects, but it's easiest
+      // to just copy it into each project's Github repo.
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'fbcode_builder.py' =>
+        FBCodeBuilder::DEST_FBCODE_BUILDER.'fbcode_builder.py',
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'travis.yml' => '.travis.yml',
+      // Thrift is only interested in the Github revisions of its dependencies.
+      FBCodeBuilder::SRC_GITHUB_HASHES.'folly-rev.txt' =>
+        FBCodeBuilder::DEST_GITHUB_HASHES.'folly-rev.txt',
+      FBCodeBuilder::SRC_GITHUB_HASHES.'wangle-rev.txt' =>
+        FBCodeBuilder::DEST_GITHUB_HASHES.'wangle-rev.txt',
+      FBCodeBuilder::SRC_GITHUB_HASHES.'yoga-rev.txt' => null,
     };
   }
 
