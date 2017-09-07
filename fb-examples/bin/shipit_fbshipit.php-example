@@ -9,7 +9,7 @@
  */
 namespace Facebook\ShipIt;
 
-require_once(__DIR__.'/../autoload.php');
+require_once (__DIR__.'/../autoload.php');
 
 final class ShipItFBShipIt extends FBShipItCLI {
   <<__Override>>
@@ -29,17 +29,17 @@ final class ShipItFBShipIt extends FBShipItCLI {
       |> self::stripExceptSourceRoots($$)
       |> FBCommonFilters::applyAll($$)
       |> ShipItPathFilters::stripPaths(
-          $$,
-          ImmVector {
-            '@/fb-private/@',
-            // Replacement implementation in public_tld
-            '@(^|/)autoload.php$@',
-            '@(^|fbcode/opensource/shipit/)composer.json$@',
-            '@(^|/)fb_.+\.sh$@',
-            '@(^|/)fb_.+\.py$@',
-            '@(^|/)bin/generate-autoload-map.php@',
-          },
-        )
+        $$,
+        ImmVector {
+          '@/fb-private/@',
+          // Replacement implementation in public_tld
+          '@(^|/)autoload.php$@',
+          '@(^|fbcode/opensource/shipit/)composer.json$@',
+          '@(^|/)fb_.+\.sh$@',
+          '@(^|/)fb_.+\.py$@',
+          '@(^|/)bin/generate-autoload-map.php@',
+        },
+      )
       |> self::removePrivateProjects($$)
       |> ShipItPathFilters::rewritePaths(
         $$,
@@ -71,7 +71,7 @@ final class ShipItFBShipIt extends FBShipItCLI {
   <<__Override>>
   protected static function getPhases(): ImmVector<ShipItPhase> {
     $original_phases = parent::getPhases();
-    $phases = Vector { };
+    $phases = Vector {};
     foreach ($original_phases as $phase) {
       if ($phase instanceof ShipItSyncPhase) {
         $phases[] = new FBShipItPublicizeSyncScriptsPhase(
@@ -89,8 +89,9 @@ final class ShipItFBShipIt extends FBShipItCLI {
 
   <<__Override>>
   public static function getBaseConfig(): ShipItBaseConfig {
-    return parent::getBaseConfig()
-      ->withSourceRoots(ImmSet { 'fbcode/opensource/shipit/' });
+    return parent::getBaseConfig()->withSourceRoots(
+      ImmSet { 'fbcode/opensource/shipit/' },
+    );
   }
   /**
    * Rename fb-examples/foo.php to fb-examples/foo.php-example.
@@ -103,18 +104,14 @@ final class ShipItFBShipIt extends FBShipItCLI {
   ): ShipItChangeset {
     return ShipItPathFilters::rewritePaths(
       $changeset,
-      $path ==> preg_replace(
-        '@^fb-examples/.+\.php$@',
-        '\0-example',
-        $path,
-      ),
+      $path ==> preg_replace('@^fb-examples/.+\.php$@', '\0-example', $path),
     );
   }
 
   private static function removePrivateProjects(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $diffs = Vector { };
+    $diffs = Vector {};
     foreach ($changeset->getDiffs() as $diff) {
       if (!self::isFileForPrivateProject($diff['path'])) {
         $diffs[] = $diff;
@@ -170,19 +167,14 @@ final class ShipItFBShipIt extends FBShipItCLI {
       'facebookincubator',
       'instagram',
     };
-    $credentials = FBGitHubUtils::getCredentialsForProject(
-      'facebook',
-      'shipit',
-    );
+    $credentials =
+      FBGitHubUtils::getCredentialsForProject('facebook', 'shipit');
     $org_projects = \HH\Asio\join(\HH\Asio\m(
       $orgs->map(
-        async $org ==> await self::getPublicProjectsForOrg(
-          $credentials,
-          $org,
-        ),
+        async $org ==> await self::getPublicProjectsForOrg($credentials, $org),
       ),
     ));
-    $all_projects = Set { };
+    $all_projects = Set {};
     foreach ($org_projects as $projects) {
       $all_projects->addAll($projects);
     }
@@ -207,7 +199,7 @@ final class ShipItFBShipIt extends FBShipItCLI {
       $credentials,
       '/orgs/'.$org.'/repos?type=public',
     );
-    $repos = Vector { };
+    $repos = Vector {};
     foreach ($responses as $response) {
       $partial_repos = json_decode($response, /* as array = */ true);
       if ($partial_repos === null) {
