@@ -49,7 +49,7 @@ final class ShipItGenerateStubsPhase extends ShipItPhase {
     $project_class_name = $github_project
       |> preg_replace('/\./', '_', $$)
       |> preg_replace_callback(
-        '/-([a-zA-Z])/',
+        '/-([a-zA-Z0-9])/',
         $matches ==> strtoupper($matches[1]),
         $$,
       )
