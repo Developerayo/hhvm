@@ -9,10 +9,15 @@
  */
 namespace Facebook\ShipIt;
 
-require_once(__DIR__.'/../autoload.php');
+/**
+ * fbsource/fbandroid/native/redex/       syncs with github `master` branch
+ * fbsource/fbandroid/native/redex-stable syncs with github `stable` branch
+ */
+require_once (__DIR__.'/../autoload.php');
 
-final class ShipItRedex extends FBShipItCLI {
-  const string ROOT = 'fbandroid/native/redex/';
+abstract class ShipItRedex extends FBShipItCLI {
+
+  protected static abstract function getRootDir(): string;
 
   <<__Override>>
   protected static function projectFilterChangeset(
@@ -26,7 +31,15 @@ final class ShipItRedex extends FBShipItCLI {
   <<__Override>>
   public static function getPathMappings(): ImmMap<string, string> {
     return ImmMap {
-      self::ROOT => '',
+      static::getRootDir() => '',
+      // liblocator is a library within redex that is depended on by dextricks
+      // and redex itself. For the sake of safety, we only have one copy of this
+      // library in `native/redex/` (thus, dextricks and redex will always agree
+      // on the contents of liblocator). To build redex-stable with the open
+      // source build system, we need liblocator in the stable branch as well.
+      // So copy it over. This is safe for Pull Requests because PRs only come
+      // to master, not stable.
+      'fbandroid/native/redex/liblocator/' => 'liblocator/',
     };
   }
 
@@ -40,7 +53,34 @@ final class ShipItRedex extends FBShipItCLI {
   }
 }
 
+final class ShipItRedexMaster extends ShipItRedex {
+
+  <<__Override>>
+  protected static function getRootDir() {
+    return 'fbandroid/native/redex/';
+  }
+
+  <<__Override>>
+  public static function getBaseConfig(): ShipItBaseConfig {
+    return parent::getBaseConfig()->withDestinationBranch('master');
+  }
+}
+
+final class ShipItRedexStable extends ShipItRedex {
+
+  <<__Override>>
+  protected static function getRootDir() {
+    return 'fbandroid/native/redex-stable/';
+  }
+
+  <<__Override>>
+  public static function getBaseConfig(): ShipItBaseConfig {
+    return parent::getBaseConfig()->withDestinationBranch('stable');
+  }
+}
+
 // Allow require() from unit test
 if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItRedex::cliMain();
+  ShipItRedexMaster::cliMain();
+  ShipItRedexStable::cliMain();
 }

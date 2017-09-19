@@ -11,8 +11,9 @@ namespace Facebook\ImportIt;
 
 require_once(__DIR__.'/../autoload.php');
 
+// We only import on master. No pull requests should go to stable.
 final class ImportItRedex extends FBImportItCLI {
-  const type TShipIt = \Facebook\ShipIt\ShipItRedex;
+  const type TShipIt = \Facebook\ShipIt\ShipItRedexMaster;
 }
 
 // Allow require() from unit test
