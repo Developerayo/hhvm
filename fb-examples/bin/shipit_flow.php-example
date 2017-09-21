@@ -35,9 +35,7 @@ final class ShipItFlow extends FBShipItCLI {
           $$,
           ImmVector {
             '@fbcode/hphp/hack/src/@',
-            '@fbcode/flow/kpm.lock$@',
             '@fbcode/flow/.merlin@',
-            '@fbcode/flow/.npmrc$@',
             '@fbcode/flow/hack@',
           },
           $exceptions->concat(ImmVector {
