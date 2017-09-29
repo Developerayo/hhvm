@@ -53,6 +53,7 @@ final class ShipItCaffe2 extends FBShipItCLI {
         'third_party/NNPACK_deps/pthreadpool',
       self::ROOT.'submodules/android-cmake-rev.txt' =>
         'third_party/android-cmake',
+      self::ROOT.'submodules/aten-rev.txt' => 'third_party/aten',
       self::ROOT.'submodules/benchmark-rev.txt' => 'third_party/benchmark',
       self::ROOT.'submodules/cnmem-rev.txt' => 'third_party/cnmem',
       self::ROOT.'submodules/cub-rev.txt' => 'third_party/cub',
