@@ -165,6 +165,7 @@ final class ShipItFBShipIt extends FBShipItCLI {
       'facebookarchive',
       'facebookexperimental',
       'facebookincubator',
+      'hhvm',
       'instagram',
     };
     $credentials =
