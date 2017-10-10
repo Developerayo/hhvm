@@ -19,7 +19,10 @@ final class ShipItScreenshotTestsForAndroid extends FBShipItCLI {
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     return $changeset
-      |> FBCommonFilters::applyAll($$)
+      |> FBCommonFilters::applyAll($$, shape(
+        'stripCommonFiles/exceptions' => ImmVector {
+          '@BUCK@',
+        }))
       |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
   }
 
