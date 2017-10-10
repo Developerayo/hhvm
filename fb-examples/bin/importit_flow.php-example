@@ -48,7 +48,19 @@ final class ImportItFlow extends FBImportItCLI {
             return $path;
           },
         )
-      |> parent::projectFilterChangeset($$);
+      |> parent::projectFilterChangeset($$)
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> {
+          if (strpos($path, 'hack/src/LICENSE') !== false) {
+            return str_replace('hack/src/LICENSE', 'hack/LICENSE', $path);
+          }
+          if (strpos($path, 'hack/src/PATENTS') !== false) {
+            return str_replace('hack/src/PATENTS', 'hack/PATENTS', $path);
+          }
+          return $path;
+        }
+      );
   }
 }
 

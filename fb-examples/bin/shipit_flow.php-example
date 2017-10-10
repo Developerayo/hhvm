@@ -12,6 +12,8 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 final class ShipItFlow extends FBShipItCLI {
+  const HACK_ROOT_PLACEHOLDER = "<HACK_ROOT>/";
+
   <<__Override>>
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
@@ -34,7 +36,7 @@ final class ShipItFlow extends FBShipItCLI {
       |> ShipItPathFilters::stripPaths(
           $$,
           ImmVector {
-            '@fbcode/hphp/hack/src/@',
+            '@fbcode/hphp/hack/@',
             '@fbcode/flow/.merlin@',
             '@fbcode/flow/hack@',
           },
@@ -43,6 +45,7 @@ final class ShipItFlow extends FBShipItCLI {
             // root, except for a whitelist. So whitelist the file the test
             // tests for...
             '@fbcode/hphp/hack/src/'.$test_file_name.'@',
+            '@fbcode/hphp/hack/'.$test_file_name.'@',
 
             // Stuff used in open source that isn't used internally
             '@fbcode/hphp/hack/src/\.gitignore$@',
@@ -53,6 +56,8 @@ final class ShipItFlow extends FBShipItCLI {
             '@fbcode/hphp/hack/src/fsnotify_win/@',
             '@fbcode/hphp/hack/src/injection/injector_config.mli@',
             '@fbcode/hphp/hack/src/stubs/eventLogger\.ml$@',
+            '@fbcode/hphp/hack/LICENSE$@',
+            '@fbcode/hphp/hack/PATENTS@',
 
             // Stuff that is currently unused, but not Hack-specific and we
             // will probably want to use some day
@@ -84,7 +89,15 @@ final class ShipItFlow extends FBShipItCLI {
             '@fbcode/hphp/hack/src/utils/hh_json/@',
           }),
         )
-      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings())
+      |> ShipItPathFilters::rewritePaths($$, $path ==> {
+        $root = self::HACK_ROOT_PLACEHOLDER;
+        if (strncmp($path, $root, strlen($root)) !== 0) {
+          return $path;
+        } else {
+          return 'hack/' . substr($path, strlen($root));
+        }
+      });
   }
 
   <<__Override>>
@@ -95,6 +108,7 @@ final class ShipItFlow extends FBShipItCLI {
       'fbcode/flow/github/.merlin' => '.merlin',
       'fbcode/flow/' => '',
       'fbcode/hphp/hack/src/' => 'hack/',
+      'fbcode/hphp/hack/' => ShipItFlow::HACK_ROOT_PLACEHOLDER,
     };
   }
 
