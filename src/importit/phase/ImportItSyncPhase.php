@@ -21,6 +21,7 @@ final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
   private ?string $expectedHeadRev;
   private ?string $patchesDirectory;
   private ?string $pullRequestNumber;
+  private bool $skipPullRequest = false;
 
   public function __construct(
     private (function(ShipItChangeset): ShipItChangeset) $filter,
@@ -57,6 +58,12 @@ final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
                          'debugging',
         'write' => $x ==> $this->patchesDirectory = $x,
       ),
+      shape(
+        'long_name' => 'skip-pull-request',
+        'description' => 'Dont fetch a PR, instead just use the local '.
+                          'expected-head-revision',
+        'write' => $_ ==> $this->skipPullRequest = true,
+      ),
     };
   }
 
@@ -72,12 +79,21 @@ final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
   private function getSourceChangsetAndDestinationBaseRevision(
     ShipItBaseConfig $config,
   ): (ShipItChangeset, ?string) {
-    $pr_number = $this->pullRequestNumber;
+    $pr_number = null;
     $expected_head_rev = $this->expectedHeadRev;
-    invariant(
-      $pr_number !== null && $expected_head_rev !== null,
-      '--pull-request-number and --expected-head-revision must be set!',
-    );
+    if ($this->skipPullRequest) {
+      invariant(
+        $expected_head_rev !== null,
+        '--expected-head-revision must be set!',
+      );
+    } else {
+      $pr_number = $this->pullRequestNumber;
+      invariant(
+        $pr_number !== null && $expected_head_rev !== null,
+        '--expected-head-revision must be set! '.
+          'And either --pull-request-number or --skip-pull-request must be set',
+      );
+    }
     $source_repo = new ImportItRepoGIT(
       $config->getSourcePath(),
       $config->getSourceBranch(),
@@ -94,7 +110,7 @@ final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
     ShipItChangeset $changeset,
     ?string $base_rev,
   ): void {
-    $destination_repo = ShipItRepo::open(
+    $destination_repo = ImportItRepo::open(
       $config->getDestinationPath(),
       $config->getDestinationBranch(),
     );
