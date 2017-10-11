@@ -1,0 +1,155 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItHSL extends FBShipItCLI {
+  const string ROOT = 'flib/core/hack/lib/';
+
+  <<__Override>>
+  protected static function projectFilterChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return $changeset
+      |> ShipItPathFilters::stripPaths(
+        $$,
+        ImmVector {
+          '@^flib/core/hack/lib/(legacy|unreleased|async)/@',
+          '@^flib/core/hack/lib/__tests__/testing_mocks/@',
+        },
+      )
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings())
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> preg_replace(
+          '@^src/(.+/)?__tests__/@',
+          'tests/\1',
+          $path,
+        ),
+      )
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> preg_replace(
+          '@^bin/(.+)_dot_php$@',
+          'bin/\\1.php',
+          $path,
+        ),
+      )
+      |> ShipItConditionalLinesFilter::commentLines(
+        $$,
+        '@oss-disable',
+        '//',
+      )
+      |> ShipItConditionalLinesFilter::uncommentLines(
+        $$,
+        '@oss-enable',
+        '//',
+      )
+      |> self::renameGenToAsync($$);
+  }
+
+  <<__Override>>
+  public static function getPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT.'__github__/dot_' => '.',
+      self::ROOT.'__github__/' => '',
+      self::ROOT => 'src/',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'www',
+      'githubOrg' => 'hhvm',
+      'githubProject' => 'hsl',
+    );
+  }
+
+  private static function renameFunctions(
+    ShipItChangeset $changeset,
+    (function(string):string) $renamer,
+  ): ShipItChangeset {
+    $diffs = Vector {};
+    foreach ($changeset->getDiffs() as $diff) {
+      $diff['body'] = $diff['body']
+        |> explode("\n", $$)
+        |> (new ImmVector($$))->map(
+          $line ==> preg_replace_callback(
+            // Comma and dot for doc comments
+            '/(function |\\\\|\\|>| )([a-zA-Z0-9_]+)(\\(|<|,|\\.)/',
+            $matches ==> $matches[1].$renamer($matches[2]).$matches[3],
+            $line,
+          ),
+        )
+        |> implode("\n", $$);
+      $diffs[] = $diff;
+    }
+    return $changeset->withDiffs($diffs->immutable());
+  }
+
+  private static function renameGenToAsync(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return self::renameFunctions(
+      $changeset,
+      $name ==> {
+        if ($name === 'gen') {
+          return 'from_async';
+        }
+        if ($name === 'testGen') {
+          return 'testFromAsync';
+        }
+        if (strpos($name, 'gen_') === 0) {
+          return substr($name, 4).'_async';
+        }
+        if (strpos($name, 'testGen') === 0) {
+          return 'test'.substr($name, 7).'Async';
+        }
+        return $name;
+      }
+    );
+  }
+
+  // Public for ImportItHSL
+  public static function renameAsyncToGen(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return self::renameFunctions(
+      $changeset,
+      $name ==> {
+        if ($name === 'from_async') {
+          return 'gen';
+        }
+        if ($name === 'testFromAsync') {
+          return 'testGen';
+        }
+        if (substr($name, -6) === '_async') {
+          return 'gen_'.substr($name, 0, -6);
+        }
+        if (substr($name, 0, 4) === 'test' && substr($name, -5) === 'Async') {
+          return 'testGen'.substr(
+            $name,
+            4,
+            strlen($name) - 9,
+          );
+        }
+        return $name;
+      }
+    );
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItHSL::cliMain();
+}
