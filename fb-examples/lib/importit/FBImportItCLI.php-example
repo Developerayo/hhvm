@@ -11,7 +11,6 @@ namespace Facebook\ImportIt;
 
 use \Facebook\ShipIt\ {
   FBGitHubUtils,
-  IHasFBShipItCLIBaseConfig,
   IHasFBShipItCLIStaticConfig,
   ShipItBaseConfig,
   ShipItChangeset,
@@ -30,7 +29,7 @@ use \Facebook\ShipIt\ {
 abstract class FBImportItCLI
   implements
     IHasFBShipItCLIStaticConfig,
-    IHasFBShipItCLIBaseConfig {
+    \Facebook\ShipIt\Config\IShipItConfig {
 
   use \Facebook\ShipIt\FBShipItCLITrait;
 
@@ -106,7 +105,7 @@ abstract class FBImportItCLI
   }
 
   <<__Override>>
-  protected static function getPhases(
+  public static function getPhases(
   ): ImmVector<\Facebook\ShipIt\ShipItPhase> {
     $static_config = static::getStaticConfig();
     $config = static::getBaseConfig();
@@ -145,5 +144,10 @@ abstract class FBImportItCLI
     $ts = type_structure(static::class, 'TShipIt');
     invariant($ts['kind'] === TypeStructureKind::OF_CLASS, 'unexpected type');
     return $ts['classname'];
+  }
+
+  <<__Override>>
+  final public static function cliMain(): void {
+    self::cliForConfig(static::class);
   }
 }

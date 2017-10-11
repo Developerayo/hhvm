@@ -14,5 +14,5 @@ interface ISupportsFBImportIt
     ImportItSubmoduleMappings,
     ImportItPathMappings,
     \Facebook\ShipIt\IHasFBShipItCLIStaticConfig,
-    \Facebook\ShipIt\IHasFBShipItCLIBaseConfig {
+    \Facebook\ShipIt\Config\IShipItConfig {
 }

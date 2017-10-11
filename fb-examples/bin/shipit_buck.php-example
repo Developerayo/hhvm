@@ -21,11 +21,11 @@ class ShipItBuck
     '|\.git$|\.sh@'
   );
 
-  public static function cliMain(): void {
+  public static function getPhases(): ImmVector<ShipItPhase> {
     $static_config = static::getStaticConfig();
     $config = self::getBaseConfig();
 
-    $phases = ImmVector {
+    return ImmVector {
       new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::SOURCE),
       new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::DESTINATION),
       new FBRepoInitPhase(
@@ -63,6 +63,11 @@ class ShipItBuck
       new ShipItPushPhase(),
       new BuckUpdateInternalMirrorPhase(),
     };
+  }
+
+  public static function cliMain(): void {
+    $config = self::getBaseConfig();
+    $phases = self::getPhases();
 
     (new ShipItPhaseRunner($config, $phases))->run();
   }

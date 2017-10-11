@@ -9,20 +9,13 @@
  */
 namespace Facebook\ShipIt;
 
-/**
- * DEPRECATED - individual binaries are being migrated to a master
- * binary with a registry of config classes.
- *
- * Base class for projects that have no special requirements.
+/** Base class for projects that have no special requirements.
  *
  * If you need more flexibility than this provides, use the classes
  * directly (eg shipit_hhvm.php and shipit_buck.php)
  */
-<<Deprecated>>
-abstract class FBShipItCLI
+abstract class FBShipItConfig
   implements \Facebook\ImportIt\ISupportsFBImportIt {
-
-  use FBShipItCLITrait;
 
   <<__Override>>
   public abstract static function getStaticConfig(): FBShipItCLIStaticConfig;
@@ -145,7 +138,6 @@ abstract class FBShipItCLI
       );
   }
 
-  <<__Override>>
   public static function getPhases(): ImmVector<ShipItPhase> {
     $static_config = static::getStaticConfig();
     $config = static::getBaseConfig();
@@ -194,10 +186,5 @@ abstract class FBShipItCLI
       ),
       new ShipItPushPhase(),
     };
-  }
-
-  <<__Override>>
-  final public static function cliMain(): void {
-    self::cliForConfig(static::class);
   }
 }

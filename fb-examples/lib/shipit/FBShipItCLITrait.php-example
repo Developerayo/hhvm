@@ -10,10 +10,6 @@
 namespace Facebook\ShipIt;
 
 trait FBShipItCLITrait {
-  require implements IHasFBShipItCLIStaticConfig;
-  require implements IHasFBShipItCLIBaseConfig;
-
-  protected abstract static function getPhases(): ImmVector<ShipItPhase>;
 
   /** Custom exception handler that repeats the message at the bottom.
    *
@@ -36,7 +32,12 @@ trait FBShipItCLITrait {
     exit(128);
   }
 
-  final public static function cliMain(): void {
+  abstract public static function cliMain(): void;
+
+  // TODO make this private after migrating away from standalone binaries
+  public static function cliForConfig(
+    classname<\Facebook\ShipIt\Config\IShipItConfig> $config_class,
+  ): void {
     \set_exception_handler($ex ==> self::abortWithException($ex));
     \set_error_handler(
       function($severity, $message, $file, $line) {
@@ -55,10 +56,10 @@ trait FBShipItCLITrait {
         "5. A secure Chronos job will be created for you within 24 hours."
       );
     }
-    print('--- Starting '.static::class."\n");
-    $config = static::getBaseConfig();
+    print('--- Starting '.$config_class."\n");
+    $config = $config_class::getBaseConfig();
 
-    $runner = new ShipItPhaseRunner($config, static::getPhases());
+    $runner = new ShipItPhaseRunner($config, $config_class::getPhases());
     try {
       $runner->run();
     } catch (ShipItShellCommandException $e) {

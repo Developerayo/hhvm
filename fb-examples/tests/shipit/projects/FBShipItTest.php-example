@@ -80,6 +80,14 @@ final class FBShipItTest extends FBPublicProjectBaseTest {
       self::ROOT.'/composer.json' => null, // OSS has a different one
       self::ROOT.'/autoload.php' => null, // OSS generates with composer
       self::ROOT.'/bin/generate-autoload-map.php' => null, // OSS uses composer
+      // config
+      self::ROOT.'/config/fb-private/facebook/private_project.php' => null,
+      self::ROOT.'/config/fb-specific-but-public/facebook/public_project.php'
+        => 'fb-examples/config/facebook/public_project.php-example',
+      self::ROOT.'/src/config/IShipItConfig.php'
+        => 'src/config/IShipItConfig.php',
+      self::ROOT.'/src/config/fb-specific-but-public/FBShipItConfig.php'
+        => 'fb-examples/lib/config/FBShipItConfig.php-example',
     };
   }
 

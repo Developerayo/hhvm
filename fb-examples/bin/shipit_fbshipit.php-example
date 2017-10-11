@@ -25,9 +25,14 @@ final class ShipItFBShipIt extends FBShipItCLI {
   protected static function projectFilterChangeset(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
+    $strip_exceptions = shape(
+      'stripCommonFiles/exceptions' => ImmVector {
+        '@^fbcode/opensource/shipit/config/.*$@',
+      },
+    );
     return $changeset
       |> self::stripExceptSourceRoots($$)
-      |> FBCommonFilters::applyAll($$)
+      |> FBCommonFilters::applyAll($$, $strip_exceptions)
       |> ShipItPathFilters::stripPaths(
         $$,
         ImmVector {
@@ -54,6 +59,10 @@ final class ShipItFBShipIt extends FBShipItCLI {
     return ImmMap {
       'fbcode/opensource/shipit/public_tld/' => '',
       'fbcode/opensource/shipit/bin/' => 'fb-examples/bin/',
+      'fbcode/opensource/shipit/config/fb-specific-but-public/' =>
+        'fb-examples/config/',
+      'fbcode/opensource/shipit/src/config/fb-specific-but-public/' =>
+        'fb-examples/lib/config/',
       'fbcode/opensource/shipit/src/importit/fb-specific-but-public/' =>
         'fb-examples/lib/importit/',
       'fbcode/opensource/shipit/tests/importit/fb-specific-but-public/' =>
@@ -69,7 +78,7 @@ final class ShipItFBShipIt extends FBShipItCLI {
   }
 
   <<__Override>>
-  protected static function getPhases(): ImmVector<ShipItPhase> {
+  public static function getPhases(): ImmVector<ShipItPhase> {
     $original_phases = parent::getPhases();
     $phases = Vector {};
     foreach ($original_phases as $phase) {

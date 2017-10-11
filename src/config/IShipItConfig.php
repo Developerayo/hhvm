@@ -7,8 +7,9 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-interface IHasFBShipItCLIBaseConfig {
-  public static function getBaseConfig(): ShipItBaseConfig;
+interface IShipItConfig {
+  public static function getBaseConfig(): \Facebook\ShipIt\ShipItBaseConfig;
+  public static function getPhases(): ImmVector<\Facebook\ShipIt\ShipItPhase>;
 }

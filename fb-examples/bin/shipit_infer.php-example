@@ -52,7 +52,7 @@ final class ShipItInfer extends FBShipItCLI {
   }
 
   <<__Override>>
-  protected static function getPhases(): ImmVector<ShipItPhase> {
+  public static function getPhases(): ImmVector<ShipItPhase> {
     // The SanityCheck is incompatible with the whitelist approach
     return parent::getPhases()->filter(
       $phase ==> !($phase instanceof ShipItFilterSanityCheckPhase)
