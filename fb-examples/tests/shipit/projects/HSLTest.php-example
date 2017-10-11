@@ -1,0 +1,130 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class HSLTest extends FBPublicProjectBaseTest {
+  <<__Override>>
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItHSL::filterChangeset(
+      $changeset,
+    );
+  }
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'flib/foo' => null,
+      'html/foo' => null,
+      'flib/core/hack/foo/bar.php' => null,
+      'flib/core/hack/lib/foo.php' => 'src/foo.php',
+      'flib/core/hack/lib/fb/foo.php' => null,
+      'flib/core/hack/lib/legacy/foo.php' => null,
+      'flib/core/hack/lib/unreleased/foo.php' => null,
+      'flib/core/hack/lib/__github__/composer.json' => 'composer.json',
+      'flib/core/hack/lib/__github__/dot_hhconfig' => '.hhconfig',
+      'flib/core/hack/lib/__github__/bin/foo_dot_php' => 'bin/foo.php',
+      'flib/core/hack/lib/__tests__/foo.php' => 'tests/foo.php',
+      'flib/core/hack/lib/dict/__tests__/bar.php' => 'tests/dict/bar.php',
+      // https://github.com/hhvm/hsl/issues/1
+      'flib/core/hack/lib/async/dict.php' => null,
+    };
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+
+  public function testConditionalComments(): void {
+    $changeset = self::map((new ShipItChangeset())
+      ->withDiffs(ImmVector {
+        shape(
+          'path' => 'flib/core/hack/lib/foo.php',
+          'body' =>
+            " // @oss-enable: herp();\n".
+            " derp(); // @oss-disable\n".
+            " \n".
+            "+derp(); // @oss-disable\n",
+        ),
+      }));
+    $this->assertSame(
+      " herp(); // @oss-enable\n".
+      " // @oss-disable: derp();\n".
+      " \n".
+      "+// @oss-disable: derp();\n",
+      $changeset->getDiffs()->at(0)['body'],
+    );
+  }
+
+  public function testGenAsyncRenaming(): void {
+    $body =
+      "namespace HH\\Lib\\Vec;\n".
+      "async function gen(\$_): Awaitable<stuff> {}\n".
+      "async function gen_foo(\$_): Awaitable<stuff> {}\n".
+      "async function gen_bar<T as arraykey>(T \$_): Awaitable<T> {}\n".
+      "function testGen(): void {}\n".
+      "function testGenFoo(): void {}\n".
+      "function main(\$stuff) {\n".
+      "  \$_ = namespace\\gen(\$stuff);\n".
+      "  \$_ = namespace\\gen_foo(\$stuff);\n".
+      "  \$_ = gen(\$stuff\);\n".
+      "  \$_ = \$stuff |> gen(\$\$);\n".
+      "  \$_ = \$stuff |>gen(\$\$);\n".
+      "  \$_ = namespace\\gen_foo(\n".
+      "    \$stuff,\n".
+      "  );\n".
+      "  \$_ = namespace\\gen_bar(\n".
+      "    \$stuff,\n".
+      "  );\n".
+      "}\n";
+    $changeset = self::map((new ShipItChangeset())
+      ->withDiffs(ImmVector {
+        shape(
+          'path' => 'flib/core/hack/lib/foo.php',
+          'body' => $body,
+        ),
+      }));
+    $diff = $changeset->getDiffs()->at(0);
+    $this->assertSame(
+      "namespace HH\\Lib\\Vec;\n".
+      "async function from_async(\$_): Awaitable<stuff> {}\n".
+      "async function foo_async(\$_): Awaitable<stuff> {}\n".
+      "async function bar_async<T as arraykey>(T \$_): Awaitable<T> {}\n".
+      "function testFromAsync(): void {}\n".
+      "function testFooAsync(): void {}\n".
+      "function main(\$stuff) {\n".
+      "  \$_ = namespace\\from_async(\$stuff);\n".
+      "  \$_ = namespace\\foo_async(\$stuff);\n".
+      "  \$_ = from_async(\$stuff\);\n".
+      "  \$_ = \$stuff |> from_async(\$\$);\n".
+      "  \$_ = \$stuff |>from_async(\$\$);\n".
+      "  \$_ = namespace\\foo_async(\n".
+      "    \$stuff,\n".
+      "  );\n".
+      "  \$_ = namespace\\bar_async(\n".
+      "    \$stuff,\n".
+      "  );\n".
+      "}\n",
+      $diff['body'],
+      'forward translation (shipit)',
+    );
+    $changeset = (new ShipItChangeset())
+      ->withDiffs(ImmVector { $diff })
+      |> ShipItHSL::renameAsyncToGen($$);
+    $diff = $changeset->getDiffs()->at(0);
+    $this->assertSame(
+      $body,
+      $diff['body'],
+      'reverse translation (importit)',
+    );
+  }
+}
