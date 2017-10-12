@@ -33,7 +33,7 @@ class ShipItConfigRegistry {
       $config_classes = Set {};
       // TODO use hhvm-autoload and parse from the autoload map
       // instead of walking the filetree
-      $shipit_root = __DIR__.'../..';
+      $shipit_root = __DIR__.'../../..';
       $directory = new \RecursiveDirectoryIterator($shipit_root.'/config/');
       $iterator = new \RecursiveIteratorIterator($directory);
       $regex = new \RegexIterator(
@@ -71,7 +71,8 @@ class ShipItConfigRegistry {
       $class_name = self::getClassName($org, $repo);
       invariant(
         $config_classes->contains($class_name),
-        'Unknown repo: %s',
+        'Unknown repo: %s/%s',
+        $org,
         $repo,
       );
       invariant(
