@@ -294,29 +294,16 @@ abstract class FBProjectBaseTest extends BaseTest {
     // assertion is the @expectedException
   }
 
+  // TODO(T22473111) remove after config migration is complete
   public function testFileNameMatchesRepo(): void {
-    $shipit_class = self::getShipItClass();
+    $shipit_class = static::getShipItClass();
     $config = $shipit_class::getStaticConfig();
     $reflector = new \ReflectionClass($shipit_class);
-    // TODO T22473111 remove crazy classname inspection after config migration
-    if (preg_match('/\\\\Config\\\\/', $shipit_class) === 1) {
-      $this->assertEquals(
-        $config['githubOrg'],
-        basename(dirname($reflector->getFileName())),
-        'Config parent directory must match GitHub Org: '.$shipit_class
-      );
-      $this->assertEquals(
-        $config['githubProject'].'.php',
-        basename($reflector->getFileName()),
-        'Config filename must match GitHub Repo: '.$shipit_class
-      );
-    } else {
-      $this->assertEquals(
-        'shipit_'.$config['githubProject'].'.php',
-        basename($reflector->getFileName()),
-        'ShipIt executable must match GitHub Repo: '.$shipit_class
-      );
-    }
+    $this->assertEquals(
+      'shipit_'.$config['githubProject'].'.php',
+      basename($reflector->getFileName()),
+      'ShipIt executable must match GitHub Repo: '.$shipit_class
+    );
   }
 
   final public function examplePathMappings(
@@ -368,7 +355,7 @@ abstract class FBProjectBaseTest extends BaseTest {
   }
 
   final public function testPathMappingsHaveExamples(): void {
-    $shipit_class = self::getShipItClass();
+    $shipit_class = static::getShipItClass();
     $examples = static::getExamplePathMappings()->keys();
     foreach ($shipit_class::getPathMappings()->keys() as $source_path) {
       $found = false;
@@ -397,7 +384,7 @@ abstract class FBProjectBaseTest extends BaseTest {
   }
 
   final public function testRepositoryNameCollision(): void {
-    $shipit_class = self::getShipItClass();
+    $shipit_class = static::getShipItClass();
     $config = $shipit_class::getBaseConfig();
     $this->assertNotEquals(
       $config->getSourcePath(),
@@ -408,7 +395,7 @@ abstract class FBProjectBaseTest extends BaseTest {
   }
 
   final public function testSourceRootsAreDirectories(): void {
-    $shipit_class = self::getShipItClass();
+    $shipit_class = static::getShipItClass();
     $config = $shipit_class::getBaseConfig();
     $roots = $config->getSourceRoots();
     foreach ($roots as $root) {
@@ -423,9 +410,12 @@ abstract class FBProjectBaseTest extends BaseTest {
   }
 
   final public function testSubmodulesAreFilteredCorrectly(): void {
-    $shipit_class = self::getShipItClass();
+    $shipit_class = static::getShipItClass();
     $parents = new Set(class_parents($shipit_class));
-    if (!$parents->contains(FBShipItCLI::class)) {
+    if (!(
+      $parents->contains(FBShipItCLI::class) ||
+      $parents->contains(FBShipItConfig::class)
+    )) {
       $this->markTestSkipped();
     }
 
@@ -447,18 +437,13 @@ abstract class FBProjectBaseTest extends BaseTest {
     }
   }
 
-  final protected static function getShipItClass(
+  // TODO(T22473111) remove after config migration is complete
+  protected static function getShipItClass(
   ): classname<\Facebook\ImportIt\ISupportsFBImportIt> {
-    // TODO T22473111 simplify after config migration is complete
-    $shipit_class = preg_replace(
-      '/(.+\\\\Config\\\\[a-zA-Z0-9_]+)Test$/',
-      '\1',
-      static::class,
-    );
     $shipit_class = preg_replace(
       '/([a-zA-Z0-9_]+)Test$/',
       'ShipIt\1',
-      $shipit_class,
+      static::class,
     );
     invariant(
       class_exists($shipit_class, false),

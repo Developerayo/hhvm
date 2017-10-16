@@ -9,6 +9,12 @@
  */
 namespace Facebook\ShipIt;
 
+use \Facebook\ImportIt\ {
+  ImportItPathFilters,
+  ImportItSubmoduleFilter,
+  ImportItSyncPhase,
+};
+
 /** Base class for projects that have no special requirements.
  *
  * If you need more flexibility than this provides, use the classes
@@ -185,6 +191,102 @@ abstract class FBShipItConfig
         $changeset ==> self::filterChangeset($changeset),
       ),
       new ShipItPushPhase(),
+    };
+  }
+
+  //////////////////////////
+  //
+  // ImportIt Config logic
+  //
+  //////////////////////////
+
+  /**
+   * By default, ImportIt will just update paths.  If a project wants to do
+   * something more complicated, they can override this method.
+   */
+  protected static function projectImportChangeset(
+    ShipItChangeset $changeset
+  ): ShipItChangeset {
+    return $changeset
+      |> self::filterImportSubmodules($$)
+      |> ImportItPathFilters::moveDirectories(
+        $$,
+        static::getPathMappings(),
+        static::getSubmoduleMappings()
+          ->keys()
+          ->map($path ==> '@^'.$path.'$@')
+      );
+  }
+
+  // Public so that you can add a unit test
+  final public static function importChangeset(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return $changeset
+      |> static::projectImportChangeset($$);
+  }
+
+  final public static function getImportBaseConfig(
+  ): ShipItBaseConfig {
+    $static_config = static::getStaticConfig();
+    $shipit_base_config = static::getBaseConfig();
+    return (new ShipItBaseConfig(
+      /* base_dir = */ '/var/tmp/fbimportit',
+      /* source_dir */ Shapes::idx(
+        $static_config,
+        'destDirName'
+      ) ?? $static_config['githubProject'],
+      /* dest_dir = */ $static_config['internalRepo'],
+      // We assume the entire GitHub repository is being imported.
+      /* source_roots = */ ImmSet {},
+    ))
+      ->withSourceBranch($shipit_base_config->getDestinationBranch())
+      ->withDestinationBranch($shipit_base_config->getSourceBranch());
+  }
+
+  final protected static function filterImportSubmodules(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    foreach (static::getSubmoduleMappings() as $dest => $source) {
+      $changeset = ImportItSubmoduleFilter::moveSubmoduleCommitToTextFile(
+          $changeset,
+          $source,
+          $dest,
+        );
+    }
+    return $changeset;
+  }
+
+  public static function getImportPhases(
+  ): ImmVector<\Facebook\ShipIt\ShipItPhase> {
+    $static_config = static::getStaticConfig();
+    $config = static::getImportBaseConfig();
+
+    return ImmVector {
+      new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::SOURCE),
+      new ShipItDeleteCorruptedRepoPhase(ShipItRepoSide::DESTINATION),
+      new \Facebook\ShipIt\ShipItGitHubInitPhase(
+        $static_config['githubOrg'],
+        $static_config['githubProject'],
+        ShipItRepoSide::SOURCE,
+        ShipItTransport::HTTPS,
+        FBGitHubUtils::class,
+      ),
+      // Clean prior to pulling to remove any untracked files at the current
+      // revision that may conflict with updates.
+      new ShipItCleanPhase(ShipItRepoSide::SOURCE),
+      new ShipItPullPhase(ShipItRepoSide::SOURCE),
+      new FBRepoInitPhase(
+        ShipItRepoSide::DESTINATION,
+        $static_config['internalRepo'],
+      ),
+      // Clean prior to pulling to remove any untracked files at the current
+      // revision that may conflict with updates.
+      new ShipItCleanPhase(ShipItRepoSide::DESTINATION),
+      new ShipItPullPhase(ShipItRepoSide::DESTINATION),
+      new ImportItSyncPhase(
+        $changeset ==> self::importChangeset($changeset),
+      ),
     };
   }
 }

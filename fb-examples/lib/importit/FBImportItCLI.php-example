@@ -21,11 +21,15 @@ use \Facebook\ShipIt\ {
   ShipItTransport
 };
 
-/** Base class for projects that have no special requirements.
+/**
+ * DEPRECATED - individual binaries are being migrated to a master
+ * binary with a registry of config classes.
+ * Base class for projects that have no special requirements.
  *
  * If you need more flexibility than this provides, use the classes
  * directly (eg tagit_buck.php)
  */
+<<Deprecated>>
 abstract class FBImportItCLI
   implements
     IHasFBShipItCLIStaticConfig,
@@ -148,6 +152,6 @@ abstract class FBImportItCLI
 
   <<__Override>>
   final public static function cliMain(): void {
-    self::cliForConfig(static::class);
+    self::cliForBinary(static::class);
   }
 }

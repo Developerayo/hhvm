@@ -1,0 +1,31 @@
+<?hh
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ImportIt;
+
+use \Facebook\ShipIt\ {
+  FBShipItCLITrait,
+};
+
+require_once(__DIR__.'/../autoload.php');
+
+final class RunImportIt {
+  use FBShipItCLITrait;
+
+  // TODO support running from master binary
+  <<__Override>>
+  public static function cliMain() {
+    print "Not yet implemented.\n";
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  RunImportIt::cliMain();
+}

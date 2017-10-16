@@ -9,6 +9,11 @@
  */
 namespace Facebook\ShipIt;
 
+use \Facebook\ShipIt\Config\ {
+  IShipItConfig,
+  ShipItConfigRegistry,
+};
+
 trait FBShipItCLITrait {
 
   /** Custom exception handler that repeats the message at the bottom.
@@ -34,10 +39,37 @@ trait FBShipItCLITrait {
 
   abstract public static function cliMain(): void;
 
-  // TODO make this private after migrating away from standalone binaries
-  public static function cliForConfig(
-    classname<\Facebook\ShipIt\Config\IShipItConfig> $config_class,
+  final public static function cliForBinary(
+    classname<IShipItConfig> $config_class,
   ): void {
+    self::initForCli();
+    print('--- Starting '.$config_class."\n");
+    $config = $config_class::getBaseConfig();
+    $runner = new ShipItPhaseRunner($config, $config_class::getPhases());
+    self::executeRunner($runner);
+  }
+
+  final public static function cliShipIt(
+    classname<IShipItConfig> $config_class,
+  ): void {
+    self::initForCli();
+    print('--- Starting ShipIt: '.$config_class."\n");
+    $config = $config_class::getBaseConfig();
+    $runner = new ShipItPhaseRunner($config, $config_class::getPhases());
+    self::executeRunner($runner);
+  }
+
+  final public static function cliImportIt(
+    classname<FBShipItConfig> $config_class,
+  ): void {
+    self::initForCli();
+    print('--- Starting ImportIt: '.$config_class."\n");
+    $config = $config_class::getImportBaseConfig();
+    $runner = new ShipItPhaseRunner($config, $config_class::getImportPhases());
+    self::executeRunner($runner);
+  }
+
+  private static function initForCli(): void {
     \set_exception_handler($ex ==> self::abortWithException($ex));
     \set_error_handler(
       function($severity, $message, $file, $line) {
@@ -56,10 +88,9 @@ trait FBShipItCLITrait {
         "5. A secure Chronos job will be created for you within 24 hours."
       );
     }
-    print('--- Starting '.$config_class."\n");
-    $config = $config_class::getBaseConfig();
+  }
 
-    $runner = new ShipItPhaseRunner($config, $config_class::getPhases());
+  private static function executeRunner(ShipItPhaseRunner $runner): void {
     try {
       $runner->run();
     } catch (ShipItShellCommandException $e) {

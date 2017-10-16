@@ -198,6 +198,6 @@ abstract class FBShipItCLI
 
   <<__Override>>
   final public static function cliMain(): void {
-    self::cliForConfig(static::class);
+    self::cliForBinary(static::class);
   }
 }

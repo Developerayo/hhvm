@@ -9,9 +9,13 @@
  */
 namespace Facebook\ShipIt\Config;
 
-class ShipItConfigRegistry {
+use \Facebook\ShipIt\ {
+  FBShipItConfig,
+};
 
-    private static ?ImmSet<classname<IShipItConfig>>
+class FBShipItConfigRegistry {
+
+    private static ?ImmSet<classname<FBShipItConfig>>
       $config_classes = null;
 
     /**
@@ -20,7 +24,7 @@ class ShipItConfigRegistry {
     private static function getClassName(
       string $org,
       string $repo
-    ): classname<IShipItConfig> {
+    ): classname<FBShipItConfig> {
       invariant(strlen($org) > 0, 'Org cannot be empty');
       invariant(strlen($repo) > 0, 'Repo cannot be empty');
       /* HH_IGNORE_ERROR[4110]: dynamic classname generation */
@@ -29,11 +33,11 @@ class ShipItConfigRegistry {
     }
 
     public static function loadConfigClasses(
-    ): ImmSet<classname<IShipItConfig>> {
+    ): ImmSet<classname<FBShipItConfig>> {
       $config_classes = Set {};
       // TODO use hhvm-autoload and parse from the autoload map
       // instead of walking the filetree
-      $shipit_root = __DIR__.'../../..';
+      $shipit_root = __DIR__.'../../../..';
       $directory = new \RecursiveDirectoryIterator($shipit_root.'/config/');
       $iterator = new \RecursiveIteratorIterator($directory);
       $regex = new \RegexIterator(
@@ -52,7 +56,7 @@ class ShipItConfigRegistry {
     }
 
     public static function getShipItConfigClasses(
-    ): ImmSet<classname<IShipItConfig>> {
+    ): ImmSet<classname<FBShipItConfig>> {
       if (self::$config_classes === null) {
         self::$config_classes = self::loadConfigClasses();
       }
@@ -62,7 +66,7 @@ class ShipItConfigRegistry {
     public static function getRepoShipItConfig(
       string $org,
       string $repo,
-    ): classname<IShipItConfig> {
+    ): classname<FBShipItConfig> {
       $config_classes = self::$config_classes;
       if ($config_classes === null) {
         $config_classes = self::loadConfigClasses();
