@@ -88,6 +88,8 @@ final class FBShipItTest extends FBPublicProjectBaseTest {
         => 'src/config/IShipItConfig.php',
       self::ROOT.'/src/config/fb-specific-but-public/FBShipItConfig.php'
         => 'fb-examples/lib/config/FBShipItConfig.php-example',
+      self::ROOT.'/tests/config/fb-specific-but-public/FBConfigBaseTest.php'
+        => 'fb-examples/tests/config/FBConfigBaseTest.php-example',
     };
   }
 
