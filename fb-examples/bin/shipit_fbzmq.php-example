@@ -51,7 +51,7 @@ final class ShipItFbzmq extends FBShipItCLI {
   public static function getStaticConfig(): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => 'fbsource',
-      'githubOrg' => 'facebookincubator',
+      'githubOrg' => 'facebook',
       'githubProject' => 'fbzmq',
     );
   }
