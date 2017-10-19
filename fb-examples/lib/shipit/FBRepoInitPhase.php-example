@@ -216,14 +216,6 @@ final class FBRepoInitPhase extends ShipItPhase {
           'facebook-spaces',
         };
         break;
-      case 'aquila':
-        return ImmVector {
-          '/usr/bin/git',
-          'clone',
-          'ssh://projects.git.vip.facebook.com/data/gitrepos/aquila.git',
-          'aquila',
-        };
-        break;
     }
     $config = FBRepoCloneCommand::get($name);
     if ($config !== null) {
