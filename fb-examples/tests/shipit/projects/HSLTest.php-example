@@ -9,6 +9,8 @@
  */
 namespace Facebook\ShipIt;
 
+use type Facebook\ImportIt\ImportItHSL;
+
 final class HSLTest extends FBPublicProjectBaseTest {
   <<__Override>>
   protected static function map(
@@ -120,6 +122,33 @@ final class HSLTest extends FBPublicProjectBaseTest {
     $changeset = (new ShipItChangeset())
       ->withDiffs(ImmVector { $diff })
       |> ShipItHSL::renameAsyncToGen($$);
+    $diff = $changeset->getDiffs()->at(0);
+    $this->assertSame(
+      $body,
+      $diff['body'],
+      'reverse translation (importit)',
+    );
+  }
+
+  public function testCallTimePassByReference(): void {
+    $body = "\\sort(&\$vec);\n";
+    $changeset = self::map((new ShipItChangeset())
+      ->withDiffs(ImmVector {
+        shape(
+          'path' => 'flib/core/hack/lib/foo.php',
+          'body' => $body,
+        ),
+      }));
+    $diff = $changeset->getDiffs()->at(0);
+    $this->assertSame(
+      "\\sort(/*ctpbr:&*/\$vec);\n",
+      $diff['body'],
+      'forward translation (shipit)',
+    );
+
+    $changeset = (new ShipItChangeset())
+      ->withDiffs(ImmVector { $diff })
+      |> ImportItHSL::filterChangeset($$);
     $diff = $changeset->getDiffs()->at(0);
     $this->assertSame(
       $body,

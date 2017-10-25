@@ -54,6 +54,14 @@ final class ShipItHSL extends FBShipItCLI {
         '@oss-enable',
         '//',
       )
+      |> ($changeset ==> {
+        $diffs = Vector {};
+        foreach ($changeset->getDiffs() as $diff) {
+          $diff['body'] = \str_replace('&$', '/*ctpbr:&*/$', $diff['body']);
+          $diffs[] = $diff;
+        }
+        return $changeset->withDiffs($diffs->immutable());
+      })($$)
       |> self::renameGenToAsync($$);
   }
 
