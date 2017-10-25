@@ -108,12 +108,6 @@ final class FBRepoInitPhase extends ShipItPhase {
     string $name,
   ): ImmVector<string> {
     switch ($name) {
-      case 'fbcode':
-        return ImmVector {
-          '/usr/local/bin/hg-clone-fbcode',
-          '--no-working-dir',
-          '--simple',
-        };
       case 'fbsource':
         return ImmVector {
           '/usr/local/bin/hg-clone-fbsource',
