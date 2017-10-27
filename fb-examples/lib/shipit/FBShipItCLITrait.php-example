@@ -14,6 +14,10 @@ use \Facebook\ShipIt\Config\ {
   ShipItConfigRegistry,
 };
 
+use \Facebook\ImportIt\ {
+  FBImportItBranchResolutionPhase,
+};
+
 trait FBShipItCLITrait {
 
   /** Custom exception handler that repeats the message at the bottom.
@@ -50,22 +54,42 @@ trait FBShipItCLITrait {
   }
 
   final public static function cliShipIt(
-    classname<IShipItConfig> $config_class,
+    classname<FBShipItConfig> $config_class,
+    ?string $external_branch = null,
   ): void {
     self::initForCli();
     print('--- Starting ShipIt: '.$config_class."\n");
-    $config = $config_class::getBaseConfig();
-    $runner = new ShipItPhaseRunner($config, $config_class::getPhases());
+    $runner = new ShipItPhaseRunner(
+      new ShipItBaseConfig(
+        dirname(__DIR__),
+        'shipit',
+        'shipit',
+        ImmSet {},
+      ),
+      ImmVector {
+        new FBShipItBranchResolutionPhase($config_class, $external_branch),
+      },
+    );
     self::executeRunner($runner);
   }
 
   final public static function cliImportIt(
     classname<FBShipItConfig> $config_class,
+    ?string $external_branch = null,
   ): void {
     self::initForCli();
     print('--- Starting ImportIt: '.$config_class."\n");
-    $config = $config_class::getImportBaseConfig();
-    $runner = new ShipItPhaseRunner($config, $config_class::getImportPhases());
+    $runner = new ShipItPhaseRunner(
+      new ShipItBaseConfig(
+        dirname(__DIR__),
+        'shipit',
+        'shipit',
+        ImmSet {},
+      ),
+      ImmVector {
+        new FBImportItBranchResolutionPhase($config_class, $external_branch),
+      },
+    );
     self::executeRunner($runner);
   }
 

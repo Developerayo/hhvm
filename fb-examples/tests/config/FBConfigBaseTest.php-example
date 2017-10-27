@@ -12,6 +12,8 @@ namespace Facebook\ShipIt\Config;
 use \Facebook\ShipIt\ {
   FBPublicProjectBaseTest,
   ShipItChangeset,
+  ShipItSubmoduleFilter,
+  FBSourceBranchConfig,
 };
 
 use \Facebook\ImportIt\ {
@@ -19,6 +21,26 @@ use \Facebook\ImportIt\ {
 };
 
 abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
+
+  protected static function getDefaultBranchConfig(): FBSourceBranchConfig {
+    $config_class = static::getConfigClass();
+    $branch_configs = $config_class::getBranchConfigs();
+    return $branch_configs[0];
+  }
+
+  <<__Override>>
+  final protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $config_class = static::getConfigClass();
+    $branch_config = static::getDefaultBranchConfig();
+    return $config_class::filterChangeset($changeset, $branch_config);
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
 
   <<__Override>>
   final public function testFileNameMatchesRepo(): void {
@@ -37,25 +59,144 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
     );
   }
 
-  <<__Override>>
-  final protected static function getShipItClass(
-  ): classname<\Facebook\ImportIt\ISupportsFBImportIt> {
-    return self::getConfigClass();
-  }
-
   final protected static function getConfigClass(
   ): classname<\Facebook\ShipIt\FBShipItConfig> {
-    $shipit_class = preg_replace(
+    $config_class = preg_replace(
       '/([a-zA-Z0-9_]+)Test$/',
       '\1',
       static::class,
     );
     invariant(
-      class_exists($shipit_class, true),
+      class_exists($config_class, true),
       '%s does not exist.  Test and ShipIt class are not named consistently.',
-      $shipit_class,
+      $config_class,
     );
-    return $shipit_class;
+    return $config_class;
+  }
+
+  final public function testUniqueExternalBranchConfigs(): void {
+    $config_class = static::getConfigClass();
+    $branch_configs = $config_class::getBranchConfigs();
+    $external_branches = $branch_configs->map(
+      $branch_config ==> $branch_config['external']
+    );
+    $this->assertEquals(
+      $external_branches->toSet()->count(),
+      $external_branches->count(),
+      'getBranchConfigs contains multiple configs for one external branch, '.
+      'which is not allowed.',
+    );
+  }
+
+  /**
+   * Example path mappings for each shipped destination branch.
+   * Override this method if your project has custom branch configuration.
+   */
+  protected static function getExampleBranchMappings(
+  ): ImmMap<string, ImmMap<string, ?string>> {
+    return ImmMap {
+      'master' => static::getExamplePathMappings(),
+    };
+  }
+
+  <<__Override>>
+  final public function testPathMappingsHaveExamples(): void {
+    $config_class = static::getConfigClass();
+    $examples = static::getExamplePathMappings()->keys();
+    foreach ($config_class::getDefaultPathMappings()->keys() as $source_path) {
+      $found = false;
+      foreach ($examples as $example) {
+        if (strncmp($example, $source_path, strlen($source_path)) === 0) {
+          $found = true;
+          break;
+        }
+      }
+      if (!$found) {
+        $this->fail(
+          'Source path "'.$source_path.'" has no examples defined in tests.',
+        );
+      }
+    };
+  }
+
+  <<__Override>>
+  public function testRepositoryNameCollision(): void {
+    $config_class = static::getConfigClass();
+    $config = $config_class::getBaseConfig(static::getDefaultBranchConfig());
+    $this->assertNotEquals(
+      $config->getSourcePath(),
+      $config->getDestinationPath(),
+      'Repo names match and `getStaticConfig` has not set `destDirName` to '.
+        'something unique for the destination repository!',
+    );
+  }
+
+  <<__Override>>
+  public function testSourceRootsAreDirectories(): void {
+    $config_class = static::getConfigClass();
+    $config = $config_class::getBaseConfig(static::getDefaultBranchConfig());
+    $roots = $config->getSourceRoots();
+    foreach ($roots as $root) {
+      $this->assertTrue(
+        substr($root, -1) === '/',
+        sprintf(
+          'Expected `%s` to end in `/` (source roots must be a folder).',
+          $root,
+        ),
+      );
+    }
+  }
+
+  <<__Override>>
+  final public function testSubmodulesAreFilteredCorrectly(): void {
+    $config_class = static::getConfigClass();
+    $parents = new Set(class_parents($config_class));
+    foreach ($config_class::getSubmoduleMappings() as $rev_file => $dest) {
+      $changeset = (new ShipItChangeset())
+        ->withDiffs(ImmVector {
+          shape(
+            'path' => $rev_file,
+            'body' => (string) self::invoke_static_bypass_visibility(
+              ShipItSubmoduleFilter::class,
+              'makeSubmoduleDiff',
+              $rev_file,
+              'deadbeef1',
+              'deadbeef2',
+            ),
+          ),
+        });
+      $this->pathMappingCheck($changeset, $rev_file, $dest);
+    }
+  }
+
+  final public function testBranchConfigs(): void {
+    $config_class = static::getConfigClass();
+    $branch_configs = $config_class::getBranchConfigs();
+    $external_branches = $branch_configs->map(
+      $branch_config ==> $branch_config['external']
+    );
+    $branch_examples = static::getExampleBranchMappings();
+    // invariant instead of assertion to avoid confusing failure output
+    invariant(
+      $branch_examples->keys()->toSet() == $external_branches->toSet(),
+      'getExampleBranchMappings does not match %s::getBranchConfigs. '.
+      'If you have multiple branches configured, you must define '.
+      '%s::getExampleBranchMappings',
+      $config_class,
+      static::class,
+    );
+    $branch_config_map = ImmMap::fromItems(
+      $external_branches->zip($branch_configs),
+    );
+    foreach ($branch_examples as $external_branch => $examples) {
+      foreach ($examples as $path_in => $path_expected) {
+        $diffs = ImmVector { shape('path' => $path_in, 'body' => 'junk') };
+        $changeset = (new ShipItChangeset())->withDiffs($diffs);
+        $branch_config = $branch_config_map[$external_branch];
+        $mapped = $config_class::filterChangeset($changeset, $branch_config);
+        $this->pathMappingCheck($mapped, $path_in, $path_expected, true);
+      }
+    }
   }
 
   /////////////////////////
@@ -91,7 +232,10 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
     \Facebook\ShipIt\ShipItChangeset $changeset,
   ): \Facebook\ShipIt\ShipItChangeset {
     $config_class = static::getConfigClass();
-    return $config_class::importChangeset($changeset);
+    return $config_class::importChangeset(
+      $changeset,
+      static::getDefaultBranchConfig(),
+    );
   }
 
   final public function exampleImportPathMappings(
@@ -144,8 +288,12 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
 
   final public function testImportBranches(): void {
     $config_class = static::getConfigClass();
-    $importit_base_config = $config_class::getImportBaseConfig();
-    $shipit_base_config = $config_class::getBaseConfig();
+    $importit_base_config = $config_class::getImportBaseConfig(
+      static::getDefaultBranchConfig(),
+    );
+    $shipit_base_config = $config_class::getBaseConfig(
+      static::getDefaultBranchConfig(),
+    );
     $this->assertEquals(
       $shipit_base_config->getSourceBranch(),
       $importit_base_config->getDestinationBranch(),
@@ -160,7 +308,9 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
 
   final public function testImportRepositoryNameCollision(): void {
     $config_class = static::getConfigClass();
-    $config = $config_class::getImportBaseConfig();
+    $config = $config_class::getImportBaseConfig(
+      static::getDefaultBranchConfig(),
+    );
     $this->assertNotEquals(
       $config->getSourcePath(),
       $config->getDestinationPath(),

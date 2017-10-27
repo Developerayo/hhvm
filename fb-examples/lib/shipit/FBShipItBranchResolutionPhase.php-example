@@ -1,0 +1,68 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+class FBShipItBranchResolutionPhase extends ShipItPhase {
+
+  public function __construct(
+    private classname<FBShipItConfig> $configClass,
+    private ?string $externalBranch = null,
+  ) {}
+
+  <<__Override>>
+  protected function isProjectSpecific(): bool {
+    return false;
+  }
+
+  <<__Override>>
+  public function getReadableName(): string {
+    return 'Determine branch configs';
+  }
+
+  <<__Override>>
+  public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
+    return ImmVector {
+      shape(
+        'long_name' => 'external-branch',
+        'description' => 'Only run the config for one external branch',
+        'write' => $x ==> $this->externalBranch = $x,
+      ),
+    };
+  }
+
+  protected static function getRunner(
+    classname<FBShipItConfig> $config_class,
+    FBSourceBranchConfig $branch_config,
+  ): ShipItPhaseRunner {
+    return new ShipItPhaseRunner(
+      $config_class::getBaseConfig($branch_config),
+      $config_class::getPhases($branch_config),
+    );
+  }
+
+  <<__Override>>
+  public function runImpl(ShipItBaseConfig $config): void {
+    $config_class = $this->configClass;
+    $branch_configs = $config_class::getBranchConfigs();
+    if ($this->externalBranch !== null) {
+      $branch_configs = $branch_configs->filter(
+        $branch_config ==> $branch_config['external'] == $this->externalBranch,
+      );
+      invariant(
+        $branch_configs->count() === 1,
+        'Multiple configs found for one external branch',
+      );
+    }
+    foreach ($branch_configs as $branch_config) {
+      $runner = self::getRunner($config_class, $branch_config);
+      $runner->run();
+    }
+  }
+}

@@ -1,0 +1,32 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ImportIt;
+
+use \Facebook\ShipIt\{
+  FBShipItBranchResolutionPhase,
+  FBShipItConfig,
+  ShipItPhaseRunner,
+  FBSourceBranchConfig,
+};
+
+class FBImportItBranchResolutionPhase extends FBShipItBranchResolutionPhase {
+
+  <<__Override>>
+  protected static function getRunner(
+    classname<FBShipItConfig> $config_class,
+    FBSourceBranchConfig $branch_config,
+  ): ShipItPhaseRunner {
+    return new ShipItPhaseRunner(
+      $config_class::getImportBaseConfig($branch_config),
+      $config_class::getImportPhases($branch_config),
+    );
+  }
+
+}
