@@ -18,6 +18,12 @@ final class ShipItPrepack extends FBShipItCLI {
   ): ShipItChangeset {
     return $changeset
       |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::stripPaths(
+        $$,
+        ImmVector {
+          '@xplat/prepack/DEFS@',
+        },
+      )
       |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
   }
 
