@@ -304,7 +304,7 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
       // revision that may conflict with updates.
       new ShipItCleanPhase(ShipItRepoSide::SOURCE),
       new ShipItPullPhase(ShipItRepoSide::SOURCE),
-      new FBRepoInitPhase(
+      new \Facebook\ImportIt\FBRepoInitPhase(
         ShipItRepoSide::DESTINATION,
         $static_config['internalRepo'],
       ),
