@@ -254,7 +254,13 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
   ): void {
     $diffs = ImmVector { shape('path' => $path_in, 'body' => 'junk') };
     $changeset = (new ShipItChangeset())->withDiffs($diffs);
-    $this->pathMappingCheck($changeset, $path_in, $path_expected);
+    $changeset = static::mapImport($changeset);
+    $this->pathMappingCheck(
+      $changeset,
+      $path_in,
+      $path_expected,
+      /* mapped */ true,
+    );
   }
 
   final protected function importPathMappingCheck(
