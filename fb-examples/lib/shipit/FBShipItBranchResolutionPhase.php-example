@@ -61,7 +61,7 @@ class FBShipItBranchResolutionPhase extends ShipItPhase {
       );
     }
     foreach ($branch_configs as $branch_config) {
-      $runner = self::getRunner($config_class, $branch_config);
+      $runner = static::getRunner($config_class, $branch_config);
       $runner->run();
     }
   }
