@@ -1,0 +1,127 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class FBShipItPreviewTest extends BaseTest {
+
+  // Make a string act like a file or stdin.
+  private static function streamify(string $string): resource {
+    $stream = fopen('php://memory', 'r+');
+    fwrite($stream, $string);
+    rewind($stream);
+    return $stream;
+  }
+
+  /**
+   * Close to an end-to-end test -- send input in a stream,
+   * then decode the stdout stream back into an object.
+   */
+  public function testShipItPreview(): void {
+    $data = '{
+      "arcanistProject": "phabtest1_git",
+      "changeset": {
+        "id": "deadbeef",
+        "timestamp": 12345,
+        "author": "yrahbar",
+        "subject": "Test Commit",
+        "message": "Summary:\nStuff",
+        "diffs": [
+          {"path": "public/example.php", "body": ""},
+          {"path": "facebook/filtered.txt", "body": ""}
+        ]
+      },
+      "internalBranch": "master"
+    }
+    ===END===';
+    // Capture stdout
+    ob_start();
+    (new FBShipItPreview())->shipItPreview(self::streamify($data));
+    $stdout = ob_get_contents();
+    ob_end_clean();
+    $this->assertEquals(
+      json_decode($stdout, true),
+      array(
+        shape(
+          'changeset' => shape (
+            'id' => 'deadbeef',
+            'timestamp' => 12345,
+            'author' => 'yrahbar',
+            'subject' => 'Test Commit',
+            'message' => 'Summary: Stuff',
+            'diffs' => array(
+              shape('path' => 'public/example.php', 'body' => ''),
+            ),
+          ),
+          'githubOrg' => 'facebook',
+          'githubProject' => 'phabtest1_git',
+          'commitMessage' => "Test Commit\n\nSummary: Stuff",
+          'externalBranch' => 'master',
+        ),
+        shape(
+          'changeset' => shape (
+            'id' => 'deadbeef',
+            'timestamp' => 12345,
+            'author' => 'yrahbar',
+            'subject' => 'Test Commit',
+            'message' => 'Summary: Stuff',
+            'diffs' => array(
+              shape('path' => 'subdirectory/public/example.php', 'body' => ''),
+            ),
+          ),
+          'githubOrg' => 'facebook',
+          'githubProject' => 'phabtest1_git',
+          'commitMessage' => "Test Commit\n\nSummary: Stuff",
+          'externalBranch' => 'transformed_branch',
+        ),
+      ),
+    );
+  }
+
+  public function testHandleChangeset(): void {
+    $changeset = (new ShipItChangeset())
+      ->withID('deadbeef')
+      ->withTimestamp(12345)
+      ->withAuthor('yrahbar')
+      ->withSubject('Test Commit')
+      ->withMessage("Summary:\n Stuff")
+      ->withDiffs(ImmVector {
+          shape('path' => 'public/example.php', 'body' => ''),
+          shape('path' => 'facebook/filtered.txt', 'body' => ''),
+        });
+    $result = (new FBShipItPreview())
+      ->handleChangeset('phabtest1_git', 'side_branch', $changeset);
+    $this->assertEquals(count($result), 1);
+    $this->assertEquals(
+      $result[0],
+      shape(
+        'changeset' => shape(
+          'id' => 'deadbeef',
+          'timestamp' => 12345,
+          'author' => 'yrahbar',
+          'subject' => 'Test Commit',
+          'message' => 'Summary: Stuff',
+          'diffs' => vec[
+            shape('path' => 'public/example.php', 'body' => ''),
+          ],
+        ),
+        'githubOrg' => 'facebook',
+        'githubProject' => 'phabtest1_git',
+        'commitMessage' => "Test Commit\n\nSummary: Stuff",
+        'externalBranch' => 'side_branch',
+      )
+    );
+    $diffs = $result[0]['changeset']['diffs'];
+    $this->assertEquals(count($diffs), 1);
+    $this->assertEquals(
+      $diffs[0],
+      shape('path' => 'public/example.php', 'body' => '')
+    );
+  }
+}

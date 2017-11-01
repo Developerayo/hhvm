@@ -279,7 +279,7 @@ class ShipItRepoGIT
         '--allow-empty',
         '--author', $patch->getAuthor(),
         '--date', (string) $patch->getTimestamp(),
-        '-m', $patch->getSubject()."\n\n".$patch->getMessage(),
+        '-m', self::getCommitMessage($patch),
       );
       return $this->getHEADSha();
     }

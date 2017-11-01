@@ -146,7 +146,7 @@ class ShipItRepoHG extends ShipItRepo
         'commit',
         '--user', $patch->getAuthor(),
         '--date', date('c', $patch->getTimestamp()),
-        '-m', $patch->getSubject()."\n\n".$patch->getMessage(),
+        '-m', self::getCommitMessage($patch),
       );
     } else {
       $diff = $this->renderPatch($patch);
@@ -160,11 +160,11 @@ class ShipItRepoHG extends ShipItRepo
   public function renderPatch(ShipItChangeset $patch): string {
     // Mon Sep 17 is a magic date used by format-patch to distinguish from real
     // mailboxes. cf. https://git-scm.com/docs/git-format-patch
+    $commit_message = self::getCommitMessage($patch);
     $ret = "From {$patch->getID()} Mon Sep 17 00:00:00 2001\n".
            "From: {$patch->getAuthor()}\n".
            "Date: ".date('r', $patch->getTimestamp())."\n".
-           "Subject: [PATCH] {$patch->getSubject()}\n\n".
-           "{$patch->getMessage()}\n---\n\n";
+           "Subject: [PATCH] {$commit_message}\n---\n\n";
     foreach($patch->getDiffs() as $diff) {
       $path = $diff['path'];
       $body = $diff['body'];

@@ -151,4 +151,10 @@ abstract class ShipItRepo {
       'body' => $body,
     );
   }
+
+  final public static function getCommitMessage(
+    ShipItChangeset $changeset,
+  ): string {
+    return $changeset->getSubject()."\n\n".$changeset->getMessage();
+  }
 }

@@ -1,0 +1,16 @@
+{
+  "arcanistProject": "phabtest1_git",
+  "changeset": {
+    "id": "deadbeef",
+    "timestamp": 12345,
+    "author": "yrahbar",
+    "subject": "Test Commit",
+    "message": "Summary:\nStuff",
+    "diffs": [
+      {"path": "fbcode/fboss/github/example.php", "body": ""},
+      {"path": "fbcode/opensource/shipit/src/shipit/fb-private/test_changeset.txt", "body": ""}
+    ]
+  },
+  "internalBranch": "master"
+}
+===END===
