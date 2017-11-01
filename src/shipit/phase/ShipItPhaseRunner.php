@@ -9,10 +9,10 @@
  */
 namespace Facebook\ShipIt;
 
-final class ShipItPhaseRunner {
+class ShipItPhaseRunner {
   public function __construct(
-    private ShipItBaseConfig $config,
-    private ImmVector<ShipItPhase> $phases,
+    protected ShipItBaseConfig $config,
+    protected ImmVector<ShipItPhase> $phases,
   ) {}
 
   public function run(): void {
@@ -22,7 +22,7 @@ final class ShipItPhaseRunner {
     }
   }
 
-  private function getBasicCLIArguments(): ImmVector<ShipItCLIArgument> {
+  protected function getBasicCLIArguments(): ImmVector<ShipItCLIArgument> {
     return ImmVector {
       shape(
         'short_name' => 'h',
@@ -97,7 +97,7 @@ final class ShipItPhaseRunner {
     };
   }
 
-  private function getCLIArguments(): ImmVector<ShipItCLIArgument> {
+  final protected function getCLIArguments(): ImmVector<ShipItCLIArgument> {
     $args = $this->getBasicCLIArguments()->toVector();
     foreach ($this->phases as $phase) {
       $args->addAll($phase->getCLIArguments());
@@ -127,21 +127,10 @@ final class ShipItPhaseRunner {
     return $args->toImmVector();
   }
 
-  private function parseCLIArguments(
+  final protected function parseOptions(
+    ImmVector<ShipItCLIArgument> $config,
+    array<string, mixed> $raw_opts,
   ): void {
-    $config = $this->getCLIArguments();
-
-    $raw_opts = getopt(
-      implode('', $config->map($opt ==> Shapes::idx($opt, 'short_name', ''))),
-      $config->map($opt ==> $opt['long_name']),
-    );
-
-    if (array_key_exists('h', $raw_opts) ||
-        array_key_exists('help', $raw_opts)) {
-      self::printHelp($config);
-      exit(0);
-    }
-
     foreach ($config as $opt) {
       $is_optional = substr($opt['long_name'], -2) === '::';
       $is_required = !$is_optional && substr($opt['long_name'], -1) === ':';
@@ -209,7 +198,22 @@ final class ShipItPhaseRunner {
     }
   }
 
-  private static function printHelp(
+  protected function parseCLIArguments(
+  ): void {
+    $config = $this->getCLIArguments();
+    $raw_opts = getopt(
+      implode('', $config->map($opt ==> Shapes::idx($opt, 'short_name', ''))),
+      $config->map($opt ==> $opt['long_name']),
+    );
+    if (array_key_exists('h', $raw_opts) ||
+        array_key_exists('help', $raw_opts)) {
+      self::printHelp($config);
+      exit(0);
+    }
+    $this->parseOptions($config, $raw_opts);
+  }
+
+  protected static function printHelp(
     ImmVector<ShipItCLIArgument> $config,
   ): void {
     $filename = /* UNSAFE_EXPR */ $_SERVER['SCRIPT_NAME'];

@@ -18,10 +18,9 @@ require_once(__DIR__.'/../autoload.php');
 final class RunImportIt {
   use FBShipItCLITrait;
 
-  // TODO support running from master binary
   <<__Override>>
   public static function cliMain() {
-    print "Not yet implemented.\n";
+    self::cliImportIt();
   }
 }
 

@@ -54,41 +54,27 @@ trait FBShipItCLITrait {
   }
 
   final public static function cliShipIt(
-    classname<FBShipItConfig> $config_class,
+    ?classname<FBShipItConfig> $config_class = null,
     ?string $external_branch = null,
   ): void {
     self::initForCli();
     print('--- Starting ShipIt: '.$config_class."\n");
-    $runner = new ShipItPhaseRunner(
-      new ShipItBaseConfig(
-        dirname(__DIR__),
-        'shipit',
-        'shipit',
-        ImmSet {},
-      ),
-      ImmVector {
-        new FBShipItBranchResolutionPhase($config_class, $external_branch),
-      },
+    $runner = new FBShipItProjectRunner(
+      FBShipItCLIAction::SHIP_IT,
+      $config_class,
     );
     self::executeRunner($runner);
   }
 
   final public static function cliImportIt(
-    classname<FBShipItConfig> $config_class,
+    ?classname<FBShipItConfig> $config_class = null,
     ?string $external_branch = null,
   ): void {
     self::initForCli();
     print('--- Starting ImportIt: '.$config_class."\n");
-    $runner = new ShipItPhaseRunner(
-      new ShipItBaseConfig(
-        dirname(__DIR__),
-        'shipit',
-        'shipit',
-        ImmSet {},
-      ),
-      ImmVector {
-        new FBImportItBranchResolutionPhase($config_class, $external_branch),
-      },
+    $runner = new FBShipItProjectRunner(
+      FBShipItCLIAction::IMPORT_IT,
+      $config_class,
     );
     self::executeRunner($runner);
   }

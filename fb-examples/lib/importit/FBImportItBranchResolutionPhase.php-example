@@ -19,7 +19,7 @@ use \Facebook\ShipIt\{
 class FBImportItBranchResolutionPhase extends FBShipItBranchResolutionPhase {
 
   <<__Override>>
-  protected static function getRunner(
+  public static function getRunner(
     classname<FBShipItConfig> $config_class,
     FBSourceBranchConfig $branch_config,
   ): ShipItPhaseRunner {

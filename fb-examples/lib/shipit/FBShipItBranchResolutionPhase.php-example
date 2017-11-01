@@ -9,6 +9,9 @@
  */
 namespace Facebook\ShipIt;
 
+
+use \Facebook\ShipIt\Config\{FBShipItConfigRegistry};
+
 class FBShipItBranchResolutionPhase extends ShipItPhase {
 
   public function __construct(
@@ -30,14 +33,18 @@ class FBShipItBranchResolutionPhase extends ShipItPhase {
   public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
     return ImmVector {
       shape(
-        'long_name' => 'external-branch',
+        'long_name' => 'external-branch::',
         'description' => 'Only run the config for one external branch',
         'write' => $x ==> $this->externalBranch = $x,
       ),
     };
   }
 
-  protected static function getRunner(
+  public function getConfigClass(): classname<FBShipItConfig> {
+    return $this->configClass;
+  }
+
+  public static function getRunner(
     classname<FBShipItConfig> $config_class,
     FBSourceBranchConfig $branch_config,
   ): ShipItPhaseRunner {
@@ -61,7 +68,12 @@ class FBShipItBranchResolutionPhase extends ShipItPhase {
       );
     }
     foreach ($branch_configs as $branch_config) {
-      $runner = static::getRunner($config_class, $branch_config);
+      printf(
+        "--- Running for branch: (%s, %s)\n",
+        $branch_config['internal'],
+        $branch_config['external'],
+      );
+      $runner = self::getRunner($config_class, $branch_config);
       $runner->run();
     }
   }
