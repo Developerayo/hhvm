@@ -17,6 +17,7 @@ class FBShipItBranchResolutionPhase extends ShipItPhase {
   public function __construct(
     private classname<FBShipItConfig> $configClass,
     private ?string $externalBranch = null,
+    private bool $listBranches = false,
   ) {}
 
   <<__Override>>
@@ -36,6 +37,11 @@ class FBShipItBranchResolutionPhase extends ShipItPhase {
         'long_name' => 'external-branch::',
         'description' => 'Only run the config for one external branch',
         'write' => $x ==> $this->externalBranch = $x,
+      ),
+      shape(
+        'long_name' => 'list-branches',
+        'description' => "List the external branches, and exit.",
+        'write' => $_ ==> $this->listBranches = true,
       ),
     };
   }
@@ -58,6 +64,13 @@ class FBShipItBranchResolutionPhase extends ShipItPhase {
   public function runImpl(ShipItBaseConfig $config): void {
     $config_class = $this->configClass;
     $branch_configs = $config_class::getBranchConfigs();
+    if ($this->listBranches) {
+      print("--- Listing branches:\n");
+      foreach ($branch_configs as $branch_config) {
+        printf("%s\n", $branch_config['external']);
+      }
+      exit(0);
+    }
     if ($this->externalBranch !== null) {
       $branch_configs = $branch_configs->filter(
         $branch_config ==> $branch_config['external'] == $this->externalBranch,
