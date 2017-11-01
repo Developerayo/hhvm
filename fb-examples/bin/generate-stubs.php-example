@@ -22,7 +22,7 @@ final class FBShipItGenerateStubsCLI {
         ImmSet {},
       ),
       ImmVector {
-        new ShipItGenerateStubsPhase(),
+        new ShipItGenerateConfigStubsPhase(),
       },
     );
     $runner->run();

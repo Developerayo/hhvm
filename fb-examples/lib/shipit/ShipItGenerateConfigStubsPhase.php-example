@@ -1,0 +1,202 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class ShipItGenerateConfigStubsPhase extends ShipItPhase {
+  private ?string $gitHubProject;
+  private ?string $gitHubOrg;
+  private ?bool $isPublic;
+
+  <<__Override>>
+  protected function isProjectSpecific(): bool {
+    return false;
+  }
+
+  <<__Override>>
+  final public function getReadableName(): string {
+    return 'Generating files for new project';
+  }
+
+  <<__Override>>
+  final public function getCLIArguments(): ImmVector<ShipItCLIArgument> {
+    $truthy_values = ImmSet { 'true', 't', '1', 'yes', 'y' };
+    return ImmVector {
+      shape(
+        'long_name' => 'github-org:',
+        'description' => 'The name of the GitHub org to generate files for',
+        'write' => $v ==> $this->gitHubOrg = $v,
+      ),
+      shape(
+        'long_name' => 'github-project:',
+        'description' => 'The name of the GitHub project to generate files for',
+        'write' => $v ==> $this->gitHubProject = $v,
+      ),
+      shape(
+        'long_name' => 'public:',
+        'description' => 'Whether the GitHub repo is public',
+        'write' => $v ==>
+          $this->isPublic = $truthy_values->contains(strtolower($v)),
+      ),
+    };
+  }
+
+  private static function makeCamelCase(string $name): string {
+    return $name
+      |> preg_replace('/\./', '_', $$)
+      |> preg_replace_callback(
+        '/-([a-zA-Z0-9])/',
+        $matches ==> strtoupper($matches[1]),
+        $$,
+      )
+      |> ucfirst($$);
+  }
+
+  <<__Override>>
+  final protected function runImpl(ShipItBaseConfig $config): void {
+    $github_project = $this->gitHubProject;
+    invariant($github_project !== null, 'You must pass --github-project!');
+    $github_org = $this->gitHubOrg;
+    invariant($github_org !== null, 'You must pass --github-org!');
+    $is_public = $this->isPublic;
+    invariant($is_public !== null, 'You must pass --public!');
+    $license_year = date('Y');
+    $project_class_name = self::makeCamelCase($github_org)
+      .self::makeCamelCase($github_project);
+    $test_class_name = $project_class_name.'Test';
+    $user = getenv('USER');
+
+    // Create ShipIt files (exectuable and test).
+    $bin_contents = <<<EOF
+<?hh
+/**
+ * Copyright (c) $license_year-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBCommonFilters,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+  ShipItPathFilters,
+};
+
+final class $project_class_name extends FBShipItConfig {
+  // TODO($user): Define the root path for your project.
+  // If you have more than one, you will need to update getDefaultPathMappings
+  // and remove this instead.
+  const string ROOT = '';
+
+  <<__Override>>
+  protected static function defaultProjectFilterChangeset(
+    ShipItChangeset \$changeset,
+    GetPathMappingsFn \$get_path_mappings,
+  ): ShipItChangeset {
+    return \$changeset
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::moveDirectories($$, \$get_path_mappings());
+  }
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT => '',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      // TODO($user): Update the internal repository if fbsource is not right
+      'internalRepo' => 'fbsource',
+      'githubOrg' => '$github_org',
+      'githubProject' => '$github_project',
+    );
+  }
+}
+
+EOF;
+    if ($is_public) {
+      $subpath = 'fb-specific-but-public';
+    } else {
+      $subpath = 'fb-private';
+    }
+    $config_path = $config->getBaseDirectory().
+      '/config/'.$subpath.'/'.$github_org.'/'.$github_project.'.php';
+    printf("  Generating %s\n", $config_path);
+    file_put_contents($config_path, $bin_contents);
+    (new ShipItShellCommand(
+      $config->getBaseDirectory(),
+      'hg',
+      'add',
+      $config_path,
+    ))
+      ->runSynchronously();
+
+    $test_contents = <<<EOF
+<?hh // strict
+/**
+ * Copyright (c) $license_year-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class $test_class_name extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      // TODO($user): add example path mappings to test that your ShipIt code
+      // works correctly.  If a path should be omitted from open source, map it
+      // to null.
+    };
+  }
+}
+
+EOF;
+    $test_path = $config->getBaseDirectory().
+      '/tests/config/'.$subpath.'/'.$github_org.'/'.$github_project.'Test.php';
+    printf("  Generating %s\n", $test_path);
+    file_put_contents($test_path, $test_contents);
+    (new ShipItShellCommand(
+      $config->getBaseDirectory(),
+      'hg',
+      'add',
+      $test_path,
+    ))
+      ->runSynchronously();
+
+    // Finally, update the autoload maps.
+    printf("  Updating autoload.php\n");
+    (new ShipItShellCommand(
+      $config->getBaseDirectory(),
+      'php',
+      'bin/generate-autoload-map.php',
+    ))
+      ->runSynchronously();
+
+    printf("  Updating tagit/autoload.php\n");
+    (new ShipItShellCommand(
+      $config->getBaseDirectory(),
+      'php',
+      '../tagit/bin/generate-autoload-map.php',
+    ))
+      ->runSynchronously();
+  }
+}
