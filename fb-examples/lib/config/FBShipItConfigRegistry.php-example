@@ -11,25 +11,42 @@ namespace Facebook\ShipIt\Config;
 
 use \Facebook\ShipIt\ {
   FBShipItConfig,
+  ShipItGenerateConfigStubsPhase,
 };
 
-class FBShipItConfigRegistry {
+final class FBShipItConfigRegistry {
 
     private static ?ImmSet<classname<FBShipItConfig>>
       $config_classes = null;
 
+    private static function makeCamelCase(string $name): string {
+      return $name
+        |> preg_replace_callback(
+          '/[-_\.]([a-zA-Z0-9])/',
+          $matches ==> strtoupper($matches[1]),
+          $$,
+        )
+        |> ucfirst($$);
+    }
+
     /**
      * 'facebook/fbshipit' => 'Facebook\ShipIt\Config\FacebookFbshipit'
      */
-    private static function getClassName(
+    final public static function getClassName(
       string $org,
-      string $repo
+      string $repo,
+      bool $include_namespace = false,
     ): classname<FBShipItConfig> {
       invariant(strlen($org) > 0, 'Org cannot be empty');
       invariant(strlen($repo) > 0, 'Repo cannot be empty');
+      $prefix = '';
+      if ($include_namespace) {
+        $prefix = 'Facebook\\ShipIt\\Config\\';
+      }
       /* HH_IGNORE_ERROR[4110]: dynamic classname generation */
-      return 'Facebook\\ShipIt\\Config\\'.
-        ucfirst(strtolower($org)).ucfirst(strtolower($repo));
+      return $prefix.
+        self::makeCamelCase(strtolower($org)).
+        self::makeCamelCase(strtolower($repo));
     }
 
     public static function loadConfigClasses(
@@ -49,6 +66,7 @@ class FBShipItConfigRegistry {
         $class_name = self::getClassName(
           basename(dirname($filename)),
           basename($filename, '.php'),
+          /* include_namespace */ true,
         );
         $config_classes[] = $class_name;
       }
@@ -72,7 +90,11 @@ class FBShipItConfigRegistry {
         $config_classes = self::loadConfigClasses();
         self::$config_classes = $config_classes;
       }
-      $class_name = self::getClassName($org, $repo);
+      $class_name = self::getClassName(
+        $org,
+        $repo,
+        /* include_namespace */ true,
+      );
       invariant(
         $config_classes->contains($class_name),
         'Unknown repo: %s/%s',

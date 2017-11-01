@@ -9,6 +9,8 @@
  */
 namespace Facebook\ShipIt;
 
+use \Facebook\ShipIt\Config\FBShipItConfigRegistry;
+
 final class ShipItGenerateConfigStubsPhase extends ShipItPhase {
   private ?string $gitHubProject;
   private ?string $gitHubOrg;
@@ -47,17 +49,6 @@ final class ShipItGenerateConfigStubsPhase extends ShipItPhase {
     };
   }
 
-  private static function makeCamelCase(string $name): string {
-    return $name
-      |> preg_replace('/\./', '_', $$)
-      |> preg_replace_callback(
-        '/-([a-zA-Z0-9])/',
-        $matches ==> strtoupper($matches[1]),
-        $$,
-      )
-      |> ucfirst($$);
-  }
-
   <<__Override>>
   final protected function runImpl(ShipItBaseConfig $config): void {
     $github_project = $this->gitHubProject;
@@ -67,8 +58,10 @@ final class ShipItGenerateConfigStubsPhase extends ShipItPhase {
     $is_public = $this->isPublic;
     invariant($is_public !== null, 'You must pass --public!');
     $license_year = date('Y');
-    $project_class_name = self::makeCamelCase($github_org)
-      .self::makeCamelCase($github_project);
+    $project_class_name = FBShipItConfigRegistry::getClassName(
+      $github_org,
+      $github_project,
+    );
     $test_class_name = $project_class_name.'Test';
     $user = getenv('USER');
 
