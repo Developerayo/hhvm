@@ -86,7 +86,7 @@ class FBShipItBranchResolutionPhase extends ShipItPhase {
         $branch_config['internal'],
         $branch_config['external'],
       );
-      $runner = self::getRunner($config_class, $branch_config);
+      $runner = static::getRunner($config_class, $branch_config);
       $runner->run();
     }
   }
