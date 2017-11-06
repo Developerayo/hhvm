@@ -42,7 +42,7 @@ final class ShipItDuckling extends FBShipItCLI {
   public static function getStaticConfig(): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => 'si_sigma',
-      'githubOrg' => 'facebookincubator',
+      'githubOrg' => 'facebook',
       'githubProject' => 'duckling',
     );
   }
