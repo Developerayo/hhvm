@@ -31,6 +31,14 @@ final class ShipItMetroBundler extends FBShipItCLI {
             },
           ),
         )
+      |> ShipItPathFilters::rewritePaths(
+          $$,
+          $path ==> preg_replace(
+            '@/\.github\.flowconfig$@',
+            '/.flowconfig',
+            $path,
+          ),
+        )
       |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
   }
 

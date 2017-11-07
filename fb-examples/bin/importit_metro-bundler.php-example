@@ -11,8 +11,31 @@ namespace Facebook\ImportIt;
 
 require_once(__DIR__.'/../autoload.php');
 
+use \Facebook\ShipIt\ {
+  ShipItChangeset
+};
+
 final class ImportItMetroBundler extends FBImportItCLI {
   const type TShipIt = \Facebook\ShipIt\ShipItMetroBundler;
+
+  <<__Override>>
+  protected static function projectFilterChangeset(
+    ShipItChangeset $changeset
+  ): ShipItChangeset {
+    $shipit_class = static::getShipItClass();
+    return $changeset
+      |> \Facebook\ShipIt\ShipItPathFilters::rewritePaths(
+          $$,
+          $path ==> preg_replace(
+            '@(^|/)\.flowconfig$@',
+            '\1.github.flowconfig',
+            $path,
+          ),
+        )
+      |> parent::projectFilterChangeset(
+        $$,
+      );
+  }
 }
 
 // Allow require() from unit test
