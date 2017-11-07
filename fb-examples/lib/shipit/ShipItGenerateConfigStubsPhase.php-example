@@ -130,6 +130,10 @@ EOF;
     $config_path = $config->getBaseDirectory().
       '/config/'.$subpath.'/'.$github_org.'/'.$github_project.'.php';
     printf("  Generating %s\n", $config_path);
+    $config_dir = dirname($config_path);
+    if (!file_exists($config_dir)) {
+      mkdir($config_dir, /* mode */ 0777, /* recursive */ true);
+    }
     file_put_contents($config_path, $bin_contents);
     (new ShipItShellCommand(
       $config->getBaseDirectory(),
@@ -166,6 +170,10 @@ EOF;
     $test_path = $config->getBaseDirectory().
       '/tests/config/'.$subpath.'/'.$github_org.'/'.$github_project.'Test.php';
     printf("  Generating %s\n", $test_path);
+    $test_dir = dirname($test_path);
+    if (!file_exists($test_dir)) {
+      mkdir($test_dir, /* mode */ 0777, /* recursive */ true);
+    }
     file_put_contents($test_path, $test_contents);
     (new ShipItShellCommand(
       $config->getBaseDirectory(),
