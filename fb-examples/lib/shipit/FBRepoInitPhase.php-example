@@ -175,8 +175,9 @@ final class FBRepoInitPhase extends ShipItPhase {
         break;
       case 'si_sigma':
         return ImmVector {
-          '/usr/local/bin/fbclone',
-          'si_sigma',
+          '/usr/local/bin/hg-clone-si_sigma',
+          '--no-working-dir',
+          '--simple',
         };
       case 'phabtest1_git':
         return ImmVector {
