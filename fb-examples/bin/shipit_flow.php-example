@@ -87,6 +87,7 @@ final class ShipItFlow extends FBShipItCLI {
             '@fbcode/hphp/hack/src/utils/collections/@',
             '@fbcode/hphp/hack/src/utils/disk/@',
             '@fbcode/hphp/hack/src/utils/hh_json/@',
+            '@fbcode/hphp/hack/src/utils/sys/@',
           }),
         )
       |> ShipItPathFilters::moveDirectories($$, static::getPathMappings())
