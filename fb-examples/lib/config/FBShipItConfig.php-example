@@ -362,4 +362,26 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
       () ==> static::getDefaultPathMappings(),
     );
   }
+
+  /**
+   * Heuristic to determine the branch used when landing a diff.
+   * By default, it returns the 'master' branch.
+   * If your project does not ship from the master branch,
+   * you must override this yourself.
+   * If your project does not ship from the branch that diffs 'arc land'
+   * onto, then override this method to return null.
+   */
+  public static function getLandBranch(): ?string {
+    $internal_branches = static::getBranchConfigs()
+      ->map($branch_config ==> $branch_config['internal'])
+      ->toSet();
+    invariant(
+      $internal_branches->contains('master'),
+      'Branch setup without master detected! You must override '.
+      'getLandBranch to return the default diff land branch for your '.
+      'project, or null if your project does not ship from the diff land '.
+      'branch.',
+    );
+    return 'master';
+  }
 }

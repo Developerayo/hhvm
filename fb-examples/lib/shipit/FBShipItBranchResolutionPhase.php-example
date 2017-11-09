@@ -80,6 +80,10 @@ class FBShipItBranchResolutionPhase extends ShipItPhase {
     $config_class = $this->configClass;
     $branch_configs = $this->getBranchConfigs();
     if ($this->listBranches) {
+      $land_branch = $config_class::getLandBranch();
+      if ($land_branch !== null) {
+        printf("--- Land branch:\n%s\n", $land_branch);
+      }
       print("--- Listing branches:\n");
       foreach ($branch_configs as $branch_config) {
         printf("%s\n", $branch_config['external']);

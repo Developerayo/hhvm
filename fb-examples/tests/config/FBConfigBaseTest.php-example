@@ -345,4 +345,16 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
       $this->importPathMappingCheck($changeset, $dest, $rev_file);
     }
   }
+
+  final public function testGetLandBranch(): void {
+    $config_class = static::getConfigClass();
+    $land_branch = $config_class::getLandBranch();
+    if ($land_branch !== null) {
+        $this->assertContains(
+          $land_branch,
+          $config_class::getBranchConfigs()->map($bc ==> $bc['internal']),
+          'Arc land branch '.$land_branch.' not found in branch configs!',
+        );
+    }
+  }
 }
