@@ -19,6 +19,15 @@ use \Facebook\ShipIt\{
 class FBImportItBranchResolutionPhase extends FBShipItBranchResolutionPhase {
 
   <<__Override>>
+  public function getBranchConfigs(): ImmVector<FBSourceBranchConfig> {
+    invariant(
+      $this->externalBranch !== null,
+      'ImportIt must always run on a single external branch',
+    );
+    return parent::getBranchConfigs();
+  }
+
+  <<__Override>>
   public static function getRunner(
     classname<FBShipItConfig> $config_class,
     FBSourceBranchConfig $branch_config,

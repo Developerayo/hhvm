@@ -22,11 +22,15 @@ final class FBShipItProjectRunner extends ShipItPhaseRunner {
   public function __construct(
     private FBShipItCLIAction $action,
     private ?classname<FBShipItConfig> $config_class = null,
+    private ?string $external_branch = null,
   ) {
     $config =
       new ShipItBaseConfig(dirname(__DIR__), 'shipit', 'shipit', ImmSet {});
     if ($config_class !== null) {
-      parent::__construct($config, self::getPhases($action, $config_class));
+      parent::__construct(
+        $config,
+        self::getPhases($action, $config_class, $external_branch),
+      );
     } else {
       parent::__construct($config, ImmVector {});
     }
@@ -61,21 +65,31 @@ final class FBShipItProjectRunner extends ShipItPhaseRunner {
             "\n"
           );
           $this->config_class = $config_class;
-          $this->phases = self::getPhases($this->action, $config_class);
+          $this->phases = self::getPhases(
+            $this->action,
+            $config_class,
+            $this->external_branch,
+          );
         },
       ),
     };
   }
 
+  <<TestsBypassVisibility>>
   private static function getPhases(
     FBShipItCLIAction $action,
     classname<FBShipItConfig> $config_class,
+    ?string $external_branch,
   ): ImmVector<ShipItPhase> {
     switch ($action) {
       case FBShipItCLIAction::SHIP_IT:
-        return ImmVector { new FBShipItBranchResolutionPhase($config_class) };
+        return ImmVector {
+          new FBShipItBranchResolutionPhase($config_class, $external_branch),
+        };
       case FBShipItCLIAction::IMPORT_IT:
-        return ImmVector { new FBImportItBranchResolutionPhase($config_class) };
+        return ImmVector {
+          new FBImportItBranchResolutionPhase($config_class, $external_branch),
+        };
     }
   }
 

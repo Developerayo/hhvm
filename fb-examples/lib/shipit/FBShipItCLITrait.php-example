@@ -75,6 +75,7 @@ trait FBShipItCLITrait {
     $runner = new FBShipItProjectRunner(
       FBShipItCLIAction::IMPORT_IT,
       $config_class,
+      $external_branch,
     );
     self::executeRunner($runner);
   }
