@@ -43,14 +43,6 @@ final class ShipItCaffe2 extends FBShipItCLI {
   public static function getSubmoduleMappings(): ImmMap<string, string> {
     return ImmMap {
       self::ROOT.'submodules/NNPACK-rev.txt' => 'third_party/NNPACK',
-      self::ROOT.'submodules/NNPACK_deps/FP16-rev.txt' =>
-        'third_party/NNPACK_deps/FP16',
-      self::ROOT.'submodules/NNPACK_deps/FXdiv-rev.txt' =>
-        'third_party/NNPACK_deps/FXdiv',
-      self::ROOT.'submodules/NNPACK_deps/psimd-rev.txt' =>
-        'third_party/NNPACK_deps/psimd',
-      self::ROOT.'submodules/NNPACK_deps/pthreadpool-rev.txt' =>
-        'third_party/NNPACK_deps/pthreadpool',
       self::ROOT.'submodules/android-cmake-rev.txt' =>
         'third_party/android-cmake',
       self::ROOT.'submodules/aten-rev.txt' => 'third_party/aten',
@@ -65,6 +57,7 @@ final class ShipItCaffe2 extends FBShipItCLI {
       self::ROOT.'submodules/nervanagpu-rev.txt' => 'third_party/nervanagpu',
       self::ROOT.'submodules/protobuf-rev.txt' => 'third_party/protobuf',
       self::ROOT.'submodules/pybind11-rev.txt' => 'third_party/pybind11',
+      self::ROOT.'submodules/zstd-rev.txt' => 'third_party/zstd',
     };
   }
 
