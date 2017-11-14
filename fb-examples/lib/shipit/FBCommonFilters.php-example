@@ -200,7 +200,7 @@ final class FBCommonFilters {
   ): ShipItChangeset {
     return $changeset->withMessage(
       preg_replace(
-        '/@override-unit-failures/',
+        '/(@override-unit-failures)|(@build\[.*\])/',
         '',
         $changeset->getMessage(),
       ),
