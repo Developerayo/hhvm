@@ -41,6 +41,8 @@ final class RelayTest extends FBPublicProjectBaseTest {
         'packages/relay-compiler/XYZ.js',
       self::RELAY_OSS.'/relay-runtime/XYZ.js' =>
         'packages/relay-runtime/XYZ.js',
+      self::RELAY_OSS.'/relay-test-utils/MockEnvironment.js' =>
+        'packages/relay-test-utils/MockEnvironment.js',
 
       // Special cases
       self::RELAY_OSS.'/README.md' =>

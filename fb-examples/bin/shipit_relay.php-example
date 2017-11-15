@@ -21,6 +21,7 @@ final class ShipItRelay extends FBShipItCLI {
   const REACT_RELAY = self::RELAY_OSS.'react-relay/';
   const RELAY_COMPILER = self::RELAY_OSS.'relay-compiler/';
   const RELAY_RUNTIME = self::RELAY_OSS.'relay-runtime/';
+  const RELAY_TEST_UTILS = self::RELAY_OSS.'relay-test-utils/';
 
   <<__Override>>
   protected static function projectFilterChangeset(
@@ -51,6 +52,7 @@ final class ShipItRelay extends FBShipItCLI {
       self::REACT_RELAY => 'packages/react-relay/',
       self::RELAY_COMPILER => 'packages/relay-compiler/',
       self::RELAY_RUNTIME => 'packages/relay-runtime/',
+      self::RELAY_TEST_UTILS => 'packages/relay-test-utils/',
     };
   }
 
