@@ -1,0 +1,64 @@
+<?hh
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+require_once(__DIR__.'/../autoload.php');
+
+final class ShipItOpenr extends FBShipItCLI {
+  use FBCodeBuilderTrait;
+
+  <<__Override>>
+  protected static function getFBCodeBuilderDependencies(): ImmSet<string> {
+    return ImmSet {
+      'folly',
+      'fbthrift',
+      'fbzmq',
+      'wangle',
+    };
+  }
+
+  <<__Override>>
+  protected static function projectFilterChangesetNonFBCodeBuilder(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return $changeset
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  }
+
+  <<__Override>>
+  protected static function getFBCodeBuilderTravisConfig(
+  ): string {
+    return 'fbcode/openr/public_tld/.travis.yml';
+  }
+
+  <<__Override>>
+    public static function getPathMappingsNonFBCodeBuilder(
+    ): ImmMap<string, string> {
+    return ImmMap {
+      'fbcode/openr/public_tld/' => '',
+      'fbcode/openr/' => 'openr/',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'openr',
+    );
+  }
+}
+
+// Allow require() from unit test
+if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  ShipItOpenr::cliMain();
+}
