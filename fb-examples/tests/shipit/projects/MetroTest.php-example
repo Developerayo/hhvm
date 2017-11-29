@@ -1,0 +1,42 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+
+final class MetroTest extends FBPublicProjectBaseTest {
+  const string ROOT =
+    'xplat/js/metro';
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return true;
+  }
+
+  <<__Override>>
+  protected static function map(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItMetro::filterChangeset(
+      $changeset,
+    );
+  }
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      self::ROOT.'/foo.js' => 'foo.js',
+      self::ROOT.'/.github.flowconfig' => '.flowconfig',
+      self::ROOT.'/packages/metro/foo.js' =>
+        'packages/metro/foo.js',
+      'react-native-github/packager/src/index.js' => null,
+      'xplat/js/react-native-github/Libraries/View.js' => null,
+    };
+  }
+}
