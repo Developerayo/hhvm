@@ -14,6 +14,8 @@ final class ShipItFboss extends FBShipItCLI {
       $changeset,
       ImmVector {
         '@.*facebook.*@',
+        '@fbcode/fboss/agent/hw/bf.*@',
+        '@fbcode/fboss/agent/platforms/bf_wedge.*@',
         '@fbcode/fboss/THIRD-PARTY-VERSIONS@',
         '@.*tphacks.*@',
       },
