@@ -120,6 +120,13 @@ final class FBRepoInitPhase extends ShipItPhase {
           '--no-working-dir',
           '--simple',
         };
+      case 'pse-demos':
+        return ImmVector {
+          '/usr/bin/git',
+          'clone',
+          'ssh://projects.git.vip.facebook.com/data/gitrepos/pse-demos',
+          'pse-demos',
+        };
       case 'opsfiles':
         return ImmVector {
           '/usr/local/bin/hg-clone-opsfiles',
