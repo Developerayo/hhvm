@@ -98,7 +98,7 @@ class ShipItSync {
     }
 
     $patches_dir = $this->syncConfig->getPatchesDirectory();
-    if ($patches_dir !== null) {
+    if ($patches_dir !== null && !file_exists($patches_dir)) {
       mkdir($patches_dir, 0755, /* recursive = */ true);
     }
 
@@ -107,7 +107,11 @@ class ShipItSync {
     $changesets_applied = Vector {};
     foreach ($changesets as $changeset) {
       if ($patches_dir !== null) {
-        $file = $patches_dir.'/'.$changeset->getID().'.patch';
+        $file = $patches_dir.'/'.$this->baseConfig->getDestinationBranch().'-'.
+          $changeset->getID().'.patch';
+        if (file_exists($file)) {
+          printf("Overwriting patch file: %s\n", $file);
+        }
         file_put_contents($file, $dest->renderPatch($changeset));
         $changeset = $changeset->withDebugMessage(
           'Saved patch file: %s',
