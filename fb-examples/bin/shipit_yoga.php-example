@@ -13,7 +13,7 @@ require_once(__DIR__.'/../autoload.php');
 
 
 final class ShipItYoga extends FBShipItCLI {
-  const string ROOT = 'fbobjc/xplat/yoga/';
+  const string ROOT = 'xplat/yoga/';
 
   <<__Override>>
   protected static function projectFilterChangeset(
