@@ -1,0 +1,38 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class Caffe2ReinforcementLearningModelsTest extends FBConfigBaseTest {
+  const string ROOT = 'fbcode/ml/rl/';
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      self::ROOT => 'ml/rl/',
+      self::ROOT.'docs/' => '',
+      self::ROOT.'docs/README.md' => 'README.md',
+
+      self::ROOT.'test/gym/open_ai_gym_environment.py' =>
+        'ml/rl/test/gym/open_ai_gym_environment.py',
+      self::ROOT.'training/discrete_action_predictor.py' =>
+        'ml/rl/training/discrete_action_predictor.py',
+
+      self::ROOT.'TARGETS' => null,
+      self::ROOT.'training/continuous_action_trainer.py' => null,
+      self::ROOT.'training/continuous_action_predictor.py' => null,
+      self::ROOT.'training/two_tower_trainer.py' => null,
+      self::ROOT.'training/knn_engine.py' => null,
+      self::ROOT.'test/legacy/' => null,
+      self::ROOT.'test/legacy/run_rl_gym.py' => null,
+      self::ROOT.'test/legacy/rlmodels/' => null,
+      self::ROOT.'test/legacy/rlmodels/rlmodel_base.py' => null,
+    };
+  }
+}
