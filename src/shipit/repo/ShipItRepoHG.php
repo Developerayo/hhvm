@@ -441,10 +441,16 @@ class ShipItRepoHG extends ShipItRepo
      * generate a command that is larger than the maximum length
      * allowed by the system, so, exec() won't actually execute.
      *
+     * In the case of zero files passed, assume that means we're exporting
+     * the root, otherwise archive will fail.
+     *
      * Example diff:
      *   rFBSed54f611dc0aebe17010b3416e64549d95ee3a49
      *   ... which is https://github.com/facebook/nuclide/commit/2057807d2653dd1af359f44f658eadac6eaae34b
      */
+    if ($files->count() === 0) {
+      $files = ImmSet { '.' };
+    }
     $patterns = $files->map(
       $file ==> 'path:'.$file,
     );
@@ -468,6 +474,7 @@ class ShipItRepoHG extends ShipItRepo
     $this->hgPipeCommand(
       $patterns,
       'archive',
+      '--config', 'ui.archivemeta=False',
       '-r', $rev,
       '-I', 'listfile:/dev/stdin',
       $path,
