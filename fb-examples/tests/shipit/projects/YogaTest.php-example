@@ -11,7 +11,7 @@ namespace Facebook\ShipIt;
 
 
 final class YogaTest extends FBPublicProjectBaseTest {
-  const string ROOT = 'xplat/yoga';
+  const string ROOT = 'fbobjc/xplat/yoga';
 
   <<__Override>>
   protected function removesSummariesByDefault(): bool {
