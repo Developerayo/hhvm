@@ -24,7 +24,7 @@ final class PrepackTest extends FBPublicProjectBaseTest {
       'xplat/prepack/facebook/file' => null,
       'xplat/prepack/BUCK' => null,
       'xplat/prepack/TARGETS' => null,
-      'xplat/prepack/DEFS' => null,
+      'xplat/prepack/DEFS.bzl' => null,
     };
   }
 

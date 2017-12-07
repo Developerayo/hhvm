@@ -21,7 +21,7 @@ final class ShipItPrepack extends FBShipItCLI {
       |> ShipItPathFilters::stripPaths(
         $$,
         ImmVector {
-          '@xplat/prepack/DEFS@',
+          '@xplat/prepack/DEFS.bzl@',
         },
       )
       |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
