@@ -66,8 +66,8 @@ final class ShipItChefCookbooks extends FBShipItCLI{
   ): ShipItChangeset {
     return $changeset->withMessage(
       preg_replace(
-        "/^\s*chef_test_hosts:.*$/m",
-        '',
+        "/^((?:Summary|Test Plan):.*)\s*chef_test_hosts:.*$/m",
+        '${1}',
         $changeset->getMessage(),
       ),
     );
