@@ -1,0 +1,31 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class OculusExtPlatformFrameworksAvTest extends FBPublicProjectBaseTest {
+  <<__Override>>
+  protected static function map(ShipItChangeset $changeset): ShipItChangeset {
+    return ShipItOculusExtPlatformFrameworksAv::filterChangeset($changeset);
+  }
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'CleanSpec.mk' => 'CleanSpec.mk',
+      'include/camera/Camera.h' => 'include/camera/Camera.h',
+      'NOTICE' => 'NOTICE',
+    };
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return false;
+  }
+}
