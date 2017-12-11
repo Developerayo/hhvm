@@ -27,6 +27,7 @@ final class ShipItCaffe2 extends FBShipItCLI {
           '@(^|/)fb_protobuf.sh@', /** Caffe2 fb protobuf script **/
           '@\.hgsparse-caffe2-dev@', /** Caffe2 hg sparse configs **/
           '@\.hgsparse-caffe2-xplat@', /** Caffe2 hg sparse configs **/
+          '@(^|/)detectron(/|$)@', /** detectron code will be oss later. **/
         }
       )
       |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
