@@ -7,16 +7,25 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-require_once (__DIR__.'/../autoload.php');
+use \Facebook\ShipIt\{
+  FBCommonFilters,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  FBSourceBranchConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+  ShipItPathFilters,
+};
 
-final class ShipItAugmentedTrafficControl extends FBShipItCLI {
+final class FacebookAugmentedTrafficControl extends FBShipItConfig {
   const string ROOT = 'fbcode/pe_dev_infra/atc/';
 
   <<__Override>>
-  protected static function projectFilterChangeset(
+  protected static function defaultProjectFilterChangeset(
     ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
   ): ShipItChangeset {
     return $changeset
       |> FBCommonFilters::applyAll($$)
@@ -27,11 +36,11 @@ final class ShipItAugmentedTrafficControl extends FBShipItCLI {
           '@^chef@', // ignore upstream/downstream chef files
         },
       )
-      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+      |> ShipItPathFilters::moveDirectories($$, $get_path_mappings());
   }
 
   <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       self::ROOT.'github/' => '',
       self::ROOT.'src/' => 'src/',
@@ -41,10 +50,13 @@ final class ShipItAugmentedTrafficControl extends FBShipItCLI {
   }
 
   <<__Override>>
-  public static function getBaseConfig(): ShipItBaseConfig {
-    return parent::getBaseConfig()
-      ->withSourceBranch('master')
-      ->withDestinationBranch('golang');
+  public static function getBranchConfigs(): ImmVector<FBSourceBranchConfig> {
+    return ImmVector {
+      shape(
+        'internal' => 'master',
+        'external' => 'golang',
+      ),
+    };
   }
 
   <<__Override>>
@@ -55,9 +67,4 @@ final class ShipItAugmentedTrafficControl extends FBShipItCLI {
       'githubProject' => 'augmented-traffic-control',
     );
   }
-}
-
-// Allow require() from unit test
-if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItAugmentedTrafficControl::cliMain();
 }
