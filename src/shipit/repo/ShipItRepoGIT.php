@@ -322,6 +322,7 @@ class ShipItRepoGIT
         $this->gitCommand(
           'submodule',
           'add',
+          '-f',
           '--name', $submodule['name'],
           $submodule['url'],
           $submodule['path'],
