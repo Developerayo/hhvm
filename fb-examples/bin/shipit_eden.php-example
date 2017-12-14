@@ -35,6 +35,7 @@ final class ShipItEden extends FBShipItCLI {
   public static function getPathMappings(): ImmMap<string, string> {
     return ImmMap {
       'fbcode/eden/oss/external/TARGETS.oss' => 'external/TARGETS',
+      'fbcode/eden/oss/.buckconfig.opensource' => '.buckconfig',
       'fbcode/eden/oss/' => '',
       'fbcode/eden/' => 'eden/',
       'fbcode/fboss/common/' => 'common/',

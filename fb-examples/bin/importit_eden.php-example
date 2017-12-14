@@ -37,6 +37,7 @@ final class ImportItEden extends FBImportItCLI {
   public static function getPathMappings(): ImmMap<string, string> {
     return ImmMap {
       'external/TARGETS' => 'fbcode/eden/oss/external/TARGETS.oss',
+      '.buckconfig' => 'fbcode/eden/oss/.buckconfig.opensource',
       'eden/' => 'fbcode/eden/',
       'common/' => 'fbcode/fboss/common/',
       '' => 'fbcode/eden/oss/',

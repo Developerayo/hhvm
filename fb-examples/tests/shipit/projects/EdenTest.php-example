@@ -48,7 +48,7 @@ final class EdenTest extends FBPublicProjectBaseTest {
 
       # Other contents of eden/oss should end up in the root.
       'fbcode/eden/oss/README.md' => 'README.md',
-      'fbcode/eden/oss/.buckconfig' => '.buckconfig',
+      'fbcode/eden/oss/.buckconfig.opensource' => '.buckconfig',
 
       # We use the same common/ stub files as fboss, and publish them
       # from the fboss directory.
