@@ -7,16 +7,25 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-require_once(__DIR__.'/../autoload.php');
+use \Facebook\ShipIt\ {
+  FBCommonFilters,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  FBSourceBranchConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+  ShipItPathFilters,
+};
 
-final class ShipItDuckling extends FBShipItCLI {
+final class FacebookDuckling extends FBShipItConfig {
   const string ROOT = 'duckling/';
 
   <<__Override>>
-  protected static function projectFilterChangeset(
+  protected static function defaultProjectFilterChangeset(
     ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
   ): ShipItChangeset {
     return $changeset
       |> FBCommonFilters::applyAll($$)
@@ -26,11 +35,28 @@ final class ShipItDuckling extends FBShipItCLI {
             '@^'.self::ROOT.'Duckling/Engine/Regex.hs@',
           },
         )
-      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+      |> ShipItPathFilters::moveDirectories($$, $get_path_mappings());
   }
 
   <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  protected static function projectImportChangeset(
+    ShipItChangeset $changeset,
+    FBSourceBranchConfig $branch_config,
+  ): \Facebook\ShipIt\ShipItChangeset {
+    return $changeset
+      |> \Facebook\ShipIt\ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> str_replace(
+          'Duckling/Engine/Regex.hs',
+          'github/Duckling/Engine/Regex.hs',
+          $path,
+        ),
+      )
+      |> parent::projectImportChangeset($$, $branch_config);
+  }
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       self::ROOT.'github/Duckling/Engine/Regex.hs' =>
         'Duckling/Engine/Regex.hs',
@@ -46,9 +72,4 @@ final class ShipItDuckling extends FBShipItCLI {
       'githubProject' => 'duckling',
     );
   }
-}
-
-// Allow require() from unit test
-if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItDuckling::cliMain();
 }
