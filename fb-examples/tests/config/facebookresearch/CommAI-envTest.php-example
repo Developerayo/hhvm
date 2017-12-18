@@ -1,0 +1,22 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookresearchCommaiEnvTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/experimental/commai/env/README' => 'README',
+      'fbcode/experimental/commai/env/src/run_tournament.py' => 'src/run_tournament.py',
+      'fbcode/experimental/foo' => null,
+      'fbcode/experimental/commai/env/src/experimental/__init__.py' => null,
+    };
+  }
+}
