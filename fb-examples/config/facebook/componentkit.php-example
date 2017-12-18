@@ -7,24 +7,32 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-require_once(__DIR__.'/../autoload.php');
+use \Facebook\ShipIt\ {
+  FBCommonFilters,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+  ShipItPathFilters,
+};
 
-final class ShipItComponentkit extends FBShipItCLI {
+final class FacebookComponentkit extends FBShipItConfig {
   const string ROOT = 'fbobjc/VendorLib/ComponentKit/src/';
 
   <<__Override>>
-  protected static function projectFilterChangeset(
+  protected static function defaultProjectFilterChangeset(
     ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
   ): ShipItChangeset {
     return $changeset
-    |> FBCommonFilters::applyAll($$)
-    |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::moveDirectories($$, $get_path_mappings());
   }
 
   <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       self::ROOT => '',
     };
@@ -49,9 +57,4 @@ final class ShipItComponentkit extends FBShipItCLI {
       'githubProject' => 'componentkit',
     );
   }
-}
-
-// Allow require() from unit test
-if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItComponentkit::cliMain();
 }
