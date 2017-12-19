@@ -22,6 +22,7 @@ final class MononokeTest extends FBPublicProjectBaseTest {
       'fbcode/common/rust/async-compression/src/lib.rs' =>
         'async-compression/src/lib.rs',
       'fbcode/common/rust/asyncmemo/src/lib.rs' => 'asyncmemo/src/lib.rs',
+      'fbcode/common/rust/bytes-ext/src/lib.rs' => 'bytes-ext/src/lib.rs',
       'fbcode/common/rust/futures-ext/src/lib.rs' => 'futures-ext/src/lib.rs',
       'fbcode/common/rust/utils/py_tar_utils/foo.py' => 'py_tar_utils/foo.py',
       'fbcode/common/rust/scribe/src/lib.rs' => null,
