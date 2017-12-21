@@ -30,6 +30,7 @@ final class ShipItBuckit extends FBShipItCLI {
             $$,
             ImmVector {
               '@infra_macros/macro_lib/convert/java.*\.py@',
+              '@infra_macros/fbcode_macros/.buckconfig@',
             })
         |> ShipItPathFilters::rewritePaths(
           $$,
