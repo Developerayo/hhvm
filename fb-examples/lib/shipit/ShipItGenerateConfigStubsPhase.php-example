@@ -94,16 +94,6 @@ final class $project_class_name extends FBShipItConfig {
   const string ROOT = '';
 
   <<__Override>>
-  protected static function defaultProjectFilterChangeset(
-    ShipItChangeset \$changeset,
-    GetPathMappingsFn \$get_path_mappings,
-  ): ShipItChangeset {
-    return \$changeset
-      |> FBCommonFilters::applyAll($$)
-      |> ShipItPathFilters::moveDirectories($$, \$get_path_mappings());
-  }
-
-  <<__Override>>
   public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       self::ROOT => '',

@@ -35,10 +35,14 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
   public abstract static function getDefaultPathMappings(
   ): ImmMap<string, string>;
 
-  protected abstract static function defaultProjectFilterChangeset(
+  protected static function defaultProjectFilterChangeset(
     ShipItChangeset $changeset,
     GetPathMappingsFn $get_path_mappings,
-  ): ShipItChangeset;
+  ): ShipItChangeset {
+    return $changeset
+      |> FBCommonFilters::applyAll($$)
+      |> ShipItPathFilters::moveDirectories($$, $get_path_mappings());
+  }
 
   // Public so that you can add a unit test
   final public static function filterChangeset(
