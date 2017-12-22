@@ -13,12 +13,16 @@ final class RsocketRsocketCppTest extends FBConfigBaseTest {
   <<__Override>>
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
-      'fbcode/rsocket/' => '',
-      'fbcode/rsocket/file' => 'file',
+      'fbcode/rsocket/' => 'rsocket/',
+      'fbcode/rsocket/file' => 'rsocket/file',
       'fbcode/yarpl/' => 'yarpl/',
       'fbcode/yarpl/hello' => 'yarpl/hello',
-      'fbcode/rsocket/examples' => 'examples',
-      'fbcode/rsocket/framing' => 'framing',
+      'fbcode/rsocket/examples/' => 'examples/',
+      'fbcode/rsocket/test/' => 'test/',
+      'fbcode/rsocket/tck-test/' => 'tck-test/',
+      'fbcode/rsocket/benchmarks/' => 'benchmarks/',
+      'fbcode/rsocket/framing/' => 'rsocket/framing/',
+      'fbcode/rsocket/public_tld/CMakeLists.txt' => 'CMakeLists.txt',
       'fbcode/rsocket/facebook/transports' => null,
       'fbcode/something_else' => null,
     };
