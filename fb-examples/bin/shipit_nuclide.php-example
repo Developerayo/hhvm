@@ -33,7 +33,7 @@ class ShipItNuclide extends FBShipItCLI {
   <<__Override>>
   public static function getPathMappings(): ImmMap<string, string> {
     return ImmMap {
-      'fbobjc/Tools/Nuclide/' => '',
+      'xplat/nuclide/' => '',
     };
   }
 

@@ -22,15 +22,14 @@ final class NuclideTest extends FBPublicProjectBaseTest {
   <<__Override>>
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
-      'fbobjc/Tools/Nuclide/foo' => 'foo',
-      'fbobjc/Tools/Nuclide/fb-only/foo' => null,
-      'fbobjc/Tools/Nuclide/fb_only/foo' => null,
-      'fbobjc/Tools/Nuclide/fb-package/foo' => null,
-      'fbobjc/Tools/Nuclide/fb_package/foo' => null,
-      'fbobjc/Tools/Nuclide/fb-config.js' => null,
-      'fbobjc/Tools/Nuclide/fb_config.js' => null,
-      'fbobjc/not_Nuclide/foo' => null,
-      'fbobjc/Tools/foo.txt' => null,
+      'xplat/nuclide/foo' => 'foo',
+      'xplat/nuclide/fb-only/foo' => null,
+      'xplat/nuclide/fb_only/foo' => null,
+      'xplat/nuclide/fb-package/foo' => null,
+      'xplat/nuclide/fb_package/foo' => null,
+      'xplat/nuclide/fb-config.js' => null,
+      'xplat/nuclide/fb_config.js' => null,
+      'xplat/not_Nuclide/foo' => null,
     };
   }
 
