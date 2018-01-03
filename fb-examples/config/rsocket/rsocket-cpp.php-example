@@ -22,10 +22,6 @@ final class RsocketRsocketCpp extends FBShipItConfig {
       // On github all rsocket code is in the rsocket dir, while it's in root
       // in fbcode.
       'fbcode/rsocket/public_tld/' => '',
-      'fbcode/rsocket/test/' => 'test/',
-      'fbcode/rsocket/tck-test/' => 'tck-test/',
-      'fbcode/rsocket/benchmarks/' => 'benchmarks/',
-      'fbcode/rsocket/examples/' => 'examples/',
       'fbcode/rsocket/' => 'rsocket/',
       'fbcode/yarpl/' => 'yarpl/',
     };
