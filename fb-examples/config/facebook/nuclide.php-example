@@ -7,14 +7,24 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-require_once(__DIR__.'/../autoload.php');
+use \Facebook\ShipIt\ {
+  FBCommonFilters,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+  ShipItPathFilters,
+};
 
-class ShipItNuclide extends FBShipItCLI {
+final class FacebookNuclide extends FBShipItConfig {
+  const string ROOT = 'xplat/nuclide/';
+
   <<__Override>>
-  protected static function projectFilterChangeset(
+  protected static function defaultProjectFilterChangeset(
     ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
   ): ShipItChangeset {
     return $changeset
       |> FBCommonFilters::applyAll($$)
@@ -27,28 +37,22 @@ class ShipItNuclide extends FBShipItCLI {
             '@(^|/)fb_[^/]*(/|$)@',
           },
         )
-      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+      |> ShipItPathFilters::moveDirectories($$, $get_path_mappings());
   }
 
   <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
-      'xplat/nuclide/' => '',
+      self::ROOT => '',
     };
   }
 
   <<__Override>>
-  public static function getStaticConfig(
-  ): FBShipItCLIStaticConfig {
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'nuclide',
     );
   }
-}
-
-// Allow require() from unit test
-if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItNuclide::cliMain();
 }
