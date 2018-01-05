@@ -7,25 +7,10 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-
-final class IGListKitTest extends FBPublicProjectBaseTest {
+final class InstagramIglistkitTest extends FBConfigBaseTest {
   const string ROOT = 'fbobjc/VendorLib/IGListKit/src';
-
-  <<__Override>>
-  protected function removesSummariesByDefault(): bool {
-    return false;
-  }
-
-  <<__Override>>
-  protected static function map(
-    ShipItChangeset $changeset,
-  ): ShipItChangeset {
-    return ShipItIGListKit::filterChangeset(
-      $changeset,
-    );
-  }
 
   <<__Override>>
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
