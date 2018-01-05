@@ -7,15 +7,25 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-require_once(__DIR__.'/../autoload.php');
+use \Facebook\ShipIt\ {
+  FBCommonFilters,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  FBSourceBranchConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+  ShipItPathFilters,
+};
 
+final class FacebookMetro extends FBShipItConfig {
+  const string ROOT = 'xplat/js/metro/';
 
-final class ShipItMetro extends FBShipItCLI {
   <<__Override>>
-  protected static function projectFilterChangeset(
+  protected static function defaultProjectFilterChangeset(
     ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
   ): ShipItChangeset {
     return $changeset
       |> FBCommonFilters::stripSummariesByDefault($$)
@@ -39,13 +49,33 @@ final class ShipItMetro extends FBShipItCLI {
             $path,
           ),
         )
-      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+      |> ShipItPathFilters::moveDirectories($$, $get_path_mappings());
   }
 
   <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  protected static function projectImportChangeset(
+    ShipItChangeset $changeset,
+    FBSourceBranchConfig $branch_config,
+  ): ShipItChangeset {
+    return $changeset
+      |> \Facebook\ShipIt\ShipItPathFilters::rewritePaths(
+          $$,
+          $path ==> preg_replace(
+            '@(^|/)\.flowconfig$@',
+            '\1.github.flowconfig',
+            $path,
+          ),
+        )
+      |> parent::projectImportChangeset(
+        $$,
+        $branch_config,
+      );
+  }
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
-      'xplat/js/metro/' => '',
+      self::ROOT => '',
     };
   }
 
@@ -57,9 +87,4 @@ final class ShipItMetro extends FBShipItCLI {
       'githubProject' => 'metro',
     );
   }
-}
-
-// Allow require() from unit test
-if (isset($argv[0]) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItMetro::cliMain();
 }
