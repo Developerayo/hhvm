@@ -22,17 +22,7 @@ final class Caffe2ReinforcementLearningModels extends FBShipItConfig {
   const string ROOT = 'fbcode/ml/rl/';
 
   <<__Override>>
-  protected static function defaultProjectFilterChangeset(
-    ShipItChangeset $changeset,
-    GetPathMappingsFn $get_path_mappings,
-  ): ShipItChangeset {
-    return $changeset
-      |> FBCommonFilters::applyAll($$)
-      |> ShipItPathFilters::stripPaths($$, self::filteredPaths())
-      |> ShipItPathFilters::moveDirectories($$, $get_path_mappings());
-  }
-
-  private static function filteredPaths(): ImmVector<string> {
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
     $paths_to_omit = ImmVector {
       'training/continuous_action_trainer.py',
       'training/continuous_action_predictor.py',
@@ -46,8 +36,6 @@ final class Caffe2ReinforcementLearningModels extends FBShipItConfig {
       }
     );
   }
-
-
 
   <<__Override>>
   public static function getDefaultPathMappings(): ImmMap<string, string> {

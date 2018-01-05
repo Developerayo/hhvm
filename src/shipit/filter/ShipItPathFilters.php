@@ -15,6 +15,9 @@ abstract final class ShipItPathFilters {
     ImmVector<string> $strip_patterns,
     ImmVector<string> $strip_exception_patterns = ImmVector { },
   ): ShipItChangeset {
+    if ($strip_patterns->count() == 0) {
+      return $changeset;
+    }
     $diffs = Vector { };
     foreach ($changeset->getDiffs() as $diff) {
       $path = $diff['path'];

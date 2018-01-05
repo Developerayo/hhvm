@@ -40,8 +40,48 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
     GetPathMappingsFn $get_path_mappings,
   ): ShipItChangeset {
     return $changeset
-      |> FBCommonFilters::applyAll($$)
+      |> FBCommonFilters::applyAll(
+        $$,
+        shape(
+          'stripCommonFiles/exceptions' =>
+            static::getStripCommonFilesExceptions(),
+        ),
+      )
+      |> ShipItPathFilters::stripPaths(
+        $$,
+        static::getDefaultStrippedFiles(),
+        static::getDefaultStrippedFileExceptions(),
+      )
       |> ShipItPathFilters::moveDirectories($$, $get_path_mappings());
+  }
+
+  /*
+   * Override to return a vector of regular expression strings that match
+   * whitelisted files or directories that will not be stripped, even if
+   * they have names that would normally exclude them.
+   * Example: '@^facebook[/|$]@' to whitelist files inside facebook/
+   * directories.
+   */
+  protected static function getStripCommonFilesExceptions(): ImmVector<string> {
+    return ImmVector {};
+  }
+
+  /*
+   * Blacklist of regular expression strings that match project files which
+   * should be stripped out of published commits.
+   */
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
+    return ImmVector {};
+  }
+
+  /*
+   * Whitelist of regular expression strings that match project files which
+   * should not be stripped, even if they match the above project-specific
+   * blacklist.
+   */
+  protected static function getDefaultStrippedFileExceptions(
+  ): ImmVector<string> {
+    return ImmVector {};
   }
 
   // Public so that you can add a unit test

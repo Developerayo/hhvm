@@ -21,23 +21,14 @@ use \Facebook\ShipIt\ {
 final class FacebookFboss extends FBShipItConfig {
 
   <<__Override>>
-  protected static function defaultProjectFilterChangeset(
-    ShipItChangeset $changeset,
-    GetPathMappingsFn $get_path_mappings,
-  ): ShipItChangeset {
-    return $changeset
-      |> FBCommonFilters::applyAll($$)
-      |> ShipItPathFilters::stripPaths(
-        $$,
-        ImmVector {
-          '@.*facebook.*@',
-          '@fbcode/fboss/agent/hw/bf.*@',
-          '@fbcode/fboss/agent/platforms/bf_wedge.*@',
-          '@fbcode/fboss/THIRD-PARTY-VERSIONS@',
-          '@.*tphacks.*@',
-        },
-      )
-      |> ShipItPathFilters::moveDirectories($$, $get_path_mappings());
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
+    return ImmVector {
+      '@.*facebook.*@',
+      '@fbcode/fboss/agent/hw/bf.*@',
+      '@fbcode/fboss/agent/platforms/bf_wedge.*@',
+      '@fbcode/fboss/THIRD-PARTY-VERSIONS@',
+      '@.*tphacks.*@',
+    };
   }
 
   <<__Override>>

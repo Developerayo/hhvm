@@ -22,26 +22,18 @@ final class FacebookresearchCommaiEnv extends FBShipItConfig {
   const string ROOT = 'fbcode/experimental/commai/env/';
 
   <<__Override>>
-  protected static function defaultProjectFilterChangeset(
-    ShipItChangeset $changeset,
-    GetPathMappingsFn $get_path_mappings,
-  ): ShipItChangeset {
-    return $changeset
-      |> FBCommonFilters::applyAll($$,
-          shape(
-            'stripCommonFiles/exceptions' => ImmVector {
-              '@^fbcode/experimental/commai/env/@',
-            },
-          ),
-        )
-      |> ShipItPathFilters::stripPaths(
-          $$,
-          ImmVector {
-            "@^(?!fbcode/experimental/commai/env/)@",
-            '@^fbcode/experimental/commai/env/src/experimental/@',
-          },
-        )
-      |> ShipItPathFilters::moveDirectories($$, $get_path_mappings());
+  protected static function getStripCommonFilesExceptions(): ImmVector<string> {
+    return ImmVector {
+      '@^fbcode/experimental/commai/env/@',
+    };
+  }
+
+  <<__Override>>
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
+    return ImmVector {
+      "@^(?!fbcode/experimental/commai/env/)@",
+      '@^fbcode/experimental/commai/env/src/experimental/@',
+    };
   }
 
   <<__Override>>
