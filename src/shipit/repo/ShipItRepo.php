@@ -142,7 +142,11 @@ abstract class ShipItRepo {
   protected static function parseDiffHunk(string $hunk): ?ShipItDiff {
     list($header, $body) = explode("\n", $hunk, 2);
     $matches = array();
-    preg_match('@^diff --git [ab]/(.*?) [ab]/(.*?)$@', trim($header), $matches);
+    preg_match(
+      '@^diff --git [ab]/(.*?) [ab]/(.*?)$@',
+      trim($header),
+      &$matches,
+    );
     if (count($matches) === 0) {
       return null;
     }

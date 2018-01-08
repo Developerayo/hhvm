@@ -16,7 +16,7 @@ final class HHVMEnvironmentCheckPhase extends EnvironmentCheckPhase {
   public function runImpl(ShipItBaseConfig $config): void {
     $gcc_check_cmd = "gcc --version";
     $gcc_check_output = array();
-    exec($gcc_check_cmd, $gcc_check_output);
+    exec($gcc_check_cmd, &$gcc_check_output);
     if (
       strpos(
         implode("", $gcc_check_output),

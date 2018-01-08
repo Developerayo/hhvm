@@ -126,7 +126,7 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
     }
     $paths = $paths->toArray();
     // Sort least specific to most specific.
-    sort($paths);
+    sort(&$paths);
     $roots = Set {};
     foreach ($paths as $path) {
       // If this path starts with any elements in the set of roots we have

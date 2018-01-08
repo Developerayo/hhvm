@@ -82,7 +82,7 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
         1 => array('file', '/dev/null', 'w'),
         2 => array('file', '/dev/null', 'w'),
       ),
-      $pipes,
+      &$pipes,
       $sourcePath
     );
     fclose($pipes[0]);

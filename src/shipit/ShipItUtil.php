@@ -50,7 +50,7 @@ abstract class ShipItUtil {
         preg_match(
           '/^@@ -\d+(,(?<minus_lines>\d+))? \+\d+(,(?<plus_lines>\d+))? @@/',
           $line,
-          $matches,
+          &$matches,
         )
       ) {
         $minus_lines = $matches['minus_lines'] ?? '';

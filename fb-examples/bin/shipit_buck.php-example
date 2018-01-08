@@ -155,7 +155,7 @@ class ShipItBuck
     if (preg_match('/(^|\n)GitHub Author: (.*?)(\n|$)/si',
                    $changeset->getMessage()) &&
         preg_match('/<([^@]*)@fb\.com>/',
-                       $changeset->getAuthor(), $matches) &&
+                       $changeset->getAuthor(), &$matches) &&
         is_array($matches) &&
         isset($matches[1])) {
       if ($matches[1] === 'svcscm') {

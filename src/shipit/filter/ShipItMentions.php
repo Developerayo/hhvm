@@ -51,7 +51,7 @@ final class ShipItMentions {
     preg_match_all(
       self::MENTIONS_PATTERN,
       $changeset->getMessage(),
-      $matches,
+      &$matches,
       PREG_SET_ORDER,
     );
     return (new ImmSet(array_map($match ==> $match[1], $matches)));

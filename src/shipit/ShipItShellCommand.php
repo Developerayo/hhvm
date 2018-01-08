@@ -117,7 +117,7 @@ class ShipItShellCommand {
     $fp = proc_open(
       $command,
       $fds,
-      $pipes,
+      &$pipes,
       $this->path,
       $env_vars->toArray(),
     );
@@ -155,9 +155,9 @@ class ShipItShellCommand {
       $ready_streams = [$stdout_stream, $stderr_stream];
       $null_byref = null;
       $result = stream_select(
-        $ready_streams,
-        /* write streams = */ $null_byref,
-        /* exception streams = */ $null_byref,
+        &$ready_streams,
+        /* write streams = */ &$null_byref,
+        /* exception streams = */ &$null_byref,
         /* timeout = */ null,
       );
       if ($result === false) {

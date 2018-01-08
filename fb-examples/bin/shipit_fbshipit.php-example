@@ -150,7 +150,7 @@ final class ShipItFBShipIt extends FBShipItCLI {
 
     foreach (self::getProjectFilePatterns() as $pattern) {
       $matches = [];
-      if (preg_match($pattern, $path, $matches)) {
+      if (preg_match($pattern, $path, &$matches)) {
         return !$public_projects->contains(strtolower($matches['project']));
       }
     }

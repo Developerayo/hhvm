@@ -24,7 +24,7 @@ class ShipItUserFilters {
       preg_match(
         $pattern,
         $changeset->getAuthor(),
-        $matches,
+        &$matches,
       )
       && array_key_exists('user', $matches)
     ) {
@@ -85,7 +85,7 @@ class ShipItUserFilters {
     string $pattern,
   ): ShipItChangeset {
     $matches = [];
-    if (preg_match($pattern, $changeset->getMessage(), $matches)) {
+    if (preg_match($pattern, $changeset->getMessage(), &$matches)) {
       return $changeset->withAuthor($matches['author']);
     }
     return $changeset;

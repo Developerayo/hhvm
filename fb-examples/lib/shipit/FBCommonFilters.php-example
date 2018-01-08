@@ -300,7 +300,7 @@ final class FBCommonFilters {
       preg_match(
         '/<(?<author>[^@]*)@fb\.com>/',
         $changeset->getAuthor(),
-        $matches,
+        &$matches,
       ) && !self::isBotUser($matches['author'])
     ) {
       $pulled_by_unixname = $matches['author'];

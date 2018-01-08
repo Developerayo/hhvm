@@ -82,7 +82,7 @@ class ShipItRepoGIT
       !preg_match(
         '/^ *(fb)?shipit-source-id: (?<commit>[a-z0-9]+)$/m',
         $log,
-        $matches,
+        &$matches,
       )
     ) {
       return null;
@@ -114,7 +114,7 @@ class ShipItRepoGIT
       return null;
     }
     $revs = explode("\n", trim($log));
-    list($rev) = explode(' ', array_pop($revs), 2);
+    list($rev) = explode(' ', array_pop(&$revs), 2);
     return $rev;
   }
 

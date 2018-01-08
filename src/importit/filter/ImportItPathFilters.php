@@ -55,7 +55,7 @@ abstract final class ImportItPathFilters {
     // that if two src path entries exist such that one of them is a prefix of
     // the other, the prefix always appears last.  This ensures that mappings
     // for subdirectories always take precedence over less-specific mappings.
-    krsort($reverse_mapping);
+    krsort(&$reverse_mapping);
 
     return $reverse_mapping->toImmMap();
   }

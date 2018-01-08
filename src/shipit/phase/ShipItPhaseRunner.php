@@ -249,7 +249,7 @@ class ShipItPhaseRunner {
 
       $rows[$long] = tuple($left, $description);
     }
-    ksort($rows);
+    ksort(&$rows);
 
     $help = $rows['help'];
     $rows->removeKey('help');
