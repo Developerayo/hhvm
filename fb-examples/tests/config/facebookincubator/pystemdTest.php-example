@@ -7,24 +7,14 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-final class PystemdTest extends FBPublicProjectBaseTest {
-  <<__Override>>
-  protected static function map(ShipItChangeset $changeset): ShipItChangeset {
-    return ShipItPystemd::filterChangeset($changeset);
-  }
-
+final class FacebookincubatorPystemdTest extends FBConfigBaseTest {
   <<__Override>>
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
       'fbcode/libfb/py/pystemd/README.md' => 'README.md',
       'fbcode/libfb/py/pystemd/TARGETS' => null,
     };
-  }
-
-  <<__Override>>
-  protected function removesSummariesByDefault(): bool {
-    return false;
   }
 }
