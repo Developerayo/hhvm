@@ -116,6 +116,7 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
       ShipItUtil::DONT_VERBOSE,
       'git',
       'diff',
+      '--no-color',
       $dirty_ref,
       'HEAD',
     );
