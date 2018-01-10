@@ -1,0 +1,32 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookincubatorOnlineschemachangeTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/dba/osc/core/lib/constant.py' => 'core/lib/constant.py',
+      'fbcode/dba/osc/core/commands/copy.py' => 'core/commands/copy.py',
+      'fbcode/dba/osc/core/tests/hook.py' => 'core/tests/hook.py',
+      'fbcode/dba/osc/.gitignore' => '.gitignore',
+      'fbcode/dba/osc/CONTRIBUTING.md' => 'CONTRIBUTING.md',
+      'fbcode/dba/osc/LICENSE' => 'LICENSE',
+      'fbcode/dba/osc/PATENTS' => 'PATENTS',
+      'fbcode/dba/osc/README.md' => 'README.md',
+      'fbcode/dba/osc/osc_cli' => 'osc_cli',
+      'fbcode/dba/osc/setup.py' => 'setup.py',
+      'fbcode/dba/osc/test_cli' => 'test_cli',
+      'fbcode/dba/osc/TARGETS' => null,
+      'fbcode/dba/osc/fb_hook.py' => null,
+      'fbcode/somethingelseentirely/' => null,
+    };
+  }
+}
