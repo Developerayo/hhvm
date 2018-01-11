@@ -7,22 +7,17 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-require_once(__DIR__.'/../autoload.php');
+use \Facebook\ShipIt\ {
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+};
 
-final class ShipItFatal extends FBShipItCLI {
-  <<__Override>>
-  protected static function projectFilterChangeset(
-    ShipItChangeset $changeset,
-  ): ShipItChangeset {
-    return $changeset
-      |> FBCommonFilters::applyAll($$)
-      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
-  }
+final class FacebookFatal extends FBShipItConfig {
 
   <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       'fbcode/fatal/public_tld/' => '',
       'fbcode/fatal/' => 'fatal/',
@@ -37,9 +32,4 @@ final class ShipItFatal extends FBShipItCLI {
       'githubProject' => 'fatal',
     );
   }
-}
-
-// Allow require() from unit test
-if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItFatal::cliMain();
 }
