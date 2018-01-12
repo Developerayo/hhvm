@@ -397,7 +397,7 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
   /**
    * Uses default function implementation if no override is provided.
    */
-  private static function getPathMappingsFn(
+  protected static function getPathMappingsFn(
     FBSourceBranchConfig $branch_config,
   ): GetPathMappingsFn {
     return Shapes::idx(

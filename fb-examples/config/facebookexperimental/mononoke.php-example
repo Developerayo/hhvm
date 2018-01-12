@@ -7,24 +7,39 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
 use Facebook\ImportIt\ImportItRustPathFilters;
+use \Facebook\ShipIt\ {
+  FBCommonFilters,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  FBSourceBranchConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+  ShipItPathFilters,
+};
 
-require_once(__DIR__.'/../autoload.php');
+final class FacebookexperimentalMononoke extends FBShipItConfig {
 
-final class ShipItMononoke extends FBShipItCLI {
   <<__Override>>
-  protected static function projectFilterChangeset(
+  protected static function projectImportChangeset(
     ShipItChangeset $changeset,
+    FBSourceBranchConfig $branch_config,
   ): ShipItChangeset {
     return $changeset
-      |> FBCommonFilters::applyAll($$)
-      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+      |> self::filterImportSubmodules($$)
+      |> ImportItRustPathFilters::moveDirectories(
+        $$,
+        (self::getPathMappingsFn($branch_config))(),
+        static::getSubmoduleMappings()
+          ->keys()
+          ->map($path ==> '@^'.$path.'$@'),
+      );
   }
 
   <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
     // The order here is important -- ImportIt matches paths in reverse order.
     return ImmMap {
       'fbcode/scm/mononoke/' => '',
@@ -45,9 +60,4 @@ final class ShipItMononoke extends FBShipItCLI {
       'githubProject' => 'mononoke',
     );
   }
-}
-
-// Allow require() from unit test
-if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItMononoke::cliMain();
 }

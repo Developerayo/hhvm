@@ -7,14 +7,9 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-final class MononokeTest extends FBPublicProjectBaseTest {
-  <<__Override>>
-  protected static function map(ShipItChangeset $changeset): ShipItChangeset {
-    return ShipItMononoke::filterChangeset($changeset);
-  }
-
+final class FacebookexperimentalMononokeTest extends FBConfigBaseTest {
   <<__Override>>
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
@@ -28,10 +23,5 @@ final class MononokeTest extends FBPublicProjectBaseTest {
       'fbcode/common/rust/scribe/src/lib.rs' => null,
       'fbcode/common/rust/ossconfigs/rustfmt.toml' => 'rustfmt.toml',
     };
-  }
-
-  <<__Override>>
-  protected function removesSummariesByDefault(): bool {
-    return false;
   }
 }
