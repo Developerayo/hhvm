@@ -97,7 +97,7 @@ class ShipItUserFilters {
   ): ShipItChangeset {
     return self::rewriteAuthorFromMessagePattern(
       $changeset,
-      '/(^|\n)GitHub Author: (?<author>.*?)(\n|$)/si',
+      '/(^|\n)GitHub Author:\s*(?<author>.*?)(\n|$)/si',
     );
   }
 }
