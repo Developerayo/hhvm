@@ -1,0 +1,51 @@
+<?hh
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+};
+
+final class FacebookRocksdb extends FBShipItConfig {
+  const string ROOT = 'fbcode/internal_repo_rocksdb/repo/';
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT => '',
+    };
+  }
+
+  <<__Override>>
+  protected static function getStripCommonFilesExceptions(): ImmVector<string> {
+    return ImmVector {
+      '@\.mk$@',
+      '@TARGETS$@',
+    };
+  }
+
+  <<__Override>>
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
+    return ImmVector {
+      // Ignore file containing sandcastle token
+      '@^' . self::ROOT . '.sandcastle$@',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'rocksdb',
+    );
+  }
+}
