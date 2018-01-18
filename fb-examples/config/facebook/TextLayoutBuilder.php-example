@@ -7,24 +7,18 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-require_once(__DIR__.'/../autoload.php');
+use \Facebook\ShipIt\ {
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+};
 
-final class ShipItTextLayoutBuilder extends FBShipItCLI {
+final class FacebookTextlayoutbuilder extends FBShipItConfig {
   const string ROOT = 'fbandroid/libraries/textlayoutbuilder/';
 
   <<__Override>>
-  protected static function projectFilterChangeset(
-    ShipItChangeset $changeset,
-  ): ShipItChangeset {
-    return $changeset
-      |> FBCommonFilters::applyAll($$)
-      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
-  }
-
-  <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       self::ROOT => '',
     };
@@ -38,9 +32,4 @@ final class ShipItTextLayoutBuilder extends FBShipItCLI {
       'githubProject' => 'TextLayoutBuilder',
     );
   }
-}
-
-// Allow require() from unit test
-if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItTextLayoutBuilder::cliMain();
 }
