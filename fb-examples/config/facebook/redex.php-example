@@ -1,0 +1,73 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  FBSourceBranchConfig,
+};
+
+final class FacebookRedex extends FBShipItConfig {
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return self::getMasterPathMappings();
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'redex',
+    );
+  }
+
+  private static function getMasterPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'fbandroid/native/redex/' => '',
+    };
+  }
+
+  private static function getStablePathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'fbandroid/native/redex-stable/' => '',
+      // liblocator is a library within redex that is depended on by dextricks
+      // and redex itself. For the sake of safety, we only have one copy of this
+      // library in `native/redex/` (thus, dextricks and redex will always agree
+      // on the contents of liblocator). To build redex-stable with the open
+      // source build system, we need liblocator in the stable branch as well.
+      // So copy it over. This is safe for Pull Requests because PRs only come
+      // to master, not stable.
+      'fbandroid/native/redex/liblocator/' => 'liblocator/',
+    };
+  }
+
+  /**
+   * fbsource/fbandroid/native/redex/       syncs with github `master` branch
+   * fbsource/fbandroid/native/redex-stable syncs with github `stable` branch
+   */
+  <<__Override>>
+  public static function getBranchConfigs(): ImmVector<FBSourceBranchConfig> {
+    return ImmVector {
+      shape(
+        'internal' => 'master',
+        'external' => 'master',
+        'getPathMappings' => () ==> self::getMasterPathMappings(),
+      ),
+      shape(
+        'internal' => 'master',
+        'external' => 'stable',
+        'getPathMappings' => () ==> self::getStablePathMappings(),
+      ),
+    };
+  }
+}
