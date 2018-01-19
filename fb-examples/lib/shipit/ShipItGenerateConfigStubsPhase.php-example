@@ -67,7 +67,7 @@ final class ShipItGenerateConfigStubsPhase extends ShipItPhase {
 
     // Create ShipIt files (exectuable and test).
     $bin_contents = <<<EOF
-<?hh
+<?hh // strict
 /**
  * Copyright (c) $license_year-present, Facebook, Inc.
  * All rights reserved.
@@ -79,12 +79,8 @@ final class ShipItGenerateConfigStubsPhase extends ShipItPhase {
 namespace Facebook\ShipIt\Config;
 
 use \Facebook\ShipIt\ {
-  FBCommonFilters,
   FBShipItCLIStaticConfig,
   FBShipItConfig,
-  GetPathMappingsFn,
-  ShipItChangeset,
-  ShipItPathFilters,
 };
 
 final class $project_class_name extends FBShipItConfig {
