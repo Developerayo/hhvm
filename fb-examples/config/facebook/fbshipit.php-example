@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -7,11 +7,25 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-require_once (__DIR__.'/../autoload.php');
+use \Facebook\ShipIt\ {
+  FBGitHubUtils,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  FBShipItPublicizeSyncScriptsPhase,
+  FBSourceBranchConfig,
+  GetPathMappingsFn,
+  ShipItBaseConfig,
+  ShipItChangeset,
+  ShipItGitHubCredentials,
+  ShipItGitHubUtils,
+  ShipItPathFilters,
+  ShipItPhase,
+  ShipItSyncPhase,
+};
 
-final class ShipItFBShipIt extends FBShipItCLI {
+final class FacebookFbshipit extends FBShipItConfig {
   <<__Override>>
   public static function getStaticConfig(): FBShipItCLIStaticConfig {
     return shape(
@@ -22,40 +36,42 @@ final class ShipItFBShipIt extends FBShipItCLI {
   }
 
   <<__Override>>
-  protected static function projectFilterChangeset(
+  protected static function defaultProjectFilterChangeset(
     ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
   ): ShipItChangeset {
-    $strip_exceptions = shape(
-      'stripCommonFiles/exceptions' => ImmVector {
-        '@^fbcode/opensource/shipit/config/.*$@',
-      },
-    );
     return $changeset
-      |> self::stripExceptSourceRoots($$)
-      |> FBCommonFilters::applyAll($$, $strip_exceptions)
-      |> ShipItPathFilters::stripPaths(
-        $$,
-        ImmVector {
-          '@/fb-private/@',
-          // Replacement implementation in public_tld
-          '@(^|/)autoload.php$@',
-          '@(^|fbcode/opensource/shipit/)composer.json$@',
-          '@(^|/)fb_.+\.sh$@',
-          '@(^|/)fb_.+\.py$@',
-          '@(^|/)bin/generate-autoload-map.php@',
-        },
-      )
-      |> self::removePrivateProjects($$)
       |> ShipItPathFilters::rewritePaths(
         $$,
         $path ==> str_replace('/public_tld/dot_', '/public_tld/.', $path),
       )
-      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings())
+      |> parent::defaultProjectFilterChangeset($$, $get_path_mappings)
+      |> self::removePrivateProjects($$)
       |> self::changeExampleExtensions($$);
   }
 
   <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  protected static function getStripCommonFilesExceptions(): ImmVector<string> {
+    return ImmVector {
+      '@^fbcode/opensource/shipit/config/.*$@',
+    };
+  }
+
+  <<__Override>>
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
+    return ImmVector {
+      '@/fb-private/@',
+      // Replacement implementation in public_tld
+      '@(^|/)autoload.php$@',
+      '@(^|fbcode/opensource/shipit/)composer.json$@',
+      '@(^|/)fb_.+\.sh$@',
+      '@(^|/)fb_.+\.py$@',
+      '@(^|/)bin/generate-autoload-map.php@',
+    };
+  }
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       'fbcode/opensource/shipit/public_tld/' => '',
       'fbcode/opensource/shipit/bin/' => 'fb-examples/bin/',
@@ -80,13 +96,15 @@ final class ShipItFBShipIt extends FBShipItCLI {
   }
 
   <<__Override>>
-  public static function getPhases(): ImmVector<ShipItPhase> {
-    $original_phases = parent::getPhases();
+  public static function getPhases(
+    FBSourceBranchConfig $branch_config,
+  ): ImmVector<ShipItPhase> {
+    $original_phases = parent::getPhases($branch_config);
     $phases = Vector {};
     foreach ($original_phases as $phase) {
       if ($phase instanceof ShipItSyncPhase) {
         $phases[] = new FBShipItPublicizeSyncScriptsPhase(
-          $changeset ==> self::filterChangeset($changeset),
+          $changeset ==> self::filterChangeset($changeset, $branch_config),
         );
       }
       $phases[] = $phase;
@@ -99,11 +117,42 @@ final class ShipItFBShipIt extends FBShipItCLI {
   }
 
   <<__Override>>
-  public static function getBaseConfig(): ShipItBaseConfig {
-    return parent::getBaseConfig()->withSourceRoots(
+  public static function getBaseConfig(
+    FBSourceBranchConfig $branch_config,
+  ): ShipItBaseConfig {
+    return parent::getBaseConfig($branch_config)->withSourceRoots(
       ImmSet { 'fbcode/opensource/shipit/' },
     );
   }
+
+  <<__Override>>
+  protected static function projectImportChangeset(
+    ShipItChangeset $changeset,
+    FBSourceBranchConfig $branch_config,
+  ): ShipItChangeset {
+    return $changeset
+      |> self::reverseExampleExtensions($$)
+      |> parent::projectImportChangeset($$, $branch_config)
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> str_replace('/public_tld/.', '/public_tld/dot_', $path),
+      );
+  }
+
+  /**
+   * Rename fb-examples/foo.php-example to fb-examples/foo.php.
+   *
+   * Inverse of changeExampleExtensions.
+   */
+  private static function reverseExampleExtensions(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItPathFilters::rewritePaths(
+      $changeset,
+      $path ==> preg_replace('@^(fb-examples/.+\.php)-example$@', '\1', $path),
+    );
+  }
+
   /**
    * Rename fb-examples/foo.php to fb-examples/foo.php-example.
    *
@@ -231,9 +280,4 @@ final class ShipItFBShipIt extends FBShipItCLI {
       ->toImmSet();
     return $repos;
   }
-}
-
-// Allow require() from unit test
-if (isset($argv) && realpath(idx($argv, 0)) === realpath(__FILE__)) {
-  ShipItFBShipIt::cliMain();
 }
