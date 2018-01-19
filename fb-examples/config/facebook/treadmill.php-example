@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -7,28 +7,18 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-require_once(__DIR__.'/../autoload.php');
+use \Facebook\ShipIt\ {
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+};
 
-final class ShipItTreadmill extends FBShipItCLI {
+final class FacebookTreadmill extends FBShipItConfig {
   const string ROOT = 'fbcode/treadmill/';
 
   <<__Override>>
-  protected static function projectFilterChangeset(
-    ShipItChangeset $changeset,
-  ): ShipItChangeset {
-    $changeset = FBCommonFilters::applyAll($changeset);
-    $changeset = ShipItPathFilters::moveDirectories(
-      $changeset,
-      static::getPathMappings(),
-    );
-
-    return $changeset;
-  }
-
-  <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       self::ROOT => '',
     };
@@ -42,9 +32,4 @@ final class ShipItTreadmill extends FBShipItCLI {
       'githubProject' => 'treadmill',
     );
   }
-}
-
-// Allow require() from unit test
-if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItTreadmill::cliMain();
 }
