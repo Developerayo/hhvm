@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -7,24 +7,18 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-require_once(__DIR__.'/../autoload.php');
+use \Facebook\ShipIt\ {
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+};
 
-final class ShipItThpp extends FBShipItCLI {
+final class FacebookThpp extends FBShipItConfig {
   const string ROOT = 'fbcode/thpp/';
 
   <<__Override>>
-  protected static function projectFilterChangeset(
-    ShipItChangeset $changeset,
-  ): ShipItChangeset {
-    return $changeset
-      |> FBCommonFilters::applyAll($$)
-      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
-  }
-
-  <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       self::ROOT . 'public_tld/' => '',
       self::ROOT => 'thpp/' ,
@@ -39,9 +33,4 @@ final class ShipItThpp extends FBShipItCLI {
       'githubProject' => 'thpp',
     );
   }
-}
-
-// Allow require() from unit test
-if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItThpp::cliMain();
 }
