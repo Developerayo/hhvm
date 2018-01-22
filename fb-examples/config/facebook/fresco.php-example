@@ -1,0 +1,68 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBCommonFilters,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+};
+
+final class FacebookFresco extends FBShipItConfig {
+
+  <<__Override>>
+  protected static function defaultProjectFilterChangeset(
+    ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
+  ): ShipItChangeset {
+    return $changeset
+      |> FBCommonFilters::stripSummariesByDefault($$)
+      |> parent::defaultProjectFilterChangeset($$, $get_path_mappings);
+  }
+
+  <<__Override>>
+  protected static function getStripCommonFilesExceptions(): ImmVector<string> {
+    return ImmVector {
+      // We want to keep .mk files for native code
+      '@\.mk$@',
+    };
+  }
+
+  <<__Override>>
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
+    return ImmVector {
+      '@/whitelist_for_modules$@',
+      '@/local.properties$@',
+      '@dep_test.py$@',
+      '@^fbandroid/libraries/fresco/fbcore$@',
+    };
+  }
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      // Move the Fresco files
+      'fbandroid/libraries/fresco/' => '',
+      // Move Fresco files in other directories
+      'fbandroid/libraries/fbcore/' => 'fbcore/',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'fresco',
+    );
+  }
+}
