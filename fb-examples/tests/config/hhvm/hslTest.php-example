@@ -7,20 +7,13 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-use type Facebook\ImportIt\ImportItHSL;
+use \Facebook\ShipIt\ {
+  ShipItChangeset,
+};
 
-final class HSLTest extends FBPublicProjectBaseTest {
-  <<__Override>>
-  protected static function map(
-    ShipItChangeset $changeset,
-  ): ShipItChangeset {
-    return ShipItHSL::filterChangeset(
-      $changeset,
-    );
-  }
-
+final class HhvmHslTest extends FBConfigBaseTest {
   <<__Override>>
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
@@ -39,11 +32,6 @@ final class HSLTest extends FBPublicProjectBaseTest {
       // https://github.com/hhvm/hsl/issues/1
       'flib/core/hack/lib/async/dict.php' => null,
     };
-  }
-
-  <<__Override>>
-  protected function removesSummariesByDefault(): bool {
-    return false;
   }
 
   public function testConditionalComments(): void {
@@ -121,12 +109,29 @@ final class HSLTest extends FBPublicProjectBaseTest {
     );
     $changeset = (new ShipItChangeset())
       ->withDiffs(ImmVector { $diff })
-      |> ShipItHSL::renameAsyncToGen($$);
+      |> HhvmHsl::renameAsyncToGen($$);
     $diff = $changeset->getDiffs()->at(0);
     $this->assertSame(
       $body,
       $diff['body'],
       'reverse translation (importit)',
+    );
+  }
+
+  public function testImportConditionalComments(): void {
+    $changeset = self::mapImport((new ShipItChangeset())
+      ->withDiffs(ImmVector {
+        shape(
+          'path' => 'src/foo.php',
+          'body' =>
+            " herp(); // @oss-enable\n".
+            " // @oss-disable: derp();\n",
+        ),
+      }));
+    $this->assertSame(
+      " // @oss-enable: herp();\n".
+      " derp(); // @oss-disable\n",
+      $changeset->getDiffs()->at(0)['body'],
     );
   }
 }

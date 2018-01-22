@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -7,27 +7,27 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-require_once(__DIR__.'/../autoload.php');
+use \Facebook\ShipIt\ {
+  FBSourceBranchConfig,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+  ShipItConditionalLinesFilter,
+  ShipItPathFilters,
+};
 
-final class ShipItHSL extends FBShipItCLI {
+final class HhvmHsl extends FBShipItConfig {
   const string ROOT = 'flib/core/hack/lib/';
 
   <<__Override>>
-  protected static function projectFilterChangeset(
+  protected static function defaultProjectFilterChangeset(
     ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
   ): ShipItChangeset {
-    return $changeset
-      |> ShipItPathFilters::stripPaths(
-        $$,
-        ImmVector {
-          '@^flib/core/hack/lib/(legacy|unreleased|async)/@',
-          '@^flib/core/hack/lib/__tests__/testing_mocks/@',
-        },
-      )
-      |> FBCommonFilters::applyAll($$)
-      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings())
+    return parent::defaultProjectFilterChangeset($changeset, $get_path_mappings)
       |> ShipItPathFilters::rewritePaths(
         $$,
         $path ==> preg_replace(
@@ -58,7 +58,15 @@ final class ShipItHSL extends FBShipItCLI {
   }
 
   <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
+    return ImmVector {
+      '@^flib/core/hack/lib/(legacy|unreleased|async)/@',
+      '@^flib/core/hack/lib/__tests__/testing_mocks/@',
+    };
+  }
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       self::ROOT.'__github__/dot_' => '.',
       self::ROOT.'__github__/' => '',
@@ -120,7 +128,6 @@ final class ShipItHSL extends FBShipItCLI {
     );
   }
 
-  // Public for ImportItHSL
   public static function renameAsyncToGen(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
@@ -147,9 +154,44 @@ final class ShipItHSL extends FBShipItCLI {
       }
     );
   }
-}
 
-// Allow require() from unit test
-if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItHSL::cliMain();
+  <<__Override>>
+  protected static function projectImportChangeset(
+    ShipItChangeset $changeset,
+    FBSourceBranchConfig $branch_config,
+  ): ShipItChangeset {
+    return $changeset
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> preg_replace(
+          '@^tests/(.+/)?@',
+          'src/\1__tests__/',
+          $path,
+        ),
+      )
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> preg_replace(
+          '@^bin/(.+)\\.php$@',
+          'bin/\\1_dot_php',
+          $path,
+        ),
+      )
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> preg_replace('/^\\./', 'dot_', $path),
+      )
+      |> ShipItConditionalLinesFilter::uncommentLines(
+        $$,
+        '@oss-disable',
+        '//',
+      )
+      |> ShipItConditionalLinesFilter::commentLines(
+        $$,
+        '@oss-enable',
+        '//',
+      )
+      |> self::renameAsyncToGen($$)
+      |> parent::projectImportChangeset($$, $branch_config);
+  }
 }
