@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -7,14 +7,26 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-require_once(__DIR__.'/../autoload.php');
+use \Facebook\ShipIt\ {
+  FBCommonFilters,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  FBSourceBranchConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+  ShipItDiff,
+  ShipItFilterSanityCheckPhase,
+  ShipItPhase,
+};
 
-final class ShipItInfer extends FBShipItCLI {
+final class FacebookInfer extends FBShipItConfig {
+
   <<__Override>>
-  protected static function projectFilterChangeset(
+  protected static function defaultProjectFilterChangeset(
     ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
   ): ShipItChangeset {
     $subject = $changeset->getSubject();
     return $changeset
@@ -22,10 +34,8 @@ final class ShipItInfer extends FBShipItCLI {
       |> FBCommonFilters::applyAll(
           $$,
           shape(
-            'stripCommonFiles/exceptions' => ImmVector {
-              '@(^|/)BUCK$@',
-              '@\.mk$@',
-            },
+            'stripCommonFiles/exceptions'
+              => static::getStripCommonFilesExceptions(),
           ),
         )
       |> $$->withSubject($subject)
@@ -35,15 +45,22 @@ final class ShipItInfer extends FBShipItCLI {
   }
 
   <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  protected static function getStripCommonFilesExceptions(): ImmVector<string> {
+    return ImmVector {
+      '@(^|/)BUCK$@',
+      '@\.mk$@',
+    };
+  }
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       '' => '',
     };
   }
 
   <<__Override>>
-  public static function getStaticConfig(
-  ): FBShipItCLIStaticConfig {
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => 'infer-fb',
       'githubOrg' => 'facebook',
@@ -52,9 +69,11 @@ final class ShipItInfer extends FBShipItCLI {
   }
 
   <<__Override>>
-  public static function getPhases(): ImmVector<ShipItPhase> {
+  public static function getPhases(
+    FBSourceBranchConfig $branch_config,
+  ): ImmVector<ShipItPhase> {
     // The SanityCheck is incompatible with the whitelist approach
-    return parent::getPhases()->filter(
+    return parent::getPhases($branch_config)->filter(
       $phase ==> !($phase instanceof ShipItFilterSanityCheckPhase)
     );
   }
@@ -88,9 +107,4 @@ final class ShipItInfer extends FBShipItCLI {
       'facebook/',
     };
   }
-}
-
-// Allow require() from unit test
-if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItInfer::cliMain();
 }
