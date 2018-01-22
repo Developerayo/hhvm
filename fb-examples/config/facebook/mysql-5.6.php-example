@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 /**
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -7,11 +7,15 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-namespace Facebook\ShipIt;
+namespace Facebook\ShipIt\Config;
 
-require_once(__DIR__.'/../autoload.php');
+use \Facebook\ShipIt\ {
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  FBSourceBranchConfig,
+};
 
-final class ShipItMySQL56 extends FBShipItCLI {
+final class FacebookMysql56 extends FBShipItConfig {
   const string ROOT = '';
 
   // There needs to be an entry for this name in ~/fbcode/opensource/shipit/
@@ -32,21 +36,15 @@ final class ShipItMySQL56 extends FBShipItCLI {
   const string DESTINATION_BRANCH = 'fb-mysql-5.6.35';
 
   <<__Override>>
-  protected static function projectFilterChangeset(
-    ShipItChangeset $changeset,
-  ): ShipItChangeset {
-    return $changeset
-      |> FBCommonFilters::applyAll($$,
-        shape(
-          // We want to keep .mk files for native code
-          'stripCommonFiles/exceptions' => ImmVector { '@\.mk$@', },
-        ),
-      )
-      |> ShipItPathFilters::moveDirectories($$, static::getPathMappings());
+  protected static function getStripCommonFilesExceptions(): ImmVector<string> {
+    // We want to keep .mk files for native code
+    return ImmVector {
+      '@\.mk$@',
+    };
   }
 
   <<__Override>>
-  public static function getPathMappings(): ImmMap<string, string> {
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       self::ROOT => '',
     };
@@ -70,17 +68,17 @@ final class ShipItMySQL56 extends FBShipItCLI {
   }
 
   <<__Override>>
-  public static function getBaseConfig(): ShipItBaseConfig {
-    // Given that MySQL is "special" and doesn't use "master" for neither source
-    // or destination branches then this is the custom configuration we need to
-    // expose for the import work.
-    return parent::getBaseConfig()
-      ->withSourceBranch(self::SOURCE_BRANCH)
-      ->withDestinationBranch(self::DESTINATION_BRANCH);
+  public static function getBranchConfigs(): ImmVector<FBSourceBranchConfig> {
+    return ImmVector {
+      shape(
+        'internal' => self::SOURCE_BRANCH,
+        'external' => self::DESTINATION_BRANCH,
+      ),
+    };
   }
-}
 
-// Allow require() from unit test
-if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
-  ShipItMySQL56::cliMain();
+  <<__Override>>
+  public static function getLandBranch(): ?string {
+    return self::SOURCE_BRANCH;
+  }
 }
