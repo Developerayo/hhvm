@@ -1,0 +1,71 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBCommonFilters,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+};
+
+final class FacebookRelay extends FBShipItConfig {
+  const string JS_ROOT = 'xplat/js/';
+  const string RELAY_OSS = self::JS_ROOT.'RKJSModules/Libraries/Relay/oss/';
+
+  // Open source modules.
+  const string GITHUB_ROOT = self::RELAY_OSS.'__github__/';
+  const string BABEL_PLUGIN_RELAY = self::RELAY_OSS.'babel-plugin-relay/';
+  const string REACT_RELAY = self::RELAY_OSS.'react-relay/';
+  const string RELAY_COMPILER = self::RELAY_OSS.'relay-compiler/';
+  const string RELAY_RUNTIME = self::RELAY_OSS.'relay-runtime/';
+  const string RELAY_TEST_UTILS = self::RELAY_OSS.'relay-test-utils/';
+
+  <<__Override>>
+  protected static function defaultProjectFilterChangeset(
+    ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
+  ): ShipItChangeset {
+    return $changeset
+      |> FBCommonFilters::stripSummariesByDefault($$)
+      |> parent::defaultProjectFilterChangeset($$, $get_path_mappings);
+  }
+
+  <<__Override>>
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
+    return ImmVector {
+      // Don't include the README in the top directory.
+      '@^'.self::RELAY_OSS.'README.md@',
+    };
+  }
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      // Modules
+      self::GITHUB_ROOT => '',
+      self::BABEL_PLUGIN_RELAY => 'packages/babel-plugin-relay/',
+      self::REACT_RELAY => 'packages/react-relay/',
+      self::RELAY_COMPILER => 'packages/relay-compiler/',
+      self::RELAY_RUNTIME => 'packages/relay-runtime/',
+      self::RELAY_TEST_UTILS => 'packages/relay-test-utils/',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'relay',
+    );
+  }
+}
