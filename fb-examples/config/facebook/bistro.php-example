@@ -1,0 +1,58 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBCodeBuilderTrait,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+};
+
+final class FacebookBistro extends FBShipItConfig {
+  use FBCodeBuilderTrait;
+
+  <<__Override>>
+  protected static function getFBCodeBuilderDependencies(): ImmSet<string> {
+    return ImmSet {
+      'fbthrift',
+      'folly',
+      'proxygen',
+      'wangle',
+    };
+  }
+
+  <<__Override>>
+  protected static function getStripCommonFilesExceptions(): ImmVector<string> {
+    return ImmVector {
+      # bistro/build/build.sh transforms these to CMakeLists.txt, so
+      # we want to let external contributors change TARGETS.
+      '@/TARGETS$@',
+    };
+  }
+
+  <<__Override>>
+  public static function getPathMappingsNonFBCodeBuilder(
+  ): ImmMap<string, string> {
+    return ImmMap {
+      'fbcode/bistro/public_tld/' => '',
+      'fbcode/bistro/bistro/' => 'bistro/',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(
+  ): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'bistro',
+    );
+  }
+}

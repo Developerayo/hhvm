@@ -1,0 +1,56 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBCodeBuilderTrait,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+};
+
+final class FacebookFbthrift extends FBShipItConfig {
+  use FBCodeBuilderTrait;
+
+  <<__Override>>
+  protected static function getFBCodeBuilderDependencies(): ImmSet<string> {
+    return ImmSet {
+      'folly',
+      'wangle',
+    };
+  }
+
+  <<__Override>>
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
+    return ImmVector {
+      '@^fbcode/thrift/thrift-config\\.h$@',  // Made by autoconf.
+      // These 2 aren't usable in OSS at present. Future: release these?
+      '@^fbcode/thrift/perf/canary.py$@',
+      '@^fbcode/thrift/perf/loadtest.py$@',
+    };
+  }
+
+  <<__Override>>
+  public static function getPathMappingsNonFBCodeBuilder(
+  ): ImmMap<string, string> {
+    return ImmMap {
+      'fbcode/thrift/public_tld/' => '',
+      'fbcode/thrift/' => 'thrift/',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'fbthrift',
+    );
+  }
+}

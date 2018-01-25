@@ -47,12 +47,18 @@ interface ISupportsFBCodeBuilder {};
  * appropriate parts of the filter chain.
  */
 trait FBCodeBuilderTrait implements ISupportsFBCodeBuilder {
-  require extends FBShipItCLI;  // The trait accesses getStaticConfig()
+  require extends FBShipItConfig;
 
   // Implement the same as you would write a vanilla projectFilterChangeset()
-  abstract protected static function projectFilterChangesetNonFBCodeBuilder(
+  protected static function projectFilterChangesetNonFBCodeBuilder(
     ShipItChangeset $changeset,
-  ): ShipItChangeset;
+    GetPathMappingsFn $get_path_mappings,
+  ): ShipItChangeset {
+    return parent::defaultProjectFilterChangeset(
+      $changeset,
+      $get_path_mappings,
+    );
+  }
   // Implement the same as you would write a vanilla getPathMappings()
   abstract public static function getPathMappingsNonFBCodeBuilder(
   ): ImmMap<string, string>;
@@ -78,7 +84,7 @@ trait FBCodeBuilderTrait implements ISupportsFBCodeBuilder {
   // Adds fbcode_builder's path mappings to the per-project path mappings.
   // `projectFilterChangesetNonFBCodeBuilder` will `moveDirectories` for us.
   <<__Override>>
-  final public static function getPathMappings(
+  final public static function getDefaultPathMappings(
   ): ImmMap<string, string> {
     return ImmMap::fromItems(
       static::getPathMappingsNonFBCodeBuilder()->items()->concat(
@@ -87,13 +93,15 @@ trait FBCodeBuilderTrait implements ISupportsFBCodeBuilder {
     );
   }
 
-  final protected static function projectFilterChangeset(
+  <<__Override>>
+  final protected static function defaultProjectFilterChangeset(
     ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
   ): ShipItChangeset {
     return $changeset
       // We are counting on this to call
       //   ShipItPathFilters::moveDirectories($$, static::getPathMappings())
-      |> static::projectFilterChangesetNonFBCodeBuilder($$)
+      |> static::projectFilterChangesetNonFBCodeBuilder($$, $get_path_mappings)
       // Strip all project_hashes except those of our dependencies.
       // Strip code specific to Facebook's internal continuous integration.
       |> ShipItPathFilters::stripPaths(
