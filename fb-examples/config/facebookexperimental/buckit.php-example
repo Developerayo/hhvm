@@ -1,0 +1,124 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBCommonFilters,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  FBSourceBranchConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+  ShipItPathFilters,
+};
+
+final class FacebookexperimentalBuckit extends FBShipItConfig {
+
+  <<__Override>>
+  protected static function defaultProjectFilterChangeset(
+    ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
+  ): ShipItChangeset {
+    return
+      $changeset
+        |> FBCommonFilters::applyAll(
+            $$,
+            shape('stripCommonFiles/exceptions' => ImmVector {
+              '@/BUCK$@',
+              '@/TARGETS$@',
+            }))
+        |> ShipItPathFilters::moveDirectories($$, $get_path_mappings())
+        |> static::removeOssExtension($$)
+        |> ShipItPathFilters::stripPaths(
+            $$,
+            ImmVector {
+              '@infra_macros/macro_lib/convert/java.*\.py@',
+              '@infra_macros/fbcode_macros/.buckconfig@',
+            })
+        |> ShipItPathFilters::rewritePaths(
+          $$,
+          $path ==> preg_replace(
+            '@^((?!infra_macros/fbcode_macros).*)/TARGETS$@', '\1/BUCK', $path));
+  }
+
+  private static ImmSet<string> $FilesWithOssExtension = ImmSet {
+    "infra_macros/package.json",
+    "infra_macros/.buckconfig",
+  };
+
+  const BuckFilesToRewrite = '@^((?!specs|infra_macros/fbcode_macros).*)/BUCK$@';
+
+  private static function removeOssExtension(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return ShipItPathFilters::rewritePaths(
+      $changeset,
+      $path ==> {
+        $stripped = preg_replace('@(.*)\.oss$@', '\1', $path);
+        if(static::$FilesWithOssExtension->contains($stripped)) {
+          return $stripped;
+        } else {
+          return $path;
+        }
+      });
+  }
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'fbcode/experimental/pjameson/buckit/buckit/LICENSE' => 'LICENSE',
+      'fbcode/experimental/pjameson/buckit/buckit/PATENTS' => 'PATENTS',
+      'fbcode/experimental/pjameson/buckit/buckit/README' => 'README',
+      'fbcode/experimental/pjameson/buckit/buckit/' => 'buckit/',
+      'fbcode/experimental/pjameson/buckit/specs/' => 'specs/',
+      'fbcode/tools/build/buck/infra_macros/' => 'infra_macros/',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebookexperimental',
+      'githubProject' => 'buckit',
+    );
+  }
+
+  <<__Override>>
+  protected static function projectImportChangeset(
+    ShipItChangeset $changeset,
+    FBSourceBranchConfig $branch_config,
+  ): ShipItChangeset {
+    return $changeset
+      |> static::addOssExtension($$)
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> preg_replace(
+          self::BuckFilesToRewrite,
+          '\1/TARGETS',
+          $path))
+      |> parent::projectImportChangeset($$, $branch_config);
+  }
+
+  private static function addOssExtension(
+    ShipItChangeset $changeset
+  ): ShipItChangeset {
+    return ShipItPathFilters::rewritePaths(
+      $changeset,
+      $path ==> {
+        if(self::$FilesWithOssExtension->contains($path)) {
+          return $path . '.oss';
+        } else {
+          return $path;
+        }
+      });
+  }
+
+}
