@@ -1,0 +1,130 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  FBSourceBranchConfig,
+  GetPathMappingsFn,
+  OSTeamFilters,
+  ShipItBaseConfig,
+  ShipItChangeset,
+};
+
+final class FacebookChefCookbooks extends FBShipItConfig {
+  const string BASE_DIR = 'chef/cookbooks/core/';
+
+  # Add new open-source cookbooks here. Be sure to get sign-off
+  # from the OpenSource team.
+  static ImmSet<string> $cookbooks = ImmSet{
+    'fb_apcupsd',
+    'fb_apache',
+    'fb_apt',
+    'fb_apt_cacher',
+    'fb_collectd',
+    'fb_cron',
+    'fb_dnsmasq',
+    'fb_dracut',
+    'fb_ethers',
+    'fb_fstab',
+    'fb_grub',
+    'fb_hdparm',
+    'fb_iptables',
+    'fb_helpers',
+    'fb_hddtemp',
+    'fb_hostconf',
+    'fb_hosts',
+    'fb_limits',
+    'fb_logrotate',
+    'fb_modprobe',
+    'fb_motd',
+    'fb_nsswitch',
+    'fb_reprepro',
+    'fb_securetty',
+    'fb_swap',
+    'fb_sysctl',
+    'fb_sysfs',
+    'fb_syslog',
+    'fb_systemd',
+    'fb_timers',
+    'fb_tmpclean',
+    'fb_vsftpd',
+    'fb_zfs',
+  };
+
+  public static function getDirs(): ImmSet<string> {
+    return self::$cookbooks->map(
+        $cookbook ==> self::BASE_DIR.$cookbook.'/',
+      )
+        ->concat(['chef/github/'])
+        ->toImmSet();
+  }
+
+  public static function stripChefTestHostsHeader(
+    ShipItChangeset $changeset
+  ): ShipItChangeset {
+    return $changeset->withMessage(
+      preg_replace(
+        '/\s*chef_test_hosts:.*/',
+        '',
+        $changeset->getMessage(),
+      ),
+    );
+  }
+
+  <<__Override>>
+  protected static function defaultProjectFilterChangeset(
+    ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
+  ): ShipItChangeset {
+    return parent::defaultProjectFilterChangeset($changeset, $get_path_mappings)
+      |> OSTeamFilters::rewriteEmails($$)
+      |> static::stripChefTestHostsHeader($$);
+  }
+
+  <<__Override>>
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
+    return ImmVector {
+      # filter all tests not marked as public because most of our
+      # test require our crazy hacked up chefspec... but allow
+      # pure rspec tests.
+      '@^.*/spec/(?!public_).*@',
+      '@README.facebook@',
+      '@(^|/)OWNERS$@',
+    };
+  }
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'chef/github/' => '',
+      'chef/cookbooks/core/' => 'cookbooks/',
+      'chef/github/cookbooks/fb_init_sample' => 'cookbooks/fb_init_sample',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'opsfiles',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'chef-cookbooks',
+    );
+  }
+
+  <<__Override>>
+  public static function getBaseConfig(
+    FBSourceBranchConfig $branch_config,
+  ): ShipItBaseConfig {
+    return parent::getBaseConfig($branch_config)
+      ->withSourceRoots(self::getDirs());
+  }
+}
