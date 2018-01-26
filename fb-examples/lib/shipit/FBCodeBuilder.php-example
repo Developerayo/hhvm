@@ -18,6 +18,72 @@ class FBCodeBuilder {
   // `facebook` for a future-proof pattern of `<github user>/<github repo>`.
   const string SRC_GITHUB_HASHES = 'fbcode/opensource/project_hashes/facebook/';
   const string DEST_GITHUB_HASHES = 'build/deps/github_hashes/facebook/';
+
+  public static function getPathMappings(
+    ?string $travisConfig = null,
+  ): ImmMap<string, string>  {
+    if ($travisConfig === null) {
+      $travisConfig = FBCodeBuilder::SRC_FBCODE_BUILDER.'travis.yml';
+    }
+    return ImmMap {
+      $travisConfig => '.travis.yml',
+      FBCodeBuilder::SRC_FBCODE_BUILDER => FBCodeBuilder::DEST_FBCODE_BUILDER,
+      FBCodeBuilder::SRC_GITHUB_HASHES => FBCodeBuilder::DEST_GITHUB_HASHES,
+    };
+  }
+  public static function getDestStrippedFiles(
+  ): ImmVector<string>  {
+    return ImmVector {
+      // Don't bother Github users with code only relevant internally.
+      '@^build/facebook_.*@',
+      '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'@',
+      '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'facebook_@',
+      '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'README.facebook$@',
+      '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'TARGETS@',
+    };
+  }
+  public static function getDestStrippedFileExceptions(
+    ImmSet<string> $dependencies,
+  ): ImmVector<string>  {
+    return ImmVector {
+      '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'$@',
+      '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'('.implode(
+          '|',
+          $dependencies->map($d ==> preg_quote($d, '@'))
+        ).')-rev.txt$@',
+      // This is just to appease ShipItFilterSanityCheckPhase
+      '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'shipit_test_file.txt$@',
+    };
+  }
+
+  // The newer FBShipItConfig classes strip on source paths rather than
+  // destination paths.
+  //
+  // TODO: These unfortunately cannot easily strip files that get installed at
+  // build/facebook_.*
+  // Individual projects have to provide their own rules for these files.
+  public static function getSrcStrippedFiles(
+  ): ImmVector<string>  {
+    return ImmVector {
+      '@^'.FBCodeBuilder::SRC_GITHUB_HASHES.'@',
+      '@^'.FBCodeBuilder::SRC_FBCODE_BUILDER.'facebook_@',
+      '@^'.FBCodeBuilder::SRC_FBCODE_BUILDER.'README.facebook$@',
+      '@^'.FBCodeBuilder::SRC_FBCODE_BUILDER.'TARGETS@',
+    };
+  }
+  public static function getSrcStrippedFileExceptions(
+    ImmSet<string> $dependencies,
+  ): ImmVector<string>  {
+    return ImmVector {
+      '@^'.FBCodeBuilder::SRC_GITHUB_HASHES.'$@',
+      '@^'.FBCodeBuilder::SRC_GITHUB_HASHES.'('.implode(
+          '|',
+          $dependencies->map($d ==> preg_quote($d, '@'))
+        ).')-rev.txt$@',
+      // This is just to appease ShipItFilterSanityCheckPhase
+      '@^'.FBCodeBuilder::SRC_GITHUB_HASHES.'shipit_test_file.txt$@',
+    };
+  }
 }
 
 interface ISupportsFBCodeBuilder {};
@@ -72,13 +138,11 @@ trait FBCodeBuilderTrait implements ISupportsFBCodeBuilder {
     return FBCodeBuilder::SRC_FBCODE_BUILDER.'travis.yml';
   }
 
-  private static function getFBCodeBuilderPathMappings(
+  public static function getFBCodeBuilderPathMappings(
   ): ImmMap<string, string>  {
-    return ImmMap {
-      static::getFBCodeBuilderTravisConfig() => '.travis.yml',
-      FBCodeBuilder::SRC_FBCODE_BUILDER => FBCodeBuilder::DEST_FBCODE_BUILDER,
-      FBCodeBuilder::SRC_GITHUB_HASHES => FBCodeBuilder::DEST_GITHUB_HASHES,
-    };
+    return FBCodeBuilder::getPathMappings(
+      static::getFBCodeBuilderTravisConfig(),
+    );
   }
 
   // Adds fbcode_builder's path mappings to the per-project path mappings.
@@ -98,6 +162,7 @@ trait FBCodeBuilderTrait implements ISupportsFBCodeBuilder {
     ShipItChangeset $changeset,
     GetPathMappingsFn $get_path_mappings,
   ): ShipItChangeset {
+    $dependencies = static::getFBCodeBuilderDependencies();
     return $changeset
       // We are counting on this to call
       //   ShipItPathFilters::moveDirectories($$, static::getPathMappings())
@@ -106,24 +171,8 @@ trait FBCodeBuilderTrait implements ISupportsFBCodeBuilder {
       // Strip code specific to Facebook's internal continuous integration.
       |> ShipItPathFilters::stripPaths(
         $$,
-        /* strip = */ ImmVector {
-          // Don't bother Github users with code only relevant internally.
-          '@^build/facebook_.*@',
-          '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'@',
-          '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'facebook_@',
-          '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'README.facebook$@',
-          '@^'.FBCodeBuilder::DEST_FBCODE_BUILDER.'TARGETS@',
-        },
-        /* exceptions = */ ImmVector {
-          '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'$@',
-          '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'('.implode(
-              '|',
-              static::getFBCodeBuilderDependencies()
-                ->map($d ==> preg_quote($d, '@'))
-            ).')-rev.txt$@',
-          // This is just to appease ShipItFilterSanityCheckPhase
-          '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'shipit_test_file.txt$@',
-        },
+        FBCodeBuilder::getDestStrippedFiles(),
+        FBCodeBuilder::getDestStrippedFileExceptions($dependencies),
       );
   }
 }

@@ -10,18 +10,23 @@
 namespace Facebook\ShipIt\Config;
 
 use \Facebook\ShipIt\ {
+  FBCodeBuilder,
   FBShipItCLIStaticConfig,
   FBShipItConfig,
 };
 
 final class FacebookFolly extends FBShipItConfig {
-
   <<__Override>>
   public static function getDefaultPathMappings(): ImmMap<string, string> {
-    return ImmMap {
+    $localMappings = ImmMap {
       'fbcode/folly/public_tld/' => '',
       'fbcode/folly/' => 'folly/',
     };
+    return ImmMap::fromItems(
+      $localMappings->items()->concat(
+        FBCodeBuilder::getPathMappings()->items()
+      )
+    );
   }
 
   <<__Override>>
@@ -35,8 +40,18 @@ final class FacebookFolly extends FBShipItConfig {
 
   <<__Override>>
   protected static function getDefaultStrippedFiles(): ImmVector<string> {
-    return ImmVector {
+    $localStrippedFiles = ImmVector {
       '@^fbcode/folly/folly-config\\.h$@',
+      '@^fbcode/folly/public_tld/build/facebook_.*@',
     };
+    return $localStrippedFiles->concat(
+      FBCodeBuilder::getSrcStrippedFiles()
+    );
+  }
+
+  <<__Override>>
+  protected static function getDefaultStrippedFileExceptions(
+  ): ImmVector<string> {
+    return FBCodeBuilder::getSrcStrippedFileExceptions(ImmSet{});
   }
 }
