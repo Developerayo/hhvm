@@ -10,6 +10,13 @@
 namespace Facebook\ShipIt;
 
 final class ShipItSyncConfig {
+  const type FilterFn = (
+    function(ShipItBaseConfig, ShipItChangeset): ShipItChangeset
+  );
+  const type PostFilterChangesetsFn = (
+    function(ImmVector<ShipItChangeset>, ShipItRepo): ImmVector<ShipItChangeset>
+  );
+
   private ?string $firstCommit = null;
   private ImmSet<string> $skippedSourceCommits = ImmSet { };
   private ?string $patchesDirectory = null;
@@ -18,9 +25,8 @@ final class ShipItSyncConfig {
 
   public function __construct(
     private ImmSet<string> $sourceRoots,
-    private
-      (function(ShipItBaseConfig, ShipItChangeset): ShipItChangeset)
-      $filter,
+    private self::FilterFn $filter,
+    private ?self::PostFilterChangesetsFn $postFilterChangesets = null,
   ) {
   }
 
@@ -71,6 +77,17 @@ final class ShipItSyncConfig {
   public function getFilter(
   ): (function(ShipItBaseConfig, ShipItChangeset): ShipItChangeset) {
     return $this->filter;
+  }
+
+  public function postFilterChangesets(
+    ImmVector<ShipItChangeset> $changesets,
+    ShipItRepo $dest,
+  ): ImmVector<ShipItChangeset> {
+    $post_filter_changesets = $this->postFilterChangesets;
+    if ($post_filter_changesets === null) {
+      return $changesets;
+    }
+    return $post_filter_changesets($changesets, $dest);
   }
 
   public function getStatsFilename(): ?string {

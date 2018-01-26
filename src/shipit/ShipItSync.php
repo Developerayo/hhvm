@@ -104,6 +104,9 @@ class ShipItSync {
 
     $verbose = $this->baseConfig->isVerboseEnabled();
     $dest = $this->getRepo(ShipItDestinationRepo::class);
+
+    $changesets = $this->syncConfig->postFilterChangesets($changesets, $dest);
+
     $changesets_applied = Vector {};
     foreach ($changesets as $changeset) {
       if ($patches_dir !== null) {

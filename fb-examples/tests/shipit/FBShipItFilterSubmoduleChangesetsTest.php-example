@@ -1,0 +1,180 @@
+<?hh // strict
+/**
+ * Copyright (c) 2018-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+final class FBShipItFilterSubmoduleChangesetsTest extends BaseTest {
+
+  private static function getSubmodulesChangeset(
+    ?ImmVector<ShipItDiff> $diffs = null,
+  ): ShipItChangeset {
+    if ($diffs === null) {
+      $diffs = ImmVector{
+        shape('path' => 'dep_a.txt', 'body' => '0'),
+        shape('path' => 'dep_b.txt', 'body' => '0'),
+      };
+    }
+    return (new ShipItChangeset())
+      ->withAuthor(FBShipItConfig::UPDATE_SUBMODULE_AUTHOR)
+      ->withSubject(FBShipItConfig::UPDATE_SUBMODULE_SUBJECT)
+      ->withDiffs($diffs);
+  }
+
+  public function testMergeSubmoduleChangesets(): void {
+    $changesets = ImmVector{
+      // Two Updating Submodules commits in a row
+      self::getSubmodulesChangeset(
+        ImmVector{
+          shape('path' => 'dep_a.txt', 'body' => '0'),
+          shape('path' => 'dep_b.txt', 'body' => '0'),
+        },
+      ),
+      self::getSubmodulesChangeset(
+        ImmVector{
+          shape('path' => 'dep_b.txt', 'body' => '1'),
+          shape('path' => 'dep_c.txt', 'body' => '1'),
+        },
+      ),
+      // Missing required subject -- not considered
+      self::getSubmodulesChangeset(
+        ImmVector{
+          shape('path' => 'dep_a.txt', 'body' => '9'),
+          shape('path' => 'dep_b.txt', 'body' => '9'),
+        },
+      )->withSubject(''),
+      // Missing required author -- not considered
+      self::getSubmodulesChangeset(
+        ImmVector{
+          shape('path' => 'dep_a.txt', 'body' => '9'),
+          shape('path' => 'dep_b.txt', 'body' => '9'),
+        },
+      )->withAuthor(''),
+      // One more Updating Submodules commit
+      self::getSubmodulesChangeset(
+        ImmVector{
+          shape('path' => 'dep_b.txt', 'body' => '2'),
+          shape('path' => 'dep_c.txt', 'body' => '2'),
+        },
+      ),
+    };
+    // The first two commits get merged together.
+    $merged_changesets = FBShipItConfig::mergeSubmoduleChangesets($changesets);
+    $this->assertEquals(4, $merged_changesets->count());
+    $this->assertEquals(
+      FBShipItConfig::UPDATE_SUBMODULE_AUTHOR,
+      $merged_changesets[0]->getAuthor(),
+    );
+    $this->assertEquals(
+      FBShipItConfig::UPDATE_SUBMODULE_SUBJECT,
+      $merged_changesets[0]->getSubject(),
+    );
+    $this->assertEquals(
+      ImmVector{
+        shape('path' => 'dep_a.txt', 'body' => '0'),
+        shape('path' => 'dep_b.txt', 'body' => '01'),
+        shape('path' => 'dep_c.txt', 'body' => '1'),
+      },
+      $merged_changesets[0]->getDiffs(),
+    );
+    $this->assertEquals($changesets[2], $merged_changesets[1]);
+    $this->assertEquals($changesets[3], $merged_changesets[2]);
+    $this->assertEquals(
+      FBShipItConfig::UPDATE_SUBMODULE_AUTHOR,
+      $merged_changesets[3]->getAuthor(),
+    );
+    $this->assertEquals(
+      FBShipItConfig::UPDATE_SUBMODULE_SUBJECT,
+      $merged_changesets[3]->getSubject(),
+    );
+    $this->assertEquals(
+      ImmVector{
+        shape('path' => 'dep_b.txt', 'body' => '2'),
+        shape('path' => 'dep_c.txt', 'body' => '2'),
+      },
+      $merged_changesets[3]->getDiffs(),
+    );
+  }
+
+  public function testMergeSubmoduleChangesetsNoMerge(): void {
+    $changesets = ImmVector{
+      (new ShipItChangeset())
+        ->withAuthor(FBShipItConfig::UPDATE_SUBMODULE_AUTHOR)
+        ->withDiffs(ImmVector{
+          shape('path' => 'dep_a.txt', 'body' => '9'),
+          shape('path' => 'dep_b.txt', 'body' => '9'),
+        }),
+      (new ShipItChangeset())
+        ->withSubject(FBShipItConfig::UPDATE_SUBMODULE_SUBJECT)
+        ->withDiffs(ImmVector{
+          shape('path' => 'dep_a.txt', 'body' => '9'),
+          shape('path' => 'dep_b.txt', 'body' => '9'),
+        }),
+    };
+    $merged_changesets = FBShipItConfig::mergeSubmoduleChangesets($changesets);
+    $this->assertEquals($changesets, $merged_changesets);
+  }
+
+  public function testShouldSkipUpdateSubmodules(): void {
+    $dest_head = self::getSubmodulesChangeset()
+      ->withTimestamp(time());
+    $repo = new FakeShipItRepo($dest_head);
+    $changesets = ImmVector { self::getSubmodulesChangeset() };
+    $this->assertTrue(
+      FBShipItConfig::shouldSkipUpdateSubmodules($changesets, $repo),
+    );
+  }
+
+  public function testShouldSkipUpdateSubmodulesNothingToSkip(): void {
+    $dest_head = self::getSubmodulesChangeset()
+      ->withTimestamp(time());
+    $repo = new FakeShipItRepo($dest_head);
+    // intern has a non-submodule commit
+    $changesets = ImmVector {
+      self::getSubmodulesChangeset(),
+      self::getSubmodulesChangeset()->withAuthor(''),
+    };
+    $this->assertFalse(
+      FBShipItConfig::shouldSkipUpdateSubmodules($changesets, $repo),
+    );
+  }
+
+  public function testShouldSkipUpdateSubmodulesNoDoubleCommit(): void {
+    $dest_head = self::getSubmodulesChangeset()
+      ->withTimestamp(time())
+      // destination head is not a submodule update
+      ->withAuthor('');
+    $repo = new FakeShipItRepo($dest_head);
+    $changesets = ImmVector { self::getSubmodulesChangeset() };
+    $this->assertFalse(
+      FBShipItConfig::shouldSkipUpdateSubmodules($changesets, $repo),
+    );
+  }
+
+  public function testShouldSkipUpdateSubmodulesRateLimit(): void {
+    $dest_head = self::getSubmodulesChangeset()
+      // no submodule commits shipped in the last week
+      ->withTimestamp(time() - (60 * 60 * 24 * 7));
+    $repo = new FakeShipItRepo($dest_head);
+    $changesets = ImmVector { self::getSubmodulesChangeset() };
+    $this->assertFalse(
+      FBShipItConfig::shouldSkipUpdateSubmodules($changesets, $repo),
+    );
+  }
+
+  public function testPostFilterChangesets(): void {
+    $dest_head = self::getSubmodulesChangeset()
+      ->withTimestamp(time());
+    $repo = new FakeShipItRepo($dest_head);
+    $changesets = ImmVector { self::getSubmodulesChangeset() };
+    $this->assertEquals(
+      ImmVector {},
+      FBShipItConfig::postFilterChangesets($changesets, $repo),
+    );
+  }
+}

@@ -16,12 +16,10 @@ final class ShipItSyncPhase extends ShipItPhase {
   private ?string $statsFilename = null;
 
   public function __construct(
-    private
-      (function(
-        ShipItBaseConfig,
-        ShipItChangeset,
-      ): ShipItChangeset) $filter,
+    private ShipItSyncConfig::FilterFn $filter,
     private ImmSet<string> $destinationRoots = ImmSet { },
+    private ?ShipItSyncConfig::PostFilterChangesetsFn $postFilterChangesets
+      = null,
   ) {}
 
   <<__Override>>
@@ -83,7 +81,11 @@ final class ShipItSyncPhase extends ShipItPhase {
   protected function runImpl(
     ShipItBaseConfig $base,
   ): void {
-    $sync = (new ShipItSyncConfig($base->getSourceRoots(), $this->filter))
+    $sync = (new ShipItSyncConfig(
+      $base->getSourceRoots(),
+      $this->filter,
+      $this->postFilterChangesets,
+    ))
      ->withDestinationRoots($this->destinationRoots)
      ->withFirstCommit($this->firstCommit)
      ->withSkippedSourceCommits($this->skippedSourceCommits)

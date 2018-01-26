@@ -31,6 +31,10 @@ type FBSourceBranchConfig = shape(
  * directly (eg shipit_hhvm.php and shipit_buck.php)
  */
 abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
+  // Do not update submodules twice in a row in a 24-hour period.
+  const int UPDATE_SUBMODULE_FREQUENCY = 60 * 60 * 24;
+  const string UPDATE_SUBMODULE_AUTHOR = 'svcscm <svcscm@fb.com>';
+  const string UPDATE_SUBMODULE_SUBJECT = 'Updating submodules';
 
   public abstract static function getDefaultPathMappings(
   ): ImmMap<string, string>;
@@ -251,6 +255,8 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
       new ShipItSyncPhase(
         ($config, $changeset) ==>
           self::filterChangeset($changeset, $branch_config),
+        ImmSet {},
+        ($changesets, $dest) ==> self::postFilterChangesets($changesets, $dest),
       ),
       new ShipItVerifyRepoPhase(
         $changeset ==> self::filterChangeset($changeset, $branch_config),
@@ -427,5 +433,121 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
       'branch.',
     );
     return 'master';
+  }
+
+  final public static function postFilterChangesets(
+    ImmVector<ShipItChangeset> $changesets,
+    ShipItRepo $dest,
+  ): ImmVector<ShipItChangeset> {
+    $merged_changesets = self::mergeSubmoduleChangesets($changesets);
+    if (self::shouldSkipUpdateSubmodules($merged_changesets, $dest)) {
+      return ImmVector {};
+    } else {
+      return $merged_changesets;
+    }
+  }
+
+  final public static function mergeSubmoduleChangesets(
+    ImmVector<ShipItChangeset> $changesets,
+  ): ImmVector<ShipItChangeset> {
+    $new_changesets = Vector{};
+    $submodules_changeset = null;
+    foreach ($changesets as $changeset) {
+      if (self::isUpdatingSubmodules($changeset)) {
+        if ($submodules_changeset === null) {
+          $submodules_changeset = $changeset;
+        } else {
+          printf(
+            "  MERGE %s %s\n",
+            $submodules_changeset->getShortID(),
+            $submodules_changeset->getSubject(),
+          );
+          $submodules_changeset = $submodules_changeset
+            ->withID($changeset->getID())
+            ->withDiffs(
+              self::mergeSubmoduleDiffs($submodules_changeset, $changeset)
+            )
+            ->withTimestamp($changeset->getTimestamp())
+            ->withAuthor($changeset->getAuthor())
+            ->withSubject($changeset->getSubject())
+            ->withMessage($changeset->getMessage());
+        }
+      } else {
+        if ($submodules_changeset !== null) {
+          $new_changesets[] = $submodules_changeset;
+          $submodules_changeset = null;
+        }
+        $new_changesets[] = $changeset;
+      }
+    }
+    if ($submodules_changeset !== null) {
+      $new_changesets[] = $submodules_changeset;
+      $submodules_changeset = null;
+    }
+    return $new_changesets->toImmVector();
+  }
+
+  final public static function shouldSkipUpdateSubmodules(
+    ImmVector<ShipItChangeset> $changesets,
+    ShipItRepo $dest,
+  ): bool {
+    if (
+      $changesets->count() === 1 &&
+      self::isUpdatingSubmodules($changesets[0])
+    ) {
+      // If that's all there is, skip the whole operation unless enough
+      // time has passed or a non-submodule commit has been made.
+      $dest_head = $dest->getHeadChangeset();
+      if ($dest_head !== null && self::isUpdatingSubmodules($dest_head)) {
+        $time_elapsed = time() - $dest_head->getTimestamp();
+        if ($time_elapsed < self::UPDATE_SUBMODULE_FREQUENCY) {
+          printf(
+            "  SKIP Not updating submodules for another %d seconds\n",
+            $time_elapsed,
+          );
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private static function isUpdatingSubmodules(
+    ShipItChangeset $changeset,
+  ): bool {
+    return (
+      $changeset->getAuthor() === self::UPDATE_SUBMODULE_AUTHOR &&
+      $changeset->getSubject() === self::UPDATE_SUBMODULE_SUBJECT
+    );
+  }
+
+  /**
+   * Patches the new changeset's diffs on top of the old changeset's diffs.
+   * XXX this might break on HG, but that's okay, because this is only
+   * relevant to git submodules.
+   */
+  private static function mergeSubmoduleDiffs(
+    ShipItChangeset $old_changeset,
+    ShipItChangeset $new_changeset,
+  ): ImmVector<ShipItDiff> {
+    $diffs_map = Map{};
+    foreach ($old_changeset->getDiffs() as $diff) {
+      $diffs_map[$diff['path']] = $diff;
+    }
+    foreach ($new_changeset->getDiffs() as $diff) {
+      // Concatenate the new changeset's file body after the old changeset's
+      // file body, or just add the new changeset's file if it does not exist
+      // in the old changeset.
+      if ($diffs_map->contains($diff['path'])) {
+        $new_body = $diffs_map[$diff['path']]['body'] . $diff['body'];
+      } else {
+        $new_body = $diff['body'];
+      }
+      $diffs_map[$diff['path']] = shape(
+        'path' => $diff['path'],
+        'body' => $new_body,
+      );
+    }
+    return $diffs_map->values()->toImmVector();
   }
 }
