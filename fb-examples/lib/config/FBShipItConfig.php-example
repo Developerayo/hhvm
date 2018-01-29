@@ -474,9 +474,7 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
               );
             foreach($changeset->getDebugMessages() as $debug_message) {
               $submodules_changeset = $submodules_changeset->withDebugMessage(
-                /* HH_IGNORE_ERROR[4110] these are already-formatted strings */
-                /* HH_FIXME[4027]: cannot be a literal string */
-                $debug_message,
+                '%s', $debug_message,
               );
             }
           } else {
