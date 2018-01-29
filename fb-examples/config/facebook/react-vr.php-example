@@ -15,7 +15,7 @@ use \Facebook\ShipIt\ {
 };
 
 final class FacebookReactVr extends FBShipItConfig {
-  const string ROOT = 'ReactVR/';
+  const string ROOT = 'Software/Apps/skyline/src/react-vr/github/';
 
   <<__Override>>
   public static function getDefaultPathMappings(): ImmMap<string, string> {
@@ -27,7 +27,7 @@ final class FacebookReactVr extends FBShipItConfig {
   <<__Override>>
   public static function getStaticConfig(): FBShipItCLIStaticConfig {
     return shape(
-      'internalRepo' => 'oculus-webvr',
+      'internalRepo' => 'ovrsource',
       'githubOrg' => 'facebook',
       'githubProject' => 'react-vr',
     );
