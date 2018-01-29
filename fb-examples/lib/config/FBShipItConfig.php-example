@@ -457,20 +457,34 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
         if ($submodules_changeset === null) {
           $submodules_changeset = $changeset;
         } else {
-          printf(
-            "  MERGE %s %s\n",
-            $submodules_changeset->getShortID(),
-            $submodules_changeset->getSubject(),
-          );
-          $submodules_changeset = $submodules_changeset
-            ->withID($changeset->getID())
-            ->withDiffs(
-              self::mergeSubmoduleDiffs($submodules_changeset, $changeset)
-            )
-            ->withTimestamp($changeset->getTimestamp())
-            ->withAuthor($changeset->getAuthor())
-            ->withSubject($changeset->getSubject())
-            ->withMessage($changeset->getMessage());
+          if ($changeset->isValid()) {
+            $submodules_changeset = $submodules_changeset
+              ->withID($changeset->getID())
+              ->withDiffs(
+                self::mergeSubmoduleDiffs($submodules_changeset, $changeset)
+              )
+              ->withTimestamp($changeset->getTimestamp())
+              ->withAuthor($changeset->getAuthor())
+              ->withSubject($changeset->getSubject())
+              ->withMessage($changeset->getMessage())
+              ->withDebugMessage(
+                'MERGE %s %s',
+                $submodules_changeset->getShortID(),
+                $submodules_changeset->getSubject(),
+              );
+            foreach($changeset->getDebugMessages() as $debug_message) {
+              $submodules_changeset = $submodules_changeset->withDebugMessage(
+                /* HH_IGNORE_ERROR[4110] these are already-formatted strings */
+                /* HH_FIXME[4027]: cannot be a literal string */
+                $debug_message,
+              );
+            }
+          } else {
+            $submodules_changeset = $submodules_changeset->withDebugMessage(
+              'SKIPPED COMMIT (%s) - Would have merged submodule commit',
+              $changeset->getShortID(),
+            );
+          }
         }
       } else {
         if ($submodules_changeset !== null) {
@@ -503,7 +517,7 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
         if ($time_elapsed < self::UPDATE_SUBMODULE_FREQUENCY) {
           printf(
             "  SKIP Not updating submodules for another %d seconds\n",
-            $time_elapsed,
+            self::UPDATE_SUBMODULE_FREQUENCY - $time_elapsed,
           );
           return true;
         }
