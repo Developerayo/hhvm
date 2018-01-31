@@ -35,27 +35,36 @@ final class FacebookexperimentalBuckit extends FBShipItConfig {
               '@/TARGETS$@',
             }))
         |> ShipItPathFilters::moveDirectories($$, $get_path_mappings())
-        |> static::removeOssExtension($$)
+        /**
+         * Drop internal versions of files that have oss counterparts,
+         * as well as some other random files
+         */
         |> ShipItPathFilters::stripPaths(
             $$,
-            ImmVector {
-              '@infra_macros/macro_lib/convert/java.*\.py@',
-              '@infra_macros/fbcode_macros/.buckconfig@',
-            })
+            static::$FilesToExclude->concat(
+              static::$FilesWithOssExtension->map($path ==> '@^'.$path.'$@')))
+        |> static::rewriteRemovingOssExtension($$)
         |> ShipItPathFilters::rewritePaths(
           $$,
           $path ==> preg_replace(
             '@^((?!infra_macros/fbcode_macros).*)/TARGETS$@', '\1/BUCK', $path));
   }
 
+  private static ImmVector<string> $FilesToExclude = ImmVector {
+    '@infra_macros/macro_lib/convert/java.*\.py@',
+  };
+
   private static ImmSet<string> $FilesWithOssExtension = ImmSet {
-    "infra_macros/package.json",
-    "infra_macros/.buckconfig",
+    'infra_macros/package.json',
+    'infra_macros/.buckconfig',
+    'infra_macros/fbcode_macros/build_defs/third_party_config.bzl',
+    'infra_macros/fbcode_macros/build_defs/platform_overrides.bzl',
+    'infra_macros/fbcode_macros/.buckconfig',
   };
 
   const BuckFilesToRewrite = '@^((?!specs|infra_macros/fbcode_macros).*)/BUCK$@';
 
-  private static function removeOssExtension(
+  private static function rewriteRemovingOssExtension(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     return ShipItPathFilters::rewritePaths(
@@ -97,7 +106,7 @@ final class FacebookexperimentalBuckit extends FBShipItConfig {
     FBSourceBranchConfig $branch_config,
   ): ShipItChangeset {
     return $changeset
-      |> static::addOssExtension($$)
+      |> static::rewriteAddingOssExtension($$)
       |> ShipItPathFilters::rewritePaths(
         $$,
         $path ==> preg_replace(
@@ -107,7 +116,7 @@ final class FacebookexperimentalBuckit extends FBShipItConfig {
       |> parent::projectImportChangeset($$, $branch_config);
   }
 
-  private static function addOssExtension(
+  private static function rewriteAddingOssExtension(
     ShipItChangeset $changeset
   ): ShipItChangeset {
     return ShipItPathFilters::rewritePaths(

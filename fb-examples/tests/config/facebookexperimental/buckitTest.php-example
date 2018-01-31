@@ -35,8 +35,6 @@ final class FacebookexperimentalBuckitTest extends FBConfigBaseTest {
         'infra_macros/fbcode_macros/BUCK',
       'fbcode/tools/build/buck/infra_macros/macro_lib_tests/' =>
         'infra_macros/macro_lib_tests/',
-      'fbcode/tools/build/buck/infra_macros/fbcode_macros/.buckconfig' =>
-        null,
       'fbcode/tools/build/buck/infra_macros/macro_lib/convert/javafoundations.py' =>
         null,
       'fbcode/tools/build/buck/infra_macros/macro_lib/convert/java_plugins.py' =>
@@ -47,6 +45,18 @@ final class FacebookexperimentalBuckitTest extends FBConfigBaseTest {
       'fbcode/experimental/pjameson/buckit/specs/' => 'specs/',
       'fbcode/experimental/pjameson/buckit/specs/glog/glog/BUCK' =>
         'specs/glog/glog/BUCK',
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/third_party_config.bzl' =>
+        null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/platform_overrides.bzl' =>
+        null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/.buckconfig' =>
+        null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/third_party_config.bzl.oss' =>
+        'infra_macros/fbcode_macros/build_defs/third_party_config.bzl',
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/platform_overrides.bzl.oss' =>
+        'infra_macros/fbcode_macros/build_defs/platform_overrides.bzl',
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/.buckconfig.oss' =>
+        'infra_macros/fbcode_macros/.buckconfig',
     };
   }
 }
