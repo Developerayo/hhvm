@@ -38,12 +38,15 @@ final class Caffe2Caffe2 extends FBShipItConfig {
   <<__Override>>
   public static function getSubmoduleMappings(): ImmMap<string, string> {
     return ImmMap {
+      self::ROOT.'submodules/FP16-rev.txt' => 'third_party/FP16',
+      self::ROOT.'submodules/FXdiv-rev.txt' => 'third_party/FXdiv',
       self::ROOT.'submodules/NNPACK-rev.txt' => 'third_party/NNPACK',
       self::ROOT.'submodules/android-cmake-rev.txt' =>
         'third_party/android-cmake',
       self::ROOT.'submodules/aten-rev.txt' => 'third_party/aten',
       self::ROOT.'submodules/benchmark-rev.txt' => 'third_party/benchmark',
       self::ROOT.'submodules/cnmem-rev.txt' => 'third_party/cnmem',
+      self::ROOT.'submodules/cpuinfo-rev.txt' => 'third_party/cpuinfo',
       self::ROOT.'submodules/cub-rev.txt' => 'third_party/cub',
       self::ROOT.'submodules/eigen-rev.txt' => 'third_party/eigen',
       self::ROOT.'submodules/gloo-rev.txt' => 'third_party/gloo',
@@ -52,6 +55,8 @@ final class Caffe2Caffe2 extends FBShipItConfig {
       self::ROOT.'submodules/nccl-rev.txt' => 'third_party/nccl',
       self::ROOT.'submodules/nervanagpu-rev.txt' => 'third_party/nervanagpu',
       self::ROOT.'submodules/protobuf-rev.txt' => 'third_party/protobuf',
+      self::ROOT.'submodules/psimd-rev.txt' => 'third_party/psimd',
+      self::ROOT.'submodules/pthreadpool-rev.txt' => 'third_party/pthreadpool',
       self::ROOT.'submodules/pybind11-rev.txt' => 'third_party/pybind11',
       self::ROOT.'submodules/zstd-rev.txt' => 'third_party/zstd',
     };
