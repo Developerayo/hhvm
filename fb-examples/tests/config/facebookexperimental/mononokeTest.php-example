@@ -21,7 +21,7 @@ final class FacebookexperimentalMononokeTest extends FBConfigBaseTest {
       'fbcode/common/rust/futures-ext/src/lib.rs' => 'futures-ext/src/lib.rs',
       'fbcode/common/rust/utils/py_tar_utils/foo.py' => 'py_tar_utils/foo.py',
       'fbcode/common/rust/scribe/src/lib.rs' => null,
-      'fbcode/common/rust/ossconfigs/rustfmt.toml' => 'rustfmt.toml',
+      'tools/rust/ossconfigs/rustfmt.toml' => 'rustfmt.toml',
     };
   }
 }

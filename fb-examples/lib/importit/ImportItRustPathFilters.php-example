@@ -13,7 +13,7 @@ abstract final class ImportItRustPathFilters {
   private static ImmVector<string> $oss_config_files =
     ImmVector { 'rustfmt.toml' };
 
-  const RUST_OSS_CONFIGS = 'fbcode/common/rust/ossconfigs/';
+  const RUST_OSS_CONFIGS = 'tools/rust/ossconfigs/';
 
   /**
    * A wrapper around ImportItPathFilters that makes sure the configs in
