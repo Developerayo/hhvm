@@ -41,8 +41,6 @@ final class Caffe2Caffe2 extends FBShipItConfig {
       self::ROOT.'submodules/FP16-rev.txt' => 'third_party/FP16',
       self::ROOT.'submodules/FXdiv-rev.txt' => 'third_party/FXdiv',
       self::ROOT.'submodules/NNPACK-rev.txt' => 'third_party/NNPACK',
-      self::ROOT.'submodules/android-cmake-rev.txt' =>
-        'third_party/android-cmake',
       self::ROOT.'submodules/aten-rev.txt' => 'third_party/aten',
       self::ROOT.'submodules/benchmark-rev.txt' => 'third_party/benchmark',
       self::ROOT.'submodules/cnmem-rev.txt' => 'third_party/cnmem',
