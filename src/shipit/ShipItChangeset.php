@@ -47,11 +47,11 @@ final class ShipItChangeset {
     if ($this->getID() === '') {
       return '';
     }
-    $short_id = substr($this->getID(), 0, ShipItUtil::SHORT_REV_LENGTH);
+    $short_id = \substr($this->getID(), 0, ShipItUtil::SHORT_REV_LENGTH);
     invariant(
-      is_string($short_id),
+      \is_string($short_id),
       'got %s, expected string',
-      gettype($short_id),
+      \gettype($short_id),
     );
     return $short_id;
   }
@@ -122,7 +122,7 @@ final class ShipItChangeset {
   ): ShipItChangeset {
     $messages = $this->getDebugMessages()->toVector();
     /* HH_FIXME[4027]: cannot be a literal string */
-    $messages[] = sprintf($format_string, ...$args);
+    $messages[] = \sprintf($format_string, ...$args);
 
     $out = clone $this;
     $out->debugMessages = $messages->toImmVector();
@@ -130,14 +130,14 @@ final class ShipItChangeset {
   }
 
   public function dumpDebugMessages(): void {
-    printf(
+    \printf(
       "  DEBUG %s %s\n    Full ID: %s\n",
       $this->getShortID(),
       $this->getSubject(),
       $this->getID(),
     );
     foreach ($this->getDebugMessages() as $message) {
-      printf("    %s\n", $message);
+      \printf("    %s\n", $message);
     }
   }
 

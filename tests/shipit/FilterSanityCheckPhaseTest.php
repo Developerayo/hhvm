@@ -14,7 +14,7 @@ final class FilterSanityCheckPhaseTest extends BaseTest {
     $phase = new ShipItFilterSanityCheckPhase(
       $changeset ==> $changeset->withDiffs(
         $changeset->getDiffs()->filter(
-          $diff ==> substr($diff['path'], 0, 4) === 'foo/',
+          $diff ==> \substr($diff['path'], 0, 4) === 'foo/',
         ),
       ),
     );
@@ -71,7 +71,7 @@ final class FilterSanityCheckPhaseTest extends BaseTest {
     $phase = new ShipItFilterSanityCheckPhase(
       $changeset ==> $changeset->withDiffs(
         $changeset->getDiffs()->filter(
-          $diff ==> substr($diff['path'], 0, 3) === 'foo',
+          $diff ==> \substr($diff['path'], 0, 3) === 'foo',
         )
       ),
     );

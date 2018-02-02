@@ -31,7 +31,7 @@ final class FacebookSurround360 extends FBShipItConfig {
     return $changeset
       |> ShipItPathFilters::rewritePaths(
         $$,
-        $path ==> str_replace(
+        $path ==> \str_replace(
           'surround360_render/.',
           'surround360_render/dot_',
           $path,
@@ -39,7 +39,7 @@ final class FacebookSurround360 extends FBShipItConfig {
       )
       |> ShipItPathFilters::rewritePaths(
         $$,
-        $path ==> str_replace(
+        $path ==> \str_replace(
           'surround360_camera_ctl/.',
           'surround360_camera_ctl/dot_',
           $path
@@ -60,12 +60,12 @@ final class FacebookSurround360 extends FBShipItConfig {
       |> FBCommonFilters::applyAll($$)
       |> ShipItPathFilters::rewritePaths(
         $$,
-        $path ==> str_replace('/surround360_render/dot_',
+        $path ==> \str_replace('/surround360_render/dot_',
           '/surround360_render/.', $path),
       )
       |> ShipItPathFilters::rewritePaths(
         $$,
-        $path ==> str_replace('/surround360_camera_ctl/dot_',
+        $path ==> \str_replace('/surround360_camera_ctl/dot_',
           '/surround360_camera_ctl/.', $path),
       )
       |> ShipItPathFilters::moveDirectories($$, $get_path_mappings());

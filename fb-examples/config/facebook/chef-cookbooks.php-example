@@ -72,7 +72,7 @@ final class FacebookChefCookbooks extends FBShipItConfig {
     ShipItChangeset $changeset
   ): ShipItChangeset {
     return $changeset->withMessage(
-      preg_replace(
+      \preg_replace(
         '/\s*chef_test_hosts:.*/',
         '',
         $changeset->getMessage(),

@@ -122,7 +122,7 @@ final class FBShipItFilterSubmoduleChangesetsTest extends BaseTest {
 
   public function testShouldSkipUpdateSubmodules(): void {
     $dest_head = self::getSubmodulesChangeset()
-      ->withTimestamp(time());
+      ->withTimestamp(\time());
     $repo = new FakeShipItRepo($dest_head);
     $changesets = ImmVector { self::getSubmodulesChangeset() };
     $this->assertTrue(
@@ -132,7 +132,7 @@ final class FBShipItFilterSubmoduleChangesetsTest extends BaseTest {
 
   public function testShouldSkipUpdateSubmodulesNothingToSkip(): void {
     $dest_head = self::getSubmodulesChangeset()
-      ->withTimestamp(time());
+      ->withTimestamp(\time());
     $repo = new FakeShipItRepo($dest_head);
     // intern has a non-submodule commit
     $changesets = ImmVector {
@@ -146,7 +146,7 @@ final class FBShipItFilterSubmoduleChangesetsTest extends BaseTest {
 
   public function testShouldSkipUpdateSubmodulesNoDoubleCommit(): void {
     $dest_head = self::getSubmodulesChangeset()
-      ->withTimestamp(time())
+      ->withTimestamp(\time())
       // destination head is not a submodule update
       ->withAuthor('');
     $repo = new FakeShipItRepo($dest_head);
@@ -159,7 +159,7 @@ final class FBShipItFilterSubmoduleChangesetsTest extends BaseTest {
   public function testShouldSkipUpdateSubmodulesRateLimit(): void {
     $dest_head = self::getSubmodulesChangeset()
       // no submodule commits shipped in the last week
-      ->withTimestamp(time() - (60 * 60 * 24 * 7));
+      ->withTimestamp(\time() - (60 * 60 * 24 * 7));
     $repo = new FakeShipItRepo($dest_head);
     $changesets = ImmVector { self::getSubmodulesChangeset() };
     $this->assertFalse(
@@ -169,7 +169,7 @@ final class FBShipItFilterSubmoduleChangesetsTest extends BaseTest {
 
   public function testPostFilterChangesets(): void {
     $dest_head = self::getSubmodulesChangeset()
-      ->withTimestamp(time());
+      ->withTimestamp(\time());
     $repo = new FakeShipItRepo($dest_head);
     $changesets = ImmVector { self::getSubmodulesChangeset() };
     $this->assertEquals(

@@ -75,7 +75,7 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
     );
 
     $pipes = array();
-    $proc = proc_open(
+    $proc = \proc_open(
       'docs/soyweb-prod.sh',
       array(
         0 => array('pipe', 'r'),
@@ -85,7 +85,7 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
       &$pipes,
       $sourcePath
     );
-    fclose($pipes[0]);
+    \fclose($pipes[0]);
 
     try {
 /* HH_FIXME[4128] Use ShipItShellCommand */
@@ -96,10 +96,10 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
         'docs/soy2html.sh', $docsPath,
       );
     } finally {
-      $status = proc_get_status($proc);
+      $status = \proc_get_status($proc);
       if ($status !== null) {
         // kill whole tree of docs/soyweb-prod.sh
-        exec('pstree -pl '.$status['pid'].
+        \exec('pstree -pl '.$status['pid'].
              ' | grep -o "([0-9]\+)" | sed "s/(\|)//g" | xargs kill');
       }
     }
@@ -113,7 +113,7 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
     );
 
 /* HH_FIXME[4128] Use ShipItShellCommand */
-    $sourceCommitHash = rtrim(ShipItUtil::shellExec(
+    $sourceCommitHash = \rtrim(ShipItUtil::shellExec(
       $sourcePath,
       /* stdin = */ null,
       $verbose,
@@ -125,7 +125,7 @@ final class BuckGenerateDocsPhase extends ShipItPhase {
       /* stdin = */ null,
       $verbose,
       'git', 'commit',
-      '-m', sprintf('Updated HTML documentation to %s.', $sourceCommitHash),
+      '-m', \sprintf('Updated HTML documentation to %s.', $sourceCommitHash),
     );
   }
 }

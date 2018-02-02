@@ -77,7 +77,7 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
     );
 
 /* HH_FIXME[4128] Use ShipItShellCommand */
-    $diffstat = rtrim(ShipItUtil::shellExec(
+    $diffstat = \rtrim(ShipItUtil::shellExec(
       $clean_path,
       null,
       ShipItUtil::DONT_VERBOSE,
@@ -90,19 +90,19 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
 
     if ($diffstat === '') {
       if ($this->createPatch) {
-        fwrite(
-          STDERR,
+        \fwrite(
+          \STDERR,
           "  CREATE PATCH FAILED: destination is already in sync.\n",
         );
         exit(1);
       }
-      printf("  Verification OK: destination is in sync.\n");
+      \printf("  Verification OK: destination is in sync.\n");
       exit(0);
     }
 
     if (!$this->createPatch) {
-      fprintf(
-        STDERR,
+      \fprintf(
+        \STDERR,
         "  VERIFICATION FAILED: destination repo does not match:\n\n%s\n",
         $diffstat,
       );
@@ -121,10 +121,10 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
       'HEAD',
     );
 
-    $patch_file = tempnam(sys_get_temp_dir(), 'shipit-resync-patch-');
-    file_put_contents($patch_file, $diff);
+    $patch_file = \tempnam(\sys_get_temp_dir(), 'shipit-resync-patch-');
+    \file_put_contents($patch_file, $diff);
 
-    printf(
+    \printf(
       "  Created patch file: %s\n\n".
       "%s\n\n".
       "  To apply:\n\n".

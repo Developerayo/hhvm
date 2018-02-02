@@ -35,10 +35,10 @@ abstract class ShipItUtil {
     $plus_lines = 0;
     $seen_range_header = false;
 
-    foreach (explode("\n", $patch) as $line) {
-      $line = preg_replace('/(\r\n|\n)/', "\n", $line);
+    foreach (\explode("\n", $patch) as $line) {
+      $line = \preg_replace('/(\r\n|\n)/', "\n", $line);
 
-      if (preg_match('@^diff --git [ab]/(.*?) [ab]/\1$@', rtrim($line))) {
+      if (\preg_match('@^diff --git [ab]/(.*?) [ab]/\1$@', \rtrim($line))) {
         if ($contents !== '') {
           yield $contents;
         }
@@ -47,7 +47,7 @@ abstract class ShipItUtil {
         continue;
       }
       if (
-        preg_match(
+        \preg_match(
           '/^@@ -\d+(,(?<minus_lines>\d+))? \+\d+(,(?<plus_lines>\d+))? @@/',
           $line,
           &$matches,
@@ -68,7 +68,7 @@ abstract class ShipItUtil {
         continue;
       }
 
-      $leftmost = substr($line, 0, 1);
+      $leftmost = \substr($line, 0, 1);
       if ($leftmost === "\\") {
         $contents .= $line."\n";
         // Doesn't count as a + or - line whatever happens; if NL at EOF
@@ -80,7 +80,7 @@ abstract class ShipItUtil {
         continue;
       }
 
-      $leftmost = substr($line, 0, 1);
+      $leftmost = \substr($line, 0, 1);
       if ($leftmost === '+') {
         --$plus_lines;
       } else if ($leftmost === '-') {
@@ -106,11 +106,11 @@ abstract class ShipItUtil {
   }
 
   public static function isNewFile(string $body): bool {
-    return (bool) preg_match('@^new file@m', $body);
+    return (bool) \preg_match('@^new file@m', $body);
   }
 
   public static function isFileRemoval(string $body): bool {
-    return (bool) preg_match('@^deleted file@m', $body);
+    return (bool) \preg_match('@^deleted file@m', $body);
   }
 
   // 0 is runtime log rate - typechecker is sufficient.
@@ -124,14 +124,14 @@ abstract class ShipItUtil {
     $command = new ShipItShellCommand($path, ...$args);
 
     if ($flags & self::VERBOSE_SHELL) {
-      $cmd = implode(' ', $args);
-      fwrite(STDERR, "\$ $cmd\n");
+      $cmd = \implode(' ', $args);
+      \fwrite(\STDERR, "\$ $cmd\n");
     }
 
 
     if ($stdin !== null) {
       if ($flags & self::VERBOSE_SHELL_INPUT) {
-        fwrite(STDERR, "--STDIN--\n$stdin\n");
+        \fwrite(\STDERR, "--STDIN--\n$stdin\n");
       }
       $command->setStdIn($stdin);
     }
@@ -158,7 +158,7 @@ abstract class ShipItUtil {
     ImmVector<string> $patterns,
   ): ?string {
     foreach ($patterns as $pattern) {
-      if (preg_match($pattern, $path)) {
+      if (\preg_match($pattern, $path)) {
         return $pattern;
       }
     }

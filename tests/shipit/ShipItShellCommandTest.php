@@ -40,7 +40,7 @@ final class ShipItShellCommandTest extends BaseTest {
   }
 
   public function testSettingEnvironmentVariable(): void {
-    $herp = bin2hex(random_bytes(16));
+    $herp = \bin2hex(\random_bytes(16));
     $result = (new ShipItShellCommand('/', 'env'))
       ->setEnvironmentVariables(ImmMap { 'HERP' => $herp })
       ->runSynchronously();
@@ -71,7 +71,7 @@ final class ShipItShellCommandTest extends BaseTest {
 
     $matched_any = false;
     foreach ($to_try as $var) {
-      $value = getenv($var);
+      $value = \getenv($var);
       if ($value !== false) {
         $this->assertContains($var.'='.$value."\n", $output);
         $matched_any = true;
@@ -89,16 +89,16 @@ final class ShipItShellCommandTest extends BaseTest {
       (new ShipItShellCommand('/', 'pwd'))
         ->runSynchronously()
         ->getStdOut()
-        |> trim($$),
+        |> \trim($$),
     );
 
-    $tmp = sys_get_temp_dir();
+    $tmp = \sys_get_temp_dir();
     $this->assertSame(
       $tmp,
       (new ShipItShellCommand($tmp, 'pwd'))
         ->runSynchronously()
         ->getStdOut()
-        |> trim($$),
+        |> \trim($$),
     );
   }
 
@@ -136,38 +136,38 @@ final class ShipItShellCommandTest extends BaseTest {
   }
 
   public function testNoRetriesByDefault(): void {
-    $file = tempnam(sys_get_temp_dir(), __CLASS__);
-    unlink($file);
+    $file = \tempnam(\sys_get_temp_dir(), __CLASS__);
+    \unlink($file);
     $result = (new ShipItShellCommand('/', 'test', '-e', $file))
-      ->setFailureHandler($_ ==> touch($file))
+      ->setFailureHandler($_ ==> \touch($file))
       ->setNoExceptions()
       ->runSynchronously();
-    unlink($file);
+    \unlink($file);
     $this->assertSame(1, $result->getExitCode());
   }
 
   public function testRetries(): void {
-    $file = tempnam(sys_get_temp_dir(), __CLASS__);
-    unlink($file);
+    $file = \tempnam(\sys_get_temp_dir(), __CLASS__);
+    \unlink($file);
     $result = (new ShipItShellCommand('/', 'test', '-e', $file))
-      ->setFailureHandler($_ ==> touch($file))
+      ->setFailureHandler($_ ==> \touch($file))
       ->setNoExceptions()
       ->setRetries(1)
       ->runSynchronously();
-    if (file_exists($file)) {
-      unlink($file);
+    if (\file_exists($file)) {
+      \unlink($file);
     }
     $this->assertSame(0, $result->getExitCode());
   }
 
   public function testRetriesNotUsedOnSuccess(): void {
-    $file = tempnam(sys_get_temp_dir(), __CLASS__);
+    $file = \tempnam(\sys_get_temp_dir(), __CLASS__);
     // rm will fail if ran twice with same arg
     $result = (new ShipItShellCommand('/', 'rm', '--preserve-root', $file))
       ->setRetries(1)
       ->runSynchronously();
-    if (file_exists($file)) {
-      unlink($file);
+    if (\file_exists($file)) {
+      \unlink($file);
     }
     $this->assertSame(0, $result->getExitCode());
   }

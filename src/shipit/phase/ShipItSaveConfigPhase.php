@@ -59,8 +59,8 @@ final class ShipItSaveConfigPhase extends ShipItPhase {
         'roots' => $config->getSourceRoots(),
       },
     };
-    file_put_contents($this->outputFile, json_encode($data, JSON_PRETTY_PRINT));
-    printf("Finished phase: %s\n", $this->getReadableName());
+    \file_put_contents($this->outputFile, \json_encode($data, \JSON_PRETTY_PRINT));
+    \printf("Finished phase: %s\n", $this->getReadableName());
     exit(0);
   }
 }

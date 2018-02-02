@@ -27,7 +27,7 @@ class ShipItRepoHG extends ShipItRepo
     try {
       // $this->path will be set by here as it is the first thing to
       // set on the constructor call. So it can be used in hgCommand, etc.
-      $hg_root = trim($this->hgCommand('root'));
+      $hg_root = \trim($this->hgCommand('root'));
     } catch (ShipItRepoException $ex) {
       throw new ShipItRepoHGException($this, "{$this->path} is not a HG repo");
     }
@@ -65,11 +65,11 @@ class ShipItRepoHG extends ShipItRepo
        '--template',
        '{node}\\n',
     );
-    $log = trim($log);
+    $log = \trim($log);
     if ($log === '') {
       return null;
     }
-    if (strlen($log) != 40) {
+    if (\strlen($log) != 40) {
       throw new ShipItRepoHGException($this, "{$log} doesn't look like a valid".
                                             " hg changeset id");
     }
@@ -94,11 +94,11 @@ class ShipItRepoHG extends ShipItRepo
        '{node}\\n',
        ...$roots,
     );
-    $log = trim($log);
+    $log = \trim($log);
     if ($log === '') {
       return null;
     }
-    if (strlen($log) != 40) {
+    if (\strlen($log) != 40) {
       throw new ShipItRepoHGException($this, "{$log} doesn't look like a valid".
                                             " hg changeset id");
     }
@@ -118,10 +118,10 @@ class ShipItRepoHG extends ShipItRepo
       '{desc}',
       ...$roots,
     );
-    $log = trim($log);
+    $log = \trim($log);
     $matches = null;
     if (
-      !preg_match(
+      !\preg_match(
         '/^ *fbshipit-source-id: (?<commit>[a-z0-9]+)$/m',
         $log,
         &$matches,
@@ -129,10 +129,10 @@ class ShipItRepoHG extends ShipItRepo
     ) {
       return null;
     }
-    if (!is_array($matches)) {
+    if (!\is_array($matches)) {
       return null;
     }
-    if (!array_key_exists('commit', $matches)) {
+    if (!\array_key_exists('commit', $matches)) {
       return null;
     }
     return $matches['commit'];
@@ -145,7 +145,7 @@ class ShipItRepoHG extends ShipItRepo
         '--config', 'ui.allowemptycommit=True',
         'commit',
         '--user', $patch->getAuthor(),
-        '--date', date('c', $patch->getTimestamp()),
+        '--date', \date('c', $patch->getTimestamp()),
         '-m', self::getCommitMessage($patch),
       );
     } else {
@@ -163,7 +163,7 @@ class ShipItRepoHG extends ShipItRepo
     $commit_message = self::getCommitMessage($patch);
     $ret = "From {$patch->getID()} Mon Sep 17 00:00:00 2001\n".
            "From: {$patch->getAuthor()}\n".
-           "Date: ".date('r', $patch->getTimestamp())."\n".
+           "Date: ".\date('r', $patch->getTimestamp())."\n".
            "Subject: [PATCH] {$commit_message}\n---\n\n";
     foreach($patch->getDiffs() as $diff) {
       $path = $diff['path'];
@@ -188,13 +188,13 @@ class ShipItRepoHG extends ShipItRepo
    */
   protected static function ParseHgRegions(string $patch): Iterator<string> {
     $contents = '';
-    foreach(explode("\n", $patch) as $line) {
-      $line = preg_replace('/(\r\n|\n)/', "\n", $line);
+    foreach(\explode("\n", $patch) as $line) {
+      $line = \preg_replace('/(\r\n|\n)/', "\n", $line);
 
       if (
-        preg_match(
+        \preg_match(
           '@^diff --git( ([ab]/(.*?)|/dev/null)){2}@',
-          rtrim($line),
+          \rtrim($line),
         )
         && $contents !== ''
       ) {
@@ -213,16 +213,16 @@ class ShipItRepoHG extends ShipItRepo
 
     $subject = null;
     $message = '';
-    foreach (explode("\n", $header) as $line) {
-      if (strlen($line) == 0) {
+    foreach (\explode("\n", $header) as $line) {
+      if (\strlen($line) == 0) {
         $message .= "\n";
         continue;
       }
       if ($line[0] === '#') {
-        if (!strncasecmp($line, '# User ', 7)) {
-          $changeset = $changeset->withAuthor(substr($line, 7));
-        } else if (!strncasecmp($line, '# Date ', 7)) {
-          $changeset = $changeset->withTimestamp((int)substr($line, 7));
+        if (!\strncasecmp($line, '# User ', 7)) {
+          $changeset = $changeset->withAuthor(\substr($line, 7));
+        } else if (!\strncasecmp($line, '# Date ', 7)) {
+          $changeset = $changeset->withTimestamp((int)\substr($line, 7));
         }
         // Ignore anything else in the envelope
         continue;
@@ -236,7 +236,7 @@ class ShipItRepoHG extends ShipItRepo
 
     return $changeset
       ->withSubject((string) $subject)
-      ->withMessage(trim($message));
+      ->withMessage(\trim($message));
   }
 
   public function getNativePatchFromID(string $revision): string {
@@ -294,16 +294,16 @@ class ShipItRepoHG extends ShipItRepo
     // If we have any matching files, re-create their diffs using git, which
     // will do full diffs for both sides of the copy/rename.
     $matches = [];
-    preg_match_all(
+    \preg_match_all(
       '/^(?:rename|copy) (?:from|to) (?<files>.+)$/m',
       $patch,
       &$matches,
-      PREG_PATTERN_ORDER,
+      \PREG_PATTERN_ORDER,
     );
     $has_rename_or_copy = new ImmSet($matches['files']);
     $has_mode_change = $changeset
       ->getDiffs()
-      ->filter($diff ==> preg_match('/^old mode/m', $diff['body']) === 1)
+      ->filter($diff ==> \preg_match('/^old mode/m', $diff['body']) === 1)
       ->map($diff ==> $diff['path'])
       ->toImmSet();
 
@@ -383,14 +383,14 @@ class ShipItRepoHG extends ShipItRepo
     $lock = $this->getSharedLock()->getExclusive();
 
     if (ShipItRepo::$VERBOSE & ShipItRepo::VERBOSE_FETCH) {
-      fwrite(STDERR, "** Updating checkout in {$this->path}\n");
+      \fwrite(\STDERR, "** Updating checkout in {$this->path}\n");
     }
     $this->hgCommand('pull');
   }
 
   <<__Override>>
   public function getOrigin(): string {
-    return trim($this->hgCommand('config', 'paths.default'));
+    return \trim($this->hgCommand('config', 'paths.default'));
   }
 
   private function makeDiffsUsingGit(
@@ -454,7 +454,7 @@ class ShipItRepoHG extends ShipItRepo
     $patterns = $files->map(
       $file ==> 'path:'.$file,
     );
-    $patterns = implode("\n", $patterns);
+    $patterns = \implode("\n", $patterns);
 
     // Prefetch is needed for reasonable performance with the remote file
     // log extension

@@ -17,11 +17,11 @@ final class ShipItSubmoduleFilter {
     ?string $new_rev,
   ): string {
     if ($old_rev === null && $new_rev !== null) {
-      printf(
+      \printf(
         "  Adding submodule at '%s'.\n",
         $path,
       );
-      return sprintf(
+      return \sprintf(
         'new file mode 16000
 index 0000000..%s 160000
 --- /dev/null
@@ -34,11 +34,11 @@ index 0000000..%s 160000
         $new_rev,
       );
     } else if ($new_rev === null && $old_rev !== null) {
-      printf(
+      \printf(
         "  Removing submodule at '%s'.\n",
         $path,
       );
-      return sprintf(
+      return \sprintf(
         'deleted file mode 160000
 index %s..0000000
 --- a/%s
@@ -51,7 +51,7 @@ index %s..0000000
         $old_rev,
       );
     } else {
-      return sprintf(
+      return \sprintf(
         'index %s..%s 160000
 --- a/%s
 +++ b/%s
@@ -93,11 +93,11 @@ index %s..0000000
       }
 
       $old_rev = $new_rev = null;
-      foreach(explode("\n", $body) as $line) {
-        if (!strncmp('-Subproject commit ', $line, 19)) {
-          $old_rev = trim(substr($line, 19));
-        } else if (!strncmp('+Subproject commit ', $line, 19)) {
-          $new_rev = trim(substr($line, 19));
+      foreach(\explode("\n", $body) as $line) {
+        if (!\strncmp('-Subproject commit ', $line, 19)) {
+          $old_rev = \trim(\substr($line, 19));
+        } else if (!\strncmp('+Subproject commit ', $line, 19)) {
+          $new_rev = \trim(\substr($line, 19));
         }
       }
 

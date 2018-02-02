@@ -26,7 +26,7 @@ final class SyncTrackingTest extends BaseTest {
     ))->runSynchronously();
 
     // Add a tracked commit
-    $fake_commit_id = bin2hex(random_bytes(16));
+    $fake_commit_id = \bin2hex(\random_bytes(16));
     $message = ShipItSync::addTrackingData(
       (new ShipItChangeset())->withID($fake_commit_id)
     )->getMessage();
@@ -48,7 +48,7 @@ final class SyncTrackingTest extends BaseTest {
     $this->configureHg($tempdir);
 
     // Add a tracked commit
-    $fake_commit_id = bin2hex(random_bytes(16));
+    $fake_commit_id = \bin2hex(\random_bytes(16));
     $message = ShipItSync::addTrackingData(
       (new ShipItChangeset())->withID($fake_commit_id)
     )->getMessage();

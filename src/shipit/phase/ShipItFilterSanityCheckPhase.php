@@ -48,7 +48,7 @@ final class ShipItFilterSanityCheckPhase extends ShipItPhase {
     $allows_all = false;
     foreach ($sourceRoots as $root) {
       $test_file = $root.'/'.self::TEST_FILE_NAME;
-      $test_file = str_replace('//', '/', $test_file);
+      $test_file = \str_replace('//', '/', $test_file);
       $changeset = (new ShipItChangeset())
         ->withDiffs(ImmVector {
           shape('path' => $test_file, 'body' => 'junk')
@@ -58,7 +58,7 @@ final class ShipItFilterSanityCheckPhase extends ShipItPhase {
         invariant_violation(
           "Source root '%s' specified, but is removed by filter; debug: %s\n",
           $root,
-          var_export($changeset->getDebugMessages(), /* return = */ true),
+          \var_export($changeset->getDebugMessages(), /* return = */ true),
         );
       }
 

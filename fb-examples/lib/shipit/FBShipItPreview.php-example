@@ -38,11 +38,11 @@ final class FBShipItPreview {
   }
 
   private static function decodeInput(string $in): ShipItPreviewInput {
-    return json_decode($in, true);
+    return \json_decode($in, true);
   }
 
   private static function encodeOutput(vec<ShipItPreviewOutput> $out): string {
-    return json_encode($out);
+    return \json_encode($out);
   }
 
   final public function handleChangeset(
@@ -70,7 +70,7 @@ final class FBShipItPreview {
           $transformed_changeset =
             $config_class::filterChangeset($changeset, $branch_config);
           // Does the changeset create any diffs on the open source project?
-          if (count($transformed_changeset->getDiffs()) > 0) {
+          if (\count($transformed_changeset->getDiffs()) > 0) {
             $commit_message =
               ShipItRepoGIT::getCommitMessage($transformed_changeset);
             $result[] = shape(
@@ -91,13 +91,13 @@ final class FBShipItPreview {
     if ($in_name === null) {
       $in_name = 'php://stdin';
     }
-    $resource = fopen($in_name, 'r');
+    $resource = \fopen($in_name, 'r');
     invariant($resource !== false, 'Failed to open file: %s', $resource);
     return $resource;
   }
 
   private static function printHelp(): void {
-    printf(
+    \printf(
 "Preview ShipIt actions for a given changeset.
 
 The input should be JSON ShipItChangesetData objects,
@@ -110,15 +110,15 @@ Options:
   --help  Print this help message
 ",
       self::OBJECT_TERMINATOR,
-      basename(__FILE__, ""),
+      \basename(__FILE__, ""),
 );
   }
 
   final public function shipItPreview(resource $in_stream): void {
     $in_data = '';
-    $line = fgets($in_stream);
+    $line = \fgets($in_stream);
     while ($line !== false) {
-      if (trim($line) === self::OBJECT_TERMINATOR) {
+      if (\trim($line) === self::OBJECT_TERMINATOR) {
         $parsed = self::decodeInput($in_data);
         $result = $this->handleChangeset(
           $parsed['arcanistProject'],
@@ -130,12 +130,12 @@ Options:
       } else {
         $in_data = $in_data.$line;
       }
-      $line = fgets($in_stream);
+      $line = \fgets($in_stream);
     }
   }
 
   final public static function cliMain(): void {
-    $opts = dict(getopt('i::', vec['help']));
+    $opts = dict(\getopt('i::', vec['help']));
     if (idx($opts, 'help') !== null) {
       self::printHelp();
       return;

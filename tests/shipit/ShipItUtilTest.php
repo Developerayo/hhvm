@@ -11,7 +11,7 @@ namespace Facebook\ShipIt;
 
 final class ShipItUtilTest extends BaseTest {
   public function testDiffofDiffs(): void {
-    $patch = file_get_contents(__DIR__.'/git-diffs/diff-in-diff.patch');
+    $patch = \file_get_contents(__DIR__.'/git-diffs/diff-in-diff.patch');
     $sections = Vector {};
     $sections->addAll(ShipItUtil::parsePatch($patch));
     $this->assertEquals(1, $sections->count(), 'Should only get one section!');

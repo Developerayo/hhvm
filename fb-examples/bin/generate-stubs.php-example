@@ -16,7 +16,7 @@ final class FBShipItGenerateStubsCLI {
   final public static function cliMain(): void {
     $runner = new ShipItPhaseRunner(
       new ShipItBaseConfig(
-        dirname(__DIR__),
+        \dirname(__DIR__),
         'shipit',
         'shipit',
         ImmSet {},

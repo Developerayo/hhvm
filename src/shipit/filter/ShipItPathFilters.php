@@ -79,10 +79,10 @@ abstract final class ShipItPathFilters {
           return $path;
         }
         foreach ($mapping as $src => $dest) {
-          if (strncmp($path, $src, strlen($src)) !== 0) {
+          if (\strncmp($path, $src, \strlen($src)) !== 0) {
             continue;
           }
-          return $dest.substr($path, strlen($src));
+          return $dest.\substr($path, \strlen($src));
         }
         return $path;
       },
@@ -102,15 +102,15 @@ abstract final class ShipItPathFilters {
         continue;
       }
 
-      $old_path = preg_quote($old_path, '@');
+      $old_path = \preg_quote($old_path, '@');
 
       $body = $diff['body'];
-      $body = preg_replace(
+      $body = \preg_replace(
         '@^--- a/'.$old_path.'@m',
         '--- a/'.$new_path,
         $body,
       );
-      $body = preg_replace(
+      $body = \preg_replace(
         '@^\+\+\+ b/'.$old_path.'@m',
         '+++ b/'.$new_path,
         $body,
@@ -128,14 +128,14 @@ abstract final class ShipItPathFilters {
     ImmSet<string> $roots,
   ): ShipItChangeset {
     $roots = $roots->map(
-      $root ==> substr($root, -1) === '/' ? $root : $root.'/'
+      $root ==> \substr($root, -1) === '/' ? $root : $root.'/'
     );
     $diffs = Vector { };
     foreach ($changeset->getDiffs() as $diff) {
       $path = $diff['path'];
       $match = false;
       foreach ($roots as $root) {
-        if (substr($path, 0, strlen($root)) === $root) {
+        if (\substr($path, 0, \strlen($root)) === $root) {
           $match = true;
           break;
         }
@@ -148,7 +148,7 @@ abstract final class ShipItPathFilters {
       $changeset = $changeset->withDebugMessage(
         'STRIP FILE: "%s" is not in a listed root (%s)',
         $path,
-        implode(', ', $roots),
+        \implode(', ', $roots),
       );
     }
     return $changeset->withDiffs($diffs->toImmVector());

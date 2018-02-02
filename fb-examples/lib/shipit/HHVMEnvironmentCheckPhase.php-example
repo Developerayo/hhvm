@@ -16,21 +16,21 @@ final class HHVMEnvironmentCheckPhase extends EnvironmentCheckPhase {
   public function runImpl(ShipItBaseConfig $config): void {
     $gcc_check_cmd = "gcc --version";
     $gcc_check_output = array();
-    exec($gcc_check_cmd, &$gcc_check_output);
+    \exec($gcc_check_cmd, &$gcc_check_output);
     if (
-      strpos(
-        implode("", $gcc_check_output),
+      \strpos(
+        \implode("", $gcc_check_output),
         "gcc (GCC) ".self::REQUIRED_GCC_VERSION,
       ) !== false
     ) {
       return; // OK
     }
 
-    fprintf(
-      STDERR,
+    \fprintf(
+      \STDERR,
       "Need %s.x, got %s\n",
       self::REQUIRED_GCC_VERSION,
-      implode("\n", $gcc_check_output),
+      \implode("\n", $gcc_check_output),
     );
     exit(1);
   }

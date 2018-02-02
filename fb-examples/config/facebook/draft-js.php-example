@@ -28,7 +28,7 @@ final class FacebookDraftJs extends FBShipItConfig {
     return $changeset
       |> ShipItPathFilters::rewritePaths(
         $$,
-        $path ==> preg_replace('@/dot_@', '/.', $path),
+        $path ==> \preg_replace('@/dot_@', '/.', $path),
       )
       |> parent::defaultProjectFilterChangeset($$, $get_path_mappings);
   }
@@ -41,7 +41,7 @@ final class FacebookDraftJs extends FBShipItConfig {
     return $changeset
       |> ShipItPathFilters::rewritePaths(
         $$,
-        $path ==> preg_replace('@^\.@', 'dot_', $path),
+        $path ==> \preg_replace('@^\.@', 'dot_', $path),
       )
       |> parent::projectImportChangeset($$, $branch_config);
   }

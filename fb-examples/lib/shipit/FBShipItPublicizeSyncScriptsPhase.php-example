@@ -54,8 +54,8 @@ final class FBShipItPublicizeSyncScriptsPhase extends ShipItPhase {
       $src_rev,
     );
 
-    $export_root = realpath($export->getPath());
-    $dest_root = realpath($config->getDestinationPath());
+    $export_root = \realpath($export->getPath());
+    $dest_root = \realpath($config->getDestinationPath());
 
     $globs = ImmSet {
       '/fb-examples/bin/importit_*.php-example',
@@ -65,19 +65,19 @@ final class FBShipItPublicizeSyncScriptsPhase extends ShipItPhase {
     };
     $files = Set { };
     foreach ($globs as $glob) {
-      $files->addAll(glob($export_root.$glob));
+      $files->addAll(\glob($export_root.$glob));
     }
-    $files = $files->map($file ==> realpath($file))->toImmSet();
+    $files = $files->map($file ==> \realpath($file))->toImmSet();
 
     foreach ($files as $file) {
       invariant(
-        substr($file, 0, strlen($export_root)) === $export_root,
+        \substr($file, 0, \strlen($export_root)) === $export_root,
         'file %s is not inside %s',
         $file,
         $export_root,
       );
-      $dest_file = $dest_root.substr($file, strlen($export_root));
-      if (!file_exists($dest_file)) {
+      $dest_file = $dest_root.\substr($file, \strlen($export_root));
+      if (!\file_exists($dest_file)) {
         $this->releaseFile(
           $dest,
           $file,
@@ -93,7 +93,7 @@ final class FBShipItPublicizeSyncScriptsPhase extends ShipItPhase {
     string $destination_file,
   ): void {
     $dest_root = $repo->getPath();
-    copy($exported_file, $destination_file);
+    \copy($exported_file, $destination_file);
 
 /* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
@@ -108,7 +108,7 @@ final class FBShipItPublicizeSyncScriptsPhase extends ShipItPhase {
       /* stdin = */  null,
       ShipItUtil::DONT_VERBOSE,
       'git', 'commit', '-m',
-      '[autocommit] release '.basename($destination_file),
+      '[autocommit] release '.\basename($destination_file),
     );
   }
 }

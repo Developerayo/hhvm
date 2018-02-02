@@ -50,18 +50,18 @@ final class ImportItSubmoduleFilter {
       }
 
       $old_rev = $new_rev = null;
-      foreach(explode("\n", $body) as $line) {
-        if (!strncmp('-Subproject commit ', $line, 19)) {
-          $old_rev = trim(substr($line, 19));
-        } else if (!strncmp('+Subproject commit ', $line, 19)) {
-          $new_rev = trim(substr($line, 19));
+      foreach(\explode("\n", $body) as $line) {
+        if (!\strncmp('-Subproject commit ', $line, 19)) {
+          $old_rev = \trim(\substr($line, 19));
+        } else if (!\strncmp('+Subproject commit ', $line, 19)) {
+          $new_rev = \trim(\substr($line, 19));
         }
       }
 
       if ($old_rev === null || $new_rev === null) {
         // Do nothing - this will lead to a 'patch does not apply' error for
         // human debugging, which seems like a reasonable error to give :)
-        printf(
+        \printf(
           "  Skipping change to '%s' (-> %s); this will certainly fail.\n",
           $submodule_path,
           $text_file_with_rev,

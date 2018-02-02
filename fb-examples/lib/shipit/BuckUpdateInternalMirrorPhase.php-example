@@ -25,7 +25,7 @@ final class BuckUpdateInternalMirrorPhase extends ShipItPhase {
     return ImmVector {
       shape(
         'long_name' => 'skip-sync-internal',
-        'description' => "Don't ".strtolower($this->getReadableName()),
+        'description' => "Don't ".\strtolower($this->getReadableName()),
         'write' => $_ ==> $this->skip(),
       ),
     };

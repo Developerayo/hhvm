@@ -18,13 +18,13 @@ final class ShipItMentions {
     ShipItChangeset $changeset,
     (function(string):string) $callback,
   ): ShipItChangeset {
-    $message = preg_replace_callback(
+    $message = \preg_replace_callback(
       self::MENTIONS_PATTERN,
       $matches ==> $callback($matches[1]),
       $changeset->getMessage(),
     );
 
-    return $changeset->withMessage(trim($message));
+    return $changeset->withMessage(\trim($message));
   }
 
   /** Turn '@foo' into 'foo.
@@ -38,9 +38,9 @@ final class ShipItMentions {
   ): ShipItChangeset {
     return self::rewriteMentions(
       $changeset,
-      $it ==> ($exceptions->contains($it) || substr($it, 0, 1) !== '@')
+      $it ==> ($exceptions->contains($it) || \substr($it, 0, 1) !== '@')
         ? $it
-        : substr($it, 1),
+        : \substr($it, 1),
     );
   }
 
@@ -48,13 +48,13 @@ final class ShipItMentions {
     ShipItChangeset $changeset,
   ): ImmSet<string> {
     $matches = [];
-    preg_match_all(
+    \preg_match_all(
       self::MENTIONS_PATTERN,
       $changeset->getMessage(),
       &$matches,
-      PREG_SET_ORDER,
+      \PREG_SET_ORDER,
     );
-    return (new ImmSet(array_map($match ==> $match[1], $matches)));
+    return (new ImmSet(\array_map($match ==> $match[1], $matches)));
   }
 
   public static function containsMention(

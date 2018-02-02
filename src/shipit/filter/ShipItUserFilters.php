@@ -21,12 +21,12 @@ class ShipItUserFilters {
   ): ShipItChangeset {
     $matches = [];
     if (
-      preg_match(
+      \preg_match(
         $pattern,
         $changeset->getAuthor(),
         &$matches,
       )
-      && array_key_exists('user', $matches)
+      && \array_key_exists('user', $matches)
     ) {
       $author = \HH\Asio\join(
         $user_info::getDestinationAuthorFromLocalUser(
@@ -63,7 +63,7 @@ class ShipItUserFilters {
     return ShipItMentions::rewriteMentions(
       $changeset,
       function(string $mention): string use ($user_info) {
-        $mention = substr($mention, 1); // chop off leading @
+        $mention = \substr($mention, 1); // chop off leading @
         $new = \HH\Asio\join(
           $user_info::getDestinationUserFromLocalUser($mention)
         );
@@ -85,7 +85,7 @@ class ShipItUserFilters {
     string $pattern,
   ): ShipItChangeset {
     $matches = [];
-    if (preg_match($pattern, $changeset->getMessage(), &$matches)) {
+    if (\preg_match($pattern, $changeset->getMessage(), &$matches)) {
       return $changeset->withAuthor($matches['author']);
     }
     return $changeset;

@@ -25,7 +25,7 @@ final class FBShipItProjectRunner extends ShipItPhaseRunner {
     private ?string $external_branch = null,
   ) {
     $config =
-      new ShipItBaseConfig(dirname(__DIR__), 'shipit', 'shipit', ImmSet {});
+      new ShipItBaseConfig(\dirname(__DIR__), 'shipit', 'shipit', ImmSet {});
     if ($config_class !== null) {
       parent::__construct(
         $config,
@@ -97,8 +97,8 @@ final class FBShipItProjectRunner extends ShipItPhaseRunner {
     string $name,
   ): classname<FBShipItConfig> {
     // owner/reponame
-    $split = explode('/', $name);
-    if (count($split) === 2) {
+    $split = \explode('/', $name);
+    if (\count($split) === 2) {
       return FBShipItConfigRegistry::getRepoShipItConfig($split[0], $split[1]);
     }
     // reponame OR FacebookReponame
@@ -129,8 +129,8 @@ final class FBShipItProjectRunner extends ShipItPhaseRunner {
   private static function getRawOpts(
     ImmVector<ShipItCLIArgument> $config,
   ): array<string, mixed> {
-    return getopt(
-      implode('', $config->map($opt ==> Shapes::idx($opt, 'short_name', ''))),
+    return \getopt(
+      \implode('', $config->map($opt ==> Shapes::idx($opt, 'short_name', ''))),
       $config->map($opt ==> $opt['long_name']),
     );
   }
@@ -151,7 +151,7 @@ final class FBShipItProjectRunner extends ShipItPhaseRunner {
       $this->parseOptions($project_config, self::getRawOpts($project_config));
     }
     if (
-      array_key_exists('h', $raw_opts) || array_key_exists('help', $raw_opts)
+      \array_key_exists('h', $raw_opts) || \array_key_exists('help', $raw_opts)
     ) {
       // hacky coupling with FBShipItBranchResolutionPhase
       // render the project's help message

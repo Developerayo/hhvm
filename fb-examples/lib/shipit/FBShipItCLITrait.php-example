@@ -28,12 +28,12 @@ trait FBShipItCLITrait {
   final private static function abortWithException(
     \Exception $ex,
   ): noreturn {
-    $first_line = sprintf(
+    $first_line = \sprintf(
       "Fatal error: Uncaught exception '%s' with message '%s'",
-      get_class($ex),
+      \get_class($ex),
       $ex->getMessage(),
     );
-    fprintf(STDERR, "%s\nStack trace:\n%s\n%s\n",
+    \fprintf(\STDERR, "%s\nStack trace:\n%s\n%s\n",
       $first_line,
       $ex->getTraceAsString(),
       $first_line,
@@ -88,7 +88,7 @@ trait FBShipItCLITrait {
       }
     );
 
-    if (get_current_user() === 'svcscm') {
+    if (\get_current_user() === 'svcscm') {
       throw new \Exception(
         'This executable must be ran as an individual user, or via a hipster '.
         "account. If you are seeing this from Chronos:\n".
@@ -110,12 +110,12 @@ trait FBShipItCLITrait {
         'abort: abandoned transaction found!',
       };
       foreach ($retry_causes as $cause) {
-        if (strpos($e->getError(), $cause) !== false) {
+        if (\strpos($e->getError(), $cause) !== false) {
           // Recover by restarting; the init phase will detect the bad state
           // fix it by deleting and re-cloning the repo.
-          fwrite(STDERR, "**** HG: TRANSACTION ABORT (t12066068) ****\n");
-          fwrite(STDERR, $e->getError()."\n");
-          fwrite(STDERR, "**** RESTARTING ****\n");
+          \fwrite(\STDERR, "**** HG: TRANSACTION ABORT (t12066068) ****\n");
+          \fwrite(\STDERR, $e->getError()."\n");
+          \fwrite(\STDERR, "**** RESTARTING ****\n");
           $runner->run();
           return;
         }

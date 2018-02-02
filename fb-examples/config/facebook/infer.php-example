@@ -84,7 +84,7 @@ final class FacebookInfer extends FBShipItConfig {
   ): bool {
     $path = $diff['path'];
     foreach ($list as $entry) {
-      if (strpos($path, $entry) === 0) {
+      if (\strpos($path, $entry) === 0) {
         return true;
       }
     }

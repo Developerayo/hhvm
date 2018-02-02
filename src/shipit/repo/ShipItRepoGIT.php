@@ -61,8 +61,8 @@ class ShipItRepoGIT
       $this->branch,
     );
 
-    $rev = trim($rev);
-    if (trim($rev) === '') {
+    $rev = \trim($rev);
+    if (\trim($rev) === '') {
       return null;
     }
     return $this->getChangesetFromID($rev);
@@ -76,10 +76,10 @@ class ShipItRepoGIT
       '^\\(fb\\)\\?shipit-source-id: [a-z0-9]\\+$',
       ...$roots,
     );
-    $log = trim($log);
+    $log = \trim($log);
     $matches = null;
     if (
-      !preg_match(
+      !\preg_match(
         '/^ *(fb)?shipit-source-id: (?<commit>[a-z0-9]+)$/m',
         $log,
         &$matches,
@@ -87,10 +87,10 @@ class ShipItRepoGIT
     ) {
       return null;
     }
-    if (!is_array($matches)) {
+    if (!\is_array($matches)) {
       return null;
     }
-    if (!array_key_exists('commit', $matches)) {
+    if (!\array_key_exists('commit', $matches)) {
       return null;
     }
     return $matches['commit'];
@@ -109,49 +109,49 @@ class ShipItRepoGIT
       ...$roots,
     );
 
-    $log = trim($log);
-    if (trim($log) === '') {
+    $log = \trim($log);
+    if (\trim($log) === '') {
       return null;
     }
-    $revs = explode("\n", trim($log));
-    list($rev) = explode(' ', array_pop(&$revs), 2);
+    $revs = \explode("\n", \trim($log));
+    list($rev) = \explode(' ', \array_pop(&$revs), 2);
     return $rev;
   }
 
   private static function parseHeader(string $header): ShipItChangeset {
-    $parts = explode("\n\n", trim($header), 2);
+    $parts = \explode("\n\n", \trim($header), 2);
     $envelope = $parts[0];
-    $message = count($parts) === 2 ? trim($parts[1]) : '';
+    $message = \count($parts) === 2 ? \trim($parts[1]) : '';
 
-    $start_of_filelist = strrpos($message, "\n---\n ");
+    $start_of_filelist = \strrpos($message, "\n---\n ");
     if ($start_of_filelist !== false) {
       // Get rid of the file list when a summary is
       // included in the commit message
-      $message = trim(substr($message, 0, $start_of_filelist));
+      $message = \trim(\substr($message, 0, $start_of_filelist));
     }
 
     $changeset = (new ShipItChangeset())->withMessage($message);
 
-    $envelope = str_replace(["\n\t","\n "], ' ', $envelope);
-    foreach(explode("\n", $envelope) as $line) {
-      $colon = strpos($line, ':');
+    $envelope = \str_replace(["\n\t","\n "], ' ', $envelope);
+    foreach(\explode("\n", $envelope) as $line) {
+      $colon = \strpos($line, ':');
       if ($colon === false) {
         continue;
       }
-      list($key, $value) = explode(':', $line, 2);
-      $value = trim($value);
-      switch(strtolower(trim($key))) {
+      list($key, $value) = \explode(':', $line, 2);
+      $value = \trim($value);
+      switch(\strtolower(\trim($key))) {
         case 'from':
           $changeset = $changeset->withAuthor($value);
           break;
         case 'subject':
-          if (!strncasecmp($value, '[PATCH] ', 8)) {
-            $value = trim(substr($value, 8));
+          if (!\strncasecmp($value, '[PATCH] ', 8)) {
+            $value = \trim(\substr($value, 8));
           }
           $changeset = $changeset->withSubject($value);
           break;
         case 'date':
-          $changeset = $changeset->withTimestamp(strtotime($value));
+          $changeset = $changeset->withTimestamp(\strtotime($value));
           break;
       }
 
@@ -190,13 +190,13 @@ class ShipItRepoGIT
       '-1',
       $revision,
     );
-    if (strlen($patch) === 0) {
+    if (\strlen($patch) === 0) {
       // This is an empty commit, so everything is the header.
       return $full_patch;
     }
-    $index = strpos($full_patch, $patch);
+    $index = \strpos($full_patch, $patch);
     if ($index !== false) {
-      return substr($full_patch, 0, $index);
+      return \substr($full_patch, 0, $index);
     }
     throw new ShipItRepoGITException(
       $this,
@@ -245,7 +245,7 @@ class ShipItRepoGIT
      *
      * https://github.com/git/git/blob/77bd3ea9f54f1584147b594abc04c26ca516d987/builtin/mailinfo.c#L701
      */
-    $message = preg_replace(
+    $message = \preg_replace(
       '/^(diff -|Index: |---(?:\s\S|\s*$))/m',
       ' $1',
       $patch->getMessage(),
@@ -255,7 +255,7 @@ class ShipItRepoGIT
     // mailboxes. cf. https://git-scm.com/docs/git-format-patch
     $ret = "From {$patch->getID()} Mon Sep 17 00:00:00 2001\n".
             "From: {$patch->getAuthor()}\n".
-            "Date: " . date('r', $patch->getTimestamp()) . "\n".
+            "Date: " . \date('r', $patch->getTimestamp()) . "\n".
             "Subject: [PATCH] {$patch->getSubject()}\n\n".
             "{$message}\n---\n\n";
     foreach($patch->getDiffs() as $diff) {
@@ -306,7 +306,7 @@ class ShipItRepoGIT
       // sure there is no leading whitespace that comes back when we get the
       // status since the first character will tell us whether submodule
       // changed.
-      $sm_status = ltrim($this->gitCommand(
+      $sm_status = \ltrim($this->gitCommand(
         'submodule',
         'status',
         $submodule['path'],
@@ -314,9 +314,9 @@ class ShipItRepoGIT
       if ($sm_status === '') {
         // If the path exists, we know we are adding a submodule.
         $full_path = $this->getPath().'/'.$submodule['path'];
-        $sha = trim(substr(
-          file_get_contents($full_path),
-          strlen('Subproject commit '),
+        $sha = \trim(\substr(
+          \file_get_contents($full_path),
+          \strlen('Subproject commit '),
         ));
         $this->gitCommand('rm', $submodule['path']);
         $this->gitCommand(
@@ -354,7 +354,7 @@ class ShipItRepoGIT
   }
 
   protected function gitPipeCommand(?string $stdin, string ...$args): string {
-    if (!file_exists("{$this->path}/.git")) {
+    if (!\file_exists("{$this->path}/.git")) {
       throw new ShipItRepoGITException(
         $this,
         $this->path." is not a GIT repo",
@@ -384,18 +384,18 @@ class ShipItRepoGIT
     string $path,
   ): void {
     invariant(
-      !file_exists($path),
+      !\file_exists($path),
       '%s already exists, cowardly refusing to overwrite',
       $path,
     );
 
-    $parent_path = dirname($path);
-    if (!file_exists($parent_path)) {
-      mkdir($parent_path, 0755, /* recursive = */ true);
+    $parent_path = \dirname($path);
+    if (!\file_exists($parent_path)) {
+      \mkdir($parent_path, 0755, /* recursive = */ true);
     }
 
     if (ShipItRepo::$VERBOSE & ShipItRepo::VERBOSE_FETCH) {
-      fwrite(STDERR, "** Cloning $origin to $path\n");
+      \fwrite(\STDERR, "** Cloning $origin to $path\n");
     }
 
     (new ShipItShellCommand(
@@ -412,7 +412,7 @@ class ShipItRepoGIT
   <<__Override>>
   public function pull(): void {
     if (ShipItRepo::$VERBOSE & ShipItRepo::VERBOSE_FETCH) {
-      fwrite(STDERR, "** Updating checkout in {$this->path}\n");
+      \fwrite(\STDERR, "** Updating checkout in {$this->path}\n");
     }
 
     try {
@@ -427,7 +427,7 @@ class ShipItRepoGIT
 
   <<__Override>>
   public function getOrigin(): string {
-    return trim($this->gitCommand('remote', 'get-url', 'origin'));
+    return \trim($this->gitCommand('remote', 'get-url', 'origin'));
   }
 
   public function push(): void {
@@ -439,7 +439,7 @@ class ShipItRepoGIT
     ?string $rev = null,
   ): shape('tempDir' => ShipItTempDir, 'revision' => string) {
     if ($rev === null) {
-      $rev = trim($this->gitCommand('rev-parse', 'HEAD'));
+      $rev = \trim($this->gitCommand('rev-parse', 'HEAD'));
     }
 
     $command = Vector {
@@ -463,36 +463,36 @@ class ShipItRepoGIT
       $sha = $status
         // Strip any -, +, or U at the start of the status (see the man page for
         // git-submodule).
-        |> preg_replace('@^[\-\+U]@', '', $$)
-        |> explode(' ', $$)[0];
+        |> \preg_replace('@^[\-\+U]@', '', $$)
+        |> \explode(' ', $$)[0];
       $dest_submodule_path = $dest->getPath().'/'.$submodule['path'];
       // This removes the empty directory for the submodule that gets created
       // by the git-archive command.
-      rmdir($dest_submodule_path);
+      \rmdir($dest_submodule_path);
       // This will setup a file that looks just like how git stores submodules.
-      file_put_contents($dest_submodule_path, 'Subproject commit '.$sha);
+      \file_put_contents($dest_submodule_path, 'Subproject commit '.$sha);
     }
 
     return shape('tempDir' => $dest, 'revision' => $rev);
   }
 
   protected function getHEADSha(): string {
-    return trim($this->gitCommand('log', '-1', "--pretty=format:%H"));
+    return \trim($this->gitCommand('log', '-1', "--pretty=format:%H"));
   }
 
   private function getSubmodules(): ImmVector<self::TSubmoduleSpec> {
-    if (!file_exists($this->getPath().'/.gitmodules')) {
+    if (!\file_exists($this->getPath().'/.gitmodules')) {
       return ImmVector {};
     }
     $configs = $this->gitCommand('config', '-f', '.gitmodules', '--list');
-    $configs = (new Map(parse_ini_string($configs)))
+    $configs = (new Map(\parse_ini_string($configs)))
       ->filterWithKey(($key, $_) ==> {
-        return substr($key, 0, 10) === 'submodule.' &&
-          (substr($key, -5) === '.path' || substr($key, -4) === '.url');
+        return \substr($key, 0, 10) === 'submodule.' &&
+          (\substr($key, -5) === '.path' || \substr($key, -4) === '.url');
       });
     $names = $configs->keys()
-      ->filter($key ==> substr($key, -4) === '.url')
-      ->map($key ==> substr($key, 10, strlen($key) - 10 - 4))
+      ->filter($key ==> \substr($key, -4) === '.url')
+      ->map($key ==> \substr($key, 10, \strlen($key) - 10 - 4))
       ->toImmSet();
     return $names->values()
       ->map($name ==> shape(
@@ -500,7 +500,7 @@ class ShipItRepoGIT
           'path' => $configs['submodule.'.$name.'.path'],
           'url' => $configs['submodule.'.$name.'.url'],
       ))
-      ->filter($config ==> file_exists($this->getPath().'/'.$config['path']))
+      ->filter($config ==> \file_exists($this->getPath().'/'.$config['path']))
       ->toImmVector();
   }
 }

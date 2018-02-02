@@ -11,9 +11,9 @@
 namespace Facebook\ShipIt;
 
 enum ShipItScopedFlockOperation: int {
-  MAKE_EXCLUSIVE = LOCK_EX;
-  MAKE_SHARED = LOCK_SH;
-  RELEASE = LOCK_UN;
+  MAKE_EXCLUSIVE = \LOCK_EX;
+  MAKE_SHARED = \LOCK_SH;
+  RELEASE = \LOCK_UN;
 }
 
 class ShipItScopedFlock {
@@ -23,11 +23,11 @@ class ShipItScopedFlock {
   public static function createShared(
     string $path,
   ): ShipItScopedFlock {
-    $dir = dirname($path);
-    if (!file_exists($dir)) {
-      mkdir($dir, /* mode = */ 0755, /* recursive = */ true);
+    $dir = \dirname($path);
+    if (!\file_exists($dir)) {
+      \mkdir($dir, /* mode = */ 0755, /* recursive = */ true);
     }
-    $fp = fopen($path, 'w+');
+    $fp = \fopen($path, 'w+');
     if (!$fp) {
       throw new \Exception('Failed to fopen: '.$path);
     }
@@ -61,7 +61,7 @@ class ShipItScopedFlock {
     private ShipItScopedFlockOperation $constructBehavior,
     private ShipItScopedFlockOperation $destructBehavior,
   ) {
-    $this->debug = getenv('FBSHIPIT_DEBUG_FLOCK');
+    $this->debug = \getenv('FBSHIPIT_DEBUG_FLOCK');
 
     switch ($constructBehavior) {
       case ShipItScopedFlockOperation::MAKE_EXCLUSIVE:
@@ -74,7 +74,7 @@ class ShipItScopedFlock {
         throw new \Exception('Invalid lock operation');
     }
 
-    if (!flock($fp, $constructBehavior)) {
+    if (!\flock($fp, $constructBehavior)) {
       throw new \Exception('Failed to acquire lock');
     }
 
@@ -100,7 +100,7 @@ class ShipItScopedFlock {
         throw new \Exception('Invalid release operation');
     }
 
-    if (!flock($this->fp, $this->destructBehavior)) {
+    if (!\flock($this->fp, $this->destructBehavior)) {
       throw new \Exception('Failed to weaken lock');
     }
     $this->debugWrite($after);
@@ -111,7 +111,7 @@ class ShipItScopedFlock {
     if (!$this->debug) {
       return;
     }
-    fprintf(STDERR, "  [flock] %s\n    %s\n", $message, $this->path);
+    \fprintf(\STDERR, "  [flock] %s\n    %s\n", $message, $this->path);
   }
 
   public function __destruct() {

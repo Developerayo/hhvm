@@ -21,12 +21,12 @@ final class FBShipItConfigRegistry {
 
     private static function makeCamelCase(string $name): string {
       return $name
-        |> preg_replace_callback(
+        |> \preg_replace_callback(
           '/[-_\.]([a-zA-Z0-9])/',
-          $matches ==> strtoupper($matches[1]),
+          $matches ==> \strtoupper($matches[1]),
           $$,
         )
-        |> ucfirst($$);
+        |> \ucfirst($$);
     }
 
     /**
@@ -37,16 +37,16 @@ final class FBShipItConfigRegistry {
       string $repo,
       bool $include_namespace = false,
     ): classname<FBShipItConfig> {
-      invariant(strlen($org) > 0, 'Org cannot be empty');
-      invariant(strlen($repo) > 0, 'Repo cannot be empty');
+      invariant(\strlen($org) > 0, 'Org cannot be empty');
+      invariant(\strlen($repo) > 0, 'Repo cannot be empty');
       $prefix = '';
       if ($include_namespace) {
         $prefix = 'Facebook\\ShipIt\\Config\\';
       }
       /* HH_IGNORE_ERROR[4110]: dynamic classname generation */
       return $prefix.
-        self::makeCamelCase(strtolower($org)).
-        self::makeCamelCase(strtolower($repo));
+        self::makeCamelCase(\strtolower($org)).
+        self::makeCamelCase(\strtolower($repo));
     }
 
     public static function loadConfigClasses(
@@ -62,10 +62,10 @@ final class FBShipItConfigRegistry {
         '@^.+\.php$@i',
         \RecursiveRegexIterator::GET_MATCH
       );
-      foreach(array_keys(iterator_to_array($regex)) as $filename) {
+      foreach(\array_keys(\iterator_to_array($regex)) as $filename) {
         $class_name = self::getClassName(
-          basename(dirname($filename)),
-          basename($filename, '.php'),
+          \basename(\dirname($filename)),
+          \basename($filename, '.php'),
           /* include_namespace */ true,
         );
         $config_classes[] = $class_name;
@@ -102,7 +102,7 @@ final class FBShipItConfigRegistry {
         $repo,
       );
       invariant(
-        class_exists($class_name),
+        \class_exists($class_name),
         'ShipItConfigRegistry error -- invalid classname: %s',
         $class_name,
       );

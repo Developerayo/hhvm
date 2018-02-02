@@ -41,7 +41,7 @@ final class ShipItPushPhase extends ShipItPhase {
       $repo instanceof ShipItDestinationRepo,
       '%s is not a writable repository type - got %s, needed %s',
       $config->getDestinationPath(),
-      get_class($repo),
+      \get_class($repo),
       ShipItDestinationRepo::class,
     );
     $repo->push();

@@ -56,10 +56,10 @@ final class ShipItSyncPhase extends ShipItPhase {
         'description' => "Comma-separate list of source commit IDs to skip.",
         'write' =>
           $x ==> {
-            $this->skippedSourceCommits = new ImmSet(explode(',', $x));
+            $this->skippedSourceCommits = new ImmSet(\explode(',', $x));
             foreach ($this->skippedSourceCommits as $commit) {
               // 7 happens to be the usual output
-              if (strlen($commit) < ShipItUtil::SHORT_REV_LENGTH) {
+              if (\strlen($commit) < ShipItUtil::SHORT_REV_LENGTH) {
                 throw new ShipItException(
                   'Skipped rev '.$commit.' is potentially ambiguous; use a '.
                   'longer id instead.'

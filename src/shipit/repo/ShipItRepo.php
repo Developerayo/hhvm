@@ -12,7 +12,7 @@ namespace Facebook\ShipIt;
 class ShipItRepoException extends \Exception {
   public function __construct(?ShipItRepo $repo, string $message) {
     if ($repo !== null) {
-      $message = get_class($repo) . ": $message";
+      $message = \get_class($repo) . ": $message";
     }
     parent::__construct($message);
   }
@@ -73,7 +73,7 @@ abstract class ShipItRepo {
   public static function getLockFilePathForRepoPath(
     string $repo_path,
   ): string {
-    return dirname($repo_path).'/'.basename($repo_path).'.fbshipit-lock';
+    return \dirname($repo_path).'/'.\basename($repo_path).'.fbshipit-lock';
   }
 
   /**
@@ -111,7 +111,7 @@ abstract class ShipItRepo {
       $repo instanceof $interface,
       '%s is a %s, needed a %s',
       $path,
-      get_class($repo),
+      \get_class($repo),
       $interface,
     );
     return $repo;
@@ -124,10 +124,10 @@ abstract class ShipItRepo {
     string $path,
     string $branch,
   ): ShipItRepo {
-    if (file_exists($path.'/.git')) {
+    if (\file_exists($path.'/.git')) {
       return new ShipItRepoGIT($path, $branch);
     }
-    if (file_exists($path.'/.hg')) {
+    if (\file_exists($path.'/.hg')) {
       return new ShipItRepoHG($path, $branch);
     }
     throw new ShipItRepoException(
@@ -140,14 +140,14 @@ abstract class ShipItRepo {
    * Convert a hunk to a ShipItDiff shape
    */
   protected static function parseDiffHunk(string $hunk): ?ShipItDiff {
-    list($header, $body) = explode("\n", $hunk, 2);
+    list($header, $body) = \explode("\n", $hunk, 2);
     $matches = array();
-    preg_match(
+    \preg_match(
       '@^diff --git [ab]/(.*?) [ab]/(.*?)$@',
-      trim($header),
+      \trim($header),
       &$matches,
     );
-    if (count($matches) === 0) {
+    if (\count($matches) === 0) {
       return null;
     }
     return shape(

@@ -21,10 +21,10 @@ use \Facebook\ShipIt\ {
 final class SubmoduleTest extends \Facebook\ShipIt\BaseTest {
   public function testSubmoduleCommitFile(): void {
     $changeset = ShipItRepoGIT::getChangesetFromExportedPatch(
-      file_get_contents(
+      \file_get_contents(
         __DIR__.'/git-diffs/submodule-hhvm-third-party.header',
       ),
-      file_get_contents(
+      \file_get_contents(
         __DIR__.'/git-diffs/submodule-hhvm-third-party.patch',
       ),
     );
@@ -53,8 +53,8 @@ final class SubmoduleTest extends \Facebook\ShipIt\BaseTest {
       $change,
     );
 
-    $old_pos = strpos($change, '6d9dffd0233c53bb83e4daf5475067073df9cdca');
-    $new_pos = strpos($change, 'ae031dcc9594163f5b0c35e7026563f1c8372595');
+    $old_pos = \strpos($change, '6d9dffd0233c53bb83e4daf5475067073df9cdca');
+    $new_pos = \strpos($change, 'ae031dcc9594163f5b0c35e7026563f1c8372595');
 
     $this->assertNotFalse($old_pos);
     $this->assertNotFalse($new_pos);
@@ -71,7 +71,7 @@ final class SubmoduleTest extends \Facebook\ShipIt\BaseTest {
     ))
       ->runSynchronously();
     $this->configureGit($submodule_dir);
-    file_put_contents($submodule_dir->getPath().'/somefile', '');
+    \file_put_contents($submodule_dir->getPath().'/somefile', '');
     (new ShipItShellCommand(
       $submodule_dir->getPath(),
       'git',
@@ -117,11 +117,11 @@ final class SubmoduleTest extends \Facebook\ShipIt\BaseTest {
     ))
       ->runSynchronously();
     $this->configureGit($dest_dir);
-    file_put_contents(
+    \file_put_contents(
       $dest_dir->getPath().'/rev.txt',
       'Subproject commit '.$submodule_first_id."\n",
     );
-    file_put_contents(
+    \file_put_contents(
       $dest_dir->getPath().'/.gitmodules',
       '[submodule "test"]
          path=submodule-test
@@ -211,7 +211,7 @@ final class SubmoduleTest extends \Facebook\ShipIt\BaseTest {
     // Now we can finally check stuff!
     $this->assertEquals(
       'Subproject commit '.$submodule_second_id."\n",
-      file_get_contents($dest_dir->getPath().'/rev.txt'),
+      \file_get_contents($dest_dir->getPath().'/rev.txt'),
       'File should be updated with new hash.',
     );
   }

@@ -16,8 +16,8 @@ final class ConditionalLinesFilterTest extends BaseTest {
     'comment-lines-comment-end';
 
   private static function getChangeset(string $name): ShipItChangeset {
-    $header = file_get_contents(__DIR__.'/git-diffs/'.$name.'.header');
-    $patch = file_get_contents(__DIR__.'/git-diffs/'.$name.'.patch');
+    $header = \file_get_contents(__DIR__.'/git-diffs/'.$name.'.header');
+    $patch = \file_get_contents(__DIR__.'/git-diffs/'.$name.'.patch');
     $changeset = ShipItRepoGIT::getChangesetFromExportedPatch(
       $header,
       $patch,
@@ -38,11 +38,11 @@ final class ConditionalLinesFilterTest extends BaseTest {
     $diff = $diffs->at(0)['body'];
 
     $this->assertRegExp(
-      '/^'.preg_quote('+// @oss-disable: baz', '/').'$/m',
+      '/^'.\preg_quote('+// @oss-disable: baz', '/').'$/m',
       $diff,
     );
     $this->assertRegExp(
-      '/^'.preg_quote('-  // @oss-disable: derp', '/').'$/m',
+      '/^'.\preg_quote('-  // @oss-disable: derp', '/').'$/m',
       $diff,
     );
     $this->assertNotRegExp('/ @oss-disable$/', $diff);
@@ -61,11 +61,11 @@ final class ConditionalLinesFilterTest extends BaseTest {
     $diff = $diffs->at(0)['body'];
 
     $this->assertRegExp(
-      '/^'.preg_quote('+/* @oss-disable: baz */', '/').'$/m',
+      '/^'.\preg_quote('+/* @oss-disable: baz */', '/').'$/m',
       $diff,
     );
     $this->assertRegExp(
-      '/^'.preg_quote('-  /* @oss-disable: derp */', '/').'$/m',
+      '/^'.\preg_quote('-  /* @oss-disable: derp */', '/').'$/m',
       $diff,
     );
     $this->assertNotRegExp('/ @oss-disable \*\/$/', $diff);

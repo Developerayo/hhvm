@@ -45,7 +45,7 @@ final class PathsWithSpacesTest extends BaseTest {
     $path = $temp_dir->getPath();
     $this->execSteps($path, [ 'git', 'init' ]);
     $this->configureGit($temp_dir);
-    mkdir($path.'/'.dirname(self::FILE_NAME), 0755, /* recursive = */ true);
+    \mkdir($path.'/'.\dirname(self::FILE_NAME), 0755, /* recursive = */ true);
     $this->execSteps(
       $path,
       [ 'touch', self::FILE_NAME ],
@@ -61,7 +61,7 @@ final class PathsWithSpacesTest extends BaseTest {
     $path = $temp_dir->getPath();
     $this->execSteps($path, [ 'hg', 'init' ]);
     $this->configureHg($temp_dir);
-    mkdir($path.'/'.dirname(self::FILE_NAME), 0755, /* recursive = */ true);
+    \mkdir($path.'/'.\dirname(self::FILE_NAME), 0755, /* recursive = */ true);
     $this->execSteps(
       $path,
       [ 'touch', self::FILE_NAME ],

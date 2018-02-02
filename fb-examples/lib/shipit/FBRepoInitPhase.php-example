@@ -64,31 +64,31 @@ final class FBRepoInitPhase extends ShipItPhase {
 
     $sh_lock = ShipItRepo::createSharedLockForPath($local_path);
 
-    if (is_dir($local_path)) {
+    if (\is_dir($local_path)) {
       return;
     }
 
     $ex_lock = $sh_lock->getExclusive();
 
     // In case the src repo dir was specified by hand
-    if (basename($local_path) !== $this->name) {
-      fprintf(
-        STDERR,
+    if (\basename($local_path) !== $this->name) {
+      \fprintf(
+        \STDERR,
         'Facebook clone scripts require directory names to match repo names: '.
         "got '%s', expected '%s'\n",
-        basename($local_path),
+        \basename($local_path),
         $this->name,
       );
       exit(1);
     }
 
     $command = self::getCloneCommand($this->name);
-    $local_parent_path = dirname($local_path);
-    if (!is_dir($local_parent_path)) {
-      mkdir($local_parent_path, 0755, /* recursive = */ true);
+    $local_parent_path = \dirname($local_path);
+    if (!\is_dir($local_parent_path)) {
+      \mkdir($local_parent_path, 0755, /* recursive = */ true);
     }
     // Make sure that "remove stale temp file" jobs don't clean this up
-    touch($local_parent_path);
+    \touch($local_parent_path);
 
     (new ShipItShellCommand($local_parent_path, ...$command))
       ->setRetries(2)

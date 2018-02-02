@@ -61,7 +61,7 @@ class ShipItSync {
     foreach ($this->getSourceChangesets() as $changeset) {
       $skip_match = null;
       foreach ($skipped_ids as $skip_id) {
-        if (strpos($changeset->getID(), $skip_id) === 0) {
+        if (\strpos($changeset->getID(), $skip_id) === 0) {
           $skip_match = $skip_id;
           break;
         }
@@ -98,8 +98,8 @@ class ShipItSync {
     }
 
     $patches_dir = $this->syncConfig->getPatchesDirectory();
-    if ($patches_dir !== null && !file_exists($patches_dir)) {
-      mkdir($patches_dir, 0755, /* recursive = */ true);
+    if ($patches_dir !== null && !\file_exists($patches_dir)) {
+      \mkdir($patches_dir, 0755, /* recursive = */ true);
     }
 
     $verbose = $this->baseConfig->isVerboseEnabled();
@@ -112,10 +112,10 @@ class ShipItSync {
       if ($patches_dir !== null) {
         $file = $patches_dir.'/'.$this->baseConfig->getDestinationBranch().'-'.
           $changeset->getID().'.patch';
-        if (file_exists($file)) {
-          printf("Overwriting patch file: %s\n", $file);
+        if (\file_exists($file)) {
+          \printf("Overwriting patch file: %s\n", $file);
         }
-        file_put_contents($file, $dest->renderPatch($changeset));
+        \file_put_contents($file, $dest->renderPatch($changeset));
         $changeset = $changeset->withDebugMessage(
           'Saved patch file: %s',
           $file,
@@ -127,7 +127,7 @@ class ShipItSync {
       }
 
       if (!$changeset->isValid()) {
-        printf(
+        \printf(
           "  SKIP %s %s\n",
           $changeset->getShortID(),
           $changeset->getSubject(),
@@ -137,7 +137,7 @@ class ShipItSync {
 
       try {
         $dest->commitPatch($changeset);
-        printf(
+        \printf(
           "  OK %s %s\n",
           $changeset->getShortID(),
           $changeset->getSubject(),
@@ -145,8 +145,8 @@ class ShipItSync {
         $changesets_applied->add($changeset);
         continue;
       } catch (ShipItRepoException $e) {
-        fprintf(
-          STDERR,
+        \fprintf(
+          \STDERR,
           "Failed to apply patch %s (%s): %s\n",
           $changeset->getID(),
           $changeset->getMessage(),
@@ -177,9 +177,9 @@ class ShipItSync {
     $destinationChangeset = $this
       ->getRepo(ShipItDestinationRepo::class)
       ->getHeadChangeset();
-    file_put_contents(
+    \file_put_contents(
       $filename,
-      json_encode(array(
+      \json_encode(array(
         'source' => array(
           'id' => $sourceChangeset?->getID(),
           'timestamp' => $sourceChangeset?->getTimestamp(),
@@ -201,7 +201,7 @@ class ShipItSync {
         "Unable to determine last differential revision pushed to dest repo"
       );
     }
-    if (!preg_match('/^D[0-9]{6,}$/', $diff)) {
+    if (!\preg_match('/^D[0-9]{6,}$/', $diff)) {
       throw new ShipItException(
         "Last differential revision number ('{$diff}') is invalid"
       );
@@ -268,6 +268,6 @@ class ShipItSync {
     }
     $new_message = $changeset->getMessage()."\n\n".
       'fbshipit-source-id: '.$rev;
-    return $changeset->withMessage(trim($new_message));
+    return $changeset->withMessage(\trim($new_message));
   }
 }

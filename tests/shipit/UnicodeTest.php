@@ -16,23 +16,23 @@ final class UnicodeTest extends BaseTest {
   private ?string $ctype;
 
   public function setUp(): void {
-    $ctype = getenv('LC_CTYPE');
+    $ctype = \getenv('LC_CTYPE');
     if ($ctype !== false) {
       $this->ctype = $ctype;
     }
-    putenv('LC_CTYPE=US-ASCII');
+    \putenv('LC_CTYPE=US-ASCII');
   }
 
   public function tearDown(): void {
-    putenv('LC_CTYPE='.$this->ctype);
+    \putenv('LC_CTYPE='.$this->ctype);
   }
 
   <<__Memoize>>
   private function getExpectedContent(): string {
-    $content = file_get_contents(self::CONTENT_FILE);
+    $content = \file_get_contents(self::CONTENT_FILE);
     $this->assertSame(
       self::CONTENT_SHA256,
-      hash('sha256', $content, /* raw output = */ false),
+      \hash('sha256', $content, /* raw output = */ false),
     );
     return $content;
   }
@@ -62,20 +62,20 @@ final class UnicodeTest extends BaseTest {
     string $patch_file,
   ): void {
     $changeset = $impl::getChangesetFromExportedPatch(
-      file_get_contents($header_file),
-      file_get_contents($patch_file),
+      \file_get_contents($header_file),
+      \file_get_contents($patch_file),
     );
     assert($changeset !== null);
     $this->assertSame(
-      trim($this->getExpectedContent()),
+      \trim($this->getExpectedContent()),
       $changeset->getMessage(),
     );
   }
 
   public function testCreatedFileWithGit(): void {
     $changeset = ShipItRepoGIT::getChangesetFromExportedPatch(
-      file_get_contents(__DIR__.'/git-diffs/unicode.header'),
-      file_get_contents(__DIR__.'/git-diffs/unicode.patch'),
+      \file_get_contents(__DIR__.'/git-diffs/unicode.header'),
+      \file_get_contents(__DIR__.'/git-diffs/unicode.patch'),
     );
     assert($changeset !== null);
 
@@ -87,14 +87,14 @@ final class UnicodeTest extends BaseTest {
 
     $this->assertSame(
       $this->getExpectedContent(),
-      file_get_contents($tempdir->getPath().'/unicode-example.txt'),
+      \file_get_contents($tempdir->getPath().'/unicode-example.txt'),
     );
   }
 
   public function testCreatedFileWithMercurial(): void {
     $changeset = ShipItRepoGIT::getChangesetFromExportedPatch(
-      file_get_contents(__DIR__.'/git-diffs/unicode.header'),
-      file_get_contents(__DIR__.'/git-diffs/unicode.patch'),
+      \file_get_contents(__DIR__.'/git-diffs/unicode.header'),
+      \file_get_contents(__DIR__.'/git-diffs/unicode.patch'),
     );
     assert($changeset !== null);
 
@@ -106,7 +106,7 @@ final class UnicodeTest extends BaseTest {
 
     $this->assertSame(
       $this->getExpectedContent(),
-      file_get_contents($tempdir->getPath().'/unicode-example.txt'),
+      \file_get_contents($tempdir->getPath().'/unicode-example.txt'),
     );
   }
 
@@ -115,7 +115,7 @@ final class UnicodeTest extends BaseTest {
     $path = $tempdir->getPath();
     $this->initGitRepo($tempdir);
 
-    file_put_contents($tempdir->getPath().'/foo', 'bar');
+    \file_put_contents($tempdir->getPath().'/foo', 'bar');
 
     (new ShipItShellCommand(
       $path,
@@ -131,7 +131,7 @@ final class UnicodeTest extends BaseTest {
     $repo = new ShipItRepoGIT($tempdir->getPath(), 'master');
     $changeset = $repo->getChangesetFromID('HEAD');
     $this->assertSame(
-      trim($this->getExpectedContent()),
+      \trim($this->getExpectedContent()),
       $changeset?->getMessage(),
     );
   }
@@ -141,7 +141,7 @@ final class UnicodeTest extends BaseTest {
     $path = $tempdir->getPath();
     $this->initMercurialRepo($tempdir);
 
-    file_put_contents($tempdir->getPath().'/foo', 'bar');
+    \file_put_contents($tempdir->getPath().'/foo', 'bar');
 
     (new ShipItShellCommand(
       $path,
@@ -153,7 +153,7 @@ final class UnicodeTest extends BaseTest {
     $repo = new ShipItRepoHG($tempdir->getPath(), 'master');
     $changeset = $repo->getChangesetFromID('.');
     $this->assertSame(
-      trim($this->getExpectedContent()),
+      \trim($this->getExpectedContent()),
       $changeset?->getMessage(),
     );
   }

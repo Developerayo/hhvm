@@ -47,7 +47,7 @@ final class ShipItDeleteCorruptedRepoPhase extends ShipItPhase {
       ? $config->getSourcePath()
       : $config->getDestinationPath();
 
-    if (!file_exists($local_path)) {
+    if (!\file_exists($local_path)) {
       return;
     }
 
@@ -57,19 +57,19 @@ final class ShipItDeleteCorruptedRepoPhase extends ShipItPhase {
       return;
     }
 
-    fwrite(STDERR, "  Corruption detected, re-cloning\n");
+    \fwrite(\STDERR, "  Corruption detected, re-cloning\n");
     $lock_ex = $lock_sh->getExclusive();
     (new ShipItShellCommand(
-      dirname($local_path),
+      \dirname($local_path),
       'rm', '-rf', '--preserve-root', $local_path,
     ))->runSynchronously();
   }
 
   protected function isCorrupted(string $local_path): bool {
-    if (file_exists($local_path.'/.git/')) {
+    if (\file_exists($local_path.'/.git/')) {
       return $this->isCorruptedGitRepo($local_path);
     }
-    if (file_exists($local_path.'/.hg/')) {
+    if (\file_exists($local_path.'/.hg/')) {
       return $this->isCorruptedHGRepo($local_path);
     }
     return false;
@@ -97,7 +97,7 @@ final class ShipItDeleteCorruptedRepoPhase extends ShipItPhase {
   protected function isCorruptedHGRepo(string $local_path): bool {
     // Given ShipItRepoHG's lock usage, there should never be a transaction in
     // progress if we have the lock.
-    if (file_exists($local_path.'/.hg/store/journal')) {
+    if (\file_exists($local_path.'/.hg/store/journal')) {
       return true;
     }
 
@@ -112,8 +112,8 @@ final class ShipItDeleteCorruptedRepoPhase extends ShipItPhase {
     if ($result->getExitCode() !== 0) {
       return true;
     }
-    $revision = trim($result->getStdOut());
-    if (preg_match('/^0+$/', $revision)) {
+    $revision = \trim($result->getStdOut());
+    if (\preg_match('/^0+$/', $revision)) {
       // 000000...0 is not a valid revision ID, but it's what we get
       // for an empty repository
       return true;

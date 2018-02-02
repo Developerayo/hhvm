@@ -13,9 +13,9 @@ final class FBShipItPreviewTest extends BaseTest {
 
   // Make a string act like a file or stdin.
   private static function streamify(string $string): resource {
-    $stream = fopen('php://memory', 'r+');
-    fwrite($stream, $string);
-    rewind($stream);
+    $stream = \fopen('php://memory', 'r+');
+    \fwrite($stream, $string);
+    \rewind($stream);
     return $stream;
   }
 
@@ -41,12 +41,12 @@ final class FBShipItPreviewTest extends BaseTest {
     }
     ===END===';
     // Capture stdout
-    ob_start();
+    \ob_start();
     (new FBShipItPreview())->shipItPreview(self::streamify($data));
-    $stdout = ob_get_contents();
-    ob_end_clean();
+    $stdout = \ob_get_contents();
+    \ob_end_clean();
     $this->assertEquals(
-      json_decode($stdout, true),
+      \json_decode($stdout, true),
       array(
         shape(
           'changeset' => shape (
@@ -97,7 +97,7 @@ final class FBShipItPreviewTest extends BaseTest {
         });
     $result = (new FBShipItPreview())
       ->handleChangeset('phabtest1_git', 'side_branch', $changeset);
-    $this->assertEquals(count($result), 1);
+    $this->assertEquals(\count($result), 1);
     $this->assertEquals(
       $result[0],
       shape(
@@ -118,7 +118,7 @@ final class FBShipItPreviewTest extends BaseTest {
       )
     );
     $diffs = $result[0]['changeset']['diffs'];
-    $this->assertEquals(count($diffs), 1);
+    $this->assertEquals(\count($diffs), 1);
     $this->assertEquals(
       $diffs[0],
       shape('path' => 'public/example.php', 'body' => '')

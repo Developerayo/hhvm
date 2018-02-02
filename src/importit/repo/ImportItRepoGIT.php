@@ -31,7 +31,7 @@ class ImportItRepoGIT extends \Facebook\ShipIt\ShipItRepoGIT {
     $_lock = $this->getSharedLock()->getExclusive();
 
     if ($pr_number === null) {
-      $actual_head_rev = trim(
+      $actual_head_rev = \trim(
         $this->gitCommand('rev-parse', $expected_head_rev)
       );
       invariant(
@@ -45,7 +45,7 @@ class ImportItRepoGIT extends \Facebook\ShipIt\ShipItRepoGIT {
     } else {
       // First, fetch the special head ref that GitHub creates for the PR.
       $this->gitCommand('fetch', 'origin', 'refs/pull/'.$pr_number.'/head');
-      $actual_head_rev = trim($this->gitCommand('rev-parse', 'FETCH_HEAD'));
+      $actual_head_rev = \trim($this->gitCommand('rev-parse', 'FETCH_HEAD'));
       invariant(
         $expected_head_rev === $actual_head_rev,
         'Expected %s to be the HEAD of the pull request, but got %s',
@@ -57,7 +57,7 @@ class ImportItRepoGIT extends \Facebook\ShipIt\ShipItRepoGIT {
     }
     // Now compute the merge base with the default branch (that we would land
     // the pull request to).
-    $merge_base = trim($this->gitCommand(
+    $merge_base = \trim($this->gitCommand(
       'merge-base',
       $actual_head_rev,
       $source_default_branch,
@@ -81,7 +81,7 @@ class ImportItRepoGIT extends \Facebook\ShipIt\ShipItRepoGIT {
       '-',
     );
     $this->gitCommand('add', '--all');
-    $status = trim($this->gitCommand('status'));
+    $status = \trim($this->gitCommand('status'));
     $this->gitCommand(
       'commit',
       '--allow-empty',
@@ -89,7 +89,7 @@ class ImportItRepoGIT extends \Facebook\ShipIt\ShipItRepoGIT {
       $commit_title."\n\n".$status,
     );
 
-    $rev = trim($this->gitCommand('rev-parse', 'HEAD'));
+    $rev = \trim($this->gitCommand('rev-parse', 'HEAD'));
     $changeset = $this->getChangesetFromID($rev);
     invariant($changeset !== null, 'Impossible');
     return tuple(

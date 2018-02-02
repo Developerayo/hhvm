@@ -52,7 +52,7 @@ abstract class FBShipItCLI
     $paths = static::getPathMappings()
       ->keys()
       ->toSet();
-    $interfaces = new Set(class_implements(static::class));
+    $interfaces = new Set(\class_implements(static::class));
     if (
       !$interfaces->contains(ISupportsFBCodeBuilder::class) &&
       $config['internalRepo'] === 'fbsource' &&
@@ -69,14 +69,14 @@ abstract class FBShipItCLI
     }
     $paths = $paths->toArray();
     // Sort least specific to most specific.
-    sort(&$paths);
+    \sort(&$paths);
     $roots = Set {};
     foreach ($paths as $path) {
       // If this path starts with any elements in the set of roots we have
       // already computed, we do not need to add this as it would be redundant.
       $root_match = false;
       foreach ($roots as $root) {
-        $root_match = $root_match || strncmp($path, $root, strlen($root)) === 0;
+        $root_match = $root_match || \strncmp($path, $root, \strlen($root)) === 0;
       }
       if ($root_match) {
         continue;
@@ -105,7 +105,7 @@ abstract class FBShipItCLI
   ): ShipItChangeset {
     $roots = static::getBaseConfig()->getSourceRoots()
       ->filter($root ==> $root !== '');
-    if (count($roots) === 0) {
+    if (\count($roots) === 0) {
       return $changeset;
     }
 
@@ -128,7 +128,7 @@ abstract class FBShipItCLI
           $dest,
         );
     }
-    $interfaces = new Set(class_implements(static::class));
+    $interfaces = new Set(\class_implements(static::class));
     if ($interfaces->contains(ISupportsFBCodeBuilder::class)) {
       // FBCodeBuilder needs these hashes, but doesn't use them as submodules.
       return $changeset;

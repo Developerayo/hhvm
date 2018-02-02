@@ -49,25 +49,25 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
     $reflector = new \ReflectionClass($config_class);
     $this->assertEquals(
       $config['githubOrg'],
-      basename(dirname($reflector->getFileName())),
+      \basename(\dirname($reflector->getFileName())),
       'Config parent directory must match GitHub Org: '.$config_class
     );
     $this->assertEquals(
       $config['githubProject'].'.php',
-      basename($reflector->getFileName()),
+      \basename($reflector->getFileName()),
       'Config filename must match GitHub Repo: '.$config_class
     );
   }
 
   final protected static function getConfigClass(
   ): classname<\Facebook\ShipIt\FBShipItConfig> {
-    $config_class = preg_replace(
+    $config_class = \preg_replace(
       '/([a-zA-Z0-9_]+)Test$/',
       '\1',
       static::class,
     );
     invariant(
-      class_exists($config_class, true),
+      \class_exists($config_class, true),
       '%s does not exist.  Test and ShipIt class are not named consistently.',
       $config_class,
     );
@@ -106,7 +106,7 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
     foreach ($config_class::getDefaultPathMappings()->keys() as $source_path) {
       $found = false;
       foreach ($examples as $example) {
-        if (strncmp($example, $source_path, strlen($source_path)) === 0) {
+        if (\strncmp($example, $source_path, \strlen($source_path)) === 0) {
           $found = true;
           break;
         }
@@ -138,8 +138,8 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
     $roots = $config->getSourceRoots();
     foreach ($roots as $root) {
       $this->assertTrue(
-        substr($root, -1) === '/',
-        sprintf(
+        \substr($root, -1) === '/',
+        \sprintf(
           'Expected `%s` to end in `/` (source roots must be a folder).',
           $root,
         ),
@@ -150,7 +150,7 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
   <<__Override>>
   final public function testSubmodulesAreFilteredCorrectly(): void {
     $config_class = static::getConfigClass();
-    $parents = new Set(class_parents($config_class));
+    $parents = new Set(\class_parents($config_class));
     foreach ($config_class::getSubmoduleMappings() as $rev_file => $dest) {
       $changeset = (new ShipItChangeset())
         ->withDiffs(ImmVector {
@@ -272,10 +272,10 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
 
     if ($path_expected === null) {
       $expected_paths = [];
-      $message = sprintf('Expected `%s` to be stripped', $path_in);
+      $message = \sprintf('Expected `%s` to be stripped', $path_in);
     } else {
       $expected_paths = [$path_expected];
-      $message = sprintf(
+      $message = \sprintf(
         'Expected `%s` to map to `%s`',
         $path_in,
         $path_expected,
@@ -284,10 +284,10 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
     $this->assertEquals(
       $expected_paths,
       $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray(),
-      sprintf(
+      \sprintf(
         "%s.  Debug messages follow:\n%s",
         $message,
-        implode("\n", $changeset->getDebugMessages()),
+        \implode("\n", $changeset->getDebugMessages()),
       ),
     );
   }
@@ -327,7 +327,7 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
 
   final public function testSubmodulesAreImportedCorrectly(): void {
     $config_class = static::getConfigClass();
-    $parents = new Set(class_parents($config_class));
+    $parents = new Set(\class_parents($config_class));
     foreach ($config_class::getSubmoduleMappings() as $rev_file => $dest) {
       $changeset = (new ShipItChangeset())
         ->withDiffs(ImmVector {

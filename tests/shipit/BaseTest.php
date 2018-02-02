@@ -39,7 +39,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
     mixed ...$args
   ): mixed {
     invariant(
-      method_exists($classname, $method),
+      \method_exists($classname, $method),
       'Method "%s" does not exists on "%s"!',
       $method,
       $classname,
@@ -74,7 +74,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
   protected function configureHg(
     ShipItTempDir $temp_dir
   ): void {
-    file_put_contents(
+    \file_put_contents(
       $temp_dir->getPath().'/.hg/hgrc',
       '[ui]
 username = FBShipIt Unit Test <fbshipit@example.com>',

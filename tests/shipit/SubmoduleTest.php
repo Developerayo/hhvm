@@ -13,10 +13,10 @@ namespace Facebook\ShipIt;
 final class SubmoduleTest extends BaseTest {
   public function testSubmoduleCommitFile(): void {
     $changeset = ShipItRepoHG::getChangesetFromExportedPatch(
-      file_get_contents(
+      \file_get_contents(
         __DIR__.'/hg-diffs/submodule-hhvm-third-party.header',
       ),
-      file_get_contents(
+      \file_get_contents(
         __DIR__.'/hg-diffs/submodule-hhvm-third-party.patch',
       ),
     );
@@ -39,8 +39,8 @@ final class SubmoduleTest extends BaseTest {
     $this->assertContains('--- a/third-party', $change);
     $this->assertContains('+++ b/third-party', $change);
 
-    $old_pos = strpos($change, '6d9dffd0233c53bb83e4daf5475067073df9cdca');
-    $new_pos = strpos($change, 'ae031dcc9594163f5b0c35e7026563f1c8372595');
+    $old_pos = \strpos($change, '6d9dffd0233c53bb83e4daf5475067073df9cdca');
+    $new_pos = \strpos($change, 'ae031dcc9594163f5b0c35e7026563f1c8372595');
 
     $this->assertNotFalse($old_pos);
     $this->assertNotFalse($new_pos);
@@ -57,7 +57,7 @@ final class SubmoduleTest extends BaseTest {
     ))
       ->runSynchronously();
     $this->configureGit($submodule_dir);
-    file_put_contents($submodule_dir->getPath().'/somefile', '');
+    \file_put_contents($submodule_dir->getPath().'/somefile', '');
     (new ShipItShellCommand(
       $submodule_dir->getPath(),
       'git',
@@ -85,11 +85,11 @@ final class SubmoduleTest extends BaseTest {
     ))
       ->runSynchronously();
     $this->configureGit($source_dir);
-    file_put_contents(
+    \file_put_contents(
       $source_dir->getPath().'/rev.txt',
       'Subproject commit '.$submodule_id,
     );
-    file_put_contents(
+    \file_put_contents(
       $source_dir->getPath().'/.gitmodules',
       '[submodule "test"]
          path=submodule-test
@@ -172,7 +172,7 @@ final class SubmoduleTest extends BaseTest {
     $submodule_id = ShipItRepo::open($submodule_dir->getPath(), 'master')
       ->getHeadChangeset()?->getID();
     invariant($submodule_id !== null, 'impossible');
-    file_put_contents(
+    \file_put_contents(
       $source_dir->getPath().'/rev.txt',
       'Subproject commit '.$submodule_id,
     );

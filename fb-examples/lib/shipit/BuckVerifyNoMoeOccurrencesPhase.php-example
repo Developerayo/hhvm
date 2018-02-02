@@ -31,7 +31,7 @@ final class BuckVerifyNoMoeOccurrencesPhase extends BuildAndTestPhase {
       ShipItUtil::DONT_VERBOSE | ShipItUtil::NO_THROW,
       'grep', '-r', 'MOE',
     );
-    $moe_occurrences = preg_replace("@^.*Binary.*\n@m", '', $moe_occurrences);
+    $moe_occurrences = \preg_replace("@^.*Binary.*\n@m", '', $moe_occurrences);
     invariant(
       !$moe_occurrences,
       "Grep found MOE in OSS repo:\n%s\n",

@@ -16,14 +16,14 @@ class ShipItShellCommandException extends \Exception {
   ) {
     $exitCode = $result->getExitCode();
     $error = $result->getStdErr();
-    if (((string) trim($error)) === '') {
+    if (((string) \trim($error)) === '') {
       $error = $result->getStdOut();
     }
-    $message = sprintf(
+    $message = \sprintf(
       '%s returned exit code %s: %s',
       $command,
       $exitCode,
-      trim($error),
+      \trim($error),
     );
     parent::__construct($message);
   }

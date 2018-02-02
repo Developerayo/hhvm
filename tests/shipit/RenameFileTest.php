@@ -22,7 +22,7 @@ final class RenameFileTest extends BaseTest {
    */
   public function testRenameFile(): void {
     $temp_dir = new ShipItTempDir('rename-file-test');
-    file_put_contents(
+    \file_put_contents(
       $temp_dir->getPath().'/initial.txt',
       'my content here',
     );
@@ -47,7 +47,7 @@ final class RenameFileTest extends BaseTest {
     );
     $changeset = $repo->getChangesetFromID('.');
     assert($changeset !== null);
-    shell_exec('rm -rf '.escapeshellarg($temp_dir->getPath()));
+    \shell_exec('rm -rf '.\escapeshellarg($temp_dir->getPath()));
 
     $this->assertSame('moved file', $changeset->getSubject());
 

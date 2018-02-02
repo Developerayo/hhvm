@@ -67,7 +67,7 @@ final class FBCommonFiltersTest extends BaseTest {
   }
 
   public function testSVNAuthor(): void {
-    $fake_uuid = str_repeat('a', 36);
+    $fake_uuid = \str_repeat('a', 36);
     $in = (new ShipItChangeset())
       ->withAuthor('fredemmott@'.$fake_uuid);
     $out = ShipItUserFilters::rewriteSVNAuthor(
@@ -185,7 +185,7 @@ final class FBCommonFiltersTest extends BaseTest {
   public function testFilterMessageSections(): void {
     foreach (FBCommonFilters::getSupportedMessageSectionNames() as $section) {
       $changeset = (new ShipItChangeset())
-        ->withMessage(sprintf("%s:\n some text", $section));
+        ->withMessage(\sprintf("%s:\n some text", $section));
       $this->assertEquals(
         '',
         FBCommonFilters::filterMessageSections($changeset, ImmSet {})
@@ -193,7 +193,7 @@ final class FBCommonFiltersTest extends BaseTest {
         "Strips section '".$section."'",
       );
       $this->assertEquals(
-        sprintf("%s: some text", ucwords($section)),
+        \sprintf("%s: some text", \ucwords($section)),
         FBCommonFilters::filterMessageSections($changeset, ImmSet {$section})
           ->getMessage(),
         "Keeps section '".$section."'",

@@ -46,7 +46,7 @@ final class FacebookexperimentalBuckit extends FBShipItConfig {
         |> static::rewriteRemovingOssExtension($$)
         |> ShipItPathFilters::rewritePaths(
           $$,
-          $path ==> preg_replace(
+          $path ==> \preg_replace(
             '@^((?!infra_macros/fbcode_macros).*)/TARGETS$@', '\1/BUCK', $path));
   }
 
@@ -70,7 +70,7 @@ final class FacebookexperimentalBuckit extends FBShipItConfig {
     return ShipItPathFilters::rewritePaths(
       $changeset,
       $path ==> {
-        $stripped = preg_replace('@(.*)\.oss$@', '\1', $path);
+        $stripped = \preg_replace('@(.*)\.oss$@', '\1', $path);
         if(static::$FilesWithOssExtension->contains($stripped)) {
           return $stripped;
         } else {
@@ -109,7 +109,7 @@ final class FacebookexperimentalBuckit extends FBShipItConfig {
       |> static::rewriteAddingOssExtension($$)
       |> ShipItPathFilters::rewritePaths(
         $$,
-        $path ==> preg_replace(
+        $path ==> \preg_replace(
           self::BuckFilesToRewrite,
           '\1/TARGETS',
           $path))

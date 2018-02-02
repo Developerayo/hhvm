@@ -60,8 +60,8 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     ShipItBaseConfig $config,
   ): void {
     $output = $this->outputPath;
-    if ($output !== null && file_exists($output)) {
-      fwrite(STDERR, "  Path '%s' already exists\n", $output);
+    if ($output !== null && \file_exists($output)) {
+      \fwrite(\STDERR, "  Path '%s' already exists\n", $output);
       exit(1);
     }
 
@@ -78,11 +78,11 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     if ($output === null) {
       $output = $temp_dir->getPath();
     } else {
-      $parent = dirname($output);
-      if (!file_exists($parent)) {
-        mkdir($parent, 0755, /* recursive = */ true);
+      $parent = \dirname($output);
+      if (!\file_exists($parent)) {
+        \mkdir($parent, 0755, /* recursive = */ true);
       }
-      rename($temp_dir->getPath(), $output);
+      \rename($temp_dir->getPath(), $output);
     }
 
     print('  New repository created at '.$output."\n");
@@ -168,8 +168,8 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     // files aren't needed
     foreach ([$export_dir, $filtered_dir] as $repo) {
       $lock_file = ShipItRepo::getLockFilePathForRepoPath($repo->getPath());
-      if (file_exists($lock_file)) {
-        unlink($lock_file);
+      if (\file_exists($lock_file)) {
+        \unlink($lock_file);
       }
     }
 

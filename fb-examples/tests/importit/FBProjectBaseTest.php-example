@@ -55,7 +55,7 @@ abstract class FBProjectBaseTest extends \Facebook\ShipIt\BaseTest {
 
     $this->assertEquals(
       'importit_'.$config['githubProject'].'.php',
-      basename($reflector->getFileName()),
+      \basename($reflector->getFileName()),
       'ImportIt executable must match GitHub Repo: '.$importit_class,
     );
   }
@@ -88,10 +88,10 @@ abstract class FBProjectBaseTest extends \Facebook\ShipIt\BaseTest {
 
     if ($path_expected === null) {
       $expected_paths = [];
-      $message = sprintf('Expected `%s` to be stripped', $path_in);
+      $message = \sprintf('Expected `%s` to be stripped', $path_in);
     } else {
       $expected_paths = [$path_expected];
-      $message = sprintf(
+      $message = \sprintf(
         'Expected `%s` to map to `%s`',
         $path_in,
         $path_expected,
@@ -100,10 +100,10 @@ abstract class FBProjectBaseTest extends \Facebook\ShipIt\BaseTest {
     $this->assertEquals(
       $expected_paths,
       $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray(),
-      sprintf(
+      \sprintf(
         "%s.  Debug messages follow:\n%s",
         $message,
-        implode("\n", $changeset->getDebugMessages()),
+        \implode("\n", $changeset->getDebugMessages()),
       ),
     );
   }
@@ -138,7 +138,7 @@ abstract class FBProjectBaseTest extends \Facebook\ShipIt\BaseTest {
 
   final public function testSubmodulesAreImportedCorrectly(): void {
     $shipit_class = self::getShipItClass();
-    $parents = new Set(class_parents($shipit_class));
+    $parents = new Set(\class_parents($shipit_class));
     if (!$parents->contains(\Facebook\ShipIt\FBShipItCLI::class)) {
       $this->markTestSkipped();
     }

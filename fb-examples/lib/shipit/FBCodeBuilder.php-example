@@ -47,9 +47,9 @@ class FBCodeBuilder {
   ): ImmVector<string>  {
     return ImmVector {
       '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'$@',
-      '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'('.implode(
+      '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'('.\implode(
           '|',
-          $dependencies->map($d ==> preg_quote($d, '@'))
+          $dependencies->map($d ==> \preg_quote($d, '@'))
         ).')-rev.txt$@',
       // This is just to appease ShipItFilterSanityCheckPhase
       '@^'.FBCodeBuilder::DEST_GITHUB_HASHES.'shipit_test_file.txt$@',
@@ -76,9 +76,9 @@ class FBCodeBuilder {
   ): ImmVector<string>  {
     return ImmVector {
       '@^'.FBCodeBuilder::SRC_GITHUB_HASHES.'$@',
-      '@^'.FBCodeBuilder::SRC_GITHUB_HASHES.'('.implode(
+      '@^'.FBCodeBuilder::SRC_GITHUB_HASHES.'('.\implode(
           '|',
-          $dependencies->map($d ==> preg_quote($d, '@'))
+          $dependencies->map($d ==> \preg_quote($d, '@'))
         ).')-rev.txt$@',
       // This is just to appease ShipItFilterSanityCheckPhase
       '@^'.FBCodeBuilder::SRC_GITHUB_HASHES.'shipit_test_file.txt$@',

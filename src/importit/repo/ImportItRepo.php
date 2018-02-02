@@ -12,7 +12,7 @@ namespace Facebook\ImportIt;
 class ImportItRepoException extends \Exception {
   public function __construct(?ImportItRepo $repo, string $message) {
     if ($repo !== null) {
-      $message = get_class($repo) . ": " . $message;
+      $message = \get_class($repo) . ": " . $message;
     }
     parent::__construct($message);
   }
@@ -30,10 +30,10 @@ abstract class ImportItRepo {
     string $path,
     string $branch,
   ):  \Facebook\ShipIt\ShipItRepo {
-    if (file_exists($path.'/.git')) {
+    if (\file_exists($path.'/.git')) {
       return new ImportItRepoGIT($path, $branch);
     }
-    if (file_exists($path.'/.hg')) {
+    if (\file_exists($path.'/.hg')) {
       return new ImportItRepoHG($path, $branch);
     }
     throw new ImportItRepoException(

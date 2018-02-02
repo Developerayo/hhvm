@@ -31,12 +31,12 @@ final class BuckEnvironmentCheckPhase extends EnvironmentCheckPhase {
       'ant', '-version',
     );
     $match = array();
-    if (!preg_match('@version ([0-9\.]+)@', $ant_v, &$match)) {
-      fprintf(STDERR, "Couldn't identify ant version: %s\n", $ant_v);
+    if (!\preg_match('@version ([0-9\.]+)@', $ant_v, &$match)) {
+      \fprintf(\STDERR, "Couldn't identify ant version: %s\n", $ant_v);
       exit(1);
     }
     if ($match[1] < '1.9') {
-      fprintf(STDERR, "Needed ant 1.9, got %s\n", $match[1]);
+      \fprintf(\STDERR, "Needed ant 1.9, got %s\n", $match[1]);
       exit(1);
     }
 
@@ -45,22 +45,22 @@ final class BuckEnvironmentCheckPhase extends EnvironmentCheckPhase {
       'java', '-version',
     );
     $match = array();
-    if (!preg_match('@version "([0-9\.]+)@', $java_v, &$match)) {
-      fprintf(STDERR, "Couldn't identify java version: %s\n", $java_v);
+    if (!\preg_match('@version "([0-9\.]+)@', $java_v, &$match)) {
+      \fprintf(\STDERR, "Couldn't identify java version: %s\n", $java_v);
       exit(1);
     }
 
     if ($match[1] < '1.7') {
-      fprintf(STDERR, "Needed Java 1.7, got %s\n", $match[1]);
+      \fprintf(\STDERR, "Needed Java 1.7, got %s\n", $match[1]);
       exit(1);
     }
 
-    if (getenv('ANDROID_HOME') === false) {
-      fwrite(STDERR, "ANDROID_HOME env variable not set\n");
+    if (\getenv('ANDROID_HOME') === false) {
+      \fwrite(\STDERR, "ANDROID_HOME env variable not set\n");
       exit(1);
     }
-    if (getenv('NDK_HOME') === false) {
-      fwrite(STDERR, "NDK_HOME env variable not set\n");
+    if (\getenv('NDK_HOME') === false) {
+      \fwrite(\STDERR, "NDK_HOME env variable not set\n");
       exit(1);
     }
   }

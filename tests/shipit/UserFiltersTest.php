@@ -81,7 +81,7 @@ final class UserFiltersTest extends BaseTest {
       ),
       tuple(
         '@foo @bar @baz',
-        $mention ==> substr($mention, 1),
+        $mention ==> \substr($mention, 1),
         'foo bar baz',
       ),
     ];
@@ -117,7 +117,7 @@ final class UserFiltersTest extends BaseTest {
 
   public function examplesForSVNUserMapping(
   ): array<(string, string)> {
-    $fake_uuid = str_repeat('a', 36);
+    $fake_uuid = \str_repeat('a', 36);
     return [
       tuple('Foo <foo@example.com>', 'Foo <foo@example.com>'),
       tuple('foo@'.$fake_uuid, 'Example User <foo-public@example.com>'),

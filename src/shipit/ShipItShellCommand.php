@@ -96,7 +96,7 @@ class ShipItShellCommand {
   }
 
   private function getCommandAsString(): string {
-    return implode(' ', $this->command->map($str ==> escapeshellarg($str)));
+    return \implode(' ', $this->command->map($str ==> \escapeshellarg($str)));
   }
 
   private function runOnceSynchronously(): ShipItShellCommandResult {
@@ -114,47 +114,47 @@ class ShipItShellCommand {
 
     $command = $this->getCommandAsString();
     $pipes = null;
-    $fp = proc_open(
+    $fp = \proc_open(
       $command,
       $fds,
       &$pipes,
       $this->path,
       $env_vars->toArray(),
     );
-    if (!$fp || !is_array($pipes)) {
+    if (!$fp || !\is_array($pipes)) {
       throw new \Exception("Failed executing $command");
     }
     if ($stdin !== null) {
-      while (strlen($stdin)) {
-        $written = fwrite($pipes[0], $stdin);
+      while (\strlen($stdin)) {
+        $written = \fwrite($pipes[0], $stdin);
         if ($written === 0) {
-          $status = proc_get_status($fp);
+          $status = \proc_get_status($fp);
           if ($status['running']) {
             continue;
           }
           $exitcode = $status['exitcode'];
           invariant(
-            is_int($exitcode) && $exitcode > 0,
+            \is_int($exitcode) && $exitcode > 0,
             'Expected non-zero exit from process, got %s',
-            var_export($exitcode, true),
+            \var_export($exitcode, true),
           );
           break;
         }
-        $stdin = substr($stdin, $written);
+        $stdin = \substr($stdin, $written);
       }
-      fclose($pipes[0]);
+      \fclose($pipes[0]);
     }
 
     $stdout_stream = $pipes[1];
     $stderr_stream = $pipes[2];
-    stream_set_blocking($stdout_stream, false);
-    stream_set_blocking($stderr_stream, false);
+    \stream_set_blocking($stdout_stream, false);
+    \stream_set_blocking($stderr_stream, false);
     $stdout = '';
     $stderr = '';
     while (true) {
       $ready_streams = [$stdout_stream, $stderr_stream];
       $null_byref = null;
-      $result = stream_select(
+      $result = \stream_select(
         &$ready_streams,
         /* write streams = */ &$null_byref,
         /* exception streams = */ &$null_byref,
@@ -165,20 +165,20 @@ class ShipItShellCommand {
       }
       $all_empty = true;
       foreach ($ready_streams as $stream) {
-        $out = fread($stream, 1024);
-        if (strlen($out) === 0) {
+        $out = \fread($stream, 1024);
+        if (\strlen($out) === 0) {
           continue;
         }
         $all_empty = false;
 
         if ($stream === $stdout_stream) {
           $stdout .= $out;
-          $this->maybeFwrite(STDOUT, $out);
+          $this->maybeFwrite(\STDOUT, $out);
           continue;
         }
         if ($stream === $stderr_stream) {
           $stderr .= $out;
-          $this->maybeFwrite(STDERR, $out);
+          $this->maybeFwrite(\STDERR, $out);
           continue;
         }
 
@@ -189,7 +189,7 @@ class ShipItShellCommand {
         break;
       }
     }
-    $exitcode = proc_close($fp);
+    $exitcode = \proc_close($fp);
 
     $result = new ShipItShellCommandResult(
       $exitcode,
@@ -214,6 +214,6 @@ class ShipItShellCommand {
     if (!$this->outputToScreen) {
       return;
     }
-    fwrite($stream, $out);
+    \fwrite($stream, $out);
   }
 }

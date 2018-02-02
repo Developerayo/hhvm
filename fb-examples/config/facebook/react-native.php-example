@@ -31,7 +31,7 @@ final class FacebookReactNative extends FBShipItConfig {
       |> FBCommonFilters::stripSummariesByDefault($$)
       |> ShipItPathFilters::rewritePaths(
           $$,
-          $path ==> preg_replace('@/\.github\.flowconfig$@',
+          $path ==> \preg_replace('@/\.github\.flowconfig$@',
             '/.flowconfig', $path),
           )
       |> parent::defaultProjectFilterChangeset($$, $get_path_mappings);
@@ -82,7 +82,7 @@ final class FacebookReactNative extends FBShipItConfig {
     return $changeset
       |> ShipItPathFilters::rewritePaths(
           $$,
-          $path ==> preg_replace(
+          $path ==> \preg_replace(
             '@(^|/)\.flowconfig$@',
             '\1.github.flowconfig',
             $path,

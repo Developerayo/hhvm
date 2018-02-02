@@ -33,49 +33,49 @@ class ShipItPhaseRunner {
         'long_name' => 'base-dir::',
         'description' => 'Path to store repositories',
         'write' => $x ==>
-          $this->config = $this->config->withBaseDirectory(trim($x)),
+          $this->config = $this->config->withBaseDirectory(\trim($x)),
       ),
       shape(
         'long_name' => 'temp-dir::',
         'replacement' => 'base-dir',
         'write' => $x ==>
-          $this->config = $this->config->withBaseDirectory(trim($x)),
+          $this->config = $this->config->withBaseDirectory(\trim($x)),
       ),
       shape(
         'long_name' => 'source-repo-dir::',
         'description' => 'path to fetch source from',
         'write' => $x ==>
-          $this->config = $this->config->withSourcePath(trim($x)),
+          $this->config = $this->config->withSourcePath(\trim($x)),
       ),
       shape(
         'long_name' => 'destination-repo-dir::',
         'description' => 'path to push filtered changes to',
         'write' => $x ==>
-          $this->config = $this->config->withDestinationPath(trim($x)),
+          $this->config = $this->config->withDestinationPath(\trim($x)),
       ),
       shape(
         'long_name' => 'source-branch::',
         'description' => "Branch to sync from",
         'write' => $x ==>
-          $this->config = $this->config->withSourceBranch(trim($x)),
+          $this->config = $this->config->withSourceBranch(\trim($x)),
       ),
       shape(
         'long_name' => 'src-branch::',
         'replacement' => 'source-branch',
         'write' => $x ==>
-          $this->config = $this->config->withSourceBranch(trim($x)),
+          $this->config = $this->config->withSourceBranch(\trim($x)),
       ),
       shape(
         'long_name' => 'destination-branch::',
         'description' => 'Branch to sync to',
         'write' => $x ==>
-          $this->config = $this->config->withDestinationBranch(trim($x)),
+          $this->config = $this->config->withDestinationBranch(\trim($x)),
       ),
       shape(
         'long_name' => 'dest-branch::',
         'replacement' => 'destination-branch',
         'write' => $x ==>
-          $this->config = $this->config->withDestinationBranch(trim($x)),
+          $this->config = $this->config->withDestinationBranch(\trim($x)),
       ),
       shape(
         'long_name' => 'debug',
@@ -132,16 +132,16 @@ class ShipItPhaseRunner {
     array<string, mixed> $raw_opts,
   ): void {
     foreach ($config as $opt) {
-      $is_optional = substr($opt['long_name'], -2) === '::';
-      $is_required = !$is_optional && substr($opt['long_name'], -1) === ':';
+      $is_optional = \substr($opt['long_name'], -2) === '::';
+      $is_required = !$is_optional && \substr($opt['long_name'], -1) === ':';
       $is_bool = !$is_optional && !$is_required;
-      $short = rtrim(Shapes::idx($opt, 'short_name', ''), ':');
-      $long = rtrim($opt['long_name'], ':');
+      $short = \rtrim(Shapes::idx($opt, 'short_name', ''), ':');
+      $long = \rtrim($opt['long_name'], ':');
 
-      if ($short && array_key_exists($short, $raw_opts)) {
+      if ($short && \array_key_exists($short, $raw_opts)) {
         $key = '-'.$short;
         $value = $is_bool ? true : $raw_opts[$short];
-      } else if (array_key_exists($long, $raw_opts)) {
+      } else if (\array_key_exists($long, $raw_opts)) {
         $key = '--'.$long;
         $value = $is_bool ? true : $raw_opts[$long];
       } else {
@@ -176,8 +176,8 @@ class ShipItPhaseRunner {
 
       $replacement = Shapes::idx($opt, 'replacement');
       if ($replacement !== null) {
-        fprintf(
-          STDERR,
+        \fprintf(
+          \STDERR,
           "%s %s, use %s instead\n",
           $key,
           $handler ? 'is deprecated' : 'has been removed',
@@ -193,7 +193,7 @@ class ShipItPhaseRunner {
           'documented replacement.',
           $key,
         );
-        fprintf(STDERR, "%s is deprecated and a no-op\n", $key);
+        \fprintf(\STDERR, "%s is deprecated and a no-op\n", $key);
       }
     }
   }
@@ -201,12 +201,12 @@ class ShipItPhaseRunner {
   protected function parseCLIArguments(
   ): void {
     $config = $this->getCLIArguments();
-    $raw_opts = getopt(
-      implode('', $config->map($opt ==> Shapes::idx($opt, 'short_name', ''))),
+    $raw_opts = \getopt(
+      \implode('', $config->map($opt ==> Shapes::idx($opt, 'short_name', ''))),
       $config->map($opt ==> $opt['long_name']),
     );
-    if (array_key_exists('h', $raw_opts) ||
-        array_key_exists('help', $raw_opts)) {
+    if (\array_key_exists('h', $raw_opts) ||
+        \array_key_exists('help', $raw_opts)) {
       self::printHelp($config);
       exit(0);
     }
@@ -237,26 +237,26 @@ class ShipItPhaseRunner {
 
       $short = Shapes::idx($opt, 'short_name');
       $long = $opt['long_name'];
-      $is_optional = substr($long, -2) === '::';
-      $is_required = !$is_optional && substr($long, -1) === ':';
-      $long = rtrim($long, ':');
+      $is_optional = \substr($long, -2) === '::';
+      $is_required = !$is_optional && \substr($long, -1) === ':';
+      $long = \rtrim($long, ':');
       $prefix = $short !== null
-        ? '-'.rtrim($short, ':').', '
+        ? '-'.\rtrim($short, ':').', '
         : '';
       $suffix = $is_optional ? "=VALUE" : ($is_required ? "=$long" : '');
       $left = '  '.$prefix.'--'.$long.$suffix;
-      $max_left = max(strlen($left), $max_left);
+      $max_left = \max(\strlen($left), $max_left);
 
       $rows[$long] = tuple($left, $description);
     }
-    ksort(&$rows);
+    \ksort(&$rows);
 
     $help = $rows['help'];
     $rows->removeKey('help');
     $rows = (Map { 'help' => $help })->setAll($rows);
 
-    $opt_help = implode("", $rows->map($row ==>
-      sprintf("%s  %s\n", str_pad($row[0], $max_left), $row[1])
+    $opt_help = \implode("", $rows->map($row ==>
+      \sprintf("%s  %s\n", \str_pad($row[0], $max_left), $row[1])
     ));
     echo <<<EOF
 Usage:

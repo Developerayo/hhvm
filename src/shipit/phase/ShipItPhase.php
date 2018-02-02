@@ -56,18 +56,18 @@ abstract class ShipItPhase {
     }
 
     if ($this->isSkipped()) {
-      printf("Skipping phase: %s\n", $this->getReadableName());
+      \printf("Skipping phase: %s\n", $this->getReadableName());
       return;
     }
-    printf(
+    \printf(
       "Starting phase%s: %s\n",
-      $config->isVerboseEnabled() ? ' ('.date('H:i:s').')' : '',
+      $config->isVerboseEnabled() ? ' ('.\date('H:i:s').')' : '',
       $this->getReadableName(),
     );
     $this->runImpl($config);
-    printf(
+    \printf(
       "Finished phase%s: %s\n",
-      $config->isVerboseEnabled() ? ' ('.date('H:i:s').')' : '',
+      $config->isVerboseEnabled() ? ' ('.\date('H:i:s').')' : '',
       $this->getReadableName(),
     );
   }

@@ -133,7 +133,7 @@ final class FBCommonFilters {
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     return $changeset->withMessage(
-      preg_replace(
+      \preg_replace(
         '@https?://phabricator\.[^/]+/@i',
         '',
         $changeset->getMessage(),
@@ -171,7 +171,7 @@ final class FBCommonFilters {
     //   unixname merging SHA1 | unixname | ...
     //
     return $changeset->withSubject(
-      preg_replace(
+      \preg_replace(
         '/^\w+ merging \w+ \| \w+ \| /',
         '',
         $changeset->getSubject(),
@@ -187,7 +187,7 @@ final class FBCommonFilters {
     // `-b`, so this is just maintaining that behavior since they sometimes
     // contain codenames.
     return $changeset->withSubject(
-      preg_replace(
+      \preg_replace(
         '/^(?:\[[^\]]+\]\s*)+/',
         '',
         $changeset->getSubject(),
@@ -199,7 +199,7 @@ final class FBCommonFilters {
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     return $changeset->withMessage(
-      preg_replace(
+      \preg_replace(
         '/(@override-unit-failures)|(@build\[.*\])/',
         '',
         $changeset->getMessage(),
@@ -211,7 +211,7 @@ final class FBCommonFilters {
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     return $changeset->withMessage(
-      preg_replace(
+      \preg_replace(
         "/#accept2ship\n?/",
         '',
         $changeset->getMessage(),
@@ -290,14 +290,14 @@ final class FBCommonFilters {
   public static function restoreGitHubAuthor(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    if (!preg_match('/^Github author:/mi', $changeset->getMessage())) {
+    if (!\preg_match('/^Github author:/mi', $changeset->getMessage())) {
       return $changeset;
     }
 
     $pulled_by_unixname = null;
     $matches = [];
     if (
-      preg_match(
+      \preg_match(
         '/<(?<author>[^@]*)@fb\.com>/',
         $changeset->getAuthor(),
         &$matches,
@@ -310,8 +310,8 @@ final class FBCommonFilters {
         self::getSupportedMessageSectionNames(),
         );
       if ($sections->containsKey('reviewed by')) {
-        $names = (new Vector(explode(', ', $sections['reviewed by'])));
-        if (count($names) === 1) {
+        $names = (new Vector(\explode(', ', $sections['reviewed by'])));
+        if (\count($names) === 1) {
           $pulled_by_unixname = $names[0];
         }
       }
@@ -342,14 +342,14 @@ final class FBCommonFilters {
     if (!$sections->containsKey('reviewed by')) {
       return $changeset;
     }
-    $names = (new Vector(explode(', ', $sections['reviewed by'])))
+    $names = (new Vector(\explode(', ', $sections['reviewed by'])))
       // No project reviewers e.g., #WDT in D2407623
-      ->filter($name ==> substr(trim($name), 0, 1) !== '#')
+      ->filter($name ==> \substr(\trim($name), 0, 1) !== '#')
       ->map(async $name ==>
         await FBToGitHubUserInfo::getDestinationUserFromLocalUser($name)
       );
-    $names = \HH\Asio\join(\HH\Asio\v($names))->filter($x ==> strlen($x) > 0);
-    $sections['reviewed by'] = implode(', ', $names);
+    $names = \HH\Asio\join(\HH\Asio\v($names))->filter($x ==> \strlen($x) > 0);
+    $sections['reviewed by'] = \implode(', ', $names);
     return $changeset->withMessage(
       ShipItMessageSections::buildMessage($sections->toImmMap())
     );

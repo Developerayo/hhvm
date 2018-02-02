@@ -51,7 +51,7 @@ abstract class BuildAndTestPhase extends ShipItPhase {
     // Get rid of codes like ^[[31;31m that may get output to stdout or stderr.
     // 0x1B is the hex code for the escape sequence ^[
     $color_escape_code_pattern = "/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K|G]/";
-    return preg_replace($color_escape_code_pattern, "", $line);
+    return \preg_replace($color_escape_code_pattern, "", $line);
   }
 
   /**

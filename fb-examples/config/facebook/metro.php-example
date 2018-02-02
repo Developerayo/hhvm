@@ -43,7 +43,7 @@ final class FacebookMetro extends FBShipItConfig {
         )
       |> ShipItPathFilters::rewritePaths(
           $$,
-          $path ==> preg_replace(
+          $path ==> \preg_replace(
             '@/\.github\.flowconfig$@',
             '/.flowconfig',
             $path,
@@ -60,7 +60,7 @@ final class FacebookMetro extends FBShipItConfig {
     return $changeset
       |> \Facebook\ShipIt\ShipItPathFilters::rewritePaths(
           $$,
-          $path ==> preg_replace(
+          $path ==> \preg_replace(
             '@(^|/)\.flowconfig$@',
             '\1.github.flowconfig',
             $path,

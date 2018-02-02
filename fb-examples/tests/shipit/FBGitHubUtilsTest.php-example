@@ -91,7 +91,7 @@ final class FBGitHubUtilsTest extends BaseTest {
 
     // nameof('facebook-github-bot-1') === 'Facebook Github Bot 1'
     $this->assertSame(
-      ucwords(strtr($user, '-', ' ')),
+      \ucwords(\strtr($user, '-', ' ')),
       $credentials['name'],
     );
   }
@@ -101,11 +101,11 @@ final class FBGitHubUtilsTest extends BaseTest {
   ): void {
     $this->assertNotNull($token, 'Token should not be null');
     $this->assertTrue(
-      strlen($token) === 40,
-      'Password field has unexpected length: '.strlen($token),
+      \strlen($token) === 40,
+      'Password field has unexpected length: '.\strlen($token),
     );
     $this->assertTrue(
-      ctype_xdigit($token),
+      \ctype_xdigit($token),
       'Password field is not hex-like',
     );
   }

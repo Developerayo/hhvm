@@ -115,36 +115,36 @@ final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
       $config->getDestinationBranch(),
     );
     if ($base_rev !== null) {
-      printf("  Updating destination branch to new base revision...\n");
+      \printf("  Updating destination branch to new base revision...\n");
       $destination_repo->updateBranchTo($base_rev);
     }
     invariant(
       $destination_repo instanceof ShipItDestinationRepo,
       'The destination repository must implement ShipItDestinationRepo!',
     );
-    printf("  Filtering...\n",);
+    \printf("  Filtering...\n",);
     $filter_fn = $this->filter;
     $changeset = $filter_fn($changeset);
     if ($config->isVerboseEnabled()) {
       $changeset->dumpDebugMessages();
     }
-    printf("  Exporting...\n",);
+    \printf("  Exporting...\n",);
     $this->maybeSavePatch($destination_repo, $changeset);
     try {
       $rev = $destination_repo->commitPatch($changeset);
-      printf(
+      \printf(
         "  Done.  %s committed in %s\n",
         $rev,
         $destination_repo->getPath(),
       );
     } catch (\Exception $e) {
       if ($this->patchesDirectory !== null) {
-        printf(
+        \printf(
           "  Failure to apply patch at %s\n",
           $this->getPatchLocationForChangeset($changeset),
         );
       } else {
-        printf(
+        \printf(
           "  Failure to apply patch:\n%s\n",
           $destination_repo->renderPatch($changeset),
         );
@@ -160,18 +160,18 @@ final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
     if ($this->patchesDirectory === null) {
       return;
     }
-    if (!file_exists($this->patchesDirectory)) {
-      mkdir($this->patchesDirectory, 0755, /* recursive = */ true);
-    } elseif (!is_dir($this->patchesDirectory)) {
-      fprintf(
-        STDERR,
+    if (!\file_exists($this->patchesDirectory)) {
+      \mkdir($this->patchesDirectory, 0755, /* recursive = */ true);
+    } elseif (!\is_dir($this->patchesDirectory)) {
+      \fprintf(
+        \STDERR,
         "Cannot log to %s: the path exists and is not a directory.\n",
         $this->patchesDirectory,
       );
       return;
     }
     $file = $this->getPatchLocationForChangeset($changeset);
-    file_put_contents($file, $destination_repo->renderPatch($changeset));
+    \file_put_contents($file, $destination_repo->renderPatch($changeset));
     $changeset = $changeset->withDebugMessage(
       'Saved patch file: %s',
       $file,

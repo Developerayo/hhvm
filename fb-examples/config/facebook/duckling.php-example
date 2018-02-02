@@ -37,7 +37,7 @@ final class FacebookDuckling extends FBShipItConfig {
     return $changeset
       |> \Facebook\ShipIt\ShipItPathFilters::rewritePaths(
         $$,
-        $path ==> str_replace(
+        $path ==> \str_replace(
           'Duckling/Engine/Regex.hs',
           'github/Duckling/Engine/Regex.hs',
           $path,

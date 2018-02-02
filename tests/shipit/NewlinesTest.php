@@ -15,8 +15,8 @@ final class NewlinesTest extends BaseTest {
 
   public function testTestData(): void {
     $this->assertSame(
-      strlen(self::UNIX_TXT) + 3,
-      strlen(self::WINDOWS_TXT),
+      \strlen(self::UNIX_TXT) + 3,
+      \strlen(self::WINDOWS_TXT),
     );
   }
 
@@ -62,8 +62,8 @@ final class NewlinesTest extends BaseTest {
   private function createTestFiles(
     ShipItTempDir $temp_dir,
   ): void {
-    file_put_contents($temp_dir->getPath().'/unix.txt', self::UNIX_TXT);
-    file_put_contents($temp_dir->getPath().'/windows.txt', self::WINDOWS_TXT);
+    \file_put_contents($temp_dir->getPath().'/unix.txt', self::UNIX_TXT);
+    \file_put_contents($temp_dir->getPath().'/windows.txt', self::WINDOWS_TXT);
   }
 
   private function assertContainsCorrectNewLines(
@@ -126,12 +126,12 @@ final class NewlinesTest extends BaseTest {
 
       $this->assertSame(
         self::UNIX_TXT,
-        file_get_contents($repo->getPath().'/unix.txt'),
+        \file_get_contents($repo->getPath().'/unix.txt'),
         'Unix test file',
       );
       $this->assertSame(
         self::WINDOWS_TXT,
-        file_get_contents($repo->getPath().'/windows.txt'),
+        \file_get_contents($repo->getPath().'/windows.txt'),
         'Windows text file',
       );
     }

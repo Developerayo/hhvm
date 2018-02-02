@@ -33,7 +33,7 @@ final class HHVMBuildAndTestPhase extends BuildAndTestPhase {
 
     // Removed by the git clean step
     invariant(
-      file_exists($config->getDestinationPath()."/hphp/hhvm/hhvm"),
+      \file_exists($config->getDestinationPath()."/hphp/hhvm/hhvm"),
       'HHVM build exited with 0, but hhvm binary does not exist',
     );
   }
@@ -50,6 +50,6 @@ final class HHVMBuildAndTestPhase extends BuildAndTestPhase {
       ->runSynchronously()
       ->getExitCode();
     invariant($exit_code === 0, 'expected exception if non-zero exit');
-    fwrite(STDERR, "All tests passed.\n");
+    \fwrite(\STDERR, "All tests passed.\n");
   }
 }

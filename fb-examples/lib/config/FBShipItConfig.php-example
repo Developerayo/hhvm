@@ -113,7 +113,7 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
     $paths = (self::getPathMappingsFn($branch_config))()
       ->keys()
       ->toSet();
-    $interfaces = new Set(class_implements(static::class));
+    $interfaces = new Set(\class_implements(static::class));
     if (
       !$interfaces->contains(ISupportsFBCodeBuilder::class) &&
       $config['internalRepo'] === 'fbsource' &&
@@ -130,14 +130,14 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
     }
     $paths = $paths->toArray();
     // Sort least specific to most specific.
-    sort(&$paths);
+    \sort(&$paths);
     $roots = Set {};
     foreach ($paths as $path) {
       // If this path starts with any elements in the set of roots we have
       // already computed, we do not need to add this as it would be redundant.
       $root_match = false;
       foreach ($roots as $root) {
-        $root_match = $root_match || strncmp($path, $root, strlen($root)) === 0;
+        $root_match = $root_match || \strncmp($path, $root, \strlen($root)) === 0;
       }
       if ($root_match) {
         continue;
@@ -173,7 +173,7 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
   ): ShipItChangeset {
     $roots = static::getBaseConfig($branch_config)->getSourceRoots()
       ->filter($root ==> $root !== '');
-    if (count($roots) === 0) {
+    if (\count($roots) === 0) {
       return $changeset;
     }
 
@@ -193,7 +193,7 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
         $dest,
       );
     }
-    $interfaces = new Set(class_implements(static::class));
+    $interfaces = new Set(\class_implements(static::class));
     if ($interfaces->contains(ISupportsFBCodeBuilder::class)) {
       // FBCodeBuilder needs these hashes, but doesn't use them as submodules.
       return $changeset;
@@ -511,9 +511,9 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
       // time has passed or a non-submodule commit has been made.
       $dest_head = $dest->getHeadChangeset();
       if ($dest_head !== null && self::isUpdatingSubmodules($dest_head)) {
-        $time_elapsed = time() - $dest_head->getTimestamp();
+        $time_elapsed = \time() - $dest_head->getTimestamp();
         if ($time_elapsed < self::UPDATE_SUBMODULE_FREQUENCY) {
-          printf(
+          \printf(
             "  SKIP Not updating submodules for another %d seconds\n",
             self::UPDATE_SUBMODULE_FREQUENCY - $time_elapsed,
           );

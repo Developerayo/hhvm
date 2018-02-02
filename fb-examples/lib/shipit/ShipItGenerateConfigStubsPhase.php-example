@@ -44,7 +44,7 @@ final class ShipItGenerateConfigStubsPhase extends ShipItPhase {
         'long_name' => 'public:',
         'description' => 'Whether the GitHub repo is public',
         'write' => $v ==>
-          $this->isPublic = $truthy_values->contains(strtolower($v)),
+          $this->isPublic = $truthy_values->contains(\strtolower($v)),
       ),
     };
   }
@@ -57,13 +57,13 @@ final class ShipItGenerateConfigStubsPhase extends ShipItPhase {
     invariant($github_org !== null, 'You must pass --github-org!');
     $is_public = $this->isPublic;
     invariant($is_public !== null, 'You must pass --public!');
-    $license_year = date('Y');
+    $license_year = \date('Y');
     $project_class_name = FBShipItConfigRegistry::getClassName(
       $github_org,
       $github_project,
     );
     $test_class_name = $project_class_name.'Test';
-    $user = getenv('USER');
+    $user = \getenv('USER');
 
     // Create ShipIt files (exectuable and test).
     $bin_contents = <<<EOF
@@ -115,12 +115,12 @@ EOF;
     }
     $config_path = $config->getBaseDirectory().
       '/config/'.$subpath.'/'.$github_org.'/'.$github_project.'.php';
-    printf("  Generating %s\n", $config_path);
-    $config_dir = dirname($config_path);
-    if (!file_exists($config_dir)) {
-      mkdir($config_dir, /* mode */ 0777, /* recursive */ true);
+    \printf("  Generating %s\n", $config_path);
+    $config_dir = \dirname($config_path);
+    if (!\file_exists($config_dir)) {
+      \mkdir($config_dir, /* mode */ 0777, /* recursive */ true);
     }
-    file_put_contents($config_path, $bin_contents);
+    \file_put_contents($config_path, $bin_contents);
     (new ShipItShellCommand(
       $config->getBaseDirectory(),
       'hg',
@@ -155,12 +155,12 @@ final class $test_class_name extends FBConfigBaseTest {
 EOF;
     $test_path = $config->getBaseDirectory().
       '/tests/config/'.$subpath.'/'.$github_org.'/'.$github_project.'Test.php';
-    printf("  Generating %s\n", $test_path);
-    $test_dir = dirname($test_path);
-    if (!file_exists($test_dir)) {
-      mkdir($test_dir, /* mode */ 0777, /* recursive */ true);
+    \printf("  Generating %s\n", $test_path);
+    $test_dir = \dirname($test_path);
+    if (!\file_exists($test_dir)) {
+      \mkdir($test_dir, /* mode */ 0777, /* recursive */ true);
     }
-    file_put_contents($test_path, $test_contents);
+    \file_put_contents($test_path, $test_contents);
     (new ShipItShellCommand(
       $config->getBaseDirectory(),
       'hg',
@@ -170,7 +170,7 @@ EOF;
       ->runSynchronously();
 
     // Finally, update the autoload maps.
-    printf("  Updating autoload.php\n");
+    \printf("  Updating autoload.php\n");
     (new ShipItShellCommand(
       $config->getBaseDirectory(),
       'php',
@@ -178,7 +178,7 @@ EOF;
     ))
       ->runSynchronously();
 
-    printf("  Updating tagit/autoload.php\n");
+    \printf("  Updating tagit/autoload.php\n");
     (new ShipItShellCommand(
       $config->getBaseDirectory(),
       'php',

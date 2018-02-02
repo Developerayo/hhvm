@@ -187,7 +187,7 @@ final class EmptyCommitTest extends BaseTest {
       ->runSynchronously();
     return tuple(
       $dir,
-      trim((new ShipItShellCommand($dir->getPath(), 'git', 'rev-parse', 'HEAD'))
+      \trim((new ShipItShellCommand($dir->getPath(), 'git', 'rev-parse', 'HEAD'))
         ->runSynchronously()
         ->getStdOut()),
     );
@@ -206,7 +206,7 @@ final class EmptyCommitTest extends BaseTest {
       ->runSynchronously();
     return tuple(
       $dir,
-      trim((new ShipItShellCommand($dir->getPath(), 'hg', 'id', '--id'))
+      \trim((new ShipItShellCommand($dir->getPath(), 'hg', 'id', '--id'))
         ->runSynchronously()
         ->getStdOut()),
     );

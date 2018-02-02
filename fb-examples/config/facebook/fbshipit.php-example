@@ -43,7 +43,7 @@ final class FacebookFbshipit extends FBShipItConfig {
     return $changeset
       |> ShipItPathFilters::rewritePaths(
         $$,
-        $path ==> str_replace('/public_tld/dot_', '/public_tld/.', $path),
+        $path ==> \str_replace('/public_tld/dot_', '/public_tld/.', $path),
       )
       |> parent::defaultProjectFilterChangeset($$, $get_path_mappings)
       |> self::changeExampleExtensions($$);
@@ -116,7 +116,7 @@ final class FacebookFbshipit extends FBShipItConfig {
       |> parent::projectImportChangeset($$, $branch_config)
       |> ShipItPathFilters::rewritePaths(
         $$,
-        $path ==> str_replace('/public_tld/.', '/public_tld/dot_', $path),
+        $path ==> \str_replace('/public_tld/.', '/public_tld/dot_', $path),
       );
   }
 
@@ -130,7 +130,7 @@ final class FacebookFbshipit extends FBShipItConfig {
   ): ShipItChangeset {
     return ShipItPathFilters::rewritePaths(
       $changeset,
-      $path ==> preg_replace('@^(fb-examples/.+\.php)-example$@', '\1', $path),
+      $path ==> \preg_replace('@^(fb-examples/.+\.php)-example$@', '\1', $path),
     );
   }
 
@@ -145,7 +145,7 @@ final class FacebookFbshipit extends FBShipItConfig {
   ): ShipItChangeset {
     return ShipItPathFilters::rewritePaths(
       $changeset,
-      $path ==> preg_replace('@^fb-examples/.+\.php$@', '\0-example', $path),
+      $path ==> \preg_replace('@^fb-examples/.+\.php$@', '\0-example', $path),
     );
   }
 

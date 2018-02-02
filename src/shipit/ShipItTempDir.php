@@ -23,9 +23,9 @@ final class ShipItTempDir {
   public function __construct(
     string $component,
   ) {
-    $path = sys_get_temp_dir().'/shipit-'.$component.'-';
-    $path .= bin2hex(random_bytes(32));
-    mkdir($path);
+    $path = \sys_get_temp_dir().'/shipit-'.$component.'-';
+    $path .= \bin2hex(\random_bytes(32));
+    \mkdir($path);
     $this->path = $path;
   }
 
@@ -38,7 +38,7 @@ final class ShipItTempDir {
     $this->assertMode(ShipItTempDirMode::AUTO_REMOVE);
 /* HH_FIXME[4128] Use ShipItShellCommand */
     ShipItUtil::shellExec(
-      sys_get_temp_dir(),
+      \sys_get_temp_dir(),
       /* stdin = */ null,
       ShipItUtil::DONT_VERBOSE,
       'rm', '-rf', $this->path,
