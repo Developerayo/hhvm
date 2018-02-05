@@ -19,10 +19,6 @@ final class FacebookexperimentalEdenTest extends FBConfigBaseTest {
       'fbcode/eden/fs/store/test/LocalStoreTest.cpp'
         => 'eden/fs/store/test/LocalStoreTest.cpp',
 
-      # Unlike most projects in fbcode, we publish our build files:
-      'fbcode/eden/fs/config/test/TARGETS'
-        => 'eden/fs/config/test/TARGETS',
-
       # README.facebook should be excluded.
       'fbcode/eden/oss/README.facebook' => null,
 
@@ -39,7 +35,6 @@ final class FacebookexperimentalEdenTest extends FBConfigBaseTest {
 
       # Other contents of eden/oss should end up in the root.
       'fbcode/eden/oss/README.md' => 'README.md',
-      'fbcode/eden/oss/.buckconfig.opensource' => '.buckconfig',
 
       # We use the same common/ stub files as fboss, and publish them
       # from the fboss directory.
@@ -47,11 +42,9 @@ final class FacebookexperimentalEdenTest extends FBConfigBaseTest {
         => 'common/fb303/if/fb303.thrift',
       # Other fboss files should be excluded.
       'fbcode/fboss/agent/Constants.h'
-        => null,
-
-      # external/TARGETS.oss should be renamed to external/TARGETS
-      'fbcode/eden/oss/external/TARGETS.oss'
-        => 'external/TARGETS',
+      => null,
+      # TARGETS files get stripped
+      'fbcode/eden/fs/config/test/TARGETS' => null,
     };
   }
 }

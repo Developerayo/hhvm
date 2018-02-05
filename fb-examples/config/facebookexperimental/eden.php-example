@@ -18,8 +18,6 @@ final class FacebookexperimentalEden extends FBShipItConfig {
   <<__Override>>
   public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
-      'fbcode/eden/oss/external/TARGETS.oss' => 'external/TARGETS',
-      'fbcode/eden/oss/.buckconfig.opensource' => '.buckconfig',
       'fbcode/eden/oss/' => '',
       'fbcode/eden/' => 'eden/',
       'fbcode/fboss/common/' => 'common/',
@@ -33,14 +31,6 @@ final class FacebookexperimentalEden extends FBShipItConfig {
       'githubOrg' => 'facebookexperimental',
       'githubProject' => 'eden',
     );
-  }
-
-  <<__Override>>
-  protected static function getStripCommonFilesExceptions(): ImmVector<string> {
-    return ImmVector {
-      // Unlike most projects in fbcode, Eden publishes its build files.
-      '@/TARGETS$@',
-    };
   }
 
   <<__Override>>
