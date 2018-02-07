@@ -43,7 +43,6 @@ final class Caffe2Caffe2 extends FBShipItConfig {
       self::ROOT.'submodules/NNPACK-rev.txt' => 'third_party/NNPACK',
       self::ROOT.'submodules/aten-rev.txt' => 'third_party/aten',
       self::ROOT.'submodules/benchmark-rev.txt' => 'third_party/benchmark',
-      self::ROOT.'submodules/cnmem-rev.txt' => 'third_party/cnmem',
       self::ROOT.'submodules/cpuinfo-rev.txt' => 'third_party/cpuinfo',
       self::ROOT.'submodules/cub-rev.txt' => 'third_party/cub',
       self::ROOT.'submodules/eigen-rev.txt' => 'third_party/eigen',
@@ -56,6 +55,10 @@ final class Caffe2Caffe2 extends FBShipItConfig {
       self::ROOT.'submodules/psimd-rev.txt' => 'third_party/psimd',
       self::ROOT.'submodules/pthreadpool-rev.txt' => 'third_party/pthreadpool',
       self::ROOT.'submodules/pybind11-rev.txt' => 'third_party/pybind11',
+      self::ROOT.'submodules/python-enum-rev.txt' => 'third_party/python-enum',
+      self::ROOT.'submodules/python-peachpy-rev.txt' =>
+          'third_party/python-peachpy',
+      self::ROOT.'submodules/python-six-rev.txt' => 'third_party/python-six',
       self::ROOT.'submodules/zstd-rev.txt' => 'third_party/zstd',
     };
   }
