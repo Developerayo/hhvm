@@ -52,6 +52,7 @@ final class FacebookHhvm extends FBShipItConfig {
     return ImmVector {
       '@^(?!fbcode/hphp)@',
       '@^fbcode/hphp/(?!(hack|doc)).*Makefile$@',
+      '@^fbcode/hphp/hack/\.merlin$@',
     };
   }
 
