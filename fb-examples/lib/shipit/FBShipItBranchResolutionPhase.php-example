@@ -68,8 +68,14 @@ class FBShipItBranchResolutionPhase extends ShipItPhase {
         $branch_config ==> $branch_config['external'] == $this->externalBranch,
       );
       invariant(
+        $branch_configs->count() > 0,
+        'No ShipIt configuration found for external branch: %s',
+        $this->externalBranch,
+      );
+      invariant(
         $branch_configs->count() === 1,
-        'Multiple configs found for one external branch',
+        'Multiple internal configs found for external branch: %s',
+        $this->externalBranch,
       );
     }
     return $branch_configs;
