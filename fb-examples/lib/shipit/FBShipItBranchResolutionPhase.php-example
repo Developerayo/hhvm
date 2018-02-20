@@ -10,14 +10,17 @@
 namespace Facebook\ShipIt;
 
 
-use \Facebook\ShipIt\Config\{FBShipItConfigRegistry};
+use \Facebook\ShipIt\Config\{
+  FBShipItConfigRegistry,
+  RepoArcanistProject,
+};
 
 class FBShipItBranchResolutionPhase extends ShipItPhase {
 
   public function __construct(
     private classname<FBShipItConfig> $configClass,
     protected ?string $externalBranch = null,
-    private bool $listBranches = false,
+    private ?string $repoMetadataFile = null,
   ) {}
 
   <<__Override>>
@@ -39,9 +42,9 @@ class FBShipItBranchResolutionPhase extends ShipItPhase {
         'write' => $x ==> $this->externalBranch = $x,
       ),
       shape(
-        'long_name' => 'list-branches',
-        'description' => "List the external branches, and exit.",
-        'write' => $_ ==> $this->listBranches = true,
+        'long_name' => 'save-repo-metadata-to::',
+        'description' => "List metadata for the repository, and exit.",
+        'write' => $x ==> $this->repoMetadataFile = $x,
       ),
     };
   }
@@ -85,15 +88,25 @@ class FBShipItBranchResolutionPhase extends ShipItPhase {
   public function runImpl(ShipItBaseConfig $config): void {
     $config_class = $this->configClass;
     $branch_configs = $this->getBranchConfigs();
-    if ($this->listBranches) {
-      $land_branch = $config_class::getLandBranch();
-      if ($land_branch !== null) {
-        \printf("--- Land branch:\n%s\n", $land_branch);
+    if ($this->repoMetadataFile !== null) {
+      $internal_repo = $config_class::getStaticConfig()['internalRepo'];
+      if (
+        RepoArcanistProject::getNotInArcanistExceptions()
+          ->contains($internal_repo)
+      ) {
+        $arcanist_project = null;
+      } else {
+        $arcanist_project =
+          RepoArcanistProject::getArcanistProject($internal_repo);
       }
-      print("--- Listing branches:\n");
-      foreach ($branch_configs as $branch_config) {
-        \printf("%s\n", $branch_config['external']);
-      }
+      $metadata = dict[
+        'land_branch' => $config_class::getLandBranch(),
+        'branches' =>
+          $branch_configs->map($branch_config ==> $branch_config['external']),
+        'internal_repo' => $internal_repo,
+        'arcanist_project' => $arcanist_project,
+      ];
+      \file_put_contents($this->repoMetadataFile, \json_encode($metadata));
       exit(0);
     }
     foreach ($branch_configs as $branch_config) {
