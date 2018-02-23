@@ -29,18 +29,7 @@ final class FacebookMetro extends FBShipItConfig {
   ): ShipItChangeset {
     return $changeset
       |> FBCommonFilters::stripSummariesByDefault($$)
-      |> FBCommonFilters::applyAll(
-          $$,
-          shape(
-            // FBCommonFilters defines a common set of files to ignore
-            // across all fb projects, such as BUCK files and others.
-            // We want to export *all* of the react-native-github folder
-            // to GitHub, except for a few specific paths.
-            'stripCommonFiles/exceptions' => ImmVector {
-              '/.*/',
-            },
-          ),
-        )
+      |> FBCommonFilters::applyAll($$)
       |> ShipItPathFilters::rewritePaths(
           $$,
           $path ==> \preg_replace(

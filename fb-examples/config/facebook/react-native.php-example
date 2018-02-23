@@ -42,7 +42,8 @@ final class FacebookReactNative extends FBShipItConfig {
     // FBCommonFilters defines a common set of files to ignore
     // across all fb projects, such as BUCK files and others.
     // We want to export *all* of the react-native-github folder
-    // to GitHub, except for a few specific paths.
+    // to GitHub, except for a few specific paths
+    // (see getDefaultStrippedFiles()).
     return ImmVector {
       '/.*/',
     };
@@ -51,6 +52,7 @@ final class FacebookReactNative extends FBShipItConfig {
   <<__Override>>
   protected static function getDefaultStrippedFiles(): ImmVector<string> {
     return ImmVector {
+      '@^'.self::ROOT.'BUCK$@',
       '@(^|/)node_modules/@',
       '@(^|/)npm-shrinkwrap.json@',
       '@(^|/)yarn.lock@',
