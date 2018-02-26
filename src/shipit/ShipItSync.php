@@ -93,7 +93,7 @@ class ShipItSync {
     $changesets = $this->getFilteredChangesets();
     if ($changesets->isEmpty()) {
       print("  No new commits to sync.\n");
-      $this->maybeLogStats(Vector {});
+      $this->maybeLogStats(Vector {}, Vector {});
       return;
     }
 
@@ -108,6 +108,7 @@ class ShipItSync {
     $changesets = $this->syncConfig->postFilterChangesets($changesets, $dest);
 
     $changesets_applied = Vector {};
+    $changesets_skipped = Vector {};
     foreach ($changesets as $changeset) {
       if ($patches_dir !== null) {
         $file = $patches_dir.'/'.$this->baseConfig->getDestinationBranch().'-'.
@@ -132,6 +133,7 @@ class ShipItSync {
           $changeset->getShortID(),
           $changeset->getSubject(),
         );
+        $changesets_skipped->add($changeset);
         continue;
       }
 
@@ -156,7 +158,7 @@ class ShipItSync {
       }
     }
 
-    $this->maybeLogStats($changesets_applied);
+    $this->maybeLogStats($changesets_applied, $changesets_skipped);
   }
 
   /**
@@ -166,29 +168,40 @@ class ShipItSync {
    */
   private function maybeLogStats(
     Vector<ShipItChangeset> $changesets_applied,
+    Vector<ShipItChangeset> $changesets_skipped,
   ): void {
     $filename = $this->syncConfig->getStatsFilename();
     if ($filename === null) {
       return;
     }
-    $sourceChangeset = $this
+    $destination_branch = $this->baseConfig->getDestinationBranch();
+    // Support logging stats for a project with multiple branches.
+    if (\is_dir($filename)) {
+      $filename = $filename.'/'.$destination_branch.'.json';
+    }
+    $source_changeset = $this
       ->getRepo(ShipItSourceRepo::class)
       ->getHeadChangeset();
-    $destinationChangeset = $this
+    $destination_changeset = $this
       ->getRepo(ShipItDestinationRepo::class)
       ->getHeadChangeset();
     \file_put_contents(
       $filename,
       \json_encode(array(
         'source' => array(
-          'id' => $sourceChangeset?->getID(),
-          'timestamp' => $sourceChangeset?->getTimestamp(),
+          'id' => $source_changeset?->getID(),
+          'timestamp' => $source_changeset?->getTimestamp(),
+          'branch' => $this->baseConfig->getSourceBranch(),
         ),
         'destination' => array(
-          'id' => $destinationChangeset?->getID(),
-          'timestamp' => $destinationChangeset?->getTimestamp(),
+          'id' => $destination_changeset?->getID(),
+          'timestamp' => $destination_changeset?->getTimestamp(),
+          'branch' => $destination_branch,
         ),
         'changesets' => $changesets_applied
+          ->map($changeset ==> $changeset->getID())
+          ->toArray(),
+        'skipped' => $changesets_skipped
           ->map($changeset ==> $changeset->getID())
           ->toArray(),
       )),

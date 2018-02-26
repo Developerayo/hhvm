@@ -71,7 +71,8 @@ final class ShipItSyncPhase extends ShipItPhase {
       shape(
         'long_name' => 'log-sync-stats-to::',
         'description' => 'The filename to log a JSON-encoded file with stats '.
-                         'about the sync.',
+                         'about the sync, or a directory name to log a file '.
+                         'for each configured branch.',
         'write' => $x ==> $this->statsFilename = $x,
       ),
     };
