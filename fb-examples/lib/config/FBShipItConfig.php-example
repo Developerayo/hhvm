@@ -503,6 +503,7 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
     ImmVector<ShipItChangeset> $changesets,
     ShipItRepo $dest,
   ): bool {
+    $changesets = $changesets->filter($changeset ==> $changeset->isValid());
     if (
       $changesets->count() === 1 &&
       self::isUpdatingSubmodules($changesets[0])
