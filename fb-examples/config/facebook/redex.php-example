@@ -70,4 +70,13 @@ final class FacebookRedex extends FBShipItConfig {
       ),
     };
   }
+
+  <<__Override>>
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
+    return ImmVector {
+      '@/REDEX_DEFS$@',
+      '@/REDEX_TEST_DEFS$@',
+    };
+  }
+
 }
