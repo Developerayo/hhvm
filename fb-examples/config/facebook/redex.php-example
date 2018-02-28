@@ -33,21 +33,17 @@ final class FacebookRedex extends FBShipItConfig {
 
   private static function getMasterPathMappings(): ImmMap<string, string> {
     return ImmMap {
+      // liblocator is a library that is depended on by dextricks and redex
+      // itself. As such, it is located outside the native/redex folder.
+      'fbandroid/native/liblocator/' => 'liblocator/',
       'fbandroid/native/redex/' => '',
     };
   }
 
   private static function getStablePathMappings(): ImmMap<string, string> {
     return ImmMap {
+      'fbandroid/native/liblocator/' => 'liblocator/',
       'fbandroid/native/redex-stable/' => '',
-      // liblocator is a library within redex that is depended on by dextricks
-      // and redex itself. For the sake of safety, we only have one copy of this
-      // library in `native/redex/` (thus, dextricks and redex will always agree
-      // on the contents of liblocator). To build redex-stable with the open
-      // source build system, we need liblocator in the stable branch as well.
-      // So copy it over. This is safe for Pull Requests because PRs only come
-      // to master, not stable.
-      'fbandroid/native/redex/liblocator/' => 'liblocator/',
     };
   }
 
