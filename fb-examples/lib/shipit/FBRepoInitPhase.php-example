@@ -124,7 +124,7 @@ final class FBRepoInitPhase extends ShipItPhase {
         return ImmVector {
           '/usr/bin/git',
           'clone',
-          'ssh://projects.git.vip.facebook.com/data/gitrepos/pse-demos',
+          'ssh://projects.git-ro.vip.facebook.com/data/gitrepos/pse-demos',
           'pse-demos',
         };
       case 'opsfiles':
@@ -143,7 +143,7 @@ final class FBRepoInitPhase extends ShipItPhase {
         return ImmVector {
           '/usr/bin/git',
           'clone',
-          'ssh://projects.git.vip.facebook.com/data/gitrepos/infer',
+          'ssh://projects.git-ro.vip.facebook.com/data/gitrepos/infer',
           'infer-fb',
         };
         break;
@@ -151,7 +151,7 @@ final class FBRepoInitPhase extends ShipItPhase {
         return ImmVector {
           '/usr/bin/git',
           'clone',
-          'ssh://projects.git.vip.facebook.com/data/gitrepos/buck.git',
+          'ssh://projects.git-ro.vip.facebook.com/data/gitrepos/buck.git',
           'buck_internal',
         };
       case 'meta-openbmc':
@@ -160,14 +160,14 @@ final class FBRepoInitPhase extends ShipItPhase {
           'clone',
           '-b',
           'fido',
-          'ssh://git.vip.facebook.com/data/gitrepos/yocto/meta-openbmc.git',
+          'ssh://projects.git-ro.vip.facebook.com/data/gitrepos/yocto/meta-openbmc.git',
           'meta-openbmc',
         };
       case 'meta-terragraph':
         return ImmVector {
           '/usr/bin/git',
           'clone',
-          'ssh://git.vip.facebook.com/data/gitrepos/yocto/meta-terragraph.git',
+          'ssh://projects.git-ro.vip.facebook.com/data/gitrepos/yocto/meta-terragraph.git',
           'meta-terragraph',
         };
       case 'mysql-fb':
@@ -176,7 +176,7 @@ final class FBRepoInitPhase extends ShipItPhase {
           'clone',
           '-b',
           'fb-mysql-5.6.35',
-          'ssh://projects.git.vip.facebook.com/data/gitrepos/mysql-5.6.git',
+          'ssh://projects.git-ro.vip.facebook.com/data/gitrepos/mysql-5.6.git',
           'mysql-fb',
         };
         break;
@@ -190,7 +190,7 @@ final class FBRepoInitPhase extends ShipItPhase {
         return ImmVector {
           '/usr/bin/git',
           'clone',
-          'ssh://git.vip.facebook.com/data/gitrepos/phabtest1_git.git',
+          'ssh://projects.git-ro.vip.facebook.com/data/gitrepos/phabtest1_git.git',
           'phabtest1_git',
         };
         break;
@@ -206,7 +206,7 @@ final class FBRepoInitPhase extends ShipItPhase {
         return ImmVector {
           '/usr/bin/git',
           'clone',
-          'ssh://git.vip.facebook.com/data/gitrepos/spaces.git',
+          'ssh://projects.git-ro.vip.facebook.com/data/gitrepos/spaces.git',
           'facebook-spaces',
         };
         break;
