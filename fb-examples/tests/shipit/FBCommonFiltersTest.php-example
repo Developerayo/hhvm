@@ -122,6 +122,8 @@ final class FBCommonFiltersTest extends BaseTest {
   public function testPrivateFileInPublicFacebookDir(): void {
     $changeset = (new ShipItChangeset())->withDiffs(ImmVector {
       shape('path' => 'foo/com/facebook/TARGETS', 'body' => 'junk'),
+      shape('path' => 'foo/com/facebook/BUILD_MODE.bzl', 'body' => 'junk'),
+      shape('path' => 'foo/com/facebook/PLATFORM.bzl', 'body' => 'junk'),
       shape('path' => 'foo/com/facebook/something', 'body' => 'junk'),
     });
     $changeset = FBCommonFilters::applyAll($changeset);

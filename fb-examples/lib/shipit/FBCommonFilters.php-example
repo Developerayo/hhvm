@@ -115,10 +115,12 @@ final class FBCommonFilters {
         '@(^|/)fb(/|$)@',
         '@/TARGETS$@',
         '@/PLATFORM$@',
+        '@/PLATFORM.bzl$@',
         '@/\.hgsparse(-\w+)?$@',
         '@/BUCK$@', /** MOBILE DEVELOPERS: HERE BE DANGER **/
         '@/FBBUILD_CONFIG$@',
         '@/BUILD_MODE$@',
+        '@/BUILD_MODE.bzl$@',
         '@\.mk$@',
       },
       $exception_patterns->concat(ImmVector {
