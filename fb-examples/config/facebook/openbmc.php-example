@@ -116,6 +116,7 @@ final class FacebookOpenbmc extends FBShipItConfig {
       'github/meta-aspeed/recipes-kernel/linux/linux-aspeed.inc' =>
       'meta-aspeed/recipes-kernel/linux/linux-aspeed.inc',
       'github/sync_yocto.sh' => 'sync_yocto.sh',
+      'github/yocto/.gitignore' => 'yocto/.gitignore',
       # Keep the rest where it was
       '' => '',
     };
@@ -148,6 +149,7 @@ final class FacebookOpenbmc extends FBShipItConfig {
     return ImmVector {
       '@^meta-facebook/classes/fb-only-network.bbclass@',
       '@^sync_yocto.sh@',
+      '@^yocto/.gitignore@',
       '@^meta-aspeed/recipes-bsp/u-boot/u-boot_2013.07.bb@',
       '@^meta-aspeed/recipes-bsp/u-boot/u-boot_2016.07.bb@',
       '@^meta-aspeed/recipes-bsp/u-boot/u-boot-fw-utils_2013.07.bb@',
