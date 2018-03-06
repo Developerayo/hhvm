@@ -78,6 +78,10 @@ final class FacebookOpenbmc extends FBShipItConfig {
       '@^meta-aspeed/recipes-kernel/linux/linux-.*@',
       '@^meta-aspeed/recipes-bsp/u-boot/files/u-boot.*@',
       '@^meta-aspeed/recipes-bsp/u-boot/u-boot.*@',
+      # Yocto releases are internal only.
+      '@^yocto@',
+      '@^.gitmodules@',
+      '@^github/.gitmodules@',
       # Anything marked 'private' should not be synced.
       '@^.*private@',
       # Remove private/confidential projects
@@ -110,7 +114,8 @@ final class FacebookOpenbmc extends FBShipItConfig {
       'github/meta-aspeed/recipes-kernel/linux/linux-aspeed_4.1.bb' =>
         'meta-aspeed/recipes-kernel/linux/linux-aspeed_4.1.bb',
       'github/meta-aspeed/recipes-kernel/linux/linux-aspeed.inc' =>
-        'meta-aspeed/recipes-kernel/linux/linux-aspeed.inc',
+      'meta-aspeed/recipes-kernel/linux/linux-aspeed.inc',
+      'github/sync_yocto.sh' => 'sync_yocto.sh',
       # Keep the rest where it was
       '' => '',
     };
@@ -142,6 +147,7 @@ final class FacebookOpenbmc extends FBShipItConfig {
   public static function getUnsupportedImportPaths(): ImmVector<string> {
     return ImmVector {
       '@^meta-facebook/classes/fb-only-network.bbclass@',
+      '@^sync_yocto.sh@',
       '@^meta-aspeed/recipes-bsp/u-boot/u-boot_2013.07.bb@',
       '@^meta-aspeed/recipes-bsp/u-boot/u-boot_2016.07.bb@',
       '@^meta-aspeed/recipes-bsp/u-boot/u-boot-fw-utils_2013.07.bb@',
