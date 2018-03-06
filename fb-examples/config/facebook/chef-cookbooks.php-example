@@ -99,6 +99,7 @@ final class FacebookChefCookbooks extends FBShipItConfig {
       '@^.*/spec/(?!public_).*@',
       '@README.facebook@',
       '@(^|/)OWNERS$@',
+      '@(^|/)fb_metadata.json$@',
     };
   }
 
