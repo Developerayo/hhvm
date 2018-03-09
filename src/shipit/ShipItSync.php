@@ -177,7 +177,13 @@ class ShipItSync {
     $destination_branch = $this->baseConfig->getDestinationBranch();
     // Support logging stats for a project with multiple branches.
     if (\is_dir($filename)) {
-      $filename = $filename.'/'.$destination_branch.'.json';
+      // Slashes are allowed in branch names but not filenames.
+      $namesafe_branch = \preg_replace(
+        '/[^a-zA-Z0-9_\-.]/',
+        '_',
+        $destination_branch,
+      );
+      $filename = $filename.'/'.$namesafe_branch.'.json';
     }
     $source_changeset = $this
       ->getRepo(ShipItSourceRepo::class)
