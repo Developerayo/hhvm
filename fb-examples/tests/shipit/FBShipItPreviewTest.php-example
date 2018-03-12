@@ -19,6 +19,25 @@ final class FBShipItPreviewTest extends BaseTest {
     return $stream;
   }
 
+  private static function makeChangeset(): ShipItChangeset {
+    return (new ShipItChangeset())
+      ->withID('deadbeef')
+      ->withTimestamp(12345)
+      ->withAuthor('yrahbar')
+      ->withSubject('Test Commit')
+      ->withMessage("Summary:\n Stuff")
+      ->withDiffs(ImmVector {
+          shape(
+            'path' => 'public/example.php',
+            'body' => 'Testing events from GitHub author date\n',
+          ),
+          shape(
+            'path' => 'facebook/filtered.txt',
+            'body' => 'Testing events from GitHub author date\n',
+          ),
+        });
+  }
+
   /**
    * Close to an end-to-end test -- send input in a stream,
    * then decode the stdout stream back into an object.
@@ -63,6 +82,7 @@ final class FBShipItPreviewTest extends BaseTest {
           'githubProject' => 'phabtest1_git',
           'commitMessage' => "Test Commit\n\nSummary: Stuff",
           'externalBranch' => 'master',
+          'patch' => null,
         ),
         shape(
           'changeset' => shape (
@@ -79,49 +99,58 @@ final class FBShipItPreviewTest extends BaseTest {
           'githubProject' => 'phabtest1_git',
           'commitMessage' => "Test Commit\n\nSummary: Stuff",
           'externalBranch' => 'transformed_branch',
+          'patch' => null,
         ),
       ),
     );
   }
 
   public function testHandleChangeset(): void {
-    $changeset = (new ShipItChangeset())
-      ->withID('deadbeef')
-      ->withTimestamp(12345)
-      ->withAuthor('yrahbar')
-      ->withSubject('Test Commit')
-      ->withMessage("Summary:\n Stuff")
-      ->withDiffs(ImmVector {
-          shape('path' => 'public/example.php', 'body' => ''),
-          shape('path' => 'facebook/filtered.txt', 'body' => ''),
-        });
+    $changeset = self::makeChangeset();
     $result = (new FBShipItPreview())
-      ->handleChangeset('phabtest1_git', 'side_branch', $changeset);
+      ->handleChangeset('phabtest1_git', 'side_branch', $changeset, null);
     $this->assertEquals(\count($result), 1);
     $this->assertEquals(
-      $result[0],
+      $result[0]['changeset'],
       shape(
-        'changeset' => shape(
-          'id' => 'deadbeef',
-          'timestamp' => 12345,
-          'author' => 'yrahbar',
-          'subject' => 'Test Commit',
-          'message' => 'Summary: Stuff',
-          'diffs' => vec[
-            shape('path' => 'public/example.php', 'body' => ''),
-          ],
-        ),
-        'githubOrg' => 'facebook',
-        'githubProject' => 'phabtest1_git',
-        'commitMessage' => "Test Commit\n\nSummary: Stuff",
-        'externalBranch' => 'side_branch',
-      )
+        'id' => 'deadbeef',
+        'timestamp' => 12345,
+        'author' => 'yrahbar',
+        'subject' => 'Test Commit',
+        'message' => 'Summary: Stuff',
+        'diffs' => vec[
+          shape('path' => 'public/example.php', 'body' => ''),
+        ],
+      ),
+    );
+    $this->assertEquals($result[0]['githubOrg'], 'facebook');
+    $this->assertEquals($result[0]['githubProject'], 'phabtest1_git');
+    $this->assertEquals(
+      $result[0]['commitMessage'],
+      "Test Commit\n\nSummary: Stuff",
+    );
+    $this->assertEquals($result[0]['patch'], null);
+  }
+
+  public function testHandleFullPatch(): void {
+    $changeset = self::makeChangeset();
+    // Actual Phabricator git-style raw patch of an fbsource diff
+    $patch = \file_get_contents(__DIR__.'/example_fbsource_git_diff.patch');
+    $result = (new FBShipItPreview())
+      ->handleChangeset('fbsource', 'master', $changeset, $patch);
+    $this->assertEquals(
+      \file_get_contents(__DIR__.'/example_fbshipit_git_diff.patch'),
+      $result[0]['patch'],
     );
     $diffs = $result[0]['changeset']['diffs'];
-    $this->assertEquals(\count($diffs), 1);
+    $this->assertEquals(2, \count($diffs));
     $this->assertEquals(
-      $diffs[0],
-      shape('path' => 'public/example.php', 'body' => '')
+      'fb-examples/tests/shipit/FBCommonFiltersTest.php-example',
+      $diffs[0]['path'],
+    );
+    $this->assertEquals(
+      'fb-examples/lib/shipit/FBCommonFilters.php-example',
+      $diffs[1]['path'],
     );
   }
 }

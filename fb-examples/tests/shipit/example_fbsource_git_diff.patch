@@ -1,0 +1,32 @@
+diff --git a/fbcode/opensource/shipit/tests/shipit/fb-specific-but-public/FBCommonFiltersTest.php b/fbcode/opensource/shipit/tests/shipit/fb-specific-but-public/FBCommonFiltersTest.php
+--- a/fbcode/opensource/shipit/tests/shipit/fb-specific-but-public/FBCommonFiltersTest.php
++++ b/fbcode/opensource/shipit/tests/shipit/fb-specific-but-public/FBCommonFiltersTest.php
+@@ -141,6 +141,16 @@
+     );
+   }
+ 
++  public function testBuildDirectiveStripped(): void {
++    $in = (new ShipItChangeset())
++      ->withMessage("Summary: Test diff\nblah @build[project1,project2]");
++    $out = FBCommonFilters::applyAll($in);
++    $this->assertSame(
++      "Summary:\nTest diff\nblah",
++      $out->getMessage(),
++    );
++  }
++
+   public function testAccept2ShipStripped(): void {
+     $in = (new ShipItChangeset())
+       ->withMessage('Summary: #accept2ship');
+diff --git a/fbcode/opensource/shipit/src/shipit/fb-specific-but-public/FBCommonFilters.php b/fbcode/opensource/shipit/src/shipit/fb-specific-but-public/FBCommonFilters.php
+--- a/fbcode/opensource/shipit/src/shipit/fb-specific-but-public/FBCommonFilters.php
++++ b/fbcode/opensource/shipit/src/shipit/fb-specific-but-public/FBCommonFilters.php
+@@ -200,7 +200,7 @@
+   ): ShipItChangeset {
+     return $changeset->withMessage(
+       preg_replace(
+-        '/@override-unit-failures/',
++        '/(@override-unit-failures)|(@build\[.*\])/',
+         '',
+         $changeset->getMessage(),
+       ),

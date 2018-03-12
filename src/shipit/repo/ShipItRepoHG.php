@@ -149,7 +149,7 @@ class ShipItRepoHG extends ShipItRepo
         '-m', self::getCommitMessage($patch),
       );
     } else {
-      $diff = $this->renderPatch($patch);
+      $diff = self::renderPatch($patch);
       $this->hgPipeCommand($diff, 'patch', '-');
     }
     $id = $this->getChangesetFromID('.')?->getID();
@@ -157,7 +157,7 @@ class ShipItRepoHG extends ShipItRepo
     return $id;
   }
 
-  public function renderPatch(ShipItChangeset $patch): string {
+  public static function renderPatch(ShipItChangeset $patch): string {
     // Mon Sep 17 is a magic date used by format-patch to distinguish from real
     // mailboxes. cf. https://git-scm.com/docs/git-format-patch
     $commit_message = self::getCommitMessage($patch);
@@ -326,24 +326,29 @@ class ShipItRepoHG extends ShipItRepo
     return $changeset->withID($revision);
   }
 
-  public static function getChangesetFromExportedPatch(
-    string $header,
+  <<__Override>>
+  public static function getDiffsFromPatch(
     string $patch,
-  ): ?ShipItChangeset {
-    $changeset = self::parseHeader($header);
+  ): ImmVector<ShipItDiff> {
     $diffs = Vector { };
-
     foreach(self::ParseHgRegions($patch) as $region) {
       $diff = self::parseDiffHunk($region);
       if ($diff !== null) {
         $diffs[] = $diff;
       }
     }
+    return $diffs->toImmVector();
+  }
 
+  public static function getChangesetFromExportedPatch(
+    string $header,
+    string $patch,
+  ): ?ShipItChangeset {
+    $changeset = self::parseHeader($header);
     if ($changeset === null) {
       return $changeset;
     }
-    return $changeset->withDiffs($diffs->toImmVector());
+    return $changeset->withDiffs(self::getDiffsFromPatch($patch));
   }
 
   protected function hgPipeCommand(?string $stdin, string ...$args): string {

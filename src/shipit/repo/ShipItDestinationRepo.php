@@ -24,7 +24,7 @@ interface ShipItDestinationRepo {
   /**
    * Generate a text patch ready for committing
    */
-  public function renderPatch(ShipItChangeset $patch): string;
+  public static function renderPatch(ShipItChangeset $patch): string;
 
   /**
    * Commit a standardized patch to the repo

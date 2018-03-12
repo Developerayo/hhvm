@@ -156,6 +156,10 @@ abstract class ShipItRepo {
     );
   }
 
+  public abstract static function getDiffsFromPatch(
+    string $patch,
+  ): ImmVector<ShipItDiff>;
+
   final public static function getCommitMessage(
     ShipItChangeset $changeset,
   ): string {

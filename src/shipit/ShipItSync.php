@@ -116,7 +116,7 @@ class ShipItSync {
         if (\file_exists($file)) {
           \printf("Overwriting patch file: %s\n", $file);
         }
-        \file_put_contents($file, $dest->renderPatch($changeset));
+        \file_put_contents($file, $dest::renderPatch($changeset));
         $changeset = $changeset->withDebugMessage(
           'Saved patch file: %s',
           $file,

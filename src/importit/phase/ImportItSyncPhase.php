@@ -146,7 +146,7 @@ final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
       } else {
         \printf(
           "  Failure to apply patch:\n%s\n",
-          $destination_repo->renderPatch($changeset),
+          $destination_repo::renderPatch($changeset),
         );
       }
       throw $e;
@@ -171,7 +171,7 @@ final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
       return;
     }
     $file = $this->getPatchLocationForChangeset($changeset);
-    \file_put_contents($file, $destination_repo->renderPatch($changeset));
+    \file_put_contents($file, $destination_repo::renderPatch($changeset));
     $changeset = $changeset->withDebugMessage(
       'Saved patch file: %s',
       $file,

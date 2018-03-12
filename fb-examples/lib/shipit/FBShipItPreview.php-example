@@ -15,6 +15,8 @@ type ShipItPreviewInput = shape(
   'arcanistProject' => string,
   'changeset' => ShipItChangesetData,
   'internalBranch' => string,
+  // TODO(yrahbar) make this field non-optional after upgrading the client
+  ?'patch' => ?string,
 );
 
 type ShipItPreviewOutput = shape(
@@ -23,6 +25,7 @@ type ShipItPreviewOutput = shape(
   'githubProject' => string,
   'commitMessage' => string,
   'externalBranch' => string,
+  'patch' => ?string,
 );
 
 
@@ -49,13 +52,21 @@ final class FBShipItPreview {
     string $arcanist_project,
     string $internal_branch,
     ShipItChangeset $changeset,
+    ?string $patch = null,
   ): vec<ShipItPreviewOutput> {
     try {
-        $repo = RepoArcanistProject::getRepo($arcanist_project);
+      $repo = RepoArcanistProject::getRepo($arcanist_project);
     } catch (InvariantException $e) {
       // If we don't recognize the arcanist project,
       // assume it will ship no commits.
       return vec[];
+    }
+    // If a patch was provided as input, override the diffs portion of the
+    // changeset object.
+    if ($patch !== null) {
+      // Assume phabricator patch was exported in git format
+      $diffs = ShipItRepoGIT::getDiffsFromPatch($patch);
+      $changeset = $changeset->withDiffs($diffs);
     }
     $result = vec[];
     foreach ($this->allConfigClasses as $config_class) {
@@ -73,12 +84,19 @@ final class FBShipItPreview {
           if (\count($transformed_changeset->getDiffs()) > 0) {
             $commit_message =
               ShipItRepoGIT::getCommitMessage($transformed_changeset);
+            if ($patch !== null) {
+              $transformed_patch =
+                ShipItRepoGIT::renderPatch($transformed_changeset);
+            } else {
+              $transformed_patch = null;
+            }
             $result[] = shape(
               'changeset' => $transformed_changeset->toData(),
               'githubOrg' => $repo_config['githubOrg'],
               'githubProject' => $repo_config['githubProject'],
               'commitMessage' => $commit_message,
               'externalBranch' => $branch_config['external'],
+              'patch' => $transformed_patch,
             );
           }
         }
@@ -124,6 +142,7 @@ Options:
           $parsed['arcanistProject'],
           $parsed['internalBranch'],
           ShipItChangeset::fromData($parsed['changeset']),
+          Shapes::idx($parsed, 'patch'),
         );
         print (self::encodeOutput($result));
         $in_data = '';

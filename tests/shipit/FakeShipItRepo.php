@@ -40,4 +40,11 @@ final class FakeShipItRepo extends ShipItRepo {
   public function getOrigin(): string {
     return '';
   }
+
+  <<__Override>>
+  public static function getDiffsFromPatch(
+    string $patch,
+  ): ImmVector<ShipItDiff> {
+    return ImmVector {};
+  }
 }

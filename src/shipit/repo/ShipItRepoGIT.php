@@ -214,28 +214,35 @@ class ShipItRepoGIT
     return $changeset;
   }
 
-  public static function getChangesetFromExportedPatch(
-    string $header,
+  <<__Override>>
+  public static function getDiffsFromPatch(
     string $patch,
-  ): ?ShipItChangeset {
-    $ret = self::parseHeader($header);
-    $diffs = Vector { };
+  ): ImmVector<ShipItDiff> {
+    $diffs = Vector {};
     foreach(ShipItUtil::parsePatch($patch) as $hunk) {
       $diff = self::parseDiffHunk($hunk);
       if ($diff !== null) {
         $diffs[] = $diff;
       }
     }
+    return $diffs->toImmVector();
+  }
+
+  public static function getChangesetFromExportedPatch(
+    string $header,
+    string $patch,
+  ): ?ShipItChangeset {
+    $ret = self::parseHeader($header);
     if ($ret === null) {
       return $ret;
     }
-    return $ret->withDiffs($diffs->toImmVector());
+    return $ret->withDiffs(self::getDiffsFromPatch($patch));
   }
 
   /**
    * Render patch suitable for `git am`
    */
-  public function renderPatch(ShipItChangeset $patch): string {
+  public static function renderPatch(ShipItChangeset $patch): string {
     /* Insert a space before patterns that will make `git am` think that a
      * line in the commit message is the start of a patch, which is an artifact
      * of the way `git am` tries to tell where the message ends and the diffs
@@ -284,7 +291,7 @@ class ShipItRepoGIT
       return $this->getHEADSha();
     }
 
-    $diff = $this->renderPatch($patch);
+    $diff = self::renderPatch($patch);
     try {
       $this->gitPipeCommand($diff, 'am', '--keep-non-patch', '--keep-cr');
     } catch (ShipItRepoGITException $e) {
