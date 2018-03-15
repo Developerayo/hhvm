@@ -147,7 +147,6 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
     }
   }
 
-  <<__Override>>
   final public function testSubmodulesAreFilteredCorrectly(): void {
     $config_class = static::getConfigClass();
     $parents = new Set(\class_parents($config_class));

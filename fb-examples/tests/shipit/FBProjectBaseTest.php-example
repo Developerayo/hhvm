@@ -294,7 +294,7 @@ abstract class FBProjectBaseTest extends BaseTest {
     // assertion is the @expectedException
   }
 
-  // TODO(T22473111) remove after config migration is complete
+  // TODO(T22473111) remove after Buck is migrated
   public function testFileNameMatchesRepo(): void {
     $shipit_class = static::getShipItClass();
     $config = $shipit_class::getStaticConfig();
@@ -357,7 +357,7 @@ abstract class FBProjectBaseTest extends BaseTest {
     );
   }
 
-  // TODO(T22473111) remove after config migration is complete
+  // TODO(T22473111) remove after Buck is migrated
   public function testPathMappingsHaveExamples(): void {
     $shipit_class = static::getShipItClass();
     $examples = static::getExamplePathMappings()->keys();
@@ -387,7 +387,7 @@ abstract class FBProjectBaseTest extends BaseTest {
     invariant_violation('test fails should throw');
   }
 
-  // TODO(T22473111) remove after config migration is complete
+  // TODO(T22473111) remove after Buck is migrated
   public function testRepositoryNameCollision(): void {
     $shipit_class = static::getShipItClass();
     $config = $shipit_class::getBaseConfig();
@@ -399,7 +399,7 @@ abstract class FBProjectBaseTest extends BaseTest {
     );
   }
 
-  // TODO(T22473111) remove after config migration is complete
+  // TODO(T22473111) remove after Buck is migrated
   public function testSourceRootsAreDirectories(): void {
     $shipit_class = static::getShipItClass();
     $config = $shipit_class::getBaseConfig();
@@ -415,36 +415,7 @@ abstract class FBProjectBaseTest extends BaseTest {
     }
   }
 
-  // TODO(T22473111) remove after config migration is complete
-  public function testSubmodulesAreFilteredCorrectly(): void {
-    $shipit_class = static::getShipItClass();
-    $parents = new Set(\class_parents($shipit_class));
-    if (!(
-      $parents->contains(FBShipItCLI::class) ||
-      $parents->contains(FBShipItConfig::class)
-    )) {
-      $this->markTestSkipped();
-    }
-
-    foreach ($shipit_class::getSubmoduleMappings() as $rev_file => $dest) {
-      $changeset = (new ShipItChangeset())
-        ->withDiffs(ImmVector {
-          shape(
-            'path' => $rev_file,
-            'body' => (string) self::invoke_static_bypass_visibility(
-              ShipItSubmoduleFilter::class,
-              'makeSubmoduleDiff',
-              $rev_file,
-              'deadbeef1',
-              'deadbeef2',
-            ),
-          ),
-        });
-      $this->pathMappingCheck($changeset, $rev_file, $dest);
-    }
-  }
-
-  // TODO(T22473111) remove after config migration is complete
+  // TODO(T22473111) remove after Buck is migrated
   protected static function getShipItClass(
   ): classname<\Facebook\ImportIt\ISupportsFBImportIt> {
     $shipit_class = \preg_replace(
