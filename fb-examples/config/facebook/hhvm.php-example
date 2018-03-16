@@ -53,6 +53,7 @@ final class FacebookHhvm extends FBShipItConfig {
       '@^(?!fbcode/hphp)@',
       '@^fbcode/hphp/(?!(hack|doc)).*Makefile$@',
       '@^fbcode/hphp/hack/\.merlin$@',
+      '@^fbcode/hphp/(.*/)?DEFS$@',
     };
   }
 
