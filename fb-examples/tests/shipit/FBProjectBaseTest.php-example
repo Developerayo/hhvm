@@ -294,6 +294,23 @@ abstract class FBProjectBaseTest extends BaseTest {
     // assertion is the @expectedException
   }
 
+  public function testBadwordsBinaryFile(): void {
+    $changeset = $this->exampleBadwordChangesets()['code'][0];
+    $binary_file_body = "index 2dc..bc4 123\n".
+      "GIT binary patch\n".
+      $changeset->getDiffs()[0]['body'];
+    $changeset = $changeset->withDiffs(
+      ImmVector {
+        shape(
+          'path' => $changeset->getDiffs()[0]['path'],
+          'body' => $binary_file_body,
+        )
+      }
+    );
+    static::map($changeset);
+    // no expected exception
+  }
+
   // TODO(T22473111) remove after Buck is migrated
   public function testFileNameMatchesRepo(): void {
     $shipit_class = static::getShipItClass();
