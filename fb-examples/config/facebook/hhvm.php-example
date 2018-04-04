@@ -13,9 +13,6 @@ use \Facebook\ShipIt\ {
   FBShipItCLIStaticConfig,
   FBShipItConfig,
   FBSourceBranchConfig,
-  HHVMBuildAndTestPhase,
-  HHVMCleanThirdPartyPhase,
-  HHVMEnvironmentCheckPhase,
   ShipItFilterSanityCheckPhase,
   ShipItGitHubInitPhase,
   ShipItPhase,
@@ -68,26 +65,6 @@ final class FacebookHhvm extends FBShipItConfig {
       ->toVector()
       ->add('@.*'.ShipItFilterSanityCheckPhase::TEST_FILE_NAME.'$@')
       ->toImmVector();
-  }
-
-  <<__Override>>
-  public static function getPhases(
-    FBSourceBranchConfig $branch_config,
-  ): ImmVector<ShipItPhase> {
-    $parentPhases = parent::getPhases($branch_config)->toVector();
-
-    $phases = Vector { new HHVMEnvironmentCheckPhase() };
-
-    foreach ($parentPhases as $phase) {
-      $phases->add($phase);
-      if ($phase instanceof ShipItGitHubInitPhase) {
-        $phases->add(new HHVMCleanThirdPartyPhase());
-      } elseif ($phase instanceof ShipItVerifyRepoPhase) {
-        $phases->add(new HHVMBuildAndTestPhase());
-      }
-    }
-
-    return $phases->toImmVector();
   }
 
   <<__Override>>
