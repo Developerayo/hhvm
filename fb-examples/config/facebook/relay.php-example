@@ -25,6 +25,7 @@ final class FacebookRelay extends FBShipItConfig {
   const string GITHUB_ROOT = self::RELAY_OSS.'__github__/';
   const string BABEL_PLUGIN_RELAY = self::RELAY_OSS.'babel-plugin-relay/';
   const string REACT_RELAY = self::RELAY_OSS.'react-relay/';
+  const string GRAPHQL_COMPILER = self::RELAY_OSS.'graphql-compiler/';
   const string RELAY_COMPILER = self::RELAY_OSS.'relay-compiler/';
   const string RELAY_RUNTIME = self::RELAY_OSS.'relay-runtime/';
   const string RELAY_TEST_UTILS = self::RELAY_OSS.'relay-test-utils/';
@@ -54,6 +55,7 @@ final class FacebookRelay extends FBShipItConfig {
       self::GITHUB_ROOT => '',
       self::BABEL_PLUGIN_RELAY => 'packages/babel-plugin-relay/',
       self::REACT_RELAY => 'packages/react-relay/',
+      self::GRAPHQL_COMPILER => 'packages/graphql-compiler/',
       self::RELAY_COMPILER => 'packages/relay-compiler/',
       self::RELAY_RUNTIME => 'packages/relay-runtime/',
       self::RELAY_TEST_UTILS => 'packages/relay-test-utils/',
