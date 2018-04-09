@@ -18,7 +18,7 @@ use \Facebook\ShipIt\ {
   ShipItPathFilters,
 };
 
-final class Caffe2ReinforcementLearningModels extends FBShipItConfig {
+final class FacebookresearchBluewhale extends FBShipItConfig {
   const string ROOT = 'fbcode/ml/rl/';
 
   <<__Override>>
@@ -40,8 +40,6 @@ final class Caffe2ReinforcementLearningModels extends FBShipItConfig {
   <<__Override>>
   public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
-      # We want our docs to appear at the root of our open source repo
-      self::ROOT.'docs/' => '',
       # We want the contents of fbcode/ml/rl/... to appear in ml/rl/...
       self::ROOT => 'ml/rl/',
     };
@@ -51,8 +49,8 @@ final class Caffe2ReinforcementLearningModels extends FBShipItConfig {
   public static function getStaticConfig(): FBShipItCLIStaticConfig {
     return shape(
       'internalRepo' => 'fbsource',
-      'githubOrg' => 'caffe2',
-      'githubProject' => 'reinforcement-learning-models',
+      'githubOrg' => 'facebookresearch',
+      'githubProject' => 'BlueWhale',
     );
   }
 }
