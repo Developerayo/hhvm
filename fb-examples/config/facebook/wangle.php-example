@@ -10,13 +10,24 @@
 namespace Facebook\ShipIt\Config;
 
 use \Facebook\ShipIt\ {
+  FBCodeBuilderTrait,
   FBShipItCLIStaticConfig,
   FBShipItConfig,
 };
 
 final class FacebookWangle extends FBShipItConfig {
+  use FBCodeBuilderTrait;
+
   <<__Override>>
-  public static function getDefaultPathMappings(): ImmMap<string, string> {
+  protected static function getFBCodeBuilderDependencies(): ImmSet<string> {
+    return ImmSet {
+      'folly',
+    };
+  }
+
+  <<__Override>>
+  public static function getPathMappingsNonFBCodeBuilder(
+  ): ImmMap<string, string> {
     return ImmMap {
       'fbcode/wangle/public_tld/' => '',
       'fbcode/wangle/' => 'wangle/',
