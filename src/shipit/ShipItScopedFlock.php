@@ -114,6 +114,7 @@ class ShipItScopedFlock {
     \fprintf(\STDERR, "  [flock] %s\n    %s\n", $message, $this->path);
   }
 
+  <<__OptionalDestruct>>
   public function __destruct() {
     if ($this->released) {
       return;
