@@ -21,7 +21,7 @@ class ShipItShellCommand {
   private ?self::TFailureHandler $failureHandler = null;
 
   public function __construct(
-    private string $path,
+    private ?string $path,
     /* HH_FIXME[4033] type hint */ ...$command
   ) {
     $this->command = new ImmVector($command);

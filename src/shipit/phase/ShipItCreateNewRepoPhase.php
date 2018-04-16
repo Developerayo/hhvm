@@ -60,29 +60,29 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     ShipItBaseConfig $config,
   ): void {
     $output = $this->outputPath;
-    if ($output !== null && \file_exists($output)) {
-      \fwrite(\STDERR, "  Path '%s' already exists\n", $output);
-      exit(1);
-    }
-
-    $temp_dir = self::createNewGitRepo(
-      $config,
-      $this->filter,
-      $this->committer,
-      $this->sourceCommit,
-    );
-    // We're either keeping it, or renaming it; either way, we don't want it
-    // automatically deleted on exit
-    $temp_dir->keep();
-
-    if ($output === null) {
-      $output = $temp_dir->getPath();
-    } else {
-      $parent = \dirname($output);
-      if (!\file_exists($parent)) {
-        \mkdir($parent, 0755, /* recursive = */ true);
+    try {
+      if ($output === null) {
+        $temp_dir = self::createNewGitRepo(
+          $config,
+          $this->filter,
+          $this->committer,
+          $this->sourceCommit,
+        );
+        // Do not delete the output directory.
+        $temp_dir->keep();
+        $output = $temp_dir->getPath();
+      } else {
+        self::createNewGitRepoAt(
+          $config,
+          $output,
+          $this->filter,
+          $this->committer,
+          $this->sourceCommit,
+        );
       }
-      \rename($temp_dir->getPath(), $output);
+    } catch (\Exception $e) {
+      \fwrite(\STDERR, '  Error: '.$e->getMessage()."\n");
+      exit(1);
     }
 
     print('  New repository created at '.$output."\n");
@@ -90,11 +90,11 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
   }
 
   private static function initGitRepo(
-    ShipItTempDir $temp_dir,
+    string $path,
     shape('name' => string, 'email' => string) $committer,
   ): void {
     self::execSteps(
-      $temp_dir->getPath(),
+      $path,
       ImmVector {
         ImmVector { 'git', 'init' },
         ImmVector { 'git', 'config', 'user.name', $committer['name'] },
@@ -109,6 +109,44 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     shape('name' => string, 'email' => string) $committer,
     ?string $revision = null,
   ): ShipItTempDir {
+    $temp_dir = new ShipItTempDir('git-with-initial-commit');
+    self::createNewGitRepoImpl(
+      $temp_dir->getPath(), $config, $filter, $committer, $revision
+    );
+    return $temp_dir;
+  }
+
+  public static function createNewGitRepoAt(
+    ShipItBaseConfig $config,
+    string $output_dir,
+    (function(ShipItChangeset):ShipItChangeset) $filter,
+    shape('name' => string, 'email' => string) $committer,
+    ?string $revision = null,
+  ): void {
+    if (\file_exists($output_dir)) {
+      throw new ShipItException("path '$output_dir' already exists");
+    }
+    \mkdir($output_dir, 0755, /* recursive = */ true);
+
+    try {
+      self::createNewGitRepoImpl(
+        $output_dir, $config, $filter, $committer, $revision
+      );
+    } catch (\Exception $e) {
+      (
+        new ShipItShellCommand(null, 'rm', '-rf', $output_dir)
+      )->runSynchronously();
+      throw $e;
+    }
+  }
+
+  private static function createNewGitRepoImpl(
+    string $output_dir,
+    ShipItBaseConfig $config,
+    (function(ShipItChangeset):ShipItChangeset) $filter,
+    shape('name' => string, 'email' => string) $committer,
+    ?string $revision = null,
+  ): void {
     $source = ShipItRepo::typedOpen(
       ShipItSourceRepo::class,
       $config->getSourcePath(),
@@ -122,7 +160,7 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
 
     print("  Creating unfiltered commit...\n");
 
-    self::initGitRepo($export_dir, $committer);
+    self::initGitRepo($export_dir->getPath(), $committer);
     self::execSteps(
       $export_dir->getPath(),
       ImmVector {
@@ -154,11 +192,10 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
 
     print("  Creating new repo...\n");
 
-    $filtered_dir = new ShipItTempDir('git-with-initial-commit');
-    self::initGitRepo($filtered_dir, $committer);
+    self::initGitRepo($output_dir, $committer);
     $filtered_repo = ShipItRepo::typedOpen(
       ShipItDestinationRepo::class,
-      $filtered_dir->getPath(),
+      $output_dir,
       '--orphan='.$config->getDestinationBranch(),
     );
     $filtered_repo->commitPatch($changeset);
@@ -166,14 +203,12 @@ final class ShipItCreateNewRepoPhase extends ShipItPhase {
     print("  Cleaning up...\n");
     // As we're done with these and nothing else has the random paths, the lock
     // files aren't needed
-    foreach ([$export_dir, $filtered_dir] as $repo) {
-      $lock_file = ShipItRepo::getLockFilePathForRepoPath($repo->getPath());
+    foreach ([$export_dir->getPath(), $output_dir] as $repo) {
+      $lock_file = ShipItRepo::getLockFilePathForRepoPath($repo);
       if (\file_exists($lock_file)) {
         \unlink($lock_file);
       }
     }
-
-    return $filtered_dir;
   }
 
   private static function execSteps(
