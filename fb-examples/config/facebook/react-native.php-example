@@ -91,14 +91,6 @@ final class FacebookReactNative extends FBShipItConfig {
             $path,
           ),
         )
-      |> ShipItPathFilters::rewritePaths(
-          $$,
-          $path ==> \preg_replace(
-            '@(^|/)Libraries/Renderer/oss/@',
-            '\1Libraries/Renderer/',
-            $path,
-          ),
-        )
       |> parent::projectImportChangeset($$, $branch_config);
   }
 }
