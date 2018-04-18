@@ -57,6 +57,7 @@ final class FacebookReactNative extends FBShipItConfig {
       '@(^|/)npm-shrinkwrap.json@',
       '@(^|/)yarn.lock@',
       '@(^|/)packager/react-packager/src/packager_experimental/@',
+      '@(^|/)Libraries/Renderer/fb/@',
     };
   }
 
@@ -87,6 +88,14 @@ final class FacebookReactNative extends FBShipItConfig {
           $path ==> \preg_replace(
             '@(^|/)\.flowconfig$@',
             '\1.github.flowconfig',
+            $path,
+          ),
+        )
+      |> ShipItPathFilters::rewritePaths(
+          $$,
+          $path ==> \preg_replace(
+            '@(^|/)Libraries/Renderer/oss/@',
+            '\1Libraries/Renderer/',
             $path,
           ),
         )
