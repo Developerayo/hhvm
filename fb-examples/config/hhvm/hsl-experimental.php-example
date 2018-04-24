@@ -19,15 +19,12 @@ use \Facebook\ShipIt\ {
   ShipItPathFilters,
 };
 
-final class HhvmHsl extends HhvmHslBase {
-  const string ROOT = 'flib/core/hack/lib/';
+final class HhvmHslExperimental extends HhvmHslBase {
+  const string ROOT = 'flib/core/hack/lib/experimental/';
 
   <<__Override>>
   protected static function getDefaultStrippedFiles(): ImmVector<string> {
-    return ImmVector {
-      '@^flib/core/hack/lib/(legacy|unreleased|experimental)/@',
-      '@^flib/core/hack/lib/__tests__/testing_mocks/@',
-    };
+    return ImmVector {};
   }
 
   <<__Override>>
@@ -35,7 +32,7 @@ final class HhvmHsl extends HhvmHslBase {
     return shape(
       'internalRepo' => 'www',
       'githubOrg' => 'hhvm',
-      'githubProject' => 'hsl',
+      'githubProject' => 'hsl-experimental',
     );
   }
 }

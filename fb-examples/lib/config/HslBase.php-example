@@ -1,0 +1,164 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBSourceBranchConfig,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+  ShipItConditionalLinesFilter,
+  ShipItPathFilters,
+};
+
+abstract class HhvmHslBase extends FBShipItConfig {
+  abstract const string ROOT;
+
+  <<__Override>>
+  final protected static function defaultProjectFilterChangeset(
+    ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
+  ): ShipItChangeset {
+    return parent::defaultProjectFilterChangeset($changeset, $get_path_mappings)
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> \preg_replace(
+          '@^src/(.+/)?__tests__/@',
+          'tests/\1',
+          $path,
+        ),
+      )
+      |> ShipItConditionalLinesFilter::commentLines(
+        $$,
+        '@oss-disable',
+        '//',
+      )
+      |> ShipItConditionalLinesFilter::uncommentLines(
+        $$,
+        '@oss-enable',
+        '//',
+      )
+      |> self::renameGenToAsync($$);
+  }
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      static::ROOT.'__github__/dot_' => '.',
+      static::ROOT.'__github__/' => '',
+      static::ROOT => 'src/',
+    };
+  }
+
+  final private static function renameFunctions(
+    ShipItChangeset $changeset,
+    (function(string):string) $renamer,
+  ): ShipItChangeset {
+    $diffs = Vector {};
+    foreach ($changeset->getDiffs() as $diff) {
+      $diff['body'] = $diff['body']
+        |> \explode("\n", $$)
+        |> (new ImmVector($$))->map(
+          $line ==> \preg_replace_callback(
+            // Comma and dot for doc comments
+            '/(function |\\\\|\\|>| )([a-zA-Z0-9_]+)(\\(|<|,|\\.)/',
+            $matches ==> $matches[1].$renamer($matches[2]).$matches[3],
+            $line,
+          ),
+        )
+        |> \implode("\n", $$);
+      $diffs[] = $diff;
+    }
+    return $changeset->withDiffs($diffs->immutable());
+  }
+
+  final private static function renameGenToAsync(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return self::renameFunctions(
+      $changeset,
+      $name ==> {
+        if ($name === 'gen') {
+          return 'from_async';
+        }
+        if ($name === 'testGen') {
+          return 'testFromAsync';
+        }
+        if (\strpos($name, 'gen_') === 0) {
+          return \substr($name, 4).'_async';
+        }
+        if (\strpos($name, 'testGen') === 0) {
+          return 'test'.\substr($name, 7).'Async';
+        }
+        return $name;
+      }
+    );
+  }
+
+  final public static function renameAsyncToGen(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    return self::renameFunctions(
+      $changeset,
+      $name ==> {
+        if ($name === 'from_async') {
+          return 'gen';
+        }
+        if ($name === 'testFromAsync') {
+          return 'testGen';
+        }
+        if (\substr($name, -6) === '_async') {
+          return 'gen_'.\substr($name, 0, -6);
+        }
+        if (\substr($name, 0, 4) === 'test' && \substr($name, -5) === 'Async') {
+          return 'testGen'.\substr(
+            $name,
+            4,
+            \strlen($name) - 9,
+          );
+        }
+        return $name;
+      }
+    );
+  }
+
+  <<__Override>>
+  final protected static function projectImportChangeset(
+    ShipItChangeset $changeset,
+    FBSourceBranchConfig $branch_config,
+  ): ShipItChangeset {
+    return $changeset
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> \preg_replace(
+          '@^tests/(.+/)?@',
+          'src/\1__tests__/',
+          $path,
+        ),
+      )
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> \preg_replace('/^\\./', 'dot_', $path),
+      )
+      |> ShipItConditionalLinesFilter::uncommentLines(
+        $$,
+        '@oss-disable',
+        '//',
+      )
+      |> ShipItConditionalLinesFilter::commentLines(
+        $$,
+        '@oss-enable',
+        '//',
+      )
+      |> static::renameAsyncToGen($$)
+      |> parent::projectImportChangeset($$, $branch_config);
+  }
+}

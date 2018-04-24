@@ -24,13 +24,11 @@ final class HhvmHslTest extends FBConfigBaseTest {
       'flib/core/hack/lib/fb/foo.php' => null,
       'flib/core/hack/lib/legacy/foo.php' => null,
       'flib/core/hack/lib/unreleased/foo.php' => null,
+      'flib/core/hack/lib/experimental/foo.php' => null,
       'flib/core/hack/lib/__github__/composer.json' => 'composer.json',
       'flib/core/hack/lib/__github__/dot_hhconfig' => '.hhconfig',
-      'flib/core/hack/lib/__github__/bin/foo_dot_php' => 'bin/foo.php',
       'flib/core/hack/lib/__tests__/foo.php' => 'tests/foo.php',
       'flib/core/hack/lib/dict/__tests__/bar.php' => 'tests/dict/bar.php',
-      // https://github.com/hhvm/hsl/issues/1
-      'flib/core/hack/lib/async/dict.php' => null,
     };
   }
 

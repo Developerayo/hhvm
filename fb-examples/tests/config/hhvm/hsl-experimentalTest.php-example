@@ -1,0 +1,34 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  ShipItChangeset,
+};
+
+final class HhvmHslExperimentalTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'flib/foo' => null,
+      'html/foo' => null,
+      'flib/core/hack/foo/bar.php' => null,
+      'flib/core/hack/lib/foo.php' => null,
+      'flib/core/hack/lib/experimental/foo.php' => 'src/foo.php',
+      'flib/core/hack/lib/__github__/composer.json' => null,
+      'flib/core/hack/lib/experimental/__github__/composer.json' =>
+        'composer.json',
+      'flib/core/hack/lib/experimental/__github__/dot_hhconfig' => '.hhconfig',
+      'flib/core/hack/lib/experimental/__tests__/foo.php' => 'tests/foo.php',
+      'flib/core/hack/lib/experimental/dict/__tests__/bar.php' =>
+        'tests/dict/bar.php',
+    };
+  }
+}
