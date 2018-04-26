@@ -1,0 +1,99 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  FBSourceBranchConfig,
+  GetPathMappingsFn,
+  OSTeamFilters,
+  ShipItBaseConfig,
+  ShipItChangeset,
+};
+
+final class FacebookChefUtils extends FBShipItConfig {
+  public static function getDirs(): ImmSet<string> {
+    return ImmSet {
+       'scripts/chef/',
+       'scripts/chefctl-github/',
+    };
+  }
+
+  public static function stripChefTestHostsHeader(
+    ShipItChangeset $changeset
+  ): ShipItChangeset {
+    return $changeset->withMessage(
+      \preg_replace(
+        '/\s*chef_test_hosts:.*/',
+        '',
+        $changeset->getMessage(),
+      ),
+    );
+  }
+
+  <<__Override>>
+  protected static function defaultProjectFilterChangeset(
+    ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
+  ): ShipItChangeset {
+    return parent::defaultProjectFilterChangeset($changeset, $get_path_mappings)
+      |> OSTeamFilters::rewriteEmails($$)
+      |> static::stripChefTestHostsHeader($$);
+  }
+
+  <<__Override>>
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
+    # Unlike most shipit plugins we effectively whitelist because we can't
+    # easily move chefctl.rb (yet)
+    #
+    # Therefore, below we do a NegativeLookAhead regex and anything that's not
+    # in this list gets rejected.
+    #
+    # For scripts/chefctl-github/ the entire directory is included, so that all
+    # works normally. But for scripts/chef/ we only include a single file, so
+    # for that directory we ALSO have to explicitly allow the shipit test file
+    # or it will crash.
+    $valid = array(
+      'chef/chefctl.rb',
+      'chefctl-github/',
+      'chef/shipit_test_file.txt',
+    );
+    return ImmVector {
+      '@^scripts\/(?!('.\implode('|', $valid).'))@',
+    };
+  }
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      # order is important - most specific first
+      'scripts/chef/' => 'chefctl/src/',
+      'scripts/chefctl-github/' => 'chefctl/',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'opsfiles',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'chef-utils',
+    );
+  }
+
+  <<__Override>>
+  public static function getBaseConfig(
+    FBSourceBranchConfig $branch_config,
+  ): ShipItBaseConfig {
+    return parent::getBaseConfig($branch_config)
+      ->withSourceRoots(self::getDirs());
+  }
+}
