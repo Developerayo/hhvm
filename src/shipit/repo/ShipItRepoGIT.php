@@ -465,7 +465,7 @@ class ShipItRepoGIT
     ))->setStdIn($tar)->runSynchronously();
 
     // If we have any submodules, we'll need to set them up manually.
-    foreach ($this->getSubmodules() as $submodule) {
+    foreach ($this->getSubmodules($roots) as $submodule) {
       $status = $this->gitCommand('submodule', 'status', $submodule['path']);
       $sha = $status
         // Strip any -, +, or U at the start of the status (see the man page for
@@ -487,7 +487,15 @@ class ShipItRepoGIT
     return \trim($this->gitCommand('log', '-1', "--pretty=format:%H"));
   }
 
-  private function getSubmodules(): ImmVector<self::TSubmoduleSpec> {
+  private function getSubmodules(
+    ?ImmSet<string> $roots = null,
+  ): ImmVector<self::TSubmoduleSpec> {
+    // The gitmodules file is in the repo root, so if this application is for
+    // a set of source roots that does not contain the entire repository then
+    // there are no relevant submodules.
+    if ($roots !== null && $roots->count() > 0 && !$roots->contains('')) {
+      return ImmVector {};
+    }
     if (!\file_exists($this->getPath().'/.gitmodules')) {
       return ImmVector {};
     }
