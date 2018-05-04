@@ -154,6 +154,15 @@ final class FBRepoInitPhase extends ShipItPhase {
           'ssh://projects.git.vip.facebook.com/data/gitrepos/buck.git',
           'buck_internal',
         };
+      case 'llvm-bolt':
+        return ImmVector {
+          '/usr/bin/git',
+          'clone',
+          '-b',
+          'facebook/bolt',
+          'ssh://git.vip.facebook.com/data/gitrepos/llvm/llvm.git',
+          'llvm-bolt',
+        };
       case 'meta-openbmc':
         return ImmVector {
           '/usr/bin/git',
