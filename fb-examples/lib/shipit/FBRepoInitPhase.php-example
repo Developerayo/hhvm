@@ -160,7 +160,7 @@ final class FBRepoInitPhase extends ShipItPhase {
           'clone',
           '-b',
           'facebook/bolt',
-          'ssh://git.vip.facebook.com/data/gitrepos/llvm/llvm.git',
+          'ssh://projects.git-ro.vip.facebook.com/data/gitrepos/llvm/llvm.git',
           'llvm-bolt',
         };
       case 'meta-openbmc':
