@@ -211,6 +211,14 @@ final class FBRepoInitPhase extends ShipItPhase {
           'phabtest1_hg',
         };
         break;
+      case 'business-sdk':
+        return ImmVector {
+          '/usr/bin/git',
+          'clone',
+          'ssh://git.vip.facebook.com/data/gitrepos/business-sdk.git',
+          'business-sdk',
+        };
+        break;
       case 'facebook-spaces':
         return ImmVector {
           '/usr/bin/git',
