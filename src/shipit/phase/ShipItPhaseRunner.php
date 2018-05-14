@@ -169,6 +169,7 @@ class ShipItPhaseRunner {
         continue;
       }
 
+      /* HH_FIXME[4089] sketchy null check */
       $deprecated = !Shapes::idx($opt, 'description');
       if (!$deprecated) {
         continue;
