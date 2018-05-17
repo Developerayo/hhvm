@@ -4,6 +4,7 @@ namespace Facebook\ShipIt;
 
 final class ShipItVerifyRepoPhase extends ShipItPhase {
   private bool $createPatch = false;
+  private ?string $verifySourceCommit = null;
 
   public function __construct(
     private (function(ShipItChangeset):ShipItChangeset) $filter,
@@ -36,6 +37,11 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
           'Create a patch to get the destination repository in sync, then exit',
         'write' => $_ ==> { $this->unskip(); $this->createPatch = true; }
       ),
+      shape(
+        'long_name' => 'verify-source-commit::',
+        'description' => 'Hash of first commit that needs to be synced',
+        'write' => $x ==> $this->verifySourceCommit = $x,
+      ),
     };
   }
 
@@ -50,6 +56,7 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
         'name' => 'FBShipIt Internal User',
         'email' => 'fbshipit@example.com',
       ),
+      $this->verifySourceCommit,
     );
     $clean_path = $clean_dir->getPath();
     $dirty_remote = 'shipit_dest';
