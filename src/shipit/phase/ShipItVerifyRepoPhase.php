@@ -128,6 +128,21 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
       'HEAD',
     );
 
+
+    $source_sync_id = $this->verifySourceCommit;
+    if ($source_sync_id === null) {
+      $repo = ShipItRepo::typedOpen(
+        ShipItSourceRepo::class,
+        $config->getSourcePath(),
+        $config->getSourceBranch(),
+      );
+      $changeset = $repo->getHeadChangeset();
+      if ($changeset === null) {
+        throw new ShipItException('Could not find source id.');
+      }
+      $source_sync_id = $changeset->getID();
+    }
+
     $patch_file = \tempnam(\sys_get_temp_dir(), 'shipit-resync-patch-');
     \file_put_contents($patch_file, $diff);
 
@@ -139,6 +154,7 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
       "    $ git apply < %s\n".
       "    $ git status\n".
       "    $ git add --all --patch\n".
+      "    $ git commit -m 'fbshipit-source-id: %s'\n".
       "    $ git push\n\n".
       "  WARNING: there are 4 possible causes for differences:\n\n".
       "    1. changes in source haven't been copied to destination\n".
@@ -151,6 +167,7 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
       $diffstat,
       $config->getDestinationPath(),
       $patch_file,
+      $source_sync_id,
     );
     exit(0);
   }
