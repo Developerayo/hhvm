@@ -23,18 +23,11 @@ final class FBCommonFiltersTest extends BaseTest {
       ->withAuthor('Joel Marcey <joelm@fb.com>')
       ->withMessage('GitHub Author: Fred Emmott <fe@fb.com>');
     $out = FBCommonFilters::applyAll($in);
-    $this->assertSame(
-      'Fred Emmott <fe@fb.com>',
-      $out->getAuthor(),
-    );
-    $this->assertSame(
-      "Pulled By: JoelMarcey",
-      $out->getMessage(),
-    );
+    $this->assertSame('Fred Emmott <fe@fb.com>', $out->getAuthor());
+    $this->assertSame("Pulled By: JoelMarcey", $out->getMessage());
   }
 
-  public function examplesForAuthorEmailCorrection(
-  ): array<(string, string)> {
+  public function examplesForAuthorEmailCorrection(): array<(string, string)> {
     return [
       tuple('Email change <fredemmott@fb.com>', 'Fred Emmott <fe@fb.com>'),
       tuple(
@@ -60,27 +53,18 @@ final class FBCommonFiltersTest extends BaseTest {
     $changeset = (new ShipItChangeset())
       ->withAuthor($in_author)
       |> FBCommonFilters::applyAll($$);
-    $this->assertSame(
-      $expected_author,
-      $changeset->getAuthor(),
-    );
+    $this->assertSame($expected_author, $changeset->getAuthor());
   }
 
   public function testSVNAuthor(): void {
     $fake_uuid = \str_repeat('a', 36);
     $in = (new ShipItChangeset())
       ->withAuthor('fredemmott@'.$fake_uuid);
-    $out = ShipItUserFilters::rewriteSVNAuthor(
-      $in,
-      FBToGitHubUserInfo::class,
-    );
-    $this->assertSame(
-      'Fred Emmott <fe@fb.com>',
-      $out->getAuthor(),
-    );
+    $out = ShipItUserFilters::rewriteSVNAuthor($in, FBToGitHubUserInfo::class);
+    $this->assertSame('Fred Emmott <fe@fb.com>', $out->getAuthor());
   }
 
-  public function exampleFacebookDirectories():array<(string, bool)> {
+  public function exampleFacebookDirectories(): array<(string, bool)> {
     return [
       /* tuple(string $path, bool $private) */
       tuple('facebook', true),
@@ -111,9 +95,9 @@ final class FBCommonFiltersTest extends BaseTest {
     $changeset = FBCommonFilters::applyAll($changeset);
 
     if ($private) {
-      $expected = [ ];
+      $expected = [];
     } else {
-      $expected = [ $file ];
+      $expected = [$file];
     }
     $actual = $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray();
     $this->assertEquals($expected, $actual);
@@ -128,7 +112,7 @@ final class FBCommonFiltersTest extends BaseTest {
     });
     $changeset = FBCommonFilters::applyAll($changeset);
     $this->assertEquals(
-      [ 'foo/com/facebook/something' ],
+      ['foo/com/facebook/something'],
       $changeset->getDiffs()->map($diff ==> $diff['path'])->toArray(),
     );
   }
@@ -137,40 +121,32 @@ final class FBCommonFiltersTest extends BaseTest {
     $in = (new ShipItChangeset())
       ->withMessage('Summary: @override-unit-failures');
     $out = FBCommonFilters::applyAll($in);
-    $this->assertSame(
-      '',
-      $out->getMessage(),
-    );
+    $this->assertSame('', $out->getMessage());
   }
 
   public function testBuildDirectiveStripped(): void {
     $in = (new ShipItChangeset())
       ->withMessage("Summary: Test diff\nblah @build[project1,project2]");
     $out = FBCommonFilters::applyAll($in);
-    $this->assertSame(
-      "Summary:\nTest diff\nblah",
-      $out->getMessage(),
-    );
+    $this->assertSame("Summary:\nTest diff\nblah", $out->getMessage());
   }
 
   public function testAccept2ShipStripped(): void {
     $in = (new ShipItChangeset())
       ->withMessage('Summary: #accept2ship');
     $out = FBCommonFilters::applyAll($in);
-    $this->assertSame(
-      '',
-      $out->getMessage(),
-    );
+    $this->assertSame('', $out->getMessage());
 
     // testing multi-line strings
     $in = (new ShipItChangeset())
       ->withMessage(
-    'some_prefix
+        'some_prefix
     #accept2ship
-    some_suffix');
+    some_suffix',
+      );
     $out = FBCommonFilters::stripAccept2Ship($in);
     $this->assertSame(
-    'some_prefix
+      'some_prefix
         some_suffix',
       $out->getMessage(),
     );
@@ -178,10 +154,7 @@ final class FBCommonFiltersTest extends BaseTest {
     $in = (new ShipItChangeset())
       ->withMessage("some_prefix\n#accept2ship\nsome_suffix");
     $out = FBCommonFilters::stripAccept2Ship($in);
-    $this->assertSame(
-      "some_prefix\nsome_suffix",
-      $out->getMessage(),
-    );
+    $this->assertSame("some_prefix\nsome_suffix", $out->getMessage());
   }
 
   public function testFilterMessageSections(): void {
@@ -196,7 +169,7 @@ final class FBCommonFiltersTest extends BaseTest {
       );
       $this->assertEquals(
         \sprintf("%s: some text", \ucwords($section)),
-        FBCommonFilters::filterMessageSections($changeset, ImmSet {$section})
+        FBCommonFilters::filterMessageSections($changeset, ImmSet { $section })
           ->getMessage(),
         "Keeps section '".$section."'",
       );

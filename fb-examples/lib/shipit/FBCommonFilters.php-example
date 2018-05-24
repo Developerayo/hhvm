@@ -23,9 +23,9 @@ final class FBCommonFilters {
     return $changeset
       |> self::skipIfAlreadyOnGitHub($$)
       |> self::stripCommonFiles(
-          $$,
-          $config['stripCommonFiles/exceptions'] ?? ImmVector {},
-        )
+        $$,
+        $config['stripCommonFiles/exceptions'] ?? ImmVector {},
+      )
       |> self::stripSubjectMergePrefix($$)
       |> self::stripSubjectTags($$)
       |> self::stripEmptyTestPlans($$)
@@ -33,15 +33,12 @@ final class FBCommonFilters {
       |> self::stripAccept2Ship($$)
       |> self::delinkifyDifferentialURLs($$)
       |> self::restoreGitHubAuthor($$)
-      |> ShipItUserFilters::rewriteSVNAuthor(
-          $$,
-          FBToGitHubUserInfo::class,
-        )
+      |> ShipItUserFilters::rewriteSVNAuthor($$, FBToGitHubUserInfo::class)
       |> self::filterMessageSections(
-          $$,
-          $config['filterMessageSections/keepFields']
-            ?? self::getDefaultMessageSectionNames(),
-        )
+        $$,
+        $config['filterMessageSections/keepFields'] ??
+          self::getDefaultMessageSectionNames(),
+      )
       |> self::rewriteMentions($$)
       |> self::rewriteReviewers($$)
       |> self::rewriteAuthor($$);
@@ -92,12 +89,9 @@ final class FBCommonFilters {
   ): ShipItChangeset {
     if (ShipItMentions::containsMention($changeset, '@already-on-github')) {
       $changeset = $changeset
-        ->withDiffs(ImmVector { })
+        ->withDiffs(ImmVector {})
         ->withDebugMessage('SKIP COMMIT: @already-on-github');
-      invariant(
-        !$changeset->isValid(),
-        '@already-on-github diff still valid',
-      );
+      invariant(!$changeset->isValid(), '@already-on-github diff still valid');
     }
     return $changeset;
   }
@@ -139,7 +133,7 @@ final class FBCommonFilters {
         '@https?://phabricator\.[^/]+/@i',
         '',
         $changeset->getMessage(),
-      )
+      ),
     );
   }
 
@@ -161,7 +155,7 @@ final class FBCommonFilters {
     }
 
     return $changeset->withMessage(
-      ShipItMessageSections::buildMessage($sections->toImmMap())
+      ShipItMessageSections::buildMessage($sections->toImmMap()),
     );
   }
 
@@ -189,11 +183,7 @@ final class FBCommonFilters {
     // `-b`, so this is just maintaining that behavior since they sometimes
     // contain codenames.
     return $changeset->withSubject(
-      \preg_replace(
-        '/^(?:\[[^\]]+\]\s*)+/',
-        '',
-        $changeset->getSubject(),
-      ),
+      \preg_replace('/^(?:\[[^\]]+\]\s*)+/', '', $changeset->getSubject()),
     );
   }
 
@@ -213,11 +203,7 @@ final class FBCommonFilters {
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     return $changeset->withMessage(
-      \preg_replace(
-        "/#accept2ship\n?/",
-        '',
-        $changeset->getMessage(),
-      ),
+      \preg_replace("/#accept2ship\n?/", '', $changeset->getMessage()),
     );
   }
   public static function getDefaultMessageSectionNames(): ImmSet<string> {
@@ -258,19 +244,17 @@ final class FBCommonFilters {
     $sections = ShipItMessageSections::getSections(
       $changeset,
       self::getSupportedMessageSectionNames(),
-    )->filterWithKey( ($k, $_) ==> $keep->contains($k));
+    )->filterWithKey(($k, $_) ==> $keep->contains($k));
     return $changeset->withMessage(
-      ShipItMessageSections::buildMessage($sections->toImmMap())
+      ShipItMessageSections::buildMessage($sections->toImmMap()),
     );
   }
 
   public static function rewriteMentions(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
-    $changeset = ShipItUserFilters::rewriteMentions(
-      $changeset,
-      FBToGitHubUserInfo::class,
-    );
+    $changeset =
+      ShipItUserFilters::rewriteMentions($changeset, FBToGitHubUserInfo::class);
     $changeset = ShipItMentions::rewriteMentionsWithoutAt(
       $changeset,
       /* exceptions = */ ImmSet {
@@ -283,10 +267,12 @@ final class FBCommonFilters {
   }
 
   private static function isBotUser(string $user): bool {
-    return (ImmSet {
-      'androidtrunkagent',
-      'svcscm',
-    })->contains($user);
+    return (
+      ImmSet {
+        'androidtrunkagent',
+        'svcscm',
+      }
+    )->contains($user);
   }
 
   public static function restoreGitHubAuthor(
@@ -303,14 +289,15 @@ final class FBCommonFilters {
         '/<(?<author>[^@]*)@fb\.com>/',
         $changeset->getAuthor(),
         &$matches,
-      ) && !self::isBotUser($matches['author'])
+      ) &&
+      !self::isBotUser($matches['author'])
     ) {
       $pulled_by_unixname = $matches['author'];
     } else {
       $sections = ShipItMessageSections::getSections(
         $changeset,
         self::getSupportedMessageSectionNames(),
-        );
+      );
       if ($sections->containsKey('reviewed by')) {
         $names = (new Vector(\explode(', ', $sections['reviewed by'])));
         if (\count($names) === 1) {
@@ -347,13 +334,14 @@ final class FBCommonFilters {
     $names = (new Vector(\explode(', ', $sections['reviewed by'])))
       // No project reviewers e.g., #WDT in D2407623
       ->filter($name ==> \substr(\trim($name), 0, 1) !== '#')
-      ->map(async $name ==>
-        await FBToGitHubUserInfo::getDestinationUserFromLocalUser($name)
+      ->map(
+        async $name ==>
+          await FBToGitHubUserInfo::getDestinationUserFromLocalUser($name),
       );
     $names = \HH\Asio\join(\HH\Asio\v($names))->filter($x ==> \strlen($x) > 0);
     $sections['reviewed by'] = \implode(', ', $names);
     return $changeset->withMessage(
-      ShipItMessageSections::buildMessage($sections->toImmMap())
+      ShipItMessageSections::buildMessage($sections->toImmMap()),
     );
   }
 }
