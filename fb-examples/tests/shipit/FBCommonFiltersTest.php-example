@@ -157,6 +157,36 @@ final class FBCommonFiltersTest extends BaseTest {
     $this->assertSame("some_prefix\nsome_suffix", $out->getMessage());
   }
 
+  public function testSevRevertSummaryStripped(): void {
+    // only 'This reverts commit'
+    $in = (new ShipItChangeset())
+      ->withMessage(
+        'Summary: This reverts commit abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd',
+      );
+    $out = FBCommonFilters::applyAll($in);
+    $this->assertSame(
+      'Summary: This reverts commit abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd',
+      $out->getMessage(),
+    );
+
+    // only 'cause_a_sev_many_files'
+    $in = (new ShipItChangeset())
+      ->withMessage('Summary: cause_a_sev_many_files');
+    $out = FBCommonFilters::applyAll($in);
+    $this->assertSame('Summary: cause_a_sev_many_files', $out->getMessage());
+
+    // both
+    $in = (new ShipItChangeset())
+      ->withMessage(
+        'Summary:This reverts commit abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd
+some_text
+cause_a_sev_many_files
+Differential Revision: D1234567',
+      );
+    $out = FBCommonFilters::applyAll($in);
+    $this->assertSame("Differential Revision: D1234567", $out->getMessage());
+  }
+
   public function testFilterMessageSections(): void {
     foreach (FBCommonFilters::getSupportedMessageSectionNames() as $section) {
       $changeset = (new ShipItChangeset())

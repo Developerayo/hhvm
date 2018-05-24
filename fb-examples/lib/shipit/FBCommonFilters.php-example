@@ -31,6 +31,7 @@ final class FBCommonFilters {
       |> self::stripEmptyTestPlans($$)
       |> self::stripCommands($$)
       |> self::stripAccept2Ship($$)
+      |> self::stripSevRevertSummary($$)
       |> self::delinkifyDifferentialURLs($$)
       |> self::restoreGitHubAuthor($$)
       |> ShipItUserFilters::rewriteSVNAuthor($$, FBToGitHubUserInfo::class)
@@ -206,6 +207,26 @@ final class FBCommonFilters {
       \preg_replace("/#accept2ship\n?/", '', $changeset->getMessage()),
     );
   }
+
+  public static function stripSevRevertSummary(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    if (
+      !\preg_match('/This reverts commit/', $changeset->getMessage()) ||
+      !\preg_match('/cause_a_sev_many_files/', $changeset->getMessage())
+    ) {
+      return $changeset;
+    }
+    $sections = ShipItMessageSections::getSections(
+      $changeset,
+      self::getSupportedMessageSectionNames(),
+    );
+    $sections->removeKey('summary');
+    return $changeset->withMessage(
+      ShipItMessageSections::buildMessage($sections->toImmMap()),
+    );
+  }
+
   public static function getDefaultMessageSectionNames(): ImmSet<string> {
     return ImmSet {
       'summary',
