@@ -84,6 +84,9 @@ final class FacebookOpenbmc extends FBShipItConfig {
       '@^github/.gitmodules@',
       # Anything marked 'private' should not be synced.
       '@^.*private@',
+      # Top level and sublevel directories named as facebook
+      '@^facebook/@',
+      '@/facebook/@',
       # Remove private/confidential projects
     };
   }
