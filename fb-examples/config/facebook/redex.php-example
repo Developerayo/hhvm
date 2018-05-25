@@ -36,6 +36,9 @@ final class FacebookRedex extends FBShipItConfig {
       // liblocator is a library that is depended on by dextricks and redex
       // itself. As such, it is located outside the native/redex folder.
       'fbandroid/native/liblocator/' => 'liblocator/',
+      // The abstract interpretation library has become a standalone project
+      // and will now reside in xplat.
+      'xplat/sparta/' => 'abstract_interpretation/',
       'fbandroid/native/redex/' => '',
     };
   }
@@ -43,6 +46,7 @@ final class FacebookRedex extends FBShipItConfig {
   private static function getStablePathMappings(): ImmMap<string, string> {
     return ImmMap {
       'fbandroid/native/liblocator/' => 'liblocator/',
+      'xplat/sparta/' => 'abstract_interpretation/',
       'fbandroid/native/redex-stable/' => '',
     };
   }
