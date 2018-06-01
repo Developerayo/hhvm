@@ -32,6 +32,7 @@ final class FBCommonFilters {
       |> self::stripCommands($$)
       |> self::stripAccept2Ship($$)
       |> self::stripSevRevertSummary($$)
+      |> self::referencePullRequestNumber($$)
       |> self::delinkifyDifferentialURLs($$)
       |> self::restoreGitHubAuthor($$)
       |> ShipItUserFilters::rewriteSVNAuthor($$, FBToGitHubUserInfo::class)
@@ -124,6 +125,23 @@ final class FBCommonFilters {
         // submodules in GitHub.
         '@^fbcode/opensource/project_hashes/.*$@',
       }),
+    );
+  }
+
+  const CLOSES_PR_REGEX = '@^Closes https://github.com/.+/.+/pull/([0-9]+)@i';
+  public static function referencePullRequestNumber(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $matches = array();
+    if (\preg_match(
+        self::CLOSES_PR_REGEX,
+        $changeset->getMessage(),
+        &$matches,
+      ) !== 1) {
+      return $changeset;
+    }
+    return $changeset->withSubject(
+      $changeset->getSubject().\sprintf(' (#%d)', $matches[1]),
     );
   }
 

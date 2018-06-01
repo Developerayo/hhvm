@@ -205,4 +205,27 @@ Differential Revision: D1234567',
       );
     }
   }
+
+  public function testClosingPullRequestReferencedInSubject(): void {
+    $changeset = (new ShipItChangeset())
+      ->withSubject('Original Subject')
+      ->withMessage(
+        'Closes https://github.com/facebook/fbshipit/pull/42',
+      );
+    $this->assertEquals(
+      $changeset->getSubject().' (#42)',
+      FBCommonFilters::referencePullRequestNumber($changeset)
+        ->getSubject(),
+    );
+
+    $changeset = $changeset
+      ->withMessage(
+        'Closes https://github.com/facebook/fbshipit/issues/42',
+      );
+    $this->assertEquals(
+      $changeset->getSubject(),
+      FBCommonFilters::referencePullRequestNumber($changeset)
+        ->getSubject(),
+    );
+  }
 }
