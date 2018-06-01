@@ -117,6 +117,7 @@ final class FBCommonFilters {
         '@/BUILD_MODE$@',
         '@/BUILD_MODE.bzl$@',
         '@\.mk$@',
+        '@pull_request_metadata_DO_NOT_COMMIT_THIS_FILE_OR_YOU_WILL_BE_FIRED\.json@',
       },
       $exception_patterns->concat(ImmVector {
         // Various Facebook projects depend on this project hashes to update
