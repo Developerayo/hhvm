@@ -219,6 +219,21 @@ Differential Revision: D1234567',
     );
 
     $changeset = $changeset
+      ->withSubject('Update travis.yml to build only on nightly and latest')
+      ->withMessage(
+        'The Travis build has been failing for 1.5 months due to a breaking '.
+        'change with a new Hack language feature (<<__OptionalDestruct>>). '.
+        'Rather than trying to continue supporting the LTS Hack version '.
+        '(3.24), it\'s easier to just bump up the minimum supported version.
+Closes https://github.com/facebook/fbshipit/pull/50',
+      );
+    $this->assertEquals(
+      $changeset->getSubject().' (#50)',
+      FBCommonFilters::referencePullRequestNumber($changeset)
+        ->getSubject(),
+    );
+
+    $changeset = $changeset
       ->withMessage(
         'Closes https://github.com/facebook/fbshipit/issues/42',
       );

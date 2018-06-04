@@ -128,7 +128,7 @@ final class FBCommonFilters {
     );
   }
 
-  const CLOSES_PR_REGEX = '@^Closes https://github.com/.+/.+/pull/([0-9]+)@i';
+  const CLOSES_PR_REGEX = '@^Closes https://github.com/.+/.+/pull/([0-9]+)@im';
   public static function referencePullRequestNumber(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
