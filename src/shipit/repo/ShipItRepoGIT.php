@@ -166,6 +166,8 @@ class ShipItRepoGIT
       '--no-renames',
       '--no-stat',
       '--stdout',
+       // use full SHAs to avoid inconsistent SHAs between calls
+      '--full-index',
       '--format=', // Contain nothing but the code changes
       '-1',
       $revision,
@@ -187,6 +189,8 @@ class ShipItRepoGIT
       '--no-renames',
       '--no-stat',
       '--stdout',
+      // use full SHAs to avoid inconsistent SHAs between calls
+      '--full-index',
       '-1',
       $revision,
     );
