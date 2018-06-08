@@ -14,7 +14,7 @@ use \Facebook\ShipIt\ {
   FBShipItConfig,
 };
 
-final class FacebookReactVr extends FBShipItConfig {
+final class FacebookReact360 extends FBShipItConfig {
   const string ROOT = 'Software/Apps/skyline/src/react-vr/github/';
 
   <<__Override>>
@@ -29,7 +29,7 @@ final class FacebookReactVr extends FBShipItConfig {
     return shape(
       'internalRepo' => 'ovrsource',
       'githubOrg' => 'facebook',
-      'githubProject' => 'react-vr',
+      'githubProject' => 'react-360',
     );
   }
 }
