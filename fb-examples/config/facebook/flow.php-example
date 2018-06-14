@@ -85,7 +85,6 @@ final class FacebookFlow extends FBShipItConfig {
       '@fbcode/hphp/hack/src/libancillary/@',
       '@fbcode/hphp/hack/src/monitor/@',
       '@fbcode/hphp/hack/src/third-party/libancillary/@',
-      '@fbcode/hphp/hack/src/watchman/@',
 
       //
       // keep these in sync with fbcode/flow/facebook/dep_test.py!
@@ -108,6 +107,7 @@ final class FacebookFlow extends FBShipItConfig {
       '@fbcode/hphp/hack/src/utils/disk/@',
       '@fbcode/hphp/hack/src/utils/hh_json/@',
       '@fbcode/hphp/hack/src/utils/sys/@',
+      '@fbcode/hphp/hack/src/watchman/@',
     });
   }
 
