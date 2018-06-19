@@ -47,22 +47,30 @@ final class FacebookexperimentalBuckitTest extends FBConfigBaseTest {
         'specs/glog/glog/BUCK',
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/build_mode_overrides.bzl' =>
         null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/dewey_artifact.bzl' =>
+        null,
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/paths_config.bzl' =>
         null,
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/third_party_config.bzl' =>
         null,
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/platform_overrides.bzl' =>
         null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/visibility_exceptions.bzl' =>
+        null,
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/.buckconfig' =>
         null,
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/build_mode_overrides.bzl.oss' =>
         'infra_macros/fbcode_macros/build_defs/build_mode_overrides.bzl',
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/dewey_artifact.bzl.oss' =>
+        'infra_macros/fbcode_macros/build_defs/dewey_artifact.bzl',
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/paths_config.bzl.oss' =>
         'infra_macros/fbcode_macros/build_defs/paths_config.bzl',
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/third_party_config.bzl.oss' =>
         'infra_macros/fbcode_macros/build_defs/third_party_config.bzl',
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/platform_overrides.bzl.oss' =>
         'infra_macros/fbcode_macros/build_defs/platform_overrides.bzl',
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/visibility_exceptions.bzl.oss' =>
+        'infra_macros/fbcode_macros/build_defs/visibility_exceptions.bzl',
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/.buckconfig.oss' =>
         'infra_macros/fbcode_macros/.buckconfig',
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/tests/facebook/BUCK' =>

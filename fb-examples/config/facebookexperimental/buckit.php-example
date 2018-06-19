@@ -58,9 +58,11 @@ final class FacebookexperimentalBuckit extends FBShipItConfig {
     'infra_macros/package.json',
     'infra_macros/.buckconfig',
     'infra_macros/fbcode_macros/build_defs/build_mode_overrides.bzl',
+    'infra_macros/fbcode_macros/build_defs/dewey_artifact.bzl',
     'infra_macros/fbcode_macros/build_defs/third_party_config.bzl',
     'infra_macros/fbcode_macros/build_defs/paths_config.bzl',
     'infra_macros/fbcode_macros/build_defs/platform_overrides.bzl',
+    'infra_macros/fbcode_macros/build_defs/visibility_exceptions.bzl',
     'infra_macros/fbcode_macros/.buckconfig',
   };
 
