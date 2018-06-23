@@ -76,6 +76,7 @@ final class FacebookRedex extends FBShipItConfig {
     return ImmVector {
       '@/REDEX_DEFS$@',
       '@/REDEX_TEST_DEFS$@',
+      '@/.*\.bzl$@',
     };
   }
 
