@@ -22,6 +22,14 @@ final class FacebookHaxl extends FBShipItConfig {
   const string ROOT = 'fbcode/haxl/core/';
 
   <<__Override>>
+  protected static function getStripCommonFilesExceptions(): ImmVector<string> {
+    return ImmVector {
+      // example/facebook is public, but would be stripped by default
+      '@^'.self::ROOT.'example/facebook/@',
+    };
+  }
+
+  <<__Override>>
   protected static function getDefaultStrippedFiles(): ImmVector<string> {
     return ImmVector {
       '@^'.self::ROOT.'open-source/@', // OSS export/import scripts
