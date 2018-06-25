@@ -75,6 +75,12 @@ final class ShipItSyncPhase extends ShipItPhase {
                          'for each configured branch.',
         'write' => $x ==> $this->statsFilename = $x,
       ),
+      shape(
+        'long_name' => 'skip-post-filter-changesets',
+        'description' =>
+          'Skip any custom definitions for processing changesets after syncing',
+        'write' => $_ ==> $this->postFilterChangesets = null,
+      )
     };
   }
 
