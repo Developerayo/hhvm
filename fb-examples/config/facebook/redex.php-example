@@ -38,7 +38,8 @@ final class FacebookRedex extends FBShipItConfig {
       'fbandroid/native/liblocator/' => 'liblocator/',
       // The abstract interpretation library has become a standalone project
       // and will now reside in xplat.
-      'xplat/sparta/' => 'abstract_interpretation/',
+      // XXX Disabling until the SPARTA repo goes public on GitHub.
+      // 'xplat/sparta/' => 'abstract_interpretation/',
       'fbandroid/native/redex/' => '',
     };
   }
@@ -46,7 +47,8 @@ final class FacebookRedex extends FBShipItConfig {
   private static function getStablePathMappings(): ImmMap<string, string> {
     return ImmMap {
       'fbandroid/native/liblocator/' => 'liblocator/',
-      'xplat/sparta/' => 'abstract_interpretation/',
+      // XXX Disabling until the SPARTA repo goes public on GitHub.
+      // 'xplat/sparta/' => 'abstract_interpretation/',
       'fbandroid/native/redex-stable/' => '',
     };
   }
