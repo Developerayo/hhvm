@@ -22,6 +22,7 @@ final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
   private ?string $patchesDirectory;
   private ?string $pullRequestNumber;
   private bool $skipPullRequest = false;
+  private bool $applyToLatest = false;
 
   public function __construct(
     private (function(ShipItChangeset): ShipItChangeset) $filter,
@@ -64,6 +65,13 @@ final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
                           'expected-head-revision',
         'write' => $_ ==> $this->skipPullRequest = true,
       ),
+      shape(
+        'long_name' => 'apply-to-latest',
+        'description' => 'Apply the PR patch to the latest internal revision, '.
+                         'instead of on the internal commit that matches the '.
+                         'PR base.',
+        'write' => $_ ==> $this->applyToLatest = true,
+      ),
     };
   }
 
@@ -102,6 +110,7 @@ final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {
       $pr_number,
       $expected_head_rev,
       $config->getSourceBranch(),
+      $this->applyToLatest,
     );
   }
 

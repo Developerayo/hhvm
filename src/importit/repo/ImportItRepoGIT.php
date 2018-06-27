@@ -27,6 +27,7 @@ class ImportItRepoGIT extends \Facebook\ShipIt\ShipItRepoGIT {
     ?string $pr_number,
     string $expected_head_rev,
     string $source_default_branch,
+    bool $use_latest_base_revision,
   ): (ShipItChangeset, ?string) {
     $_lock = $this->getSharedLock()->getExclusive();
 
@@ -92,9 +93,14 @@ class ImportItRepoGIT extends \Facebook\ShipIt\ShipItRepoGIT {
     $rev = \trim($this->gitCommand('rev-parse', 'HEAD'));
     $changeset = $this->getChangesetFromID($rev);
     invariant($changeset !== null, 'Impossible');
+    if ($use_latest_base_revision) {
+      $base_revision = null;
+    } else {
+      $base_revision = $this->findLastSourceCommit(ImmSet {});
+    }
     return tuple(
       $changeset,
-      $this->findLastSourceCommit(ImmSet {}),
+      $base_revision,
     );
   }
 }
