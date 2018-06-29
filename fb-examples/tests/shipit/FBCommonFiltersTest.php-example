@@ -218,6 +218,17 @@ Differential Revision: D1234567',
         ->getSubject(),
     );
 
+    $changeset = (new ShipItChangeset())
+      ->withSubject('Original Subject')
+      ->withMessage(
+        'Pull Request resolved: https://github.com/facebook/fbshipit/pull/42',
+      );
+    $this->assertEquals(
+      $changeset->getSubject().' (#42)',
+      FBCommonFilters::referencePullRequestNumber($changeset)
+        ->getSubject(),
+    );
+
     $changeset = $changeset
       ->withSubject('Update travis.yml to build only on nightly and latest')
       ->withMessage(
