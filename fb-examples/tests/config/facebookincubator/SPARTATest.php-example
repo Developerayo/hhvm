@@ -1,0 +1,25 @@
+<?hh // strict
+/**
+ * Copyright (c) 2018-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookincubatorSpartaTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'xplat/sparta/include' => 'include',
+      'xplat/sparta/include/AbstractDomain.h' => 'include/AbstractDomain.h',
+      'xplat/sparta/test' => 'test',
+      'xplat/sparta/test/S_ExpressionTest.cpp' => 'test/S_ExpressionTest.cpp',
+      'xplat/sparta/README.md' => 'README.md',
+      'xplat/sparta/foo' => 'foo',
+      'xplat/not_sparta/foo' => null,
+    };
+  }
+}
