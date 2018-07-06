@@ -254,4 +254,31 @@ Closes https://github.com/facebook/fbshipit/pull/50',
         ->getSubject(),
     );
   }
+
+  public function testClosingPullRequestReferencedInSubjectWithAllFilters(
+  ): void {
+    $original_subject = 'Original Subject';
+    $original_message = 'Summary:
+Pull Request resolved: https://github.com/facebook/fbshipit/pull/42
+
+This fixes a bug.';
+    $changeset = (new ShipItChangeset())
+      ->withSubject($original_subject)
+      ->withMessage($original_message);
+    $changeset = FBCommonFilters::applyAll($changeset);
+    $this->assertEquals($original_subject.' (#42)', $changeset->getSubject());
+    $this->assertEquals($original_message, $changeset->getMessage());
+
+    $original_message = 'Summary:
+Pull Request resolved: https://github.com/facebook/fbshipit/pull/42
+
+This reverts commit 123456
+cause_a_sev_many_files';
+    $changeset = (new ShipItChangeset())
+      ->withSubject($original_subject)
+      ->withMessage($original_message);
+    $changeset = FBCommonFilters::applyAll($changeset);
+    $this->assertEquals($original_subject.' (#42)', $changeset->getSubject());
+    $this->assertEquals('', $changeset->getMessage());
+  }
 }
