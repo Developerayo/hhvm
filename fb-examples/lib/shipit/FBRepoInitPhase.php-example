@@ -227,6 +227,14 @@ final class FBRepoInitPhase extends ShipItPhase {
           'facebook-spaces',
         };
         break;
+      case 'fbwin-gameroom':
+        return ImmVector {
+          '/usr/bin/git',
+          'clone',
+          'ssh://git.vip.facebook.com/data/gitrepos/fbwin-gameroom.git',
+          'fbwin-gameroom',
+        };
+        break;
     }
     $config = FBRepoCloneCommand::get($name);
     if ($config !== null) {
