@@ -41,6 +41,42 @@ final class FacebookexperimentalBuckitTest extends FBConfigBaseTest {
         null,
       'fbcode/tools/build/buck/infra_macros/macro_lib/convert/java.py' =>
         null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/java_binary.bzl' =>
+        null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/java_library.bzl' =>
+        null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/java_test.bzl' =>
+        null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/java_shaded_jar.bzl' =>
+        null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/prebuilt_jar.bzl' =>
+        null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/antlr3_srcs.bzl' =>
+        null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/scala_library.bzl' =>
+        null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/scala_test.bzl' =>
+        null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/core_tools_targets.bzl' =>
+        null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/java_binary.bzl.oss' =>
+        'infra_macros/fbcode_macros/build_defs/java_binary.bzl',
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/java_library.bzl.oss' =>
+        'infra_macros/fbcode_macros/build_defs/java_library.bzl',
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/java_test.bzl.oss' =>
+        'infra_macros/fbcode_macros/build_defs/java_test.bzl',
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/java_shaded_jar.bzl.oss' =>
+        'infra_macros/fbcode_macros/build_defs/java_shaded_jar.bzl',
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/prebuilt_jar.bzl.oss' =>
+        'infra_macros/fbcode_macros/build_defs/prebuilt_jar.bzl',
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/antlr3_srcs.bzl.oss' =>
+        'infra_macros/fbcode_macros/build_defs/antlr3_srcs.bzl',
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/scala_library.bzl.oss' =>
+        'infra_macros/fbcode_macros/build_defs/scala_library.bzl',
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/scala_test.bzl.oss' =>
+        'infra_macros/fbcode_macros/build_defs/scala_test.bzl',
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/core_tools_targets.bzl.oss' =>
+        'infra_macros/fbcode_macros/build_defs/core_tools_targets.bzl',
       'fbcode/experimental/pjameson/buckit/buckit/' => 'buckit/',
       'fbcode/experimental/pjameson/buckit/specs/' => 'specs/',
       'fbcode/experimental/pjameson/buckit/specs/glog/glog/BUCK' =>
