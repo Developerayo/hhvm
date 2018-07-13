@@ -1,0 +1,3 @@
+diff --git a/fbcode/opensource/shipit/src/shipit/fb-private/file.php b/fbcode/opensource/shipit/src/shipit/file.php
+rename from fbcode/opensource/shipit/src/shipit/fb-private/file.php
+rename to fbcode/opensource/shipit/src/shipit/file.php

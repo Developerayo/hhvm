@@ -26,6 +26,7 @@ type ShipItPreviewOutput = shape(
   'commitMessage' => string,
   'externalBranch' => string,
   'patch' => ?string,
+  'error' => ?string,
 );
 
 
@@ -63,11 +64,30 @@ final class FBShipItPreview {
     }
     // If a patch was provided as input, override the diffs portion of the
     // changeset object.
+    $error = null;
+    // FIXME undo this hack when the preview UI supports error messages
+    $hack_patch_override = null;
     if ($patch !== null) {
       // Assume phabricator patch was exported in git format
       $diffs = ShipItRepoGIT::getDiffsFromPatch($patch);
-      $changeset = $changeset->withDiffs($diffs);
+      $rename_str = 'rename from ';
+      $no_renames = $diffs
+        ->filter(
+          $diff ==>
+            (\substr($diff['body'], 0, \strlen($rename_str))) === $rename_str
+        )
+        ->isEmpty();
+      if ($no_renames) {
+        $changeset = $changeset->withDiffs($diffs);
+      } else {
+        $error = 'This patch contains renamed files, which cannot be accurately
+previewed in the ShipIt API. Please inspect the auto-shipit
+Sandcastle job or export this diff to a GitHub pull request in
+order to preview the full patch.';
+        $hack_patch_override = $error;
+      }
     }
+
     $result = vec[];
     foreach ($this->allConfigClasses as $config_class) {
       $repo_config = $config_class::getStaticConfig();
@@ -90,6 +110,9 @@ final class FBShipItPreview {
             } else {
               $transformed_patch = null;
             }
+            if ($hack_patch_override !== null) {
+              $transformed_patch = $hack_patch_override;
+            }
             $result[] = shape(
               'changeset' => $transformed_changeset->toData(),
               'githubOrg' => $repo_config['githubOrg'],
@@ -97,6 +120,7 @@ final class FBShipItPreview {
               'commitMessage' => $commit_message,
               'externalBranch' => $branch_config['external'],
               'patch' => $transformed_patch,
+              'error' => $error,
             );
           }
         }
