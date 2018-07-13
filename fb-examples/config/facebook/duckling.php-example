@@ -26,6 +26,7 @@ final class FacebookDuckling extends FBShipItConfig {
   protected static function getDefaultStrippedFiles(): ImmVector<string> {
     return ImmVector {
       '@^'.self::ROOT.'Duckling/Engine/Regex.hs@',
+      '@^'.self::ROOT.'Duckling/Custom@',
     };
   }
 
