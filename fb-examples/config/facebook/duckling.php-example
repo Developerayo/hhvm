@@ -27,6 +27,7 @@ final class FacebookDuckling extends FBShipItConfig {
     return ImmVector {
       '@^'.self::ROOT.'Duckling/Engine/Regex.hs@',
       '@^'.self::ROOT.'Duckling/Custom@',
+      '@^'.self::ROOT.'tests/Duckling/Custom@',
     };
   }
 
