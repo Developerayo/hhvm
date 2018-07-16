@@ -38,7 +38,7 @@ abstract class ShipItUtil {
     foreach (\explode("\n", $patch) as $line) {
       $line = \preg_replace('/(\r\n|\n)/', "\n", $line);
 
-      if (\preg_match('@^diff --git [ab]/(.*?) [ab]/\1$@', \rtrim($line))) {
+      if (\preg_match('@^diff --git [ab]/(.*?) [ab]/(.*?)$@', \rtrim($line))) {
         if ($contents !== '') {
           yield $contents;
         }
