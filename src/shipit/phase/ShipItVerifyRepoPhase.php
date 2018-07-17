@@ -4,6 +4,7 @@ namespace Facebook\ShipIt;
 
 final class ShipItVerifyRepoPhase extends ShipItPhase {
   private bool $createPatch = false;
+  private bool $useLatestSourceCommit = false;
   private ?string $verifySourceCommit = null;
 
   public function __construct(
@@ -42,6 +43,12 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
         'description' => 'Hash of first commit that needs to be synced',
         'write' => $x ==> $this->verifySourceCommit = $x,
       ),
+      shape(
+        'long_name' => 'use-latest-source-commit',
+        'description' =>
+          'Find the latest synced source commit to use as a base for verify',
+        'write' => $_ ==> $this->useLatestSourceCommit = true,
+      ),
     };
   }
 
@@ -49,6 +56,21 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
   public function runImpl(
     ShipItBaseConfig $config,
   ): void {
+    if ($this->useLatestSourceCommit) {
+      if ($this->verifySourceCommit != null) {
+        throw new ShipItException(
+          "the 'verify-source-commit' flag cannot be used with the ".
+          "'use-latest-source-commit' flag since the latter automatically ".
+          "sets the verify source commit",
+        );
+      }
+      $repo = ShipItRepo::typedOpen(
+        ShipItDestinationRepo::class,
+        $config->getDestinationPath(),
+        $config->getDestinationBranch(),
+      );
+      $this->verifySourceCommit = $repo->findLastSourceCommit(ImmSet {});
+    }
     $clean_dir = ShipItCreateNewRepoPhase::createNewGitRepo(
       $config,
       $this->filter,
