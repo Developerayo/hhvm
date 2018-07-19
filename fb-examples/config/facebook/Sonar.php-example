@@ -19,6 +19,7 @@ final class FacebookSonar extends FBShipItConfig {
   public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       'xplat/sonar/' => '',
+      'fbobjc/Libraries/SonarKit/OSSProject/' => 'iOS/',
       'fbobjc/Libraries/SonarKit/Sample/' => 'iOS/Sample/',
       'fbobjc/Libraries/SonarKit/SonarKit/' => 'iOS/SonarKit/',
       'fbobjc/Libraries/SonarKit/FBDefines/' => 'iOS/SonarKit/FBDefines/',
