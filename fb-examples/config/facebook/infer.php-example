@@ -94,6 +94,7 @@ final class FacebookInfer extends FBShipItConfig {
   private static function getBlacklist(): ImmSet<string> {
     return ImmSet {
       '.arcconfig',
+      '.jfconfig',
       '.deweyconfig',
       '.facebook',
       'ci_config.json',
