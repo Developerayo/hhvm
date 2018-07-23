@@ -47,6 +47,8 @@ final class FacebookexperimentalMononoke extends FBShipItConfig {
       'fbcode/common/rust/asyncmemo/' => 'asyncmemo/',
       'fbcode/common/rust/bytes-ext/' => 'bytes-ext/',
       'fbcode/common/rust/futures-ext/' => 'futures-ext/',
+      'fbcode/common/rust/failure_ext/' => 'failure_ext/',
+      'fbcode/common/rust/netstring/' => 'netstring/',
       'fbcode/common/rust/utils/py_tar_utils/' => 'py_tar_utils/',
       ImportItRustPathFilters::RUST_OSS_CONFIGS => '',
     };
