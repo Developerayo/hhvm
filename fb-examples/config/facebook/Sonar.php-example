@@ -26,7 +26,6 @@ final class FacebookSonar extends FBShipItConfig {
       'fbobjc/Libraries/SonarKit/SonarKitPlugins/OSSPlugins/' => 'iOS/Plugins/',
       'fbobjc/Libraries/SonarKit/SonarKitTests/' => 'iOS/SonarKitTests/',
       'fbobjc/Libraries/SonarKit/SonarKitTestUtils/' => 'iOS/SonarKitTestUtils/',
-      'fbandroid/java/com/facebook/sonar/plugins/oss/' => 'android/plugins/',
       'fbandroid/java/com/facebook/litho/sonar/' => 'android/plugins/inspector/litho-sonar/',
       'fbandroid/javatests/com/facebook/sonar/plugins/oss/' => 'android/tests/plugins/',
       'xplat/sonar-client/OSSProject/' => 'xplat/',
@@ -52,7 +51,6 @@ protected static function getStripCommonFilesExceptions(): ImmVector<string> {
       '@xplat/sonar/templates[/|$]@',
       '@xplat/sonar/scripts/sandcastle-build.sh@',
       '@xplat/sonar/third-party[/|$]@',
-      '@fbandroid/java/com/facebook/sonar/plugins/oss/network/formatters[/|$]@'
     };
   }
 
