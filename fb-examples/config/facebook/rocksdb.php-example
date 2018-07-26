@@ -37,6 +37,7 @@ final class FacebookRocksdb extends FBShipItConfig {
     return ImmVector {
       // Ignore file containing sandcastle token
       '@^' . self::ROOT . '.sandcastle$@',
+      '@^' . self::ROOT . 'util/build_version.cc$@',
     };
   }
 
