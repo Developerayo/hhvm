@@ -26,7 +26,6 @@ final class FacebookSonar extends FBShipItConfig {
       'fbobjc/Libraries/SonarKit/SonarKitPlugins/OSSPlugins/' => 'iOS/Plugins/',
       'fbobjc/Libraries/SonarKit/SonarKitTests/' => 'iOS/SonarKitTests/',
       'fbobjc/Libraries/SonarKit/SonarKitTestUtils/' => 'iOS/SonarKitTestUtils/',
-      'fbandroid/javatests/com/facebook/sonar/plugins/oss/' => 'android/tests/plugins/',
     };
   }
 
