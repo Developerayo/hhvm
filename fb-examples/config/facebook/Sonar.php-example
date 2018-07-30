@@ -39,7 +39,6 @@ protected static function getStripCommonFilesExceptions(): ImmVector<string> {
       '@xplat/sonar/templates[/|$]@',
       '@xplat/sonar/scripts/sandcastle-build.sh@',
       '@xplat/sonar/third-party[/|$]@',
-      '@xplat/sonar/xplat/plugins/facebook[/|$]@',
     };
   }
 
