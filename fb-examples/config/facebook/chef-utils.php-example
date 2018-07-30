@@ -22,8 +22,8 @@ use \Facebook\ShipIt\ {
 final class FacebookChefUtils extends FBShipItConfig {
   public static function getDirs(): ImmSet<string> {
     return ImmSet {
+       'chef-utils-github/',
        'scripts/chef/',
-       'scripts/chefctl-github/',
     };
   }
 
@@ -57,13 +57,12 @@ final class FacebookChefUtils extends FBShipItConfig {
     # Therefore, below we do a NegativeLookAhead regex and anything that's not
     # in this list gets rejected.
     #
-    # For scripts/chefctl-github/ the entire directory is included, so that all
-    # works normally. But for scripts/chef/ we only include a single file, so
-    # for that directory we ALSO have to explicitly allow the shipit test file
+    # For scripts/chefctl-github/ the entire directory is included, so that all 
+    # works normally. But for scripts/chef/ we only include a single file, so 
+    # for that directory we ALSO have to explicitly allow the shipit test file 
     # or it will crash.
     $valid = array(
       'chef/chefctl.rb',
-      'chefctl-github/',
       'chef/shipit_test_file.txt',
     );
     return ImmVector {
@@ -75,8 +74,8 @@ final class FacebookChefUtils extends FBShipItConfig {
   public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       # order is important - most specific first
+      'chef-utils-github/' => '',
       'scripts/chef/' => 'chefctl/src/',
-      'scripts/chefctl-github/' => 'chefctl/',
     };
   }
 
