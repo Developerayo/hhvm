@@ -14,7 +14,7 @@ use \Facebook\ShipIt\ {
   FBShipItConfig,
 };
 
-final class FacebookSonar extends FBShipItConfig {
+final class FacebookFlipper extends FBShipItConfig {
   <<__Override>>
   public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
@@ -45,7 +45,7 @@ protected static function getStripCommonFilesExceptions(): ImmVector<string> {
     return shape(
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
-      'githubProject' => 'Sonar',
+      'githubProject' => 'flipper',
     );
   }
 }
