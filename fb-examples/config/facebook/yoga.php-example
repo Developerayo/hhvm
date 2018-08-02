@@ -35,6 +35,13 @@ final class FacebookYoga extends FBShipItConfig {
   }
 
   <<__Override>>
+  public static function getSubmoduleMappings(): ImmMap<string, string> {
+    return ImmMap {
+      'xplat/yoga/facebook/third-party/googletest-rev.txt' => 'lib/gtest/googletest',
+    };
+  }
+
+  <<__Override>>
   protected static function getStripCommonFilesExceptions(): ImmVector<string> {
     return ImmVector {
       '@BUCK@',
