@@ -22,6 +22,7 @@ final class PytorchPytorchTest extends FBConfigBaseTest {
       'fbcode/caffe2/torch/fb' => null,
       'fbcode/caffe2/torch/TARGETS' => null,
       'fbcode/caffe2/README.facebook' => null,
+      'fbcode/caffe2/aten/defs.bzl' => null,
     };
   }
 
