@@ -13,6 +13,7 @@ final class FacebookexperimentalMononokeTest extends FBConfigBaseTest {
   <<__Override>>
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
+      'fbcode/scm/common/pylz4/src/lib.rs' => 'common/pylz4/src/lib.rs',
       'fbcode/scm/mononoke/README.md' => 'README.md',
       'fbcode/common/rust/async-compression/src/lib.rs' =>
         'async-compression/src/lib.rs',
