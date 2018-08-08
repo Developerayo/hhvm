@@ -42,7 +42,6 @@ final class FacebookexperimentalMononoke extends FBShipItConfig {
   public static function getDefaultPathMappings(): ImmMap<string, string> {
     // The order here is important -- ImportIt matches paths in reverse order.
     return ImmMap {
-      'fbcode/scm/common/pylz4/' => 'common/pylz4/',
       'fbcode/scm/mononoke/' => '',
       'fbcode/common/rust/async-compression/' => 'async-compression/',
       'fbcode/common/rust/asyncmemo/' => 'asyncmemo/',
