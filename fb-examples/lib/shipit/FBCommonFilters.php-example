@@ -111,12 +111,11 @@ final class FBCommonFilters {
         '@(^|/)fb(/|$)@',
         '@/TARGETS$@',
         '@/PLATFORM$@',
-        '@/PLATFORM.bzl$@',
         '@/\.hgsparse(-\w+)?$@',
         '@/BUCK$@', /** MOBILE DEVELOPERS: HERE BE DANGER **/
         '@/FBBUILD_CONFIG$@',
         '@/BUILD_MODE$@',
-        '@/BUILD_MODE.bzl$@',
+        '@\.bzl$@i',
         '@\.mk$@',
         '@pull_request_metadata_DO_NOT_COMMIT_THIS_FILE_OR_YOU_WILL_BE_FIRED\.json@',
       },

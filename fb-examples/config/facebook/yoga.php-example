@@ -46,6 +46,9 @@ final class FacebookYoga extends FBShipItConfig {
     return ImmVector {
       '@BUCK@',
       '@(^|/)fb(/|$)@',
+
+      // Fallout from adding bzl files to common ShipIt filters
+      '@yoga_defs\.bzl$@',
     };
   }
 }

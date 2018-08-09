@@ -21,6 +21,9 @@ final class FacebookWdt extends FBShipItConfig {
   protected static function getStripCommonFilesExceptions(): ImmVector<string> {
     return ImmVector {
       '@^(?:(?!fbonly/)[^/]+/)*TARGETS$@',
+
+      // Fallout from adding bzl files to common ShipIt filters
+      '@defs\.bzl$@i',
     };
   }
 

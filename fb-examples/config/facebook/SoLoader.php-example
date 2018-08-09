@@ -33,6 +33,10 @@ final class FacebookSoloader extends FBShipItConfig {
     return ImmVector {
       // We want to keep BUCK files
       '@BUCK@',
+
+      // Fallout from adding bzl files to common ShipIt filters
+      '@build_defs/fb_core_android_library\.bzl$@',
+      '@oss_defs/soloader_defs\.bzl$@',
     };
   }
 

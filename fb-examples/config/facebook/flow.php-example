@@ -181,6 +181,9 @@ final class FacebookFlow extends FBShipItConfig {
   private static function getSharedStripExceptions(): ImmVector<string> {
     return ImmVector {
       '@fbcode/flow/github/@',
+
+      // Fallout from adding bzl files to common ShipIt filters
+      '@utils\.bzl$@',
     };
   }
 

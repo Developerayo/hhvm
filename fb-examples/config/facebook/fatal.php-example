@@ -17,6 +17,14 @@ use \Facebook\ShipIt\ {
 final class FacebookFatal extends FBShipItConfig {
 
   <<__Override>>
+  protected static function getStripCommonFilesExceptions(): ImmVector<string> {
+    return ImmVector {
+      // Fallout from adding bzl files to common ShipIt filters
+      '@fatal/type/benchmark/trie/defs\.bzl$@'
+    };
+  }
+
+  <<__Override>>
   public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       'fbcode/fatal/public_tld/' => '',
