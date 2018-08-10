@@ -20,8 +20,8 @@ final class FacebookWatchman extends FBShipItConfig {
   <<__Override>>
   protected static function getStripCommonFilesExceptions(): ImmVector<string> {
     return ImmVector {
-      // Unlike most projects in fbcode, Watchman publishes its build files.
-      '@/TARGETS$@',
+      // Watchman publishes its java client build file,
+      // which is a BUCK file.
       '@/BUCK$@',
     };
   }
