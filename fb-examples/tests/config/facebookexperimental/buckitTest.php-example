@@ -41,6 +41,8 @@ final class FacebookexperimentalBuckitTest extends FBConfigBaseTest {
         null,
       'fbcode/tools/build/buck/infra_macros/macro_lib/convert/java.py' =>
         null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/platform_utils.bzl' =>
+        'infra_macros/fbcode_macros/build_defs/platform_utils.bzl',
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/java_binary.bzl' =>
         null,
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/build_defs/java_library.bzl' =>

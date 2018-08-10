@@ -33,6 +33,7 @@ final class FacebookexperimentalBuckit extends FBShipItConfig {
             shape('stripCommonFiles/exceptions' => ImmVector {
               '@(?<!/facebook)/BUCK$@',
               '@/TARGETS$@',
+              '@/.*\.bzl$@',
             }))
         |> ShipItPathFilters::moveDirectories($$, $get_path_mappings())
         /**
