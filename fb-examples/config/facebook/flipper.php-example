@@ -36,7 +36,6 @@ protected static function getStripCommonFilesExceptions(): ImmVector<string> {
       '@xplat/sonar/src/fb[/|$]@',
       '@xplat/sonar/iOS/SonarKit/FBCxxUtils[/|$]@',
       '@xplat/sonar/iOS/Plugins/Facebook[/|$]@',
-      '@xplat/sonar/scripts/sandcastle-build.sh@',
       '@xplat/sonar/third-party[/|$]@',
     };
   }
