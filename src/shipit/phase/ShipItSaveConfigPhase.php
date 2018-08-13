@@ -10,6 +10,18 @@
 namespace Facebook\ShipIt;
 
 final class ShipItSaveConfigPhase extends ShipItPhase {
+  const type TSavedConfig = shape(
+    'destination' => shape(
+      'branch' => string,
+      'owner' => string,
+      'project' => string,
+    ),
+    'source' => shape(
+      'branch' => string,
+      'roots' => ImmSet<string>,
+    ),
+  );
+
   private ?string $outputFile;
 
   public function __construct(
@@ -44,22 +56,29 @@ final class ShipItSaveConfigPhase extends ShipItPhase {
     };
   }
 
-  <<__Override>>
-  protected function runImpl(ShipItBaseConfig $config): void {
-    invariant($this->outputFile !== null, 'impossible');
-
-    $data = ImmMap {
-      'destination' => ImmMap {
+  public function renderConfig(
+    ShipItBaseConfig $config,
+  ): self::TSavedConfig {
+    return shape(
+      'destination' => shape(
         'branch' => $config->getDestinationBranch(),
         'owner' => $this->owner,
         'project' => $this->project,
-      },
-      'source' => ImmMap {
+      ),
+      'source' => shape(
         'branch' => $config->getSourceBranch(),
         'roots' => $config->getSourceRoots(),
-      },
-    };
-    \file_put_contents($this->outputFile, \json_encode($data, \JSON_PRETTY_PRINT));
+      ),
+    );
+  }
+
+  <<__Override>>
+  protected function runImpl(ShipItBaseConfig $config): void {
+    invariant($this->outputFile !== null, 'impossible');
+    \file_put_contents(
+      $this->outputFile,
+      \json_encode($this->renderConfig($config), \JSON_PRETTY_PRINT),
+    );
     \printf("Finished phase: %s\n", $this->getReadableName());
     exit(0);
   }

@@ -1,0 +1,65 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+use \Facebook\ShipIt\Config\{FBShipItConfigRegistry, RepoArcanistProject};
+
+final class FBDumpShipItMetadata {
+
+  const type ShipItMetadata = shape(
+    'destination' => shape(
+      'branch' => string,
+      'owner' => string,
+      'project' => string,
+    ),
+    'source' => shape(
+      'branch' => string,
+      'roots' => ImmSet<string>,
+    ),
+    'is_land_branch' => bool,
+    'internal_repo' => string,
+    'arcanist_project' => ?string,
+  );
+
+  private static function encodeOutput(vec<self::ShipItMetadata> $out): string {
+    return \json_encode($out);
+  }
+
+  final public static function dumpMetadata(): void {
+    $metadatas = vec[];
+    $config_classes = FBShipItConfigRegistry::getShipItConfigClasses();
+    foreach ($config_classes as $config_class) {
+      $branch_resolver = new FBShipItBranchResolutionPhase($config_class);
+      $repo_metadata = $branch_resolver->getRepoMetadata();
+      $branch_configs = $branch_resolver->getBranchConfigs();
+      $static_config = $config_class::getStaticConfig();
+      foreach ($branch_configs as $branch_config) {
+        $base_config = $config_class::getBaseConfig($branch_config);
+        $save_config_phase = new ShipItSaveConfigPhase(
+          $static_config['githubOrg'],
+          $static_config['githubProject'],
+        );
+        $branch_metadata = $save_config_phase->renderConfig($base_config);
+        $is_land_branch = (
+          $repo_metadata['land_branch'] ===
+          $branch_metadata['source']['branch']
+        );
+        $metadatas[] = shape(
+          'destination' => $branch_metadata['destination'],
+          'source' => $branch_metadata['source'],
+          'is_land_branch' => $is_land_branch,
+          'internal_repo' => $repo_metadata['internal_repo'],
+          'arcanist_project' => $repo_metadata['arcanist_project'],
+        );
+      }
+    }
+    print(self::encodeOutput($metadatas));
+  }
+}

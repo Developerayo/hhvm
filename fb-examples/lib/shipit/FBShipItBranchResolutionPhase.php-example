@@ -17,6 +17,13 @@ use \Facebook\ShipIt\Config\{
 
 class FBShipItBranchResolutionPhase extends ShipItPhase {
 
+  const type TRepoMetadata = shape(
+    'land_branch' => ?string,
+    'branches' => ImmVector<string>,
+    'internal_repo' => string,
+    'arcanist_project' => ?string,
+  );
+
   public function __construct(
     private classname<FBShipItConfig> $configClass,
     protected ?string $externalBranch = null,
@@ -84,29 +91,37 @@ class FBShipItBranchResolutionPhase extends ShipItPhase {
     return $branch_configs;
   }
 
+  public function getRepoMetadata(): self::TRepoMetadata {
+    $config_class = $this->configClass;
+    $branch_configs = $this->getBranchConfigs();
+    $internal_repo = $config_class::getStaticConfig()['internalRepo'];
+    if (
+      RepoArcanistProject::getNotInArcanistExceptions()
+        ->contains($internal_repo)
+    ) {
+      $arcanist_project = null;
+    } else {
+      $arcanist_project =
+        RepoArcanistProject::getArcanistProject($internal_repo);
+    }
+    return shape(
+      'land_branch' => $config_class::getLandBranch(),
+      'branches' =>
+        $branch_configs->map($branch_config ==> $branch_config['external']),
+      'internal_repo' => $internal_repo,
+      'arcanist_project' => $arcanist_project,
+    );
+  }
+
   <<__Override>>
   public function runImpl(ShipItBaseConfig $config): void {
     $config_class = $this->configClass;
     $branch_configs = $this->getBranchConfigs();
     if ($this->repoMetadataFile !== null) {
-      $internal_repo = $config_class::getStaticConfig()['internalRepo'];
-      if (
-        RepoArcanistProject::getNotInArcanistExceptions()
-          ->contains($internal_repo)
-      ) {
-        $arcanist_project = null;
-      } else {
-        $arcanist_project =
-          RepoArcanistProject::getArcanistProject($internal_repo);
-      }
-      $metadata = dict[
-        'land_branch' => $config_class::getLandBranch(),
-        'branches' =>
-          $branch_configs->map($branch_config ==> $branch_config['external']),
-        'internal_repo' => $internal_repo,
-        'arcanist_project' => $arcanist_project,
-      ];
-      \file_put_contents($this->repoMetadataFile, \json_encode($metadata));
+      \file_put_contents(
+        $this->repoMetadataFile,
+        \json_encode($this->getRepoMetadata()),
+      );
       exit(0);
     }
     foreach ($branch_configs as $branch_config) {
