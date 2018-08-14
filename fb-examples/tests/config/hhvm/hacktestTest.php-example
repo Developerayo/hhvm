@@ -1,0 +1,44 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  ShipItChangeset,
+};
+
+final class HhvmHacktestTest extends FBConfigBaseTest {
+  const string ROOT = HhvmHacktest::ROOT;
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'flib/foo' => null,
+      'html/foo' => null,
+      'flib/core/hack/lib/foo.php' => null,
+      'flib/intern/testinfra/foo' => null,
+      'flib/intern/testinfra/hacktest/foo' => null,
+      'flib/intern/testinfra/hacktest/fb/foo' => null,
+      self::ROOT.'foo.php' => 'src/foo.php',
+      self::ROOT.'foo/bar.php' => 'src/foo/bar.php',
+      self::ROOT.'__github__/README.md' => 'README.md',
+      self::ROOT.'__github__/bin/foo' => 'bin/foo',
+      self::ROOT.'__github__/dot_travis.sh' => '.travis.sh',
+      self::ROOT.'__github__/dot_gitattributes' => '.gitattributes',
+      self::ROOT.'__github__/src/HackTestCLI_dot_php' => 'src/HackTestCLI.php',
+      self::ROOT.'__github__/src/Retriever/foo_dot_php' => 'src/Retriever/foo.php',
+      self::ROOT.'__github__/src/Runner/foo_dot_php' => 'src/Runner/foo.php',
+      // general test
+      self::ROOT.'__github__/tests/foo_dot_php' => 'tests/foo.php',
+      // not usable at FB
+      self::ROOT.'__github__/tests/clean/exit/foo_dot_php' => 'tests/clean/exit/foo.php',
+      self::ROOT.'__github__/tests/clean/retriever/foo_dot_php' => 'tests/clean/retriever/foo.php',
+    };
+  }
+}

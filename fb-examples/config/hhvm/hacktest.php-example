@@ -1,0 +1,90 @@
+<?hh // strict
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use type Facebook\ShipIt\ {
+  FBSourceBranchConfig,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+  ShipItConditionalLinesFilter,
+  ShipItPathFilters,
+};
+
+final class HhvmHacktest extends FBWWWBase {
+  const string ROOT = 'flib/intern/testinfra/hacktest/opensource/';
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      static::ROOT.'__github__/tests/' => 'tests/',
+      static::ROOT.'__github__/src/HackTestCLI_dot_php' => 'src/HackTestCLI.php',
+      static::ROOT.'__github__/src/Retriever/' => 'src/Retriever/',
+      static::ROOT.'__github__/src/Runner/' => 'src/Runner/',
+      static::ROOT.'__github__/dot_' => '.',
+      static::ROOT.'__github__/' => '',
+      static::ROOT => 'src/',
+    };
+  }
+
+  <<__Override>>
+  final protected static function defaultProjectFilterChangeset(
+    ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
+  ): ShipItChangeset {
+    return parent::defaultProjectFilterChangeset($changeset, $get_path_mappings)
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> \str_replace('_dot_php', '.php', $path),
+      );
+  }
+
+  <<__Override>>
+  final protected static function projectImportChangeset(
+    ShipItChangeset $changeset,
+    FBSourceBranchConfig $branch_config,
+  ): ShipItChangeset {
+    // This is pretty ugly as *in general*, www projects should
+    // map tests/foo/bar.php to foo/__tests__/bar.php ...
+    // but for hacktest, currently all tests are open source-only
+    return $changeset
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> \preg_replace('@^tests/@', '__github__/tests/', $path)
+      )
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> \preg_replace('/^\\./', 'dot_', $path),
+      )
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> \preg_replace(
+          '@^((src/(Retriever|Runner)|__github__/tests)/.+)\.php$@',
+          '\1_dot_php',
+          $path,
+        ),
+      )
+      |> parent::projectImportChangeset($$, $branch_config)
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> \str_replace('__github__/__github__', '__github__', $path),
+      );
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'www',
+      'githubOrg' => 'hhvm',
+      'githubProject' => 'hacktest',
+    );
+  }
+}

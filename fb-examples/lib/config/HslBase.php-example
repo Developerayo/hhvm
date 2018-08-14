@@ -19,7 +19,7 @@ use \Facebook\ShipIt\ {
   ShipItPathFilters,
 };
 
-abstract class HhvmHslBase extends FBShipItConfig {
+abstract class HhvmHslBase extends FBWWWBase {
   abstract const string ROOT;
 
   <<__Override>>
@@ -28,14 +28,6 @@ abstract class HhvmHslBase extends FBShipItConfig {
     GetPathMappingsFn $get_path_mappings,
   ): ShipItChangeset {
     return parent::defaultProjectFilterChangeset($changeset, $get_path_mappings)
-      |> ShipItPathFilters::rewritePaths(
-        $$,
-        $path ==> \preg_replace(
-          '@^src/(.+/)?__tests__/@',
-          'tests/\1',
-          $path,
-        ),
-      )
       |> ShipItConditionalLinesFilter::commentLines(
         $$,
         '@oss-disable',
@@ -45,8 +37,7 @@ abstract class HhvmHslBase extends FBShipItConfig {
         $$,
         '@oss-enable',
         '//',
-      )
-      |> self::renameGenToAsync($$);
+      );
   }
 
   <<__Override>>
@@ -58,92 +49,12 @@ abstract class HhvmHslBase extends FBShipItConfig {
     };
   }
 
-  final private static function renameFunctions(
-    ShipItChangeset $changeset,
-    (function(string):string) $renamer,
-  ): ShipItChangeset {
-    $diffs = Vector {};
-    foreach ($changeset->getDiffs() as $diff) {
-      $diff['body'] = $diff['body']
-        |> \explode("\n", $$)
-        |> (new ImmVector($$))->map(
-          $line ==> \preg_replace_callback(
-            // Comma and dot for doc comments
-            '/(function |\\\\|\\|>| )([a-zA-Z0-9_]+)(\\(|<|,|\\.)/',
-            $matches ==> $matches[1].$renamer($matches[2]).$matches[3],
-            $line,
-          ),
-        )
-        |> \implode("\n", $$);
-      $diffs[] = $diff;
-    }
-    return $changeset->withDiffs($diffs->immutable());
-  }
-
-  final private static function renameGenToAsync(
-    ShipItChangeset $changeset,
-  ): ShipItChangeset {
-    return self::renameFunctions(
-      $changeset,
-      $name ==> {
-        if ($name === 'gen') {
-          return 'from_async';
-        }
-        if ($name === 'testGen') {
-          return 'testFromAsync';
-        }
-        if (\strpos($name, 'gen_') === 0) {
-          return \substr($name, 4).'_async';
-        }
-        if (\strpos($name, 'testGen') === 0) {
-          return 'test'.\substr($name, 7).'Async';
-        }
-        return $name;
-      }
-    );
-  }
-
-  final public static function renameAsyncToGen(
-    ShipItChangeset $changeset,
-  ): ShipItChangeset {
-    return self::renameFunctions(
-      $changeset,
-      $name ==> {
-        if ($name === 'from_async') {
-          return 'gen';
-        }
-        if ($name === 'testFromAsync') {
-          return 'testGen';
-        }
-        if (\substr($name, -6) === '_async') {
-          return 'gen_'.\substr($name, 0, -6);
-        }
-        if (\substr($name, 0, 4) === 'test' && \substr($name, -5) === 'Async') {
-          return 'testGen'.\substr(
-            $name,
-            4,
-            \strlen($name) - 9,
-          );
-        }
-        return $name;
-      }
-    );
-  }
-
   <<__Override>>
   final protected static function projectImportChangeset(
     ShipItChangeset $changeset,
     FBSourceBranchConfig $branch_config,
   ): ShipItChangeset {
     return $changeset
-      |> ShipItPathFilters::rewritePaths(
-        $$,
-        $path ==> \preg_replace(
-          '@^tests/(.+/)?@',
-          'src/\1__tests__/',
-          $path,
-        ),
-      )
       |> ShipItPathFilters::rewritePaths(
         $$,
         $path ==> \preg_replace('/^\\./', 'dot_', $path),
@@ -158,7 +69,6 @@ abstract class HhvmHslBase extends FBShipItConfig {
         '@oss-enable',
         '//',
       )
-      |> static::renameAsyncToGen($$)
       |> parent::projectImportChangeset($$, $branch_config);
   }
 }
