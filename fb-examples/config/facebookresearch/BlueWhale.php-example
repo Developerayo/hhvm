@@ -19,20 +19,17 @@ use \Facebook\ShipIt\ {
 };
 
 final class FacebookresearchBluewhale extends FBShipItConfig {
-  const string ROOT = 'fbcode/ml/rl/';
+  const string ROOT = "fbcode/ml/rl";
 
   <<__Override>>
   protected static function getDefaultStrippedFiles(): ImmVector<string> {
     $paths_to_omit = ImmVector {
-      'training/continuous_action_trainer.py',
-      'training/continuous_action_predictor.py',
-      'training/two_tower_trainer.py',
-      'training/knn_engine.py',
-      'test/legacy',
+      # Keep the fb directory internal
+      "fb",
     };
     return $paths_to_omit->map(
       function ($path) {
-        return "@^".self::ROOT."$path(/|$)@";
+        return "@^".self::ROOT."/$path(/|$)@";
       }
     );
   }
@@ -40,8 +37,11 @@ final class FacebookresearchBluewhale extends FBShipItConfig {
   <<__Override>>
   public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
+      # Put the oss directory into root
+      self::ROOT."/oss/" => "",
+
       # We want the contents of fbcode/ml/rl/... to appear in ml/rl/...
-      self::ROOT => 'ml/rl/',
+      self::ROOT."/" => "ml/rl/",
     };
   }
 
