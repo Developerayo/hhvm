@@ -50,7 +50,14 @@ abstract class FBWWWBase extends FBShipItConfig {
           return 'testFromAsync';
         }
         if (\strpos($name, 'gen_') === 0) {
+          // function
           return \substr($name, 4).'_async';
+        }
+        if (\strpos($name, 'gen') === 0) {
+          // method
+          $name = \substr($name, 3);
+          $name[0] = \strtolower($name[0]);
+          return $name.'Async';
         }
         if (\strpos($name, 'testGen') === 0) {
           return 'test'.\substr($name, 7).'Async';
@@ -103,6 +110,11 @@ abstract class FBWWWBase extends FBShipItConfig {
             4,
             \strlen($name) - 9,
           );
+        }
+        if (\substr($name, -5) === 'Async') {
+          $name = \substr($name, 0, -5);
+          $name[0] = \strtoupper($name[0]);
+          return 'gen'.$name;
         }
         return $name;
       }

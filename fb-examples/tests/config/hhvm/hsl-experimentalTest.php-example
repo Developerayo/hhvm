@@ -13,7 +13,7 @@ use \Facebook\ShipIt\ {
   ShipItChangeset,
 };
 
-final class HhvmHslExperimentalTest extends FBConfigBaseTest {
+final class HhvmHslExperimentalTest extends FBWWWConfigBaseTest {
   <<__Override>>
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {

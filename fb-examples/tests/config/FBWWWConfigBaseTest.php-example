@@ -1,0 +1,96 @@
+<?hh // strict
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use type Facebook\ShipIt\{
+  Config\FBWWWBase,
+  ShipItChangeset,
+};
+
+abstract class FBWWWConfigBaseTest extends FBConfigBaseTest {
+  const type TConfigClassBase = FBWWWBase;
+
+  final public function testGenAsyncRenaming(): void {
+    $root = null;
+    foreach (static::getExamplePathMappings() as $source => $dest) {
+      if ($dest !== null) {
+        $root = \dirname($source);
+        break;
+      }
+    }
+    invariant($root !== null, 'couldnt find a usable example path');
+
+    $body =
+      "namespace HH\\Lib\\Vec;\n".
+      "async function gen(\$_): Awaitable<stuff> {}\n".
+      "async function gen_foo(\$_): Awaitable<stuff> {}\n".
+      "async function gen_bar<T as arraykey>(T \$_): Awaitable<T> {}\n".
+      "function testGen(): void {}\n".
+      "function testGenFoo(): void {}\n".
+      "async function genFoo(): Awaitable<void> {}\n".
+      "function main(\$stuff) {\n".
+      "  \$_ = namespace\\gen(\$stuff);\n".
+      "  \$_ = namespace\\gen_foo(\$stuff);\n".
+      "  \$_ = gen(\$stuff\);\n".
+      "  \$_ = \$stuff |> gen(\$\$);\n".
+      "  \$_ = \$stuff |>gen(\$\$);\n".
+      "  \$_ = namespace\\gen_foo(\n".
+      "    \$stuff,\n".
+      "  );\n".
+      "  \$_ = namespace\\gen_bar(\n".
+      "    \$stuff,\n".
+      "  );\n".
+      "}\n";
+    $changeset = self::map((new ShipItChangeset())
+      ->withDiffs(ImmVector {
+        shape(
+          'path' => $root.'/foo.php',
+          'body' => $body,
+        ),
+      }));
+    $diff = $changeset->getDiffs()->at(0);
+    $this->assertSame(
+      "namespace HH\\Lib\\Vec;\n".
+      "async function from_async(\$_): Awaitable<stuff> {}\n".
+      "async function foo_async(\$_): Awaitable<stuff> {}\n".
+      "async function bar_async<T as arraykey>(T \$_): Awaitable<T> {}\n".
+      "function testFromAsync(): void {}\n".
+      "function testFooAsync(): void {}\n".
+      "async function fooAsync(): Awaitable<void> {}\n".
+      "function main(\$stuff) {\n".
+      "  \$_ = namespace\\from_async(\$stuff);\n".
+      "  \$_ = namespace\\foo_async(\$stuff);\n".
+      "  \$_ = from_async(\$stuff\);\n".
+      "  \$_ = \$stuff |> from_async(\$\$);\n".
+      "  \$_ = \$stuff |>from_async(\$\$);\n".
+      "  \$_ = namespace\\foo_async(\n".
+      "    \$stuff,\n".
+      "  );\n".
+      "  \$_ = namespace\\bar_async(\n".
+      "    \$stuff,\n".
+      "  );\n".
+      "}\n",
+      $diff['body'],
+      'forward translation (shipit)',
+    );
+
+    $config = static::getConfigClass();
+
+    $changeset = (new ShipItChangeset())
+      ->withDiffs(ImmVector { $diff })
+      |> $config::renameAsyncToGen($$);
+    $diff = $changeset->getDiffs()->at(0);
+    $this->assertSame(
+      $body,
+      $diff['body'],
+      'reverse translation (importit)',
+    );
+  }
+}

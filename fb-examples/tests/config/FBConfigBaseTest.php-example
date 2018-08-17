@@ -9,18 +9,22 @@
  */
 namespace Facebook\ShipIt\Config;
 
-use \Facebook\ShipIt\ {
+use type Facebook\ShipIt\{
   FBPublicProjectBaseTest,
+  FBShipItConfig,
   ShipItChangeset,
   ShipItSubmoduleFilter,
   FBSourceBranchConfig,
 };
 
-use \Facebook\ImportIt\ {
+use type Facebook\ImportIt\{
   ImportItSubmoduleFilter,
 };
 
 abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
+  // This usually doesn't need setting - it's useful if implementing
+  // another abstract class, eg FBWWWConfigBaseTest
+  const type TConfigClassBase as FBShipItConfig = FBShipItConfig;
 
   protected static function getDefaultBranchConfig(): FBSourceBranchConfig {
     $config_class = static::getConfigClass();
@@ -60,7 +64,7 @@ abstract class FBConfigBaseTest extends FBPublicProjectBaseTest {
   }
 
   final protected static function getConfigClass(
-  ): classname<\Facebook\ShipIt\FBShipItConfig> {
+  ): classname<this::TConfigClassBase> {
     $config_class = \preg_replace(
       '/([a-zA-Z0-9_]+)Test$/',
       '\1',

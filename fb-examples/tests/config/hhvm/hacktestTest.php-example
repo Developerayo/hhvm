@@ -13,7 +13,7 @@ use \Facebook\ShipIt\ {
   ShipItChangeset,
 };
 
-final class HhvmHacktestTest extends FBConfigBaseTest {
+final class HhvmHacktestTest extends FBWWWConfigBaseTest {
   const string ROOT = HhvmHacktest::ROOT;
 
   <<__Override>>

@@ -13,7 +13,7 @@ use \Facebook\ShipIt\ {
   ShipItChangeset,
 };
 
-final class HhvmHslTest extends FBConfigBaseTest {
+final class HhvmHslTest extends FBWWWConfigBaseTest {
   <<__Override>>
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
@@ -50,69 +50,6 @@ final class HhvmHslTest extends FBConfigBaseTest {
       " \n".
       "+// @oss-disable: derp();\n",
       $changeset->getDiffs()->at(0)['body'],
-    );
-  }
-
-  public function testGenAsyncRenaming(): void {
-    $body =
-      "namespace HH\\Lib\\Vec;\n".
-      "async function gen(\$_): Awaitable<stuff> {}\n".
-      "async function gen_foo(\$_): Awaitable<stuff> {}\n".
-      "async function gen_bar<T as arraykey>(T \$_): Awaitable<T> {}\n".
-      "function testGen(): void {}\n".
-      "function testGenFoo(): void {}\n".
-      "function main(\$stuff) {\n".
-      "  \$_ = namespace\\gen(\$stuff);\n".
-      "  \$_ = namespace\\gen_foo(\$stuff);\n".
-      "  \$_ = gen(\$stuff\);\n".
-      "  \$_ = \$stuff |> gen(\$\$);\n".
-      "  \$_ = \$stuff |>gen(\$\$);\n".
-      "  \$_ = namespace\\gen_foo(\n".
-      "    \$stuff,\n".
-      "  );\n".
-      "  \$_ = namespace\\gen_bar(\n".
-      "    \$stuff,\n".
-      "  );\n".
-      "}\n";
-    $changeset = self::map((new ShipItChangeset())
-      ->withDiffs(ImmVector {
-        shape(
-          'path' => 'flib/core/hack/lib/foo.php',
-          'body' => $body,
-        ),
-      }));
-    $diff = $changeset->getDiffs()->at(0);
-    $this->assertSame(
-      "namespace HH\\Lib\\Vec;\n".
-      "async function from_async(\$_): Awaitable<stuff> {}\n".
-      "async function foo_async(\$_): Awaitable<stuff> {}\n".
-      "async function bar_async<T as arraykey>(T \$_): Awaitable<T> {}\n".
-      "function testFromAsync(): void {}\n".
-      "function testFooAsync(): void {}\n".
-      "function main(\$stuff) {\n".
-      "  \$_ = namespace\\from_async(\$stuff);\n".
-      "  \$_ = namespace\\foo_async(\$stuff);\n".
-      "  \$_ = from_async(\$stuff\);\n".
-      "  \$_ = \$stuff |> from_async(\$\$);\n".
-      "  \$_ = \$stuff |>from_async(\$\$);\n".
-      "  \$_ = namespace\\foo_async(\n".
-      "    \$stuff,\n".
-      "  );\n".
-      "  \$_ = namespace\\bar_async(\n".
-      "    \$stuff,\n".
-      "  );\n".
-      "}\n",
-      $diff['body'],
-      'forward translation (shipit)',
-    );
-    $changeset = (new ShipItChangeset())
-      ->withDiffs(ImmVector { $diff })
-      |> HhvmHsl::renameAsyncToGen($$);
-    $diff = $changeset->getDiffs()->at(0);
-    $this->assertSame(
-      $body,
-      $diff['body'],
-      'reverse translation (importit)',
     );
   }
 
