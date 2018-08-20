@@ -59,7 +59,6 @@ final class FacebookReactNative extends FBShipItConfig {
       '@^'.self::ROOT.'BUCK$@',
       '@(^|/)node_modules/@',
       '@(^|/)npm-shrinkwrap.json@',
-      '@(^|/)yarn.lock@',
       '@(^|/)packager/react-packager/src/packager_experimental/@',
       '@(^|/)Libraries/Renderer/fb/@',
     };
