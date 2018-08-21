@@ -10,12 +10,30 @@
 namespace Facebook\ShipIt\Config;
 
 use \Facebook\ShipIt\ {
+  FBCodeBuilderTrait,
   FBShipItCLIStaticConfig,
   FBShipItConfig,
 };
 
 final class FacebookWatchman extends FBShipItConfig {
+  use FBCodeBuilderTrait;
+
   const string ROOT = 'fbcode/watchman/';
+
+  <<__Override>>
+  protected static function getFBCodeBuilderDependencies(): ImmSet<string> {
+    return ImmSet {
+      'folly',
+      'wangle',
+    };
+  }
+
+  protected static function getFBCodeBuilderTravisConfig(
+  ): string {
+    // Watchman has a pre-existing travis config that knows about more than
+    // fbcode_builder, so don't clobber it.
+    return self::ROOT.'.travis.yml';
+  }
 
   <<__Override>>
   protected static function getStripCommonFilesExceptions(): ImmVector<string> {
@@ -27,7 +45,7 @@ final class FacebookWatchman extends FBShipItConfig {
   }
 
   <<__Override>>
-  public static function getDefaultPathMappings(): ImmMap<string, string> {
+  public static function getPathMappingsNonFBCodeBuilder(): ImmMap<string, string> {
     return ImmMap {
       self::ROOT => '',
     };
