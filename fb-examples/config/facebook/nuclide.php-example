@@ -9,17 +9,28 @@
  */
 namespace Facebook\ShipIt\Config;
 
-use \Facebook\ShipIt\ {
-  FBCommonFilters,
+use \Facebook\ShipIt\{
+  FBSourceBranchConfig,
   FBShipItCLIStaticConfig,
   FBShipItConfig,
   GetPathMappingsFn,
   ShipItChangeset,
   ShipItPathFilters,
+  ShipItConditionalLinesFilter,
 };
 
 final class FacebookNuclide extends FBShipItConfig {
   const string ROOT = 'xplat/nuclide/';
+
+  <<__Override>>
+  protected static function defaultProjectFilterChangeset(
+    ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
+  ): ShipItChangeset {
+    return parent::defaultProjectFilterChangeset($changeset, $get_path_mappings)
+      |> ShipItConditionalLinesFilter::commentLines($$, '@fb-only', '//')
+      |> ShipItConditionalLinesFilter::uncommentLines($$, '@oss-only', '//');
+  }
 
   <<__Override>>
   protected static function getDefaultStrippedFiles(): ImmVector<string> {
@@ -45,5 +56,16 @@ final class FacebookNuclide extends FBShipItConfig {
       'githubOrg' => 'facebook',
       'githubProject' => 'nuclide',
     );
+  }
+
+  <<__Override>>
+  final protected static function projectImportChangeset(
+    ShipItChangeset $changeset,
+    FBSourceBranchConfig $branch_config,
+  ): ShipItChangeset {
+    return $changeset
+      |> ShipItConditionalLinesFilter::uncommentLines($$, '@fb-only', '//')
+      |> ShipItConditionalLinesFilter::commentLines($$, '@oss-only', '//')
+      |> parent::projectImportChangeset($$, $branch_config);
   }
 }
