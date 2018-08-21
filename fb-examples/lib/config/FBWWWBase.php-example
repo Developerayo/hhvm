@@ -78,7 +78,7 @@ abstract class FBWWWBase extends FBShipItConfig {
         |> (new ImmVector($$))->map(
           $line ==> \preg_replace_callback(
             // Comma and dot for doc comments
-            '/(function |\\\\|\\|>| )([a-zA-Z0-9_]+)(\\(|<|,|\\.)/',
+            '/(function |\\\\|\\|>| |->|::)([a-zA-Z0-9_]+)(\\(|<|,|\\.)/',
             $matches ==> $matches[1].$renamer($matches[2]).$matches[3],
             $line,
           ),

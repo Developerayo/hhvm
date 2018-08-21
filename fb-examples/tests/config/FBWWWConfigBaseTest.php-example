@@ -36,6 +36,8 @@ abstract class FBWWWConfigBaseTest extends FBConfigBaseTest {
       "function testGenFoo(): void {}\n".
       "async function genFoo(): Awaitable<void> {}\n".
       "function main(\$stuff) {\n".
+      "  \$_ = await \$foo->genBar();\n".
+      "  \$_ = await \$foo::genBaz();\n".
       "  \$_ = namespace\\gen(\$stuff);\n".
       "  \$_ = namespace\\gen_foo(\$stuff);\n".
       "  \$_ = gen(\$stuff\);\n".
@@ -65,6 +67,8 @@ abstract class FBWWWConfigBaseTest extends FBConfigBaseTest {
       "function testFooAsync(): void {}\n".
       "async function fooAsync(): Awaitable<void> {}\n".
       "function main(\$stuff) {\n".
+      "  \$_ = await \$foo->barAsync();\n".
+      "  \$_ = await \$foo::bazAsync();\n".
       "  \$_ = namespace\\from_async(\$stuff);\n".
       "  \$_ = namespace\\foo_async(\$stuff);\n".
       "  \$_ = from_async(\$stuff\);\n".
