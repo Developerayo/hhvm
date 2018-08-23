@@ -113,6 +113,8 @@ final class FacebookexperimentalBuckitTest extends FBConfigBaseTest {
         'infra_macros/fbcode_macros/.buckconfig',
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/tests/facebook/BUCK' =>
         null,
+      'fbcode/tools/build/buck/infra_macros/fbcode_macros/tests/facebook/TARGETS' =>
+        null,
       'fbcode/tools/build/buck/infra_macros/fbcode_macros/tests/facebook/utils.py' =>
         null,
     };
