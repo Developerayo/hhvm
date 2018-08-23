@@ -41,14 +41,16 @@ final class HhvmHslTest extends FBWWWConfigBaseTest {
             " // @oss-enable: herp();\n".
             " derp(); // @oss-disable\n".
             " \n".
-            "+derp(); // @oss-disable\n",
+            "+derp(); // @oss-disable\n".
+            "+  // @oss-enable:   ? \$x\n",
         ),
       }));
     $this->assertSame(
       " herp(); // @oss-enable\n".
       " // @oss-disable: derp();\n".
       " \n".
-      "+// @oss-disable: derp();\n",
+      "+// @oss-disable: derp();\n".
+      "+    ? \$x // @oss-enable\n",
       $changeset->getDiffs()->at(0)['body'],
     );
   }

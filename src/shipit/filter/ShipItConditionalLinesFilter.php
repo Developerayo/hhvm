@@ -59,7 +59,7 @@ final class ShipItConditionalLinesFilter {
       \preg_quote($comment_start, '/').
       ' '.
       \preg_quote($marker, '/').
-      ': (\S.*)'.
+      ': (.+)'.
       ($comment_end === null ? '' : (' '.\preg_quote($comment_end, '/'))).
       '$/';
     $replacement = '\\1\\2 '.$comment_start.' '.$marker;
