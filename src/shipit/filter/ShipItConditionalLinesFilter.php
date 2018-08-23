@@ -33,7 +33,7 @@ final class ShipItConditionalLinesFilter {
     ?string $comment_end = null,
   ): ShipItChangeset {
     $pattern =
-      '/^([-+ ]\s*)(.+) '.
+      '/^([-+ ]\s*)(\S.*) '.
       \preg_quote($comment_start, '/').
       ' '.
       \preg_quote($marker, '/').
@@ -59,7 +59,7 @@ final class ShipItConditionalLinesFilter {
       \preg_quote($comment_start, '/').
       ' '.
       \preg_quote($marker, '/').
-      ': (.+)'.
+      ': (\S.*)'.
       ($comment_end === null ? '' : (' '.\preg_quote($comment_end, '/'))).
       '$/';
     $replacement = '\\1\\2 '.$comment_start.' '.$marker;
@@ -75,10 +75,12 @@ final class ShipItConditionalLinesFilter {
     string $pattern,
     string $replacement,
   ): ShipItChangeset {
-    $diffs = Vector { };
+    $diffs = Vector {};
     foreach ($changeset->getDiffs() as $diff) {
       $diff['body'] = (new ImmVector(\explode("\n", $diff['body'])))
-        ->map($line ==> \preg_replace($pattern, $replacement, $line))
+        ->map(
+          $line ==> \preg_replace($pattern, $replacement, $line, /* limit */ 1),
+        )
         |> \implode("\n", $$);
       $diffs[] = $diff;
     }
