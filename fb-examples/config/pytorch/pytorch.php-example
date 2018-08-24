@@ -56,7 +56,6 @@ final class PytorchPytorch extends FBShipItConfig {
       self::ROOT.'submodules/googletest-rev.txt' => 'third_party/googletest',
       self::ROOT.'submodules/ideep-rev.txt' => 'third_party/ideep',
       self::ROOT.'submodules/ios-cmake-rev.txt' => 'third_party/ios-cmake',
-      self::ROOT.'submodules/nanopb-rev.txt' => 'third_party/nanopb',
       self::ROOT.'submodules/nccl-rev.txt' => 'third_party/nccl',
       self::ROOT.'submodules/nervanagpu-rev.txt' => 'third_party/nervanagpu',
       self::ROOT.'submodules/NNPACK-rev.txt' => 'third_party/NNPACK',
