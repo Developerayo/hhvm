@@ -109,6 +109,7 @@ final class FBCommonFilters {
         '@^facebook[/|$]@',
         '@(^|/)fb[-_]?only(/|$)@',
         '@(^|/)fb(/|$)@',
+        '@/AUTODEPS$@',
         '@/TARGETS$@',
         '@/PLATFORM$@',
         '@/\.hgsparse(-\w+)?$@',
