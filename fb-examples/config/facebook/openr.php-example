@@ -29,12 +29,6 @@ final class FacebookOpenr extends FBShipItConfig {
   }
 
   <<__Override>>
-  protected static function getFBCodeBuilderTravisConfig(
-  ): string {
-    return 'fbcode/openr/public_tld/.travis.yml';
-  }
-
-  <<__Override>>
     public static function getPathMappingsNonFBCodeBuilder(
     ): ImmMap<string, string> {
     return ImmMap {
