@@ -10,21 +10,24 @@
 namespace Facebook\ShipIt\Config;
 
 final class FacebookresearchBluewhaleTest extends FBConfigBaseTest {
-  const string ROOT = 'fbcode/ml/rl';
-
   <<__Override>>
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {
-      self::ROOT."/" => 'ml/rl/',
+      "fbcode/ml/rl/" => 'ml/rl/',
 
-      self::ROOT.'/test/gym/open_ai_gym_environment.py' =>
+        'fbcode/ml/rl/test/gym/open_ai_gym_environment.py' =>
         'ml/rl/test/gym/open_ai_gym_environment.py',
-      self::ROOT.'/training/discrete_action_predictor.py' =>
+        'fbcode/ml/rl/training/discrete_action_predictor.py' =>
         'ml/rl/training/discrete_action_predictor.py',
 
-      self::ROOT.'/TARGETS' => null,
+        'fbcode/ml/rl/TARGETS' => null,
+        'fbcode/ml/rl/fb/some_internal_file' => null,
+        'fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/src/main/scala/com/facebook/spark/rl/fb/some_internal_file' => null,
 
-      self::ROOT.'/oss/README.md' => 'README.md',
-    };
+        'fbcode/ml/rl/oss/README.md' => 'README.md',
+
+        'fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/src/main/scala/com/facebook/spark/rl/run.scala' =>
+        'preprocessing/src/main/scala/com/facebook/spark/rl/run.scala',
+        };
   }
 }

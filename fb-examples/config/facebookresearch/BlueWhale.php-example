@@ -19,29 +19,24 @@ use \Facebook\ShipIt\ {
 };
 
 final class FacebookresearchBluewhale extends FBShipItConfig {
-  const string ROOT = "fbcode/ml/rl";
-
   <<__Override>>
   protected static function getDefaultStrippedFiles(): ImmVector<string> {
-    $paths_to_omit = ImmVector {
-      # Keep the fb directory internal
-      "fb",
+    return ImmVector {
+      '@^fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/pom.xml@',
     };
-    return $paths_to_omit->map(
-      function ($path) {
-        return "@^".self::ROOT."/$path(/|$)@";
-      }
-    );
   }
 
   <<__Override>>
   public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       # Put the oss directory into root
-      self::ROOT."/oss/" => "",
+      "fbcode/ml/rl/oss/" => "",
 
-      # We want the contents of fbcode/ml/rl/... to appear in ml/rl/...
-      self::ROOT."/" => "ml/rl/",
+        # We want the contents of fbcode/ml/rl/... to appear in ml/rl/...
+        "fbcode/ml/rl/" => "ml/rl/",
+
+        # Put the dqn-preprocessing in preprocessing
+        "fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/" => "preprocessing/",
     };
   }
 
