@@ -51,12 +51,6 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
       $method,
       $classname,
     );
-    invariant(
-      null !== $rm->getAttribute('TestsBypassVisibility'),
-      '"%s" is not annotated with "TestsBypassVisibility" on "%s"',
-      $method,
-      $classname,
-    );
     $rm->setAccessible(true);
     return $rm->invokeArgs(null, $args);
   }
