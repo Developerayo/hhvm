@@ -29,6 +29,7 @@ final class FacebookRelay extends FBShipItConfig {
   const string RELAY_COMPILER = self::RELAY_OSS.'relay-compiler/';
   const string RELAY_RUNTIME = self::RELAY_OSS.'relay-runtime/';
   const string RELAY_TEST_UTILS = self::RELAY_OSS.'relay-test-utils/';
+  const string RELAY_EXPERIMENTAL = self::RELAY_OSS.'relay-experimental/';
 
   <<__Override>>
   protected static function defaultProjectFilterChangeset(
@@ -59,6 +60,7 @@ final class FacebookRelay extends FBShipItConfig {
       self::RELAY_COMPILER => 'packages/relay-compiler/',
       self::RELAY_RUNTIME => 'packages/relay-runtime/',
       self::RELAY_TEST_UTILS => 'packages/relay-test-utils/',
+      self::RELAY_EXPERIMENTAL => 'packages/relay-experimental/',
     };
   }
 
