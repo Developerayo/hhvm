@@ -13,6 +13,7 @@ use \Facebook\ShipIt\ {
   FBCommonFilters,
   FBShipItCLIStaticConfig,
   FBShipItConfig,
+  FBSourceBranchConfig,
   GetPathMappingsFn,
   ShipItChangeset,
   ShipItPathFilters,
@@ -22,8 +23,42 @@ final class FacebookresearchBluewhale extends FBShipItConfig {
   <<__Override>>
   protected static function getDefaultStrippedFiles(): ImmVector<string> {
     return ImmVector {
-      '@^fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/pom.xml@',
+      '@^fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/fb-pom.xml@',
+      '@^fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/sandcastle.ini@',
     };
+  }
+
+  <<__Override>>
+  protected static function defaultProjectFilterChangeset(
+    ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
+  ): ShipItChangeset {
+    return $changeset
+      |> ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> \str_replace(
+          'oss-pom.xml',
+          'pom.xml',
+          \str_replace('/pom.xml', '/fb-pom.xml', $path)),
+      )
+      |> parent::defaultProjectFilterChangeset($$, $get_path_mappings);
+  }
+
+  <<__Override>>
+  protected static function projectImportChangeset(
+    ShipItChangeset $changeset,
+    FBSourceBranchConfig $branch_config,
+  ): \Facebook\ShipIt\ShipItChangeset {
+    return $changeset
+      |> parent::projectImportChangeset($$, $branch_config)
+      |> \Facebook\ShipIt\ShipItPathFilters::rewritePaths(
+        $$,
+        $path ==> \str_replace(
+          'pom.xml',
+          'oss-pom.xml',
+          $path,
+        ),
+      );
   }
 
   <<__Override>>
@@ -36,7 +71,8 @@ final class FacebookresearchBluewhale extends FBShipItConfig {
         "fbcode/ml/rl/" => "ml/rl/",
 
         # Put the dqn-preprocessing in preprocessing
-        "fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/" => "preprocessing/",
+        "fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/" =>
+        "preprocessing/",
     };
   }
 

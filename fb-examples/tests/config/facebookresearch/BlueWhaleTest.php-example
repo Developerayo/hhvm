@@ -22,7 +22,21 @@ final class FacebookresearchBluewhaleTest extends FBConfigBaseTest {
 
         'fbcode/ml/rl/TARGETS' => null,
         'fbcode/ml/rl/fb/some_internal_file' => null,
-        'fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/src/main/scala/com/facebook/spark/rl/fb/some_internal_file' => null,
+
+        'fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/test' =>
+        'preprocessing/test',
+
+        'fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/src/main/scala/com/facebook/spark/rl/fb/some_internal_file' =>
+        null,
+
+        'fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/sandcastle.ini' =>
+        null,
+
+        'fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/pom.xml' =>
+        null,
+
+        'fbcode/fbjava/fb-spark-applications/rl/dqn-preprocessing/oss-pom.xml' =>
+        'preprocessing/pom.xml',
 
         'fbcode/ml/rl/oss/README.md' => 'README.md',
 
