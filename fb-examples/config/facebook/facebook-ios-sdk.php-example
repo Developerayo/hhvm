@@ -1,0 +1,68 @@
+<?hh // strict
+/**
+ * Copyright (c) 2018-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+};
+
+final class FacebookFacebookIosSdk extends FBShipItConfig {
+  const string ROOT = 'fbobjc/ios-sdk/';
+
+  <<__Override>>
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
+    return ImmVector {
+      '@^'.self::ROOT.'\.DS_Store$@',
+      '@^'.self::ROOT.'BUCK$@',
+      '@.*build-buck.sh@',
+      '@.*Buck-Info.plist@',
+      '@.*Entitlements@',
+      '@^'.self::ROOT.'\.hg.*$@',
+      '@^'.self::ROOT.'AccountKit@',
+      '@^'.self::ROOT.'Bolts-ObjC@',
+      '@^'.self::ROOT.'FBNotifications@',
+      '@^'.self::ROOT.'ads@',
+      '@^'.self::ROOT.'internal@',
+      '@^'.self::ROOT.'samples/LiveStreamApp@',
+      '@^'.self::ROOT.'vendor@',
+    };
+  }
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT => '',
+    };
+  }
+
+  <<__Override>>
+  public static function getSubmoduleMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT.'submodules/Bolts-ObjC.txt' => 'Bolts-ObjC',
+      self::ROOT.'submodules/FBNotifications.txt' => 'FBNotifications',
+      self::ROOT.'submodules/ios-snapshot-test-case.txt' =>
+        'vendor/ios-snapshot-test-case',
+      self::ROOT.'submodules/ocmock.txt' => 'vendor/OCMock',
+      self::ROOT.'submodules/OHHTTPStubs.txt' => 'vendor/OHHTTPStubs',
+      self::ROOT.'submodules/Tweaks.txt' => 'vendor/FBTweak',
+      self::ROOT.'submodules/xctool.txt' => 'vendor/xctool',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'facebook-ios-sdk',
+    );
+  }
+}
