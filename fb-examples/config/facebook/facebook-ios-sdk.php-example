@@ -22,12 +22,14 @@ final class FacebookFacebookIosSdk extends FBShipItConfig {
     return ImmVector {
       '@^'.self::ROOT.'\.DS_Store$@',
       '@^'.self::ROOT.'BUCK$@',
+      '@^'.self::ROOT.'README.fb$@',
       '@.*build-buck.sh@',
       '@.*Buck-Info.plist@',
       '@.*Entitlements@',
       '@^'.self::ROOT.'\.hg.*$@',
       '@^'.self::ROOT.'AccountKit@',
       '@^'.self::ROOT.'Bolts-ObjC@',
+      '@^'.self::ROOT.'Carthage@',
       '@^'.self::ROOT.'FBNotifications@',
       '@^'.self::ROOT.'ads@',
       '@^'.self::ROOT.'internal@',
@@ -46,14 +48,16 @@ final class FacebookFacebookIosSdk extends FBShipItConfig {
   <<__Override>>
   public static function getSubmoduleMappings(): ImmMap<string, string> {
     return ImmMap {
-      self::ROOT.'submodules/Bolts-ObjC.txt' => 'Bolts-ObjC',
-      self::ROOT.'submodules/FBNotifications.txt' => 'FBNotifications',
+      self::ROOT.'submodules/Bolts-ObjC.txt' => 'Carthage/Checkouts/Bolts-ObjC',
+      self::ROOT.'submodules/FBNotifications.txt' =>
+        'Carthage/Checkouts/FBNotifications',
       self::ROOT.'submodules/ios-snapshot-test-case.txt' =>
-        'vendor/ios-snapshot-test-case',
-      self::ROOT.'submodules/ocmock.txt' => 'vendor/OCMock',
-      self::ROOT.'submodules/OHHTTPStubs.txt' => 'vendor/OHHTTPStubs',
-      self::ROOT.'submodules/Tweaks.txt' => 'vendor/FBTweak',
-      self::ROOT.'submodules/xctool.txt' => 'vendor/xctool',
+        'Carthage/Checkouts/ios-snapshot-test-case',
+      self::ROOT.'submodules/ocmock.txt' => 'Carthage/Checkouts/ocmock',
+      self::ROOT.'submodules/OHHTTPStubs.txt' =>
+        'Carthage/Checkouts/OHHTTPStubs',
+      self::ROOT.'submodules/Tweaks.txt' => 'Carthage/Checkouts/Tweaks',
+      self::ROOT.'submodules/xctool.txt' => 'Carthage/Checkouts/xctool',
     };
   }
 
