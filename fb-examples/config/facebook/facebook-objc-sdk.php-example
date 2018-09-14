@@ -14,7 +14,7 @@ use \Facebook\ShipIt\ {
   FBShipItConfig,
 };
 
-final class FacebookFacebookIosSdk extends FBShipItConfig {
+final class FacebookFacebookObjcSdk extends FBShipItConfig {
   const string ROOT = 'fbobjc/ios-sdk/';
 
   <<__Override>>
@@ -66,7 +66,7 @@ final class FacebookFacebookIosSdk extends FBShipItConfig {
     return shape(
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebook',
-      'githubProject' => 'facebook-ios-sdk',
+      'githubProject' => 'facebook-objc-sdk',
     );
   }
 }
