@@ -92,14 +92,18 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
   final public static function filterChangeset(
     ShipItChangeset $changeset,
     FBSourceBranchConfig $branch_config,
+    bool $use_confidential_filter = true,
   ): ShipItChangeset {
-    return $changeset
+    $changeset = $changeset
       |> self::stripExceptSourceRoots($$, $branch_config)
       |> self::filterSubmodules($$)
       |> (
         self::getProjectFilterChangesetFn($branch_config)
-      )($$, self::getPathMappingsFn($branch_config))
-      |> FBConfidentialFilter::applyAll($$);
+      )($$, self::getPathMappingsFn($branch_config));
+    if ($use_confidential_filter) {
+      $changeset = FBConfidentialFilter::applyAll($changeset);
+    }
+    return $changeset;
   }
 
   public static function getSubmoduleMappings(): ImmMap<string, string> {
@@ -259,7 +263,11 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
         ($changesets, $dest) ==> self::postFilterChangesets($changesets, $dest),
       ),
       new ShipItVerifyRepoPhase(
-        $changeset ==> self::filterChangeset($changeset, $branch_config),
+        $changeset ==> self::filterChangeset(
+          $changeset,
+          $branch_config,
+          /* skip confidential filter b/c commits are not published */ false,
+        ),
       ),
       new ShipItPushPhase(),
     };
