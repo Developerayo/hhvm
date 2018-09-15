@@ -89,6 +89,7 @@ final class FacebookFlow extends FBShipItConfig {
       //
       // keep these in sync with fbcode/flow/facebook/dep_test.py!
       //
+      '@fbcode/hphp/hack/src/common/@',
       '@fbcode/hphp/hack/src/dfind/@',
       '@fbcode/hphp/hack/src/find/@',
       '@fbcode/hphp/hack/src/fsnotify_linux/@',
