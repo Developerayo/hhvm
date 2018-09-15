@@ -1,0 +1,91 @@
+<?hh // strict
+/**
+ * Copyright (c) 2018-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  ShipItChangeset,
+  GetPathMappingsFn,
+  ShipItConditionalLinesFilter,
+  FBSourceBranchConfig,
+};
+
+final class FacebookFacebookAndroidSdk extends FBShipItConfig {
+
+  const string ROOT = 'fbandroid/first-party/java/androidsdk/';
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT => '',
+    };
+  }
+
+  <<__Override>>
+  protected static function getDefaultStrippedFiles(): ImmVector<string> {
+    return ImmVector {
+      '@^'.self::ROOT.'\.DS_Store$@',
+      '@^'.self::ROOT.'\.gradle@',
+      '@^'.self::ROOT.'\.idea@',
+      '@^'.self::ROOT.'accountkit@',
+      '@^'.self::ROOT.'ads@',
+      '@^'.self::ROOT.'androidsdk\.iml@',
+      '@^'.self::ROOT.'build/@',
+      '@^'.self::ROOT.'facebook-livestreaming@',
+      '@^'.self::ROOT.'facebook-loginkit@',
+      '@^'.self::ROOT.'facebook-marketing@',
+      '@^'.self::ROOT.'internal@',
+      '@^'.self::ROOT.'local.properties@',
+      '@^'.self::ROOT.'out@',
+      '@^'.self::ROOT.'plugins@',
+      '@^'.self::ROOT.'facebook-[^/]*/build/@',
+      '@^'.self::ROOT.'facebook/BUCK@',
+      '@.facebook*BUCK@', //BUCK file under each project
+      '@.*facebook.*\.iml@',
+    };
+  }
+
+  <<__Override>>
+  protected static function defaultProjectFilterChangeset(
+    ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
+  ): ShipItChangeset {
+    return parent::defaultProjectFilterChangeset($changeset, $get_path_mappings)
+      |> ShipItConditionalLinesFilter::commentLines($$, '@fb-only', '//');
+  }
+
+  <<__Override>>
+  final protected static function projectImportChangeset(
+    ShipItChangeset $changeset,
+    FBSourceBranchConfig $branch_config,
+  ): ShipItChangeset {
+    return $changeset
+      |> ShipItConditionalLinesFilter::uncommentLines($$, '@fb-only', '//')
+      |> parent::projectImportChangeset($$, $branch_config);
+  }
+
+
+  <<__Override>>
+  protected static function getStripCommonFilesExceptions(): ImmVector<string> {
+    return ImmVector {
+      '@^([^/]+/)*(?:(?!com/)([^/]+/))facebook(/|$)@',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'fbsource',
+      'githubOrg' => 'facebook',
+      'githubProject' => 'facebook-android-sdk',
+    );
+  }
+}
