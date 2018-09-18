@@ -33,7 +33,6 @@ final class FacebookFacebookObjcSdk extends FBShipItConfig {
       '@^'.self::ROOT.'FBNotifications@',
       '@^'.self::ROOT.'ads@',
       '@^'.self::ROOT.'internal@',
-      '@^'.self::ROOT.'samples/LiveStreamApp@',
       '@^'.self::ROOT.'vendor@',
     };
   }
