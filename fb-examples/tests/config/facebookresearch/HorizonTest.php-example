@@ -9,7 +9,7 @@
  */
 namespace Facebook\ShipIt\Config;
 
-final class FacebookresearchBluewhaleTest extends FBConfigBaseTest {
+final class FacebookresearchHorizonTest extends FBConfigBaseTest {
   <<__Override>>
   public static function getExamplePathMappings(): ImmMap<string, ?string> {
     return ImmMap {

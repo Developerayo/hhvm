@@ -19,7 +19,7 @@ use \Facebook\ShipIt\ {
   ShipItPathFilters,
 };
 
-final class FacebookresearchBluewhale extends FBShipItConfig {
+final class FacebookresearchHorizon extends FBShipItConfig {
   <<__Override>>
   protected static function getDefaultStrippedFiles(): ImmVector<string> {
     return ImmVector {
@@ -81,7 +81,7 @@ final class FacebookresearchBluewhale extends FBShipItConfig {
     return shape(
       'internalRepo' => 'fbsource',
       'githubOrg' => 'facebookresearch',
-      'githubProject' => 'BlueWhale',
+      'githubProject' => 'Horizon',
     );
   }
 }
