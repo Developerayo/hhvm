@@ -31,6 +31,7 @@ final class ShipItConditionalLinesFilter {
     string $marker,
     string $comment_start,
     ?string $comment_end = null,
+    bool $remove_content = false,
   ): ShipItChangeset {
     $pattern =
       '/^([-+ ]\s*)(\S.*) '.
@@ -40,7 +41,10 @@ final class ShipItConditionalLinesFilter {
       ($comment_end === null ? '' : (' '.\preg_quote($comment_end, '/'))).
       '$/';
 
-    $replacement = '\\1'.$comment_start.' '.$marker.': \\2';
+    $replacement = '\\1'.$comment_start.' '.$marker;
+    if (!$remove_content) {
+      $replacement .= ': \\2';
+    }
     if ($comment_end !== null) {
       $replacement .= ' '.$comment_end;
     }

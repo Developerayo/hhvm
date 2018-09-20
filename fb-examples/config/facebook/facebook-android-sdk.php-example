@@ -59,19 +59,14 @@ final class FacebookFacebookAndroidSdk extends FBShipItConfig {
     GetPathMappingsFn $get_path_mappings,
   ): ShipItChangeset {
     return parent::defaultProjectFilterChangeset($changeset, $get_path_mappings)
-      |> ShipItConditionalLinesFilter::commentLines($$, '@fb-only', '//');
+      |> ShipItConditionalLinesFilter::commentLines(
+        $$,
+        '@fb-only',
+        '//',
+        null,
+        true
+      );
   }
-
-  <<__Override>>
-  final protected static function projectImportChangeset(
-    ShipItChangeset $changeset,
-    FBSourceBranchConfig $branch_config,
-  ): ShipItChangeset {
-    return $changeset
-      |> ShipItConditionalLinesFilter::uncommentLines($$, '@fb-only', '//')
-      |> parent::projectImportChangeset($$, $branch_config);
-  }
-
 
   <<__Override>>
   protected static function getStripCommonFilesExceptions(): ImmVector<string> {
