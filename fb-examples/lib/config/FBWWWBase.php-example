@@ -26,6 +26,16 @@ abstract class FBWWWBase extends FBShipItConfig {
     GetPathMappingsFn $get_path_mappings,
   ): ShipItChangeset {
     return parent::defaultProjectFilterChangeset($changeset, $get_path_mappings)
+      |> ShipItConditionalLinesFilter::commentLines(
+        $$,
+        '@oss-disable',
+        '//',
+      )
+      |> ShipItConditionalLinesFilter::uncommentLines(
+        $$,
+        '@oss-enable',
+        '//',
+      )
       |> ShipItPathFilters::rewritePaths(
         $$,
         $path ==> \preg_replace(

@@ -23,24 +23,6 @@ abstract class HhvmHslBase extends FBWWWBase {
   abstract const string ROOT;
 
   <<__Override>>
-  final protected static function defaultProjectFilterChangeset(
-    ShipItChangeset $changeset,
-    GetPathMappingsFn $get_path_mappings,
-  ): ShipItChangeset {
-    return parent::defaultProjectFilterChangeset($changeset, $get_path_mappings)
-      |> ShipItConditionalLinesFilter::commentLines(
-        $$,
-        '@oss-disable',
-        '//',
-      )
-      |> ShipItConditionalLinesFilter::uncommentLines(
-        $$,
-        '@oss-enable',
-        '//',
-      );
-  }
-
-  <<__Override>>
   public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       static::ROOT.'__github__/dot_' => '.',
