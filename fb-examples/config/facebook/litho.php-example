@@ -41,6 +41,7 @@ final class FacebookLitho extends FBShipItConfig {
 
       // Fallout from adding bzl files to common ShipIt filters
       '@LITHO_DEFS\.bzl$@',
+      '@tools/build_defs/oss/.+\.bzl$@',
     };
   }
 }
