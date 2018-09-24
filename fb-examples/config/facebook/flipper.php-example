@@ -19,7 +19,7 @@ final class FacebookFlipper extends FBShipItConfig {
   public static function getDefaultPathMappings(): ImmMap<string, string> {
     return ImmMap {
       'xplat/sonar/' => '',
-      'fbobjc/Libraries/FBCxxUtils/FBCxxUtils/' => 'iOS/SonarKit/FBCxxUtils/',
+      'fbobjc/Libraries/FBCxxUtils/FBCxxUtils/' => 'iOS/FlipperKit/FBCxxUtils/',
     };
   }
 
@@ -34,7 +34,7 @@ protected static function getStripCommonFilesExceptions(): ImmVector<string> {
   protected static function getDefaultStrippedFiles(): ImmVector<string> {
     return ImmVector {
       '@xplat/sonar/src/fb[/|$]@',
-      '@xplat/sonar/iOS/SonarKit/FBCxxUtils[/|$]@',
+      '@xplat/sonar/iOS/FlipperKit/FBCxxUtils[/|$]@',
       '@xplat/sonar/iOS/Plugins/Facebook[/|$]@',
       '@xplat/sonar/third-party[/|$]@',
     };
