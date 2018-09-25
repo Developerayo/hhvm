@@ -107,13 +107,13 @@ final class FBCommonFilters {
       ImmVector {
         '@^([^/]+/)*(?:(?!com/)([^/]+/))facebook(/|$)@',
         '@^facebook[/|$]@',
+        '@(^|/)\.patternlint(/|$)@',
         '@(^|/)fb[-_]?only(/|$)@',
         '@(^|/)fb(/|$)@',
         '@/AUTODEPS$@',
         '@/TARGETS$@',
         '@/PLATFORM$@',
         '@/\.hgsparse(-\w+)?$@',
-        '@/\.patternlint\.json$@',
         '@/BUCK$@', /** MOBILE DEVELOPERS: HERE BE DANGER **/
         '@/FBBUILD_CONFIG$@',
         '@/BUILD_MODE$@',
