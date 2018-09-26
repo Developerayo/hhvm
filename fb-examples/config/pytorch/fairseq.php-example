@@ -29,7 +29,6 @@ final class PytorchFairseq extends FBShipItConfig {
     return ImmVector {
       '@^'.self::ROOT.'README.fb$@',
       '@^'.self::ROOT.'TARGETS$@',
-      '@^'.self::ROOT.'fairseq/distributed_utils.py@',
       '@^'.self::ROOT.'fairseq/nccl.py@',
     };
   }
