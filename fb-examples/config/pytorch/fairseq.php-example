@@ -30,6 +30,7 @@ final class PytorchFairseq extends FBShipItConfig {
       '@^'.self::ROOT.'README.fb$@',
       '@^'.self::ROOT.'TARGETS$@',
       '@^'.self::ROOT.'fairseq/nccl.py@',
+      '@^'.self::ROOT.'.*/fb_@',
     };
   }
 
