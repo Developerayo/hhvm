@@ -22,6 +22,7 @@ final class PytorchFairseqTest extends FBConfigBaseTest {
       self::ROOT.'fairseq' => 'fairseq',
       self::ROOT.'fairseq/nccl.py' => null,
       self::ROOT.'fairseq/utils.py' => 'fairseq/utils.py',
+      self::ROOT.'fairseq/fb_test_shipit' => null,
     };
   }
 }
