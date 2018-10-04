@@ -97,6 +97,7 @@ final class FacebookInfer extends FBShipItConfig {
       '.jfconfig',
       '.deweyconfig',
       '.facebook',
+      '.watchmanconfig',
       'ci_config.json',
       'info.json',
       'pull-request.patch',
