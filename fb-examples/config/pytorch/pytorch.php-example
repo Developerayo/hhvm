@@ -72,6 +72,7 @@ final class PytorchPytorch extends FBShipItConfig {
       self::ROOT.'submodules/python-six-rev.txt' => 'third_party/python-six',
       self::ROOT.'submodules/sleef-rev.txt' => 'third_party/sleef',
       self::ROOT.'submodules/zstd-rev.txt' => 'third_party/zstd',
+      self::ROOT.'submodules/nccl-rev.txt' => 'third_party/nccl/nccl',
     };
   }
 
