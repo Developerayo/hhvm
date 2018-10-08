@@ -17,7 +17,8 @@ final class ShipItSubmoduleFilter {
     ?string $new_rev,
   ): string {
     if ($old_rev === null && $new_rev !== null) {
-      \printf(
+      \fprintf(
+        \STDERR,
         "  Adding submodule at '%s'.\n",
         $path,
       );
