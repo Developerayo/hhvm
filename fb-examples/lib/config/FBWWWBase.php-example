@@ -105,6 +105,9 @@ abstract class FBWWWBase extends FBShipItConfig {
     return self::renameFunctions(
       $changeset,
       $name ==> {
+        if (\substr($name, 0, 2) === '__') {
+          return $name;
+        }
         if ($name === 'from_async') {
           return 'gen';
         }
