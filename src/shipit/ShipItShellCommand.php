@@ -134,7 +134,7 @@ class ShipItShellCommand {
           }
           $exitcode = $status['exitcode'];
           invariant(
-            \is_int($exitcode) && $exitcode > 0,
+            $exitcode is int && $exitcode > 0,
             'Expected non-zero exit from process, got %s',
             \var_export($exitcode, true),
           );

@@ -49,7 +49,7 @@ final class ShipItChangeset {
     }
     $short_id = \substr($this->getID(), 0, ShipItUtil::SHORT_REV_LENGTH);
     invariant(
-      \is_string($short_id),
+      $short_id is string,
       'got %s, expected string',
       \gettype($short_id),
     );
