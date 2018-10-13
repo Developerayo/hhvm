@@ -46,7 +46,7 @@ final class FacebookexperimentalEdenTest extends FBConfigBaseTest {
       # TARGETS files get stripped
       'fbcode/eden/fs/config/test/TARGETS' => null,
       # The eden-config.h file gets stripped
-      'eden/fs/eden-config.h' => null,
+      'fbcode/eden/fs/eden-config.h' => null,
     };
   }
 }
