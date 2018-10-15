@@ -234,6 +234,13 @@ final class FBRepoInitPhase extends ShipItPhase {
           'ssh://git.vip.facebook.com/data/gitrepos/fbwin-gameroom.git',
           'fbwin-gameroom',
         };
+      case 'WABIZ':
+        return ImmVector {
+          '/usr/bin/git',
+          'clone',
+          'ssh://git.vip.facebook.com/data/gitrepos/whatsapp/biz.git',
+          'WABIZ',
+        };
         break;
     }
     $config = FBRepoCloneCommand::get($name);
