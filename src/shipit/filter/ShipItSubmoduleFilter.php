@@ -35,7 +35,8 @@ index 0000000..%s 160000
         $new_rev,
       );
     } else if ($new_rev === null && $old_rev !== null) {
-      \printf(
+      \fprintf(
+        \STDERR,
         "  Removing submodule at '%s'.\n",
         $path,
       );
