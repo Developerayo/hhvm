@@ -219,7 +219,6 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
   ): ImmVector<ShipItPhase> {
     $static_config = static::getStaticConfig();
     $config = static::getBaseConfig($branch_config);
-
     return ImmVector {
       new ShipItFilterSanityCheckPhase(
         $changeset ==> self::filterChangeset($changeset, $branch_config),
@@ -268,6 +267,12 @@ abstract class FBShipItConfig implements IHasFBShipItCLIStaticConfig {
           $branch_config,
           /* skip confidential filter b/c commits are not published */ false,
         ),
+      ),
+      new ShipItPushLfsPhase(
+        ShipItRepoSide::DESTINATION,
+        $static_config['githubOrg'],
+        $static_config['githubProject'],
+        Shapes::idx($static_config, 'gitLfs', false),
       ),
       new ShipItPushPhase(),
     };

@@ -94,6 +94,14 @@ abstract class ShipItRepo {
   public abstract function pull(): void;
 
   /**
+   * push lfs support
+   */
+  public abstract function pushLfs(
+    string $lfsPullEndpoint,
+    string $lfsPushEndpoint,
+  ): void;
+
+  /**
    * Get the origin of the checkout.
    */
   public abstract function getOrigin(): string;

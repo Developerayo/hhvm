@@ -421,6 +421,25 @@ class ShipItRepoGIT
   }
 
   <<__Override>>
+  public function pushLfs(string $pullEndpoint, string $pushEndpoint): void {
+    invariant(
+      \file_exists($this->getPath().'/.gitattributes'),
+      '.gitattributes not exists, cowardly refusing to pull lfs',
+    );
+    // ignore .lfsconfig. otherwise this would interfere
+    // with the downstream consumer.
+    invariant(
+      !\file_exists($this->getPath().'/.lfsconfig'),
+      '.lfsconfig exists, needs to strip it in your config',
+    );
+    $this->gitCommand('lfs', 'install', '--local');
+    $this->gitCommand('config', '--local', 'lfs.url', $pullEndpoint);
+    $this->gitCommand('lfs', 'pull');
+    $this->gitCommand('config', '--local', 'lfs.pushurl', $pushEndpoint);
+    $this->gitCommand('lfs', 'push', 'origin', $this->branch);
+  }
+
+  <<__Override>>
   public function pull(): void {
     if (ShipItRepo::$VERBOSE & ShipItRepo::VERBOSE_FETCH) {
       \fwrite(\STDERR, "** Updating checkout in {$this->path}\n");

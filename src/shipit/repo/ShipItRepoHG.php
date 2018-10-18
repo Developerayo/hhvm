@@ -384,6 +384,11 @@ class ShipItRepoHG extends ShipItRepo
   }
 
   <<__Override>>
+  public function pushLfs(string $pullEndpoint, string $pushEndpoint): void {
+    throw new ShipItRepoHGException($this, "push lfs not implemented for hg");
+  }
+
+  <<__Override>>
   public function pull(): void {
     $lock = $this->getSharedLock()->getExclusive();
 

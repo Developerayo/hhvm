@@ -37,6 +37,9 @@ final class FakeShipItRepo extends ShipItRepo {
   public function pull(): void {}
 
   <<__Override>>
+  public function pushLfs(string $pullEndpoint, string $pushEndpoint): void {}
+
+  <<__Override>>
   public function getOrigin(): string {
     return '';
   }
