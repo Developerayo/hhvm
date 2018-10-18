@@ -1,0 +1,39 @@
+<?hh // strict
+/**
+ * Copyright (c) 2018-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\{
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  ShipItChangeset,
+  GetPathMappingsFn,
+  FBCommonFilters,
+  ShipItPathFilters,
+};
+
+final class FacebookincubatorFacebookPixelForWordpress extends FBShipItConfig {
+  const string ROOT = 'facebook_pixel_framework/facebook_pixel_for_wordpress/';
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT => '',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'pse-demos',
+      'githubOrg' => 'facebookincubator',
+      'githubProject' => 'Facebook-Pixel-for-Wordpress',
+    );
+  }
+}
