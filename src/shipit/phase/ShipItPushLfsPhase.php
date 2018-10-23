@@ -61,12 +61,21 @@ final class ShipItPushLfsPhase extends ShipItPhase {
   }
 
   final private function getLfsPushEndpoint(): string {
-    return 'https://github.com/'.
+    $pushUrl = 'https://github.com/'.
       $this->organization.
       '/'.
       $this->project.
       '.git'.
       '/info/lfs';
+    $auth_url = ShipItGitHubUtils::authHttpsRemoteUrl(
+      $pushUrl,
+      ShipItTransport::HTTPS,
+      FBGitHubUtils::getCredentialsForProject(
+        $this->organization,
+        $this->project,
+      ),
+    );
+    return $auth_url;
   }
 
   // only dewey-lfs endpoint support now

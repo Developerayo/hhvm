@@ -434,7 +434,8 @@ class ShipItRepoGIT
     );
     $this->gitCommand('lfs', 'install', '--local');
     $this->gitCommand('config', '--local', 'lfs.url', $pullEndpoint);
-    $this->gitCommand('lfs', 'pull');
+    $this->gitCommand('config', '--local', 'lfs.fetchrecentcommitsdays', '7');
+    $this->gitCommand('lfs', 'fetch', '--recent');
     $this->gitCommand('config', '--local', 'lfs.pushurl', $pushEndpoint);
     $this->gitCommand('lfs', 'push', 'origin', $this->branch);
   }

@@ -26,6 +26,7 @@ abstract class ShipItGitHubUtils {
    *
    * This is used by ::initializeRepo().
    */
+  const string GIT_HTTPS_URL_PREFIX = 'https://';
   public abstract static function getCredentialsForProject(
     string $organization,
     string $project,
@@ -66,33 +67,13 @@ abstract class ShipItGitHubUtils {
         self::cloneAndVerifyRepo($origin, $local_path);
         break;
       case ShipItTransport::HTTPS:
+        $origin =
+          \sprintf('https://github.com/%s/%s.git', $organization, $project);
         if ($credentials === null) {
-          $origin = \sprintf(
-            'https://github.com/%s/%s.git',
-            $organization,
-            $project,
-          );
-
           self::cloneAndVerifyRepo($origin, $local_path);
           break;
         }
-
-        $access_token = Shapes::idx($credentials, 'access_token');
-        $auth_user = $access_token !== null
-          ? $access_token
-          : \sprintf(
-              '%s:%s',
-              \urlencode($credentials['user']),
-              \urlencode($credentials['password']),
-            );
-
-        $origin = \sprintf(
-          'https://%s@github.com/%s/%s.git',
-          $auth_user,
-          $organization,
-          $project,
-        );
-
+        $origin = self::authHttpsRemoteUrl($origin, $transport, $credentials);
         self::cloneAndVerifyRepo($origin, $local_path);
 
         $git_config('user.name', $credentials['name'])->runSynchronously();
@@ -106,6 +87,32 @@ abstract class ShipItGitHubUtils {
     );
 
     $git_config('remote.origin.url', $origin)->runSynchronously();
+  }
+
+  public static function authHttpsRemoteUrl(
+    string $remote_url,
+    ShipItTransport $transport,
+    ShipItGitHubCredentials $credentials,
+  ): string {
+    if ($transport !== ShipItTransport::HTTPS) {
+      return $remote_url;
+    }
+    $access_token = Shapes::idx($credentials, 'access_token');
+    $auth_user = $access_token !== null
+      ? $access_token
+      : \sprintf(
+          '%s:%s',
+          \urlencode($credentials['user']),
+          \urlencode($credentials['password']),
+        );
+    if (\strpos($remote_url, self::GIT_HTTPS_URL_PREFIX) === 0) {
+      $prefix_len = \strlen(self::GIT_HTTPS_URL_PREFIX);
+      return \substr($remote_url, 0, $prefix_len).
+        $auth_user.
+        '@'.
+        \substr($remote_url, $prefix_len);
+    }
+    return $remote_url;
   }
 
   private static function cloneAndVerifyRepo(
