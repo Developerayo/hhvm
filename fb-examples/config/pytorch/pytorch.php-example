@@ -71,8 +71,9 @@ final class PytorchPytorch extends FBShipItConfig {
       self::ROOT.'submodules/sleef-rev.txt' => 'third_party/sleef',
       self::ROOT.'submodules/zstd-rev.txt' => 'third_party/zstd',
       self::ROOT.'submodules/nccl-rev.txt' => 'third_party/nccl/nccl',
-      self::ROOT.'submodules/gemmlowp.txt' => 'third_party/gemmlowp',
+      self::ROOT.'submodules/gemmlowp.txt' => 'third_party/gemmlowp/gemmlowp',
       self::ROOT.'submodules/neon2sse.txt' => 'third_party/neon2sse',
+      self::ROOT.'submodules/QNNPACK.txt' => 'third_party/QNNPACK',
     };
   }
 
