@@ -102,6 +102,7 @@ final class FacebookexperimentalBuckit extends FBShipItConfig {
       'fbcode/experimental/pjameson/buckit/buckit/README' => 'README',
       'fbcode/experimental/pjameson/buckit/buckit/' => 'buckit/',
       'fbcode/experimental/pjameson/buckit/specs/' => 'specs/',
+      'fbcode/fs_image/' => 'fs_image/',  # Used by `image_*` macros.
       'fbcode/tools/build/buck/infra_macros/' => 'infra_macros/',
     };
   }
