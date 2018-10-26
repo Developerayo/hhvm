@@ -1,0 +1,52 @@
+<?hh // strict
+/**
+ * Copyright (c) 2018-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  FBSourceBranchConfig,
+};
+
+final class FacebookincubatorOculusGoKernel extends FBShipItConfig {
+  const string ROOT = '';
+  const string SOURCE_BRANCH = 'shipit-sync-release';
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::ROOT => '',
+    };
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'kernel-msm-4.4',
+      'githubOrg' => 'facebookincubator',
+      'githubProject' => 'oculus-go-kernel',
+    );
+  }
+
+  <<__Override>>
+  public static function getBranchConfigs(): ImmVector<FBSourceBranchConfig> {
+    return ImmVector {
+      shape(
+        'internal' => static::SOURCE_BRANCH,
+        'external' => 'master',
+      ),
+    };
+  }
+
+  <<__Override>>
+  public static function getLandBranch(): ?string {
+    return static::SOURCE_BRANCH;
+  }
+}
