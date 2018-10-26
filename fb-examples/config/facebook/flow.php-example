@@ -24,6 +24,24 @@ final class FacebookFlow extends FBShipItConfig {
   const HACK_ROOT_PLACEHOLDER = "<HACK_ROOT>/";
 
   <<__Override>>
+  public static function getBranchConfigs(): ImmVector<FBSourceBranchConfig> {
+    return ImmVector {
+      shape(
+        'internal' => 'master',
+        'external' => 'master',
+      ),
+      shape(
+        'internal' => 'remote/fbcode/releases/flow/v0.83',
+        'external' => 'v0.83',
+      ),
+      shape(
+        'internal' => 'remote/fbcode/releases/flow/v0.84',
+        'external' => 'v0.84',
+      ),
+    };
+  }
+
+  <<__Override>>
   protected static function defaultProjectFilterChangeset(
     ShipItChangeset $changeset,
     GetPathMappingsFn $get_path_mappings,
