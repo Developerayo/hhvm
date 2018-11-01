@@ -31,12 +31,12 @@ final class FacebookFlow extends FBShipItConfig {
         'external' => 'master',
       ),
       shape(
-        'internal' => 'remote/fbcode/releases/flow/v0.83',
-        'external' => 'v0.83',
+        'internal' => 'remote/fbcode/releases/flow/v0.85',
+        'external' => 'v0.85',
       ),
       shape(
-        'internal' => 'remote/fbcode/releases/flow/v0.84',
-        'external' => 'v0.84',
+        'internal' => 'remote/fbcode/releases/flow/v0.86',
+        'external' => 'v0.86',
       ),
     };
   }
