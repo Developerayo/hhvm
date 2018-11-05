@@ -37,7 +37,6 @@ protected static function getStripCommonFilesExceptions(): ImmVector<string> {
       '@xplat/sonar/iOS/FlipperKit/FBCxxUtils[/|$]@',
       '@xplat/sonar/iOS/Plugins/Facebook[/|$]@',
       '@xplat/sonar/third-party[/|$]@',
-      '@xplat/sonar/iOS/Plugins/FlipperKitLayoutPlugin/FlipperKitLayoutComponentKitSupport/NT.*@'
     };
   }
 
