@@ -65,6 +65,7 @@ final class FacebookexperimentalBuckit extends FBShipItConfig {
     'infra_macros/fbcode_macros/build_defs/paths_config.bzl',
     'infra_macros/fbcode_macros/build_defs/platform_overrides.bzl',
     'infra_macros/fbcode_macros/build_defs/visibility_exceptions.bzl',
+    'infra_macros/fbcode_macros/build_defs/allocator_targets.bzl',
     'infra_macros/fbcode_macros/build_defs/auto_pch_blacklist.bzl',
     'infra_macros/fbcode_macros/.buckconfig',
     # Files that are not cleaned up enough for OSS yet
