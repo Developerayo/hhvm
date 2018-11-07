@@ -43,7 +43,6 @@ final class PytorchPytorch extends FBShipItConfig {
   public static function getSubmoduleMappings(): ImmMap<string, string> {
     return ImmMap {
       self::ROOT.'submodules/benchmark-rev.txt' => 'third_party/benchmark',
-      self::ROOT.'submodules/catch-rev.txt' => 'third_party/catch',
       self::ROOT.'submodules/ComputeLibrary-rev.txt' =>
         'third_party/ComputeLibrary',
       self::ROOT.'submodules/cpuinfo-rev.txt' => 'third_party/cpuinfo',
