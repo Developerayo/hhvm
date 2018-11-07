@@ -33,6 +33,11 @@ final class FBToGitHubUserInfoTest extends BaseTest {
         null,
         null,
       ),
+      'lint directive' => tuple(
+        'bypass-lint',
+        null,
+        null,
+      ),
     ];
   }
 
