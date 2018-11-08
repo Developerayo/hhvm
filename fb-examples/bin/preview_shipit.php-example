@@ -12,5 +12,6 @@ namespace Facebook\ShipIt;
 require_once(__DIR__.'/../autoload.php');
 
 if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  FBShimPHP7::run($argv, $_ENV);
   FBShipItPreview::cliMain();
 }

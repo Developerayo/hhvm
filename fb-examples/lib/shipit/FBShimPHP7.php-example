@@ -1,0 +1,48 @@
+<?hh // strict
+/**
+ * Copyright (c) 2018-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+namespace Facebook\ShipIt;
+
+/**
+ * Shim for all existing cases where people run ShipIt with the 'php' wrapper.
+ * Rather than break that usage, or let it run in PHP5 mode, just fork out
+ * to an HHVM process in PHP7 mode (and print a warning).
+ */
+abstract final class FBShimPHP7 {
+  // TODO(T25280347) enable the shim once ShipItAPI / ShipItPushDaemon
+  // support hhvm_wrapper.
+  const bool SHIM_ACTIVE = false;
+  const string HHVM_WRAPPER = 'hhvm_wrapper';
+  const string HHVM_WRAPPER_ABSOLUTE = __DIR__.'/../../../'.self::HHVM_WRAPPER;
+
+  public static function run(
+    array<string> $argv,
+    KeyedContainer<string, string> $env,
+  ): void {
+    if (!self::SHIM_ACTIVE) {
+      return;
+    }
+    if (\end(&\explode('/', $env['_'])) === 'php') {
+      $message = "PHP5 execution detected. Forking to PHP7 mode.";
+      \printf("\033[33m%s\033[0m\n", $message);
+      $arg_string = \implode(' ', $argv);
+      $command = \sprintf("%s %s", self::HHVM_WRAPPER_ABSOLUTE, $arg_string);
+      $return = 0;
+      $descriptorspec = array(
+        0 => array("pipe", "r"),
+        1 => \STDOUT,
+        2 => \STDERR,
+      );
+      $pipes = [];
+      $process = \proc_open($command, $descriptorspec, &$pipes);
+      \fclose($pipes[0]);
+      exit(\proc_close($process));
+    }
+  }
+}

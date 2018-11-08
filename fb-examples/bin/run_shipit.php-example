@@ -22,5 +22,6 @@ final class RunShipIt {
 
 // Allow require() from unit test
 if (isset($argv) && realpath($argv[0]) === realpath(__FILE__)) {
+  FBShimPHP7::run($argv, $_ENV);
   RunShipIt::cliMain();
 }

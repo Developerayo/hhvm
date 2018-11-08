@@ -29,4 +29,5 @@ final class FBShipItGenerateStubsCLI {
   }
 }
 
+FBShimPHP7::run($argv, $_ENV);
 FBShipItGenerateStubsCLI::cliMain();
