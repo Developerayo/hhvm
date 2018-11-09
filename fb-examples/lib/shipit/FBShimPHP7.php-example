@@ -15,9 +15,6 @@ namespace Facebook\ShipIt;
  * to an HHVM process in PHP7 mode (and print a warning).
  */
 abstract final class FBShimPHP7 {
-  // TODO(T25280347) enable the shim once ShipItAPI / ShipItPushDaemon
-  // support hhvm_wrapper.
-  const bool SHIM_ACTIVE = false;
   const string HHVM_WRAPPER = 'hhvm_wrapper';
   const string HHVM_WRAPPER_ABSOLUTE = __DIR__.'/../../../'.self::HHVM_WRAPPER;
 
@@ -25,9 +22,6 @@ abstract final class FBShimPHP7 {
     array<string> $argv,
     KeyedContainer<string, string> $env,
   ): void {
-    if (!self::SHIM_ACTIVE) {
-      return;
-    }
     if (\end(&\explode('/', $env['_'])) === 'php') {
       $message = "PHP5 execution detected. Forking to PHP7 mode.";
       \printf("\033[33m%s\033[0m\n", $message);
