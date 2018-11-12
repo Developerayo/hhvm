@@ -134,16 +134,20 @@ final class FBCommonFilters {
     );
   }
 
-  const CLOSES_PR_REGEX = '@^(?:Closes|Pull Request resolved:) https://github.com/.+/.+/pull/([0-9]+)@im';
+  const CLOSES_PR_REGEX =
+    '@^(?:Closes|Pull Request resolved:) https://github.com/.+/.+/pull/([0-9]+)@im';
   public static function referencePullRequestNumber(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
     $matches = array();
-    if (\preg_match(
+    if (
+      \preg_match(
         self::CLOSES_PR_REGEX,
         $changeset->getMessage(),
         &$matches,
-      ) !== 1) {
+      ) !==
+        1
+    ) {
       return $changeset;
     }
     return $changeset->withSubject(
@@ -299,6 +303,7 @@ final class FBCommonFilters {
   public static function rewriteMentions(
     ShipItChangeset $changeset,
   ): ShipItChangeset {
+    $changeset = self::rewriteFBMentions($changeset);
     $changeset =
       ShipItUserFilters::rewriteMentions($changeset, FBToGitHubUserInfo::class);
     $changeset = ShipItMentions::rewriteMentionsWithoutAt(
@@ -310,6 +315,18 @@ final class FBCommonFilters {
       },
     );
     return $changeset;
+  }
+
+  public static function rewriteFBMentions(
+    ShipItChangeset $changeset,
+  ): ShipItChangeset {
+    $message = \preg_replace_callback(
+      // @[123:Name]
+      '/@\[(\d+):([^\]]+)\]/',
+      $matches ==> $matches[2],
+      $changeset->getMessage(),
+    );
+    return $changeset->withMessage($message);
   }
 
   private static function isBotUser(string $user): bool {

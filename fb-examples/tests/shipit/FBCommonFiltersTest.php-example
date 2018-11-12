@@ -281,4 +281,26 @@ cause_a_sev_many_files';
     $this->assertEquals($original_subject.' (#42)', $changeset->getSubject());
     $this->assertEquals('', $changeset->getMessage());
   }
+
+  public function testFilterFBMentions(
+  ): void {
+    $original_message = 'Summary:
+This is a test of @[12341:Name] mentions.
+So is @[12345:This] but with a greedy test char: ] foo
+
+@bypass-lint
+
+@[3213:Name2]';
+    $changeset = (new ShipItChangeset())
+      ->withMessage($original_message);
+    $changeset = FBCommonFilters::applyAll($changeset);
+    $expected_message = 'Summary:
+This is a test of Name mentions.
+So is This but with a greedy test char: ] foo
+
+bypass-lint
+
+Name2';
+    $this->assertEquals($expected_message, $changeset->getMessage());
+  }
 }
