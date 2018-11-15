@@ -60,26 +60,15 @@ final class FacebookOpenbmc extends FBShipItConfig {
   <<__Override>>
   protected static function getDefaultStrippedFiles(): ImmVector<string> {
     return ImmVector {
-      // Explicitly remove the files replaced by the
+      // Explicitly remove the recipe files which will be replaced by the
       // github directory contents.
       '@^meta-facebook/classes/fb-only-network.bbclass@',
-      '@^meta-aspeed/recipes-bsp/u-boot/u-boot_2013.07.bb@',
-      '@^meta-aspeed/recipes-bsp/u-boot/u-boot_2016.07.bb@',
-      '@^meta-aspeed/recipes-bsp/u-boot/u-boot-fw-utils_2013.07.bb@',
-      '@^meta-aspeed/recipes-bsp/u-boot/u-boot-fw-utils_2016.07.bb@',
-      '@^meta-aspeed/recipes-bsp/u-boot/u-boot.inc@',
-      '@^meta-aspeed/recipes-bsp/u-boot/u-boot-mkimage_2016.07.bb@',
+      '@^meta-aspeed/recipes-bsp/u-boot/u-boot.*@',
       '@^meta-aspeed/recipes-bsp/u-boot/verified-boot.inc@',
-      '@^meta-aspeed/recipes-kernel/linux/linux-aspeed_2.6.28.9.bb@',
-      '@^meta-aspeed/recipes-kernel/linux/linux-aspeed_4.1.bb@',
-      '@^meta-aspeed/recipes-kernel/linux/linux-aspeed_4.17.bb@',
-      '@^meta-aspeed/recipes-kernel/linux/linux-aspeed_4.17.bbappend@',
-      '@^meta-aspeed/recipes-kernel/linux/linux-aspeed.inc@',
+      '@^meta-aspeed/recipes-kernel/linux/linux-.*@',
       # Remove linux and uboot patches (for now, resolve independently).
       '@^meta-aspeed/recipes-kernel/linux/files/linux-.*@',
-      '@^meta-aspeed/recipes-kernel/linux/linux-.*@',
       '@^meta-aspeed/recipes-bsp/u-boot/files/u-boot.*@',
-      '@^meta-aspeed/recipes-bsp/u-boot/u-boot.*@',
       # Yocto releases are internal only.
       '@^yocto@',
       '@^.gitmodules@',
@@ -122,6 +111,10 @@ final class FacebookOpenbmc extends FBShipItConfig {
         'meta-aspeed/recipes-kernel/linux/linux-aspeed_4.17.bb',
       'github/meta-aspeed/recipes-kernel/linux/linux-aspeed_4.17.bbappend' =>
         'meta-aspeed/recipes-kernel/linux/linux-aspeed_4.17.bbappend',
+      'github/meta-aspeed/recipes-kernel/linux/linux-aspeed_4.18.bb' =>
+        'meta-aspeed/recipes-kernel/linux/linux-aspeed_4.18.bb',
+      'github/meta-aspeed/recipes-kernel/linux/linux-aspeed_4.18.bbappend' =>
+        'meta-aspeed/recipes-kernel/linux/linux-aspeed_4.18.bbappend',
       'github/meta-aspeed/recipes-kernel/linux/linux-aspeed.inc' =>
       'meta-aspeed/recipes-kernel/linux/linux-aspeed.inc',
       'github/sync_yocto.sh' => 'sync_yocto.sh',
@@ -170,6 +163,8 @@ final class FacebookOpenbmc extends FBShipItConfig {
       '@^meta-aspeed/recipes-kernel/linux/linux-aspeed_4.1.bb@',
       '@^meta-aspeed/recipes-kernel/linux/linux-aspeed_4.17.bb@',
       '@^meta-aspeed/recipes-kernel/linux/linux-aspeed_4.17.bbappend@',
+      '@^meta-aspeed/recipes-kernel/linux/linux-aspeed_4.18.bb@',
+      '@^meta-aspeed/recipes-kernel/linux/linux-aspeed_4.18.bbappend@',
       '@^meta-aspeed/recipes-kernel/linux/linux-aspeed.inc@',
     };
   }
