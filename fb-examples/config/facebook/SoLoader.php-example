@@ -35,8 +35,7 @@ final class FacebookSoloader extends FBShipItConfig {
       '@BUCK@',
 
       // Fallout from adding bzl files to common ShipIt filters
-      '@tools/build_defs/android/fb_core_android_library\.bzl$@',
-      '@oss_defs/soloader_defs\.bzl$@',
+      '@tools/build_defs/oss/.+\.bzl$@',
     };
   }
 
