@@ -29,11 +29,13 @@ final class FacebookMysql56 extends FBShipItConfig {
   // after "git rev-parse origin/branch_name". NB! If you change it here then
   // you'll need to modify FBRepoInitPhase.php as well.
   const string SOURCE_BRANCH = 'fb-mysql-5.6.35';
+  const string SOURCE_BRANCH_8_0 = 'fb-mysql-8.0.13';
 
   // This is the actual GitHub destination branch where changes will be pushed
   // to. It should be accessible from under the project URI:
   // https://github.com/facebook/mysql-5.6
   const string DESTINATION_BRANCH = 'fb-mysql-5.6.35';
+  const string DESTINATION_BRANCH_8_0 = 'fb-mysql-8.0.13';
 
   <<__Override>>
   protected static function getStripCommonFilesExceptions(): ImmVector<string> {
@@ -53,6 +55,7 @@ final class FacebookMysql56 extends FBShipItConfig {
   <<__Override>>
   public static function getSubmoduleMappings(): ImmMap<string, string> {
     return ImmMap {
+      'boost' => 'boost',
       'rocksdb' => 'rocksdb',
       'rqg'=> 'rqg',
     };
@@ -73,6 +76,10 @@ final class FacebookMysql56 extends FBShipItConfig {
       shape(
         'internal' => self::SOURCE_BRANCH,
         'external' => self::DESTINATION_BRANCH,
+      ),
+      shape(
+        'internal' => self::SOURCE_BRANCH_8_0,
+        'external' => self::DESTINATION_BRANCH_8_0,
       ),
     };
   }
