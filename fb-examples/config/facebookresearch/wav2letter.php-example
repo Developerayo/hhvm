@@ -9,10 +9,33 @@
  */
 namespace Facebook\ShipIt\Config;
 
-use \Facebook\ShipIt\{FBShipItCLIStaticConfig, FBShipItConfig};
+use \Facebook\ShipIt\{
+  FBCommonFilters,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+  ShipItPathFilters,
+};
 
 final class FacebookresearchWav2letter extends FBShipItConfig {
   const string ROOT = 'fbcode/deeplearning/projects/wav2letter/';
+
+  <<__Override>>
+   protected static function defaultProjectFilterChangeset(
+     ShipItChangeset $changeset,
+     GetPathMappingsFn $get_path_mappings,
+   ): ShipItChangeset {
+     return $changeset
+       |> FBCommonFilters::applyAll($$)
+       |> ShipItPathFilters::stripPaths(
+         $$,
+         ImmVector {
+           '@src/experimental@',
+         }
+       )
+       |> ShipItPathFilters::moveDirectories($$, $get_path_mappings());
+   }
 
   <<__Override>>
   public static function getDefaultPathMappings(): ImmMap<string, string> {
