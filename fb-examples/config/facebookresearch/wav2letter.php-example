@@ -12,7 +12,7 @@ namespace Facebook\ShipIt\Config;
 use \Facebook\ShipIt\{FBShipItCLIStaticConfig, FBShipItConfig};
 
 final class FacebookresearchWav2letter extends FBShipItConfig {
-  const string ROOT = 'fbcode/deeplearning/wav2letter';
+  const string ROOT = 'fbcode/deeplearning/projects/wav2letter';
 
   <<__Override>>
   public static function getDefaultPathMappings(): ImmMap<string, string> {
