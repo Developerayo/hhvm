@@ -31,6 +31,7 @@ final class FacebookresearchWav2letter extends FBShipItConfig {
        |> ShipItPathFilters::stripPaths(
          $$,
          ImmVector {
+           '@scripts@',
            '@src/experimental@',
          }
        )
