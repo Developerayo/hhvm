@@ -33,6 +33,7 @@ final class FacebookresearchWav2letter extends FBShipItConfig {
          ImmVector {
            '@scripts@',
            '@src/experimental@',
+           '@CHANGELOG@',
          }
        )
        |> ShipItPathFilters::moveDirectories($$, $get_path_mappings());
