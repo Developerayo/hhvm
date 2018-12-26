@@ -22,6 +22,8 @@ final class FacebookexperimentalBuckitTest extends FBConfigBaseTest {
       'fbcode/fs_image/chickens.py' => 'fs_image/chickens.py',
       'fbcode/fs_image/TARGETS' => 'fs_image/BUCK',
       'fbcode/fs_image/facebook/dog' => null,
+      'fbcode/fs_image/facebook/TARGETS' => null,
+      'fbcode/fs_image/facebook/cat.bzl' => null,
       'fbcode/fs_image/peanut/butter.bzl' => 'fs_image/peanut/butter.bzl',
       'fbcode/tools/build/buck/infra_macros/macros.py' =>
         'infra_macros/macros.py',

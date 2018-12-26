@@ -35,6 +35,17 @@ final class FacebookexperimentalBuckit extends FBShipItConfig {
               '@(?<!/facebook)/TARGETS$@',
               '@/.*\.bzl$@',
             }))
+        |> ShipItPathFilters::stripPaths(
+          $$,
+          // This looks redundant with FBCommonFilters, but is actually
+          // required to strip BUCK/TARGETS/*.bzl files from `facebook`
+          // subdirs, since we explicitly whitelisted all of those above.
+          ImmVector {
+            // NB: The Buckit repo will probably never contain Java, so keep
+            // this filter simpler than `stripCommonFiles`.
+           '@(^|/)facebook(/|$)@',
+          },
+        )
         |> ShipItPathFilters::moveDirectories($$, $get_path_mappings())
         /**
          * Drop internal versions of files that have oss counterparts,
