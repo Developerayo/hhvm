@@ -19,8 +19,6 @@ final class FacebookresearchWav2letterTest extends FBConfigBaseTest {
       FacebookresearchWav2letter::ROOT.'CMakeLists.txt' => 'CMakeLists.txt',
       FacebookresearchWav2letter::ROOT.'src/common/Defines.h' =>
         'src/common/Defines.h',
-      // Nonexistent files
-      FacebookresearchWav2letter::ROOT.'NONEXISTENT_FILE' => null,
       // Ignored files
       FacebookresearchWav2letter::ROOT.'CHANGELOG.md' => null,
       FacebookresearchWav2letter::ROOT.'src/fb/' => null,

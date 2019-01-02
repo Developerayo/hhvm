@@ -22,9 +22,14 @@ abstract final class FBShimPHP7 {
     array<string> $argv,
     KeyedContainer<string, string> $env,
   ): void {
-    if (\end(&\explode('/', $env['_'])) === 'php') {
-      $message = "PHP5 execution detected. Forking to PHP7 mode.";
-      \printf("\033[33m%s\033[0m\n", $message);
+    $wrapper = idx($env, 'SHIPIT_HHVM_WRAPPER');
+    // TODO delete after changes are deployed.
+    if (idx($env, '_') === '/usr/local/hphpi/bin/hhvm') {
+      $wrapper = '1';
+    }
+    if ($wrapper !== '1') {
+      $message = "Forking to ShipIt HHVM configuration.";
+      \fprintf(\STDERR, "\033[33m%s\033[0m\n", $message);
       $arg_string = \implode(' ', $argv);
       $command = \sprintf("%s %s", self::HHVM_WRAPPER_ABSOLUTE, $arg_string);
       $return = 0;
