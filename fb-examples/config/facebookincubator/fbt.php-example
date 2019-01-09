@@ -1,0 +1,57 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+use \Facebook\ShipIt\ {
+  FBCommonFilters,
+  FBShipItCLIStaticConfig,
+  FBShipItConfig,
+  GetPathMappingsFn,
+  ShipItChangeset,
+};
+
+final class FacebookincubatorFbt extends FBShipItConfig {
+  const BABEL = 'scripts/static_resources/js/fb-transforms/babel-7';
+
+  <<__Override>>
+  public static function getDefaultPathMappings(): ImmMap<string, string> {
+    return ImmMap {
+      self::BABEL.'/babel-plugin-fbt/' => 'transform/babel-plugin-fbt/',
+      self::BABEL.'/babel-plugin-fbt-runtime/' =>
+        'transform/babel-plugin-fbt-runtime/',
+      self::BABEL.'/util/' => 'transform/util/',
+      'html/shared/intl/fbt/' => 'runtime/shared/',
+
+      // Unfacebookified mocks etc.
+      'scripts/intl/js/oss-fbt/nonfb-runtime/' => 'runtime/nonfb/',
+
+      // Demo-app
+      'scripts/intl/js/oss-fbt/demo-app/' => 'demo-app/',
+
+      'scripts/intl/js/oss-fbt/__github__/' => '',
+    };
+  }
+
+  <<__Override>>
+  protected static function defaultProjectFilterChangeset(
+    ShipItChangeset $changeset,
+    GetPathMappingsFn $get_path_mappings,
+  ): ShipItChangeset {
+    return FBCommonFilters::stripSummariesByDefault($changeset)
+      |> parent::defaultProjectFilterChangeset($$, $get_path_mappings);
+  }
+
+  <<__Override>>
+  public static function getStaticConfig(): FBShipItCLIStaticConfig {
+    return shape(
+      'internalRepo' => 'www',
+      'githubOrg' => 'facebookincubator',
+      'githubProject' => 'fbt',
+    );
+  }
+}

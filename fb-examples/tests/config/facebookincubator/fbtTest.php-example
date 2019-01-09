@@ -1,0 +1,48 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookincubatorFbtTest extends FBConfigBaseTest {
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return true;
+  }
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'html/shared/intl/fbt/fbt.js' => 'runtime/shared/fbt.js',
+      'html/shared/intl/fbt/formatNumber.js' =>
+        'runtime/shared/formatNumber.js',
+      'html/shared/intl/fbt/FbtNumber/IntlCLDRNumberType01.js' =>
+        'runtime/shared/FbtNumber/IntlCLDRNumberType01.js',
+      'scripts/intl/js/oss-fbt/nonfb-runtime/FBLocaleToLang.js' =>
+        'runtime/nonfb/FBLocaleToLang.js',
+      FacebookincubatorFbt::BABEL.'/babel-plugin-fbt/index.js' =>
+        'transform/babel-plugin-fbt/index.js',
+      FacebookincubatorFbt::BABEL.'/babel-plugin-fbt-runtime/index.js' =>
+      'transform/babel-plugin-fbt-runtime/index.js',
+      FacebookincubatorFbt::BABEL.'/util/syntax-plugins.js' =>
+        'transform/util/syntax-plugins.js',
+      FacebookincubatorFbt::BABEL.'/util/test-util.js' =>
+        'transform/util/test-util.js',
+      'scripts/intl/js/oss-fbt/nonfb-runtime/IntlNumberType.js' =>
+        'runtime/nonfb/IntlNumberType.js',
+      'scripts/intl/js/oss-fbt/demo-app/package.json' =>
+        'demo-app/package.json',
+      'scripts/intl/js/oss-fbt/__github__/.github' => '.github',
+      'scripts/intl/js/oss-fbt/__github__/LICENSE' => 'LICENSE',
+      // path that should not match any path mapping
+      'html/shared/intl/FbtNumberType.js' => null,
+      // path that contains the "fb-only" folder
+      'html/shared/intl/fbt/fb-only/integration_tests/IntlFBTTestData.js' =>
+        null,
+    };
+  }
+}
