@@ -93,7 +93,7 @@ order to preview the full patch.';
       if ($repo === $repo_config['internalRepo']) {
         $branch_configs = $config_class::getBranchConfigs()
           ->filter(
-            $branch_config ==> $branch_config['internal'] == $internal_branch,
+            $branch_config ==> $branch_config['internal'] === $internal_branch,
           );
         foreach ($branch_configs as $branch_config) {
           $transformed_changeset =

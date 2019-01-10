@@ -23,7 +23,7 @@ final class BuckEnvironmentCheckPhase extends EnvironmentCheckPhase {
   }
 
   <<__Override>>
-  public function runImpl(ShipItBaseConfig $config): void {
+  public function runImpl(ShipItBaseConfig $_config): void {
     $ant_v = self::runCommand(
       /* flags = */ 0,
       'ant', '-version',

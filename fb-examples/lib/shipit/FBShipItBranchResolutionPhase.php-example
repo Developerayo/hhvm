@@ -8,10 +8,7 @@
 namespace Facebook\ShipIt;
 
 
-use type Facebook\ShipIt\Config\{
-  FBShipItConfigRegistry,
-  RepoArcanistProject,
-};
+use type Facebook\ShipIt\Config\RepoArcanistProject;
 
 class FBShipItBranchResolutionPhase extends ShipItPhase {
 
@@ -73,7 +70,7 @@ class FBShipItBranchResolutionPhase extends ShipItPhase {
     $branch_configs = $config_class::getBranchConfigs();
     if ($this->externalBranch !== null) {
       $branch_configs = $branch_configs->filter(
-        $branch_config ==> $branch_config['external'] == $this->externalBranch,
+        $branch_config ==> $branch_config['external'] === $this->externalBranch,
       );
       invariant(
         $branch_configs->count() > 0,
@@ -112,7 +109,7 @@ class FBShipItBranchResolutionPhase extends ShipItPhase {
   }
 
   <<__Override>>
-  public function runImpl(ShipItBaseConfig $config): void {
+  public function runImpl(ShipItBaseConfig $_config): void {
     $config_class = $this->configClass;
     $branch_configs = $this->getBranchConfigs();
     if ($this->repoMetadataFile !== null) {

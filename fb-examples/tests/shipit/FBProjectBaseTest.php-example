@@ -7,9 +7,6 @@
  */
 namespace Facebook\ShipIt;
 
-use type Facebook\ImportIt\ {
-  ImportItPathMappings
-};
 
 abstract class FBProjectBaseTest extends BaseTest {
   /**

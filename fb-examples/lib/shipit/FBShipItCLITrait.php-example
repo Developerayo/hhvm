@@ -7,14 +7,8 @@
  */
 namespace Facebook\ShipIt;
 
-use type Facebook\ShipIt\Config\ {
-  IShipItConfig,
-  ShipItConfigRegistry,
-};
+use type Facebook\ShipIt\Config\ IShipItConfig;
 
-use type Facebook\ImportIt\ {
-  FBImportItBranchResolutionPhase,
-};
 
 trait FBShipItCLITrait {
 
@@ -53,7 +47,7 @@ trait FBShipItCLITrait {
 
   final public static function cliShipIt(
     ?classname<FBShipItConfig> $config_class = null,
-    ?string $external_branch = null,
+    ?string $_external_branch = null,
   ): void {
     self::initForCli();
     print('--- Starting ShipIt: '.$config_class."\n");

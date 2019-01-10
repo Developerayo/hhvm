@@ -67,7 +67,7 @@ class ShipItRepoHG extends ShipItRepo
     if ($log === '') {
       return null;
     }
-    if (\strlen($log) != 40) {
+    if (\strlen($log) !== 40) {
       throw new ShipItRepoHGException($this, "{$log} doesn't look like a valid".
                                             " hg changeset id");
     }
@@ -96,7 +96,7 @@ class ShipItRepoHG extends ShipItRepo
     if ($log === '') {
       return null;
     }
-    if (\strlen($log) != 40) {
+    if (\strlen($log) !== 40) {
       throw new ShipItRepoHGException($this, "{$log} doesn't look like a valid".
                                             " hg changeset id");
     }
@@ -212,7 +212,7 @@ class ShipItRepoHG extends ShipItRepo
     $subject = null;
     $message = '';
     foreach (\explode("\n", $header) as $line) {
-      if (\strlen($line) == 0) {
+      if (\strlen($line) === 0) {
         $message .= "\n";
         continue;
       }
@@ -382,7 +382,7 @@ class ShipItRepoHG extends ShipItRepo
   }
 
   <<__Override>>
-  public function pushLfs(string $pullEndpoint, string $pushEndpoint): void {
+  public function pushLfs(string $_pullEndpoint, string $_pushEndpoint): void {
     throw new ShipItRepoHGException($this, "push lfs not implemented for hg");
   }
 

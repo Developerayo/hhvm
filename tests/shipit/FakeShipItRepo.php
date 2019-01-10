@@ -21,12 +21,12 @@ final class FakeShipItRepo extends ShipItRepo {
   }
 
   <<__Override>>
-  protected function setBranch(string $branch): bool {
+  protected function setBranch(string $_branch): bool {
     return true;
   }
 
   <<__Override>>
-  public function updateBranchTo(string $base_rev): void {}
+  public function updateBranchTo(string $_base_rev): void {}
 
   <<__Override>>
   public function clean(): void {}
@@ -35,7 +35,7 @@ final class FakeShipItRepo extends ShipItRepo {
   public function pull(): void {}
 
   <<__Override>>
-  public function pushLfs(string $pullEndpoint, string $pushEndpoint): void {}
+  public function pushLfs(string $_pullEndpoint, string $_pushEndpoint): void {}
 
   <<__Override>>
   public function getOrigin(): string {
@@ -44,7 +44,7 @@ final class FakeShipItRepo extends ShipItRepo {
 
   <<__Override>>
   public static function getDiffsFromPatch(
-    string $patch,
+    string $_patch,
   ): ImmVector<ShipItDiff> {
     return ImmVector {};
   }

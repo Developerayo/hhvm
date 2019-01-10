@@ -8,6 +8,7 @@
 namespace Facebook\ShipIt;
 
 final class UserInfoTestImplementation extends ShipItUserInfo {
+  <<__Override>>
   public static async function getDestinationAuthorFromLocalUser(
     string $local_user,
   ): Awaitable<string> {
@@ -15,6 +16,7 @@ final class UserInfoTestImplementation extends ShipItUserInfo {
     return 'Example User <'.$user.'@example.com>';
   }
 
+  <<__Override>>
   public static async function getDestinationUserFromLocalUser(
     string $local_user,
   ): Awaitable<string> {

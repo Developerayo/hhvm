@@ -13,6 +13,7 @@ final class UnicodeTest extends BaseTest {
   const string CONTENT_FILE = __DIR__.'/files/unicode.txt';
   private ?string $ctype;
 
+  <<__Override>>
   public function setUp(): void {
     $ctype = \getenv('LC_CTYPE');
     if ($ctype !== false) {
@@ -21,6 +22,7 @@ final class UnicodeTest extends BaseTest {
     \putenv('LC_CTYPE=US-ASCII');
   }
 
+  <<__Override>>
   public function tearDown(): void {
     \putenv('LC_CTYPE='.$this->ctype);
   }

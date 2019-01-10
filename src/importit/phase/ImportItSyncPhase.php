@@ -11,7 +11,6 @@ use type Facebook\ShipIt\ {
   ShipItBaseConfig,
   ShipItChangeset,
   ShipItDestinationRepo,
-  ShipItRepo
 };
 
 final class ImportItSyncPhase extends \Facebook\ShipIt\ShipItPhase {

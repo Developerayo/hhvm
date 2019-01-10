@@ -62,7 +62,7 @@ final class ShipItVerifyRepoPhase extends ShipItPhase {
     ShipItBaseConfig $config,
   ): void {
     if ($this->useLatestSourceCommit) {
-      if ($this->verifySourceCommit != null) {
+      if ($this->verifySourceCommit !== null) {
         throw new ShipItException(
           "the 'verify-source-commit' flag cannot be used with the ".
           "'use-latest-source-commit' flag since the latter automatically ".

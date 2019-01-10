@@ -7,9 +7,6 @@
  */
 namespace Facebook\ShipIt\Config;
 
-use type Facebook\ShipIt\ {
-  ShipItChangeset,
-};
 
 final class HhvmHslExperimentalTest extends FBWWWConfigBaseTest {
   <<__Override>>
