@@ -7,7 +7,7 @@
  */
 namespace Facebook\ShipIt\Config;
 
-use \Facebook\ShipIt\ {
+use type Facebook\ShipIt\ {
   FBShipItCLIStaticConfig,
   FBShipItConfig,
   FBSourceBranchConfig,

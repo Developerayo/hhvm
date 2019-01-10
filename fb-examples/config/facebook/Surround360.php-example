@@ -7,8 +7,8 @@
  */
 namespace Facebook\ShipIt\Config;
 
-use \Facebook\ImportIt\ImportItPathFilters;
-use \Facebook\ShipIt\ {
+use type Facebook\ImportIt\ImportItPathFilters;
+use type Facebook\ShipIt\ {
   FBCommonFilters,
   FBShipItCLIStaticConfig,
   FBShipItConfig,

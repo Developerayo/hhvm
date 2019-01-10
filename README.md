@@ -149,7 +149,7 @@ if (isset($argv) && idx($argv, 0) === realpath(__FILE__)) {
 
 namespace Facebook\ImportIt;
 
-use \Facebook\ShipIt\ {
+use type Facebook\ShipIt\ {
   MyGitHubUtils,
   MySourceRepoInitPhase,
   ShipItBaseConfig,

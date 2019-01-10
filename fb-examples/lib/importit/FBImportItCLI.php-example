@@ -7,7 +7,7 @@
  */
 namespace Facebook\ImportIt;
 
-use \Facebook\ShipIt\ {
+use type Facebook\ShipIt\ {
   FBGitHubUtils,
   IHasFBShipItCLIStaticConfig,
   ShipItBaseConfig,

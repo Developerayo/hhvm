@@ -7,12 +7,12 @@
  */
 namespace Facebook\ShipIt;
 
-use \Facebook\ShipIt\Config\ {
+use type Facebook\ShipIt\Config\ {
   IShipItConfig,
   ShipItConfigRegistry,
 };
 
-use \Facebook\ImportIt\ {
+use type Facebook\ImportIt\ {
   FBImportItBranchResolutionPhase,
 };
 

@@ -7,8 +7,8 @@
  */
 namespace Facebook\ShipIt;
 
-use \Facebook\ImportIt\FBImportItBranchResolutionPhase;
-use \Facebook\ShipIt\Config\FacebookPhabtest1Git;
+use type Facebook\ImportIt\FBImportItBranchResolutionPhase;
+use type Facebook\ShipIt\Config\FacebookPhabtest1Git;
 
 final class FBShipItProjectRunnerTest extends BaseTest {
 

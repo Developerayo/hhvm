@@ -7,8 +7,8 @@
  */
 namespace Facebook\ShipIt;
 
-use \Facebook\ImportIt\FBImportItBranchResolutionPhase;
-use \Facebook\ShipIt\Config\FBShipItConfigRegistry;
+use type Facebook\ImportIt\FBImportItBranchResolutionPhase;
+use type Facebook\ShipIt\Config\FBShipItConfigRegistry;
 
 enum FBShipItCLIAction: int {
   SHIP_IT = 0;

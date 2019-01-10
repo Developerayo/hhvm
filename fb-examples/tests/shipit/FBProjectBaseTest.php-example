@@ -7,7 +7,7 @@
  */
 namespace Facebook\ShipIt;
 
-use \Facebook\ImportIt\ {
+use type Facebook\ImportIt\ {
   ImportItPathMappings
 };
 

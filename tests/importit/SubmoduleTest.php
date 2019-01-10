@@ -8,7 +8,7 @@
 namespace Facebook\ImportIt;
 
 
-use \Facebook\ShipIt\ {
+use type Facebook\ShipIt\ {
   ShipItRepo,
   ShipItRepoGIT,
   ShipItShellCommand,

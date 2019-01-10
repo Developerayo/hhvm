@@ -7,7 +7,7 @@
  */
 namespace Facebook\ShipIt;
 
-use \Facebook\ShipIt\Config\{FBShipItConfigRegistry, RepoArcanistProject};
+use type Facebook\ShipIt\Config\{FBShipItConfigRegistry, RepoArcanistProject};
 
 type ShipItPreviewInput = shape(
   'arcanistProject' => string,

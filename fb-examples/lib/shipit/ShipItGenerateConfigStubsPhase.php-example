@@ -7,7 +7,7 @@
  */
 namespace Facebook\ShipIt;
 
-use \Facebook\ShipIt\Config\FBShipItConfigRegistry;
+use type Facebook\ShipIt\Config\FBShipItConfigRegistry;
 
 final class ShipItGenerateConfigStubsPhase extends ShipItPhase {
   private ?string $gitHubProject;
@@ -73,7 +73,7 @@ final class ShipItGenerateConfigStubsPhase extends ShipItPhase {
  */
 namespace Facebook\ShipIt\Config;
 
-use \Facebook\ShipIt\ {
+use type Facebook\ShipIt\ {
   FBShipItCLIStaticConfig,
   FBShipItConfig,
 };
