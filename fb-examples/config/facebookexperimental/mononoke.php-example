@@ -7,15 +7,12 @@
  */
 namespace Facebook\ShipIt\Config;
 
-use Facebook\ImportIt\ImportItRustPathFilters;
+use type Facebook\ImportIt\ImportItRustPathFilters;
 use type Facebook\ShipIt\ {
-  FBCommonFilters,
   FBShipItCLIStaticConfig,
   FBShipItConfig,
   FBSourceBranchConfig,
-  GetPathMappingsFn,
   ShipItChangeset,
-  ShipItPathFilters,
 };
 
 final class FacebookexperimentalMononoke extends FBShipItConfig {

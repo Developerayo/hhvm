@@ -8,13 +8,10 @@
 namespace Facebook\ShipIt\Config;
 
 use type Facebook\ShipIt\ {
-  FBCommonFilters,
   FBShipItCLIStaticConfig,
   FBShipItConfig,
   FBSourceBranchConfig,
-  GetPathMappingsFn,
   ShipItChangeset,
-  ShipItPathFilters,
 };
 
 final class FacebookDuckling extends FBShipItConfig {

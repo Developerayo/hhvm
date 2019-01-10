@@ -24,7 +24,7 @@ final class FacebookInfer extends FBShipItConfig {
   <<__Override>>
   protected static function defaultProjectFilterChangeset(
     ShipItChangeset $changeset,
-    GetPathMappingsFn $get_path_mappings,
+    GetPathMappingsFn $_get_path_mappings,
   ): ShipItChangeset {
     $subject = $changeset->getSubject();
     return $changeset

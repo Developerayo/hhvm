@@ -7,10 +7,7 @@
  */
 namespace Facebook\ShipIt\Config;
 
-use type Facebook\ShipIt\ {
-  FBShipItConfig,
-  ShipItGenerateConfigStubsPhase,
-};
+use type Facebook\ShipIt\ FBShipItConfig;
 
 final class FBShipItConfigRegistry {
 

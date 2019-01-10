@@ -170,7 +170,7 @@ final class FacebookOpenbmc extends FBShipItConfig {
   <<__Override>>
   protected static function projectImportChangeset(
     ShipItChangeset $changeset,
-    FBSourceBranchConfig $branch_config,
+    FBSourceBranchConfig $_branch_config,
   ): ShipItChangeset {
     return $changeset
       // These files are replaced by GitHub specific versions
@@ -206,6 +206,7 @@ final class FacebookOpenbmc extends FBShipItConfig {
     return $changeset;
   }
 
+  <<__Override>>
   public static function getLandBranch(): ?string {
     // ShipIt will assume that diffs will land onto the 'helium' branch.
     return 'helium';

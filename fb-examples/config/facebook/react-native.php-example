@@ -8,7 +8,6 @@
 namespace Facebook\ShipIt\Config;
 
 use type Facebook\ShipIt\ {
-  FBCommonFilters,
   FBShipItCLIStaticConfig,
   FBShipItConfig,
   FBSourceBranchConfig,

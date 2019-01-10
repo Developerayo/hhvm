@@ -10,10 +10,6 @@ namespace Facebook\ShipIt\Config;
 use type Facebook\ShipIt\{
   FBShipItCLIStaticConfig,
   FBShipItConfig,
-  ShipItChangeset,
-  GetPathMappingsFn,
-  FBCommonFilters,
-  ShipItPathFilters,
 };
 
 final class FacebookincubatorFacebookPixelForWordpress extends FBShipItConfig {

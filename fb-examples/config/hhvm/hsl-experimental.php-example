@@ -7,15 +7,7 @@
  */
 namespace Facebook\ShipIt\Config;
 
-use type Facebook\ShipIt\ {
-  FBSourceBranchConfig,
-  FBShipItCLIStaticConfig,
-  FBShipItConfig,
-  GetPathMappingsFn,
-  ShipItChangeset,
-  ShipItConditionalLinesFilter,
-  ShipItPathFilters,
-};
+use type Facebook\ShipIt\ FBShipItCLIStaticConfig;
 
 final class HhvmHslExperimental extends HhvmHslBase {
   const string ROOT = 'flib/core/hack/lib/experimental/';

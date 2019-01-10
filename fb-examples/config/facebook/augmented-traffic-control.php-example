@@ -8,13 +8,9 @@
 namespace Facebook\ShipIt\Config;
 
 use type Facebook\ShipIt\{
-  FBCommonFilters,
   FBShipItCLIStaticConfig,
   FBShipItConfig,
   FBSourceBranchConfig,
-  GetPathMappingsFn,
-  ShipItChangeset,
-  ShipItPathFilters,
 };
 
 final class FacebookAugmentedTrafficControl extends FBShipItConfig {

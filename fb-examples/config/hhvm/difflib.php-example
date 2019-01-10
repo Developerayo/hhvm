@@ -7,15 +7,7 @@
  */
 namespace Facebook\ShipIt\Config;
 
-use type Facebook\ShipIt\ {
-  FBSourceBranchConfig,
-  FBShipItCLIStaticConfig,
-  FBShipItConfig,
-  GetPathMappingsFn,
-  ShipItChangeset,
-  ShipItConditionalLinesFilter,
-  ShipItPathFilters,
-};
+use type Facebook\ShipIt\ FBShipItCLIStaticConfig;
 
 final class HhvmDifflib extends FBWWWBase {
   const string ROOT = 'flib/intern/diffs/difflib/opensource/';

@@ -10,10 +10,8 @@ namespace Facebook\ShipIt\Config;
 use type Facebook\ShipIt\ {
   FBSourceBranchConfig,
   FBShipItCLIStaticConfig,
-  FBShipItConfig,
   GetPathMappingsFn,
   ShipItChangeset,
-  ShipItConditionalLinesFilter,
   ShipItPathFilters,
 };
 

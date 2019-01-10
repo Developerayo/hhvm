@@ -8,19 +8,13 @@
 namespace Facebook\ShipIt\Config;
 
 use type Facebook\ShipIt\ {
-  FBGitHubUtils,
   FBShipItCLIStaticConfig,
   FBShipItConfig,
-  FBShipItPublicizeSyncScriptsPhase,
   FBSourceBranchConfig,
   GetPathMappingsFn,
   ShipItBaseConfig,
   ShipItChangeset,
-  ShipItGitHubCredentials,
-  ShipItGitHubUtils,
   ShipItPathFilters,
-  ShipItPhase,
-  ShipItSyncPhase,
 };
 
 final class FacebookFbshipit extends FBShipItConfig {

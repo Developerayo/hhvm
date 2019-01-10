@@ -8,12 +8,8 @@
 namespace Facebook\ShipIt\Config;
 
 use type Facebook\ShipIt\ {
-  FBCommonFilters,
   FBShipItCLIStaticConfig,
   FBShipItConfig,
-  GetPathMappingsFn,
-  ShipItChangeset,
-  ShipItPathFilters,
 };
 
 final class FacebookPrepack extends FBShipItConfig {

@@ -10,11 +10,7 @@ namespace Facebook\ShipIt\Config;
 use type Facebook\ShipIt\ {
   FBShipItCLIStaticConfig,
   FBShipItConfig,
-  FBSourceBranchConfig,
   ShipItFilterSanityCheckPhase,
-  ShipItGitHubInitPhase,
-  ShipItPhase,
-  ShipItVerifyRepoPhase,
 };
 
 final class FacebookHhvm extends FBShipItConfig {

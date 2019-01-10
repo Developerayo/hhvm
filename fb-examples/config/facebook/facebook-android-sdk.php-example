@@ -13,7 +13,6 @@ use type Facebook\ShipIt\ {
   ShipItChangeset,
   GetPathMappingsFn,
   ShipItConditionalLinesFilter,
-  FBSourceBranchConfig,
 };
 
 final class FacebookFacebookAndroidSdk extends FBShipItConfig {
