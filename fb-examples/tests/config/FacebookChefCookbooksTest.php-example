@@ -1,0 +1,88 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+use type Facebook\ShipIt\ShipItChangeset;
+
+final class FacebookChefCookbooksTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      # Example things that *should* make it through
+      'chef/cookbooks/core/fb_cron/README.md' =>
+        'cookbooks/fb_cron/README.md',
+      'chef/cookbooks/core/fb_cron/recipes/default.rb' =>
+        'cookbooks/fb_cron/recipes/default.rb',
+      # Example of a cookbook not in the list
+      'chef/cookbooks/secure/fb_thingy/README.md' => null,
+      'chef/cookbooks/core/fb_not_in_the_list/README.md' => null,
+      # tests should never be included (yet)
+      'chef/cookbooks/core/fb_cron/spec/default_spec.rb' => null,
+      'chef/cookbooks/core/fb_cron/spec/randomthing.rb' => null,
+      'chef/cookbooks/core/fb_cron/spec/fixtures/default/somefile' => null,
+      # except test explicitly marked as public... they should be included
+      'chef/cookbooks/core/fb_cron/spec/public_default_spec.rb' =>
+        'cookbooks/fb_cron/spec/public_default_spec.rb',
+      # examples of gh-only stuff
+      'chef/github/README.md' => 'README.md',
+      'chef/github/scripts/run_foodcritic' => 'scripts/run_foodcritic',
+      'chef/github/cookbooks/fb_init_sample/metadata.rb' =>
+        'cookbooks/fb_init_sample/metadata.rb',
+      # the excluded facebook README
+      'chef/github/README.facebook' => null,
+      # OWNERS files should never make it out
+      'chef/github/OWNERS' => null,
+      'chef/OWNERS' => null,
+      'chef/cookbooks/core/OWNERS' => null,
+      'chef/cookbooks/core/fb_cron/files/default/OWNERS' => null,
+      # fb_metadata.json files should never make it out
+      'chef/github/fb_metadata.json' => null,
+      'chef/fb_metadata.json' => null,
+      'chef/cookbooks/core/fb_metadata.json' => null,
+      'chef/cookbooks/core/fb_cron/files/default/fb_metadata.json' => null,
+      # Random top-level crap should not be included
+      'otherstuff.rb' => null,
+      'chef/otherstuff.rb' => null,
+      'chef/cookbooks/otherstuff.rb' => null,
+      'chef/cookbooks/core/otherstuff.rb' => null,
+    };
+  }
+
+  public function testStripChefTestHostsHeader(): void {
+    $in = (new ShipItChangeset())
+      ->withMessage(
+        "Summary: stuff here\n  chef_test_hosts: hostname1, hostname2\n\n".
+          "Reviewers: phild\n"
+        );
+    $out = FacebookChefCookbooks::stripChefTestHostsHeader($in);
+    $this->assertSame(
+      "Summary: stuff here\n\nReviewers: phild\n",
+      $out->getMessage(),
+    );
+    $in = (new ShipItChangeset())
+      ->withMessage(
+        "Summary: chef_test_hosts: hostname1, hostname2\n\n".
+          "Reviewers: phild\n"
+        );
+    $out = FacebookChefCookbooks::stripChefTestHostsHeader($in);
+    $this->assertSame(
+      "Summary:\n\nReviewers: phild\n",
+      $out->getMessage(),
+    );
+    $in = (new ShipItChangeset())
+      ->withMessage(
+        "Summary:\nSome Message here\n\nchef_test_hosts: ".
+          "hostname1, hostname2\n\nReviewers: phild\n"
+        );
+    $out = FacebookChefCookbooks::stripChefTestHostsHeader($in);
+    $this->assertSame(
+      "Summary:\nSome Message here\n\nReviewers: phild\n",
+      $out->getMessage(),
+    );
+  }
+}

@@ -1,0 +1,34 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+use type Facebook\ShipIt\FBCodeBuilder;
+
+final class FacebookOpenrTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/openr/Main.cpp' => 'openr/Main.cpp',
+      'fbcode/openr/spark/TARGETS' => null,
+      'fbcode/openr/TARGETS' => null,
+      'fbcode/openr/spark/tests/SparkTest.cpp' =>
+          'openr/spark/tests/SparkTest.cpp',
+      'fbcode/openr/kvstore/KvStoreClient.h' => 'openr/kvstore/KvStoreClient.h',
+      'fbcode/openr/public_tld/PATENTS' => 'PATENTS',
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'travis.yml' => '.travis.yml',
+      // fbcode_builder is shared between several projects, but it's easiest
+      // to just copy it into each project's Github repo.
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'fbcode_builder.py' =>
+        FBCodeBuilder::DEST_FBCODE_BUILDER.'fbcode_builder.py',
+      // Openr is only interested in the Github revisions its dependencies.
+      FBCodeBuilder::SRC_GITHUB_HASHES.'folly-rev.txt' =>
+        FBCodeBuilder::DEST_GITHUB_HASHES.'folly-rev.txt',
+      FBCodeBuilder::SRC_GITHUB_HASHES.'yoga-rev.txt' => null,
+    };
+  }
+}

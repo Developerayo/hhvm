@@ -1,0 +1,34 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookMetroTest extends FBConfigBaseTest {
+  const string ROOT = 'xplat/js/metro';
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return true;
+  }
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      self::ROOT.'/foo.js' => 'foo.js',
+      self::ROOT.'/.github.flowconfig' => '.flowconfig',
+      self::ROOT.'/packages/metro/foo.js' =>
+        'packages/metro/foo.js',
+      'react-native-github/packager/src/index.js' => null,
+      'xplat/js/react-native-github/Libraries/View.js' => null,
+
+      // BUCK files contain workspace information for xplat/js, which we don't
+      // want to sync to github
+      self::ROOT.'/BUCK' => null,
+      self::ROOT.'/packages/metro/BUCK' => null,
+    };
+  }
+}

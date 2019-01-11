@@ -1,0 +1,23 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookDraftJsTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      // based on examples here:
+      // https://github.com/facebook/fbshipit/blob/4038f6219f38999d56cdfb6b927c1994cd367e6e/fb-examples/tests/shipit/projects/FBShipItTest.php-example#L33
+      'html/shared/draft-js/component/FBShipItTest' => 'src/component/FBShipItTest',
+      'html/shared/draft-js/model/FBShipItTest' => 'src/model/FBShipItTest',
+      'scripts/draft-js/__github__/website/FBShipItTest' => 'website/FBShipItTest',
+      'scripts/draft-js/__github__/src/stubs/FBShipItTest' => 'src/stubs/FBShipItTest',
+      'scripts/draft-js/__github__/dot_gitignore' => '.gitignore',
+    };
+  }
+}

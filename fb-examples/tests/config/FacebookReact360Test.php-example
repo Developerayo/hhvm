@@ -1,0 +1,20 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookReact360Test extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'Software/Apps/skyline/src/react-vr/github/foo' => 'foo',
+      'Software/Apps/skyline/src/react-vr/github/.flowconfig' => '.flowconfig',
+      'Software/Apps/skyline/oculus-apps-native/Libraries/AppSupport/VrReactNativeCore/Src/RCTModule.cpp' => null,
+      'Software/Apps/skyline/src/react-vr/wasm/wasmtest.rs' => null,
+    };
+  }
+}

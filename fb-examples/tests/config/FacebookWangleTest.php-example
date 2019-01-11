@@ -1,0 +1,33 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+use type Facebook\ShipIt\FBCodeBuilder;
+
+final class FacebookWangleTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/wangle/ssl/SSLUtil.h' => 'wangle/ssl/SSLUtil.h',
+      'fbcode/wangle/public_tld/README.md' => 'README.md',
+      'fbcode/wangle/codec/README.md' => 'wangle/codec/README.md',
+      'fbcode/wangle/facebook/secret' => null,
+      // Don't bother Github users with code only relevant internally.
+      'build/facebook_cheesecake.py' => null,
+      // fbcode_builder is shared between several projects, but it's easiest
+      // to just copy it into each project's Github repo.
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'fbcode_builder.py' =>
+        FBCodeBuilder::DEST_FBCODE_BUILDER.'fbcode_builder.py',
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'travis.yml' => '.travis.yml',
+      // Wangle is only interested in the Github revisions its dependencies.
+      FBCodeBuilder::SRC_GITHUB_HASHES.'folly-rev.txt' =>
+        FBCodeBuilder::DEST_GITHUB_HASHES.'folly-rev.txt',
+      FBCodeBuilder::SRC_GITHUB_HASHES.'proxygen-rev.txt' => null,
+    };
+  }
+}

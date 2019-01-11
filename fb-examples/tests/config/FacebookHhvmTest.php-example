@@ -1,0 +1,83 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+use type Facebook\ShipIt\ {
+  FBCommonFilters,
+  ShipItChangeset,
+  ShipItMessageSections,
+};
+
+final class FacebookHhvmTest extends FBConfigBaseTest {
+  public function examplesForFilteredSections(
+  ): array<(ImmMap<string, string>,ImmMap<string, string>)> {
+    return [
+      tuple(
+        ImmMap {
+          'summary' => 'foo',
+          'test plan' => 'bar',
+          'facebook' => 'baz',
+          'differential revision' => 'D12345',
+        },
+        ImmMap {
+          'summary' => 'foo',
+          'differential revision' => 'D12345',
+        },
+      ),
+    ];
+  }
+
+  /**
+   * @dataProvider examplesForFilteredSections
+   */
+  public function testFilteredSections(
+    ImmMap<string, string> $in,
+    ImmMap<string, string> $expected,
+  ): void {
+    $changeset = (new ShipItChangeset())
+      ->withMessage(ShipItMessageSections::buildMessage($in));
+    $changeset = self::map($changeset);
+    $out = ShipItMessageSections::getSections(
+      $changeset,
+      FBCommonFilters::getSupportedMessageSectionNames(),
+    );
+    $this->assertEquals($expected, $out->toImmMap());
+  }
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/hphp/foo' => 'hphp/foo',
+      'fbcode/hphp/public_tld/foo' => 'foo',
+      'fbcode/not_hphp/foo' => null,
+
+      // exceptions to stripCommonFiles
+      'fbcode/hphp/runtime/ext/fb/file' => 'hphp/runtime/ext/fb/file',
+      'fbcode/hphp/runtime/int/fb/file' => null,
+
+      // stripped Makefiles
+      'fbcode/hphp/hack/src/Makefile' => 'hphp/hack/src/Makefile',
+      'fbcode/hphp/doc/Makefile' => 'hphp/doc/Makefile',
+      'fbcode/hphp/nothack/src/Makefile' => null,
+
+      'fbcode/hphp/hack/src/utils/sys/.merlin' =>
+        'hphp/hack/src/utils/sys/.merlin',
+      'fbcode/hphp/hack/.merlin' => null,
+
+      'fbcode/hphp/DEFS' => null,
+      'fbcode/hphp/test/DEFS' => null,
+      'fbcode/hphp/foo-DEFS.h' => 'hphp/foo-DEFS.h',
+      'fbcode/hphp/runtime/DEFS-foo.h' => 'hphp/runtime/DEFS-foo.h',
+
+      'fbcode/hphp/PLATFORM_AARCH64' => null,
+      'fbcode/hphp/dir/PLATFORM_AARCH64' => 'hphp/dir/PLATFORM_AARCH64',
+
+      'fbcode/hphp/hack/Hack.project.toml' => null,
+    };
+  }
+}

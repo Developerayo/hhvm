@@ -1,0 +1,22 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookChefUtilsTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'chef-utils-github/foo.md' => 'foo.md',
+      'chef-utils-github/bar/baz.md' => 'bar/baz.md',
+      'chef-utils-github/chefctl/README.md' => 'chefctl/README.md',
+      'scripts/chef/chefctl.rb' => 'chefctl/src/chefctl.rb',
+      'scripts/chef/another.rb' => null,
+      'scripts/another.rb' => null,
+    };
+  }
+}

@@ -1,0 +1,24 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookRocksdbTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/internal_repo_rocksdb/repo/include/rocksdb' => 'include/rocksdb',
+      'fbcode/internal_repo_rocksdb/repo/db/db_impl.cc' => 'db/db_impl.cc',
+      'fbcode/internal_repo_rocksdb/repo/da/da/da' => 'da/da/da',
+      'fbcode/internal_repo_rocksdb/repo/.sandcastle' => null,
+      'fbcode/internal_repo_rocksdb/repo/util/build_version.cc' => null,
+      'fbcode/internal_repo_rocksdb/repo/src.mk' => 'src.mk',
+      'fbcode/internal_repo_rocksdb/repo/koko.mk' => 'koko.mk',
+      'fbcode/internal_repo_rocksdb/repo/TARGETS' => 'TARGETS',
+    };
+  }
+}

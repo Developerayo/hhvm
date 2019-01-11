@@ -1,0 +1,37 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookAugmentedTrafficControlTest extends FBConfigBaseTest {
+  const string ROOT = 'fbcode/pe_dev_infra/atc/';
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      self::ROOT.'github/README.md' => 'README.md',
+      self::ROOT.'github/glide.yaml' => 'glide.yaml',
+      self::ROOT.'if/atc_thrift.thrift' => 'if/atc_thrift.thrift',
+      self::ROOT.'cmd/atcd/main.go' => 'cmd/atcd/main.go',
+      self::ROOT.'src/shaping/shaping_linux.go' =>
+        'src/shaping/shaping_linux.go',
+      self::ROOT.'github/TARGETS' => null,
+      self::ROOT.'if/TARGETS' => null,
+      self::ROOT.'chef' => null,
+      self::ROOT.'cmd/atcd/main_facebook.go' => null,
+    };
+  }
+
+  <<__Override>>
+  protected static function getExampleBranchMappings(
+  ): ImmMap<string, ImmMap<string, ?string>> {
+    return ImmMap {
+      'golang' => static::getExamplePathMappings(),
+    };
+  }
+
+}

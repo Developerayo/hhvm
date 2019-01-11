@@ -1,0 +1,32 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+use type Facebook\ShipIt\ {
+  FBCodeBuilder,
+};
+
+final class FacebookFollyTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/folly/NormalFile.h' => 'folly/NormalFile.h',
+      'fbcode/folly/public_tld/TLDFile.txt' => 'TLDFile.txt',
+      'fbcode/folly/folly-config.h' => null,  // Written by autoconf
+      'fbcode/folly/facebook/secret' => null,
+      // fbcode_builder is shared between several projects, but it's easiest
+      // to just copy it into each project's Github repo.
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'fbcode_builder.py' =>
+        FBCodeBuilder::DEST_FBCODE_BUILDER.'fbcode_builder.py',
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'travis.yml' => '.travis.yml',
+      // folly doesn't depend on any other Facebook projects, so we don't
+      // need anything from project_hashes/
+      FBCodeBuilder::SRC_GITHUB_HASHES.'proxygen-rev.txt' => null,
+    };
+  }
+}

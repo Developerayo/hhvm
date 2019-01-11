@@ -1,0 +1,92 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookInferTest extends FBConfigBaseTest {
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return true;
+  }
+
+  <<__Override>>
+  public function examplesForStripSubjectTags(
+  ): array<(string, string)> {
+    return [
+      tuple('foo bar', 'foo bar'),
+      tuple('[secret] foo', '[secret] foo'),
+      tuple('[secret][super secret] foo bar', '[secret][super secret] foo bar'),
+      tuple(
+        '[secret] [super secret] foo bar',
+        '[secret] [super secret] foo bar',
+      ),
+    ];
+  }
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    # Example things that *should* make it through
+    $keep = ImmVector {
+      '.buckconfig',
+      '.clang-format',
+      '.gitignore',
+      '.gitmodules',
+      '.inferconfig',
+      '.travis.yml',
+      '.travis/docker_tests.sh',
+      'CONTRIBUTING.md',
+      'LICENSE',
+      'PATENTS',
+      'README.md',
+      'INSTALL.md',
+      'FILES.md',
+      'build-infer.sh',
+      'compile-fcp.sh',
+      'dependencies/java/jsr-305/jsr305.jar',
+      'dependencies/ocamldot/LICENSE',
+      'docker/Dockerfile',
+      'infer/Makefile.in',
+      'examples/hello.c',
+      'update-fcp.sh',
+      'opam',
+      'infer.install',
+      'facebook-clang-plugins',
+      'autogen.sh',
+      'configure.ac',
+      'install-sh',
+      'm4/',
+      'Makefile.config.in',
+      'Makefile.in',
+      'infer/tests/.idea/.name',
+      'infer/tests/tests.iml',
+      'infer/tests/codetoanalyze/c/errors/generic.mk',
+    };
+    # Example things that should *not* make it through
+    $strip = ImmVector {
+      '.arcconfig',
+      '.deweyconfig',
+      '.facebook',
+      'ci_config.json',
+      'setup-infer.sh',
+      'setup.sh',
+      'arcanist/foo',
+      'benchmarks/foo',
+      'data/foo',
+      'facebook/foo',
+      'infer/src/facebook/foo',
+    };
+
+    $map = Map {};
+    foreach ($keep as $path) {
+      $map[$path] = $path;
+    }
+    foreach ($strip as $path) {
+      $map[$path] = null;
+    }
+    return $map->toImmMap();
+  }
+}

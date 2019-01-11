@@ -1,0 +1,34 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+use type Facebook\ShipIt\FBCodeBuilder;
+
+final class FacebookProxygenTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/proxygen/lib' => 'proxygen/lib',
+      'fbcode/proxygen/public_tld/LICENSE' => 'LICENSE',
+      'fbcode/not_proxygen/lib' => null,
+      'fbcode/proxygen/lib/http/codec/HTTPCodec.h'
+        => 'proxygen/lib/http/codec/HTTPCodec.h',
+      // Don't bother Github users with code only relevant internally.
+      'build/facebook_cheesecake.py' => null,
+      // fbcode_builder is shared between several projects, but it's easiest
+      // to just copy it into each project's Github repo.
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'fbcode_builder.py' =>
+        FBCodeBuilder::DEST_FBCODE_BUILDER.'fbcode_builder.py',
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'travis.yml' => '.travis.yml',
+      // Proxygen is only interested in the Github revisions its dependencies.
+      FBCodeBuilder::SRC_GITHUB_HASHES.'wangle-rev.txt' =>
+        FBCodeBuilder::DEST_GITHUB_HASHES.'wangle-rev.txt',
+      FBCodeBuilder::SRC_GITHUB_HASHES.'fbthrift-rev.txt' => null,
+    };
+  }
+}

@@ -1,0 +1,27 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookDucklingTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      '.arcconfig' => null,
+      'Constants.hs' => null,
+      FacebookDuckling::ROOT.'ExampleMain.hs' => 'ExampleMain.hs',
+      FacebookDuckling::ROOT.'duckling.cabal' => 'duckling.cabal',
+      FacebookDuckling::ROOT.'Duckling/Time/EN/Rules.hs' =>
+        'Duckling/Time/EN/Rules.hs',
+      FacebookDuckling::ROOT.'Duckling/Engine/Regex.hs' => null,
+      FacebookDuckling::ROOT.'github/Duckling/Engine/Regex.hs' =>
+        'Duckling/Engine/Regex.hs',
+      FacebookDuckling::ROOT.'Duckling/Custom/Foo.hs' => null,
+      FacebookDuckling::ROOT.'tests/Duckling/Custom/Tests.hs' => null,
+    };
+  }
+}

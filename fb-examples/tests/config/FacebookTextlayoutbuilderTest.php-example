@@ -1,0 +1,31 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookTextlayoutbuilderTest extends FBConfigBaseTest {
+  const string ROOT = 'fbandroid/libraries/textlayoutbuilder/library/src/';
+  const string DEST = 'library/src/';
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      // Test files that should exist and are mapped to the root
+      self::ROOT.'main/AndroidManifest.xml' =>
+          self::DEST.'main/AndroidManifest.xml',
+      self::ROOT.'res/values/attrs.xml' =>
+          self::DEST.'res/values/attrs.xml',
+      self::ROOT.'main/java/com/facebook/fbui/textlayoutbuilder/TextLayoutBuilder.java' =>
+          self::DEST.'main/java/com/facebook/fbui/textlayoutbuilder/TextLayoutBuilder.java',
+
+      // Test neighbor dirs are not included
+      'fbandroid/libraries/fresco/imagepipeline-base/BUCK' => null,
+      'fbandroid/java/com/facebook/fbui/widget/layout/ImageBlockLayout.java' =>
+          null,
+    };
+  }
+}

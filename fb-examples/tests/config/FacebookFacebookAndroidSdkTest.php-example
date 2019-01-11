@@ -1,0 +1,39 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookFacebookAndroidSdkTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      FacebookFacebookAndroidSdk::ROOT.
+      'facebook/src/main/java/com/facebook/all/All.java' =>
+        'facebook/src/main/java/com/facebook/all/All.java',
+      FacebookFacebookAndroidSdk::ROOT.
+      'facebook-core/src/main/java/com/facebook/AccessToken.java' =>
+        'facebook-core/src/main/java/com/facebook/AccessToken.java',
+      FacebookFacebookAndroidSdk::ROOT.'README.mdown' => 'README.mdown',
+      FacebookFacebookAndroidSdk::ROOT.'NOTICE.txt' => 'NOTICE.txt',
+      FacebookFacebookAndroidSdk::ROOT.'gradle.properties' =>
+        'gradle.properties',
+      FacebookFacebookAndroidSdk::ROOT.'build.gradle' => 'build.gradle',
+      FacebookFacebookAndroidSdk::ROOT.'facebook-applinks/build.gradle' =>
+        'facebook-applinks/build.gradle',
+
+      FacebookFacebookAndroidSdk::ROOT.'build/' => null,
+      FacebookFacebookAndroidSdk::ROOT.'androidsdk.iml' => null,
+      FacebookFacebookAndroidSdk::ROOT.'facebook-applinks/BUCK' => null,
+      FacebookFacebookAndroidSdk::ROOT.'facebook/BUCK' => null,
+      FacebookFacebookAndroidSdk::ROOT.'facebook-applinks/build/' => null,
+      FacebookFacebookAndroidSdk::ROOT.
+      'facebook-applinks/facebook-applinks.iml' => null,
+      FacebookFacebookAndroidSdk::ROOT.'facebook/facebook.iml' => null,
+      FacebookFacebookAndroidSdk::ROOT.'internal/' => null,
+    };
+  }
+}

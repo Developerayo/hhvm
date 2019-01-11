@@ -1,0 +1,25 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookFbossTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/fboss/NormalFile.h' => 'fboss/NormalFile.h',
+      'fbcode/fboss/github/GithubFile.txt' => 'GithubFile.txt',
+      'fbcode/fboss/Main.cpp' => 'fboss/Main.cpp',
+      'fbcode/fboss/common/README.md' => 'common/README.md',
+      'fbcode/fboss/TARGETS' => null,
+      'fbcode/fboss/common/fb303/if/TARGETS' => null,
+      'fbcode/fboss/facebook/secret' => null,
+      'fbcode/fboss/THIRD-PARTY-VERSIONS' => null,
+      'fbcode/fboss/tphacks' => null,
+    };
+  }
+}

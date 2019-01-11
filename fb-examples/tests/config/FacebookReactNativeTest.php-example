@@ -1,0 +1,70 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+use type Facebook\ShipIt\{
+  ShipItRepoHG,
+};
+
+final class FacebookReactNativeTest extends FBConfigBaseTest {
+  const string ROOT = 'xplat/js/react-native-github';
+
+  public function testPullRequestAuthorAttribution(): void {
+    $in = ShipItRepoHG::getChangesetFromExportedPatch(
+      \file_get_contents(
+        __DIR__.'/hg-diffs/react-native-pull-request.header',
+      ),
+      \file_get_contents(
+        __DIR__.'/hg-diffs/react-native-pull-request.patch',
+      ),
+    );
+    $this->assertNotNull($in);
+    assert($in !== null); // for typechecker
+    $out = static::map($in);
+
+    $this->assertSame('Brent Vatne <brentvatne@gmail.com>', $out->getAuthor());
+  }
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      self::ROOT.'/foo' => 'foo',
+      // Commonly FB-only files.
+      //
+      // This is not an exhaustive list, and should not be used to create a
+      // whitelist: react-native-github is explicitly a public directory.
+      //
+      // This test is to prevent accidental breakage.
+      self::ROOT.'/foo.mk' => 'foo.mk',
+      self::ROOT.'/.github.flowconfig' => '.flowconfig',
+      self::ROOT.'/foo/.github.flowconfig' => 'foo/.flowconfig',
+      self::ROOT.'/foo.github.flowconfig' => 'foo.github.flowconfig',
+      self::ROOT.'/templates/_flowconfig' => 'templates/_flowconfig',
+      self::ROOT.'/.github.flowconfig.android' => '.flowconfig.android',
+      self::ROOT.'/foo/.github.flowconfig.android' => 'foo/.flowconfig.android',
+      self::ROOT.'/foo.github.flowconfig.android' =>
+        'foo.github.flowconfig.android',
+      self::ROOT.'/templates/_flowconfig.android' =>
+        'templates/_flowconfig.android',
+      self::ROOT.'/ReactAndroid/libs/BUCK' => 'ReactAndroid/libs/BUCK',
+      self::ROOT.'/java/com/facebook/foo' => 'java/com/facebook/foo',
+      self::ROOT.'/ReactAndroid/DEFS' => 'ReactAndroid/DEFS',
+      // FB internal build of RN should be stripped
+      self::ROOT.'Libraries/Renderer/fb/ReactFabric-dev.js' => null,
+      self::ROOT.'Libraries/Renderer/fb/ReactFabric-prod.js' => null,
+      self::ROOT.'Libraries/Renderer/fb/ReactFeatureFlags.js' => null,
+      self::ROOT.'Libraries/Renderer/fb/ReactNativeRenderer-dev.js' => null,
+      self::ROOT.'Libraries/Renderer/fb/ReactNativeRenderer-prod.js' => null,
+      // Node-related stuff we don't want to push to GitHub
+      self::ROOT.'/node_modules/foo' => null,
+      self::ROOT.'/npm-shrinkwrap.json' => null,
+      // Buck files used for workspaces must not be pushed to GitHub
+      self::ROOT.'/BUCK' => null,
+    };
+  }
+}

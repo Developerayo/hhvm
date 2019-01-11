@@ -1,0 +1,56 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookRedexTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return self::getExampleMasterPathMappings();
+  }
+
+  private static function getExampleMasterPathMappings(
+  ): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbandroid/native/liblocator/README' => 'liblocator/README',
+      'fbandroid/native/redex/foo' => 'foo',
+      'xplat/sparta/foo' => 'sparta/foo',
+      'xplat/sparta/include/AbstractDomain.h' => 'sparta/include/AbstractDomain.h',
+      'fbandroid/not_redex/foo' => null,
+      'fbandroid/native/redex-stable/foo' => null,
+      'fbandroid/native/redex/REDEX_DEFS' => null,
+      'fbandroid/native/redex/REDEX_TEST_DEFS' => null,
+      'fbandroid/native/redex/redex_defs.bzl' => null,
+      'fbandroid/native/redex/redex_test_defs.bzl' => null,
+    };
+  }
+
+  private static function getExampleStablePathMappings(
+  ): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbandroid/native/liblocator/README' => 'liblocator/README',
+      'fbandroid/native/redex/foo' => null,
+      'fbandroid/not_redex/foo' => null,
+      'fbandroid/native/redex-stable/foo' => 'foo',
+      'xplat/sparta/foo' => 'sparta/foo',
+      'xplat/sparta/include/AbstractDomain.h' => 'sparta/include/AbstractDomain.h',
+      'fbandroid/native/redex-stable/REDEX_DEFS' => null,
+      'fbandroid/native/redex-stable/REDEX_TEST_DEFS' => null,
+      'fbandroid/native/redex-stable/redex_defs.bzl' => null,
+      'fbandroid/native/redex-stable/redex_test_defs.bzl' => null,
+    };
+  }
+
+  <<__Override>>
+  protected static function getExampleBranchMappings(
+  ): ImmMap<string, ImmMap<string, ?string>> {
+    return ImmMap {
+      'master' => self::getExampleMasterPathMappings(),
+      'stable' => self::getExampleStablePathMappings(),
+    };
+  }
+}

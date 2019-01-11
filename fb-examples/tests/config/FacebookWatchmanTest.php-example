@@ -1,0 +1,38 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+use type Facebook\ShipIt\FBCodeBuilder;
+
+final class FacebookWatchmanTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      # Example things that *should* make it through.
+      'fbcode/watchman/runtests.sh' => 'runtests.sh',
+      'fbcode/watchman/.travis.yml' => '.travis.yml',
+      # Contents of facebook/ directories should also be excluded.
+      'fbcode/watchman/facebook/add-to-yum.sh' => null,
+      # java clent build file should be published
+      'fbcode/watchman/java/BUCK' => 'java/BUCK',
+      # TARGETS file should no longer by published
+      'fbcode/watchman/TARGETS' => null,
+      'fbcode/watchman/defs.bzl' => null,
+
+      // fbcode_builder is shared between several projects, but it's easiest
+      // to just copy it into each project's Github repo.
+      FBCodeBuilder::SRC_FBCODE_BUILDER.'fbcode_builder.py' =>
+        FBCodeBuilder::DEST_FBCODE_BUILDER.'fbcode_builder.py',
+      FBCodeBuilder::SRC_GITHUB_HASHES.'folly-rev.txt' =>
+        FBCodeBuilder::DEST_GITHUB_HASHES.'folly-rev.txt',
+      FBCodeBuilder::SRC_GITHUB_HASHES.'wangle-rev.txt' =>
+        FBCodeBuilder::DEST_GITHUB_HASHES.'wangle-rev.txt',
+
+    };
+  }
+}

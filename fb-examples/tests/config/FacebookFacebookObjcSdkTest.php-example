@@ -1,0 +1,47 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookFacebookObjcSdkTest extends FBConfigBaseTest {
+  const string ROOT = 'fbobjc/ios-sdk/';
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      self::ROOT.'.DS_Store' => null,
+      self::ROOT.'.hgsub' => null,
+      self::ROOT.'.hgsubstate' => null,
+      self::ROOT.'BUCK' => null,
+      self::ROOT.'README.fb' => null,
+      self::ROOT.'AccountKit/AccountKit/AccountKit.h' => null,
+      self::ROOT.'AccountKit' => null,
+      self::ROOT.'Carthage' => null,
+      self::ROOT.'Carthage/Checkouts/Bolts-ObjC/README.md' => null,
+      self::ROOT.'ads' => null,
+      self::ROOT.'internal' => null,
+      self::ROOT.
+        'samples/LoginSample/Entitlements/Entitlements-Dev.plist' =>
+        null,
+      self::ROOT.
+        'samples/LoginSample/Entitlements/Entitlements-Master.plist' =>
+        null,
+      self::ROOT.
+        'samples/LoginSample/Entitlements/Entitlements-Release.plist' =>
+        null,
+      self::ROOT.
+        'samples/LoginSample/LoginSample/SupportingFiles/Buck-Info.plist' =>
+        null,
+      self::ROOT.'samples/LoginSample/build-buck.sh' => null,
+      self::ROOT.'samples/LoginSample/LoginSample/AppDelegate.h' =>
+        'samples/LoginSample/LoginSample/AppDelegate.h',
+      self::ROOT.'FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit.h' =>
+        'FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit.h',
+      self::ROOT.'README.md' => 'README.md',
+    };
+  }
+}

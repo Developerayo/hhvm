@@ -147,7 +147,7 @@ final class $test_class_name extends FBConfigBaseTest {
 
 EOF;
     $test_path = $config->getBaseDirectory().
-      '/tests/config/'.$subpath.'/'.$github_org.'/'.$github_project.'Test.php';
+      '/tests/config/'.$subpath.'/'.$test_class_name.'.php';
     \printf("  Generating %s\n", $test_path);
     $test_dir = \dirname($test_path);
     if (!\file_exists($test_dir)) {
@@ -167,7 +167,7 @@ EOF;
     (new ShipItShellCommand(
       $config->getBaseDirectory().'/../',
       './shipit/hhvm_wrapper',
-      'vendor/bin/hh-autoload',
+      'vendor/hhvm/hhvm-autoload/bin/hh-autoload',
     ))
       ->runSynchronously();
   }

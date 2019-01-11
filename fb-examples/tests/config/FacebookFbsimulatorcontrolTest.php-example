@@ -1,0 +1,20 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookFbsimulatorcontrolTest extends FBConfigBaseTest {
+  const string ROOT = FacebookFbsimulatorcontrol::ROOT;
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      self::ROOT.'magicDir/File.foo' => 'magicDir/File.foo',
+      self::ROOT.'file.foo' => 'file.foo',
+    };
+  }
+}

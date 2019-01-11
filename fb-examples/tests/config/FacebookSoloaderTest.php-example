@@ -1,0 +1,33 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookSoloaderTest extends FBConfigBaseTest {
+  const string ROOT = 'fbandroid/libraries/soloader';
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      // Don't export outside of the ROOT.
+      'java/com/facebook/BUCK' => null,
+
+      // Do export BUCK files.
+      self::ROOT.'/BUCK' => 'BUCK',
+      // Do not export FB-internal readmes.
+      self::ROOT.'/README.facebook' => null,
+      // Do export BUCK def files.
+      self::ROOT.'/tools/build_defs/oss/soloader_defs.bzl' => 'tools/build_defs/oss/soloader_defs.bzl',
+      // Do export nested BUCK files.
+      self::ROOT.'/java/com/facebook/soloader/BUCK' =>
+        'java/com/facebook/soloader/BUCK',
+      // Do export source files.
+      self::ROOT.'/java/com/facebook/soloader/DirectorySoSource.java' =>
+        'java/com/facebook/soloader/DirectorySoSource.java',
+    };
+  }
+}

@@ -1,0 +1,20 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookMcrouterTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/mcrouter/Proxy.h' => 'mcrouter/Proxy.h',
+      'fbcode/mcrouter/lib' => 'mcrouter/lib',
+      'fbcode/mcrouter/public_tld/LICENSE' => 'LICENSE',
+      'fbcode/not_mcrouter/lib' => null,
+    };
+  }
+}

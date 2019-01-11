@@ -1,0 +1,57 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookRelayTest extends FBConfigBaseTest {
+  const string JS = 'xplat/js';
+  const string RELAY_OSS = self::JS.'/RKJSModules/Libraries/Relay/oss';
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      // Open source modules.
+      self::RELAY_OSS.'/__github__/yarn.lock' => 'yarn.lock',
+      self::RELAY_OSS.'/__github__/XYZ.js' => 'XYZ.js',
+      self::RELAY_OSS.'/__github__/.flowconfig' => '.flowconfig',
+      self::RELAY_OSS.'/babel-plugin-relay/XYZ.js' =>
+        'packages/babel-plugin-relay/XYZ.js',
+      self::RELAY_OSS.'/react-relay/XYZ.js' =>
+        'packages/react-relay/XYZ.js',
+      self::RELAY_OSS.'/react-relay/compat/XYZ.js' =>
+        'packages/react-relay/compat/XYZ.js',
+      self::RELAY_OSS.'/react-relay/legacy/XYZ.js' =>
+        'packages/react-relay/legacy/XYZ.js',
+      self::RELAY_OSS.'/graphql-compiler/X/Y/Z.js' =>
+        'packages/graphql-compiler/X/Y/Z.js',
+      self::RELAY_OSS.'/relay-compiler/XYZ.js' =>
+        'packages/relay-compiler/XYZ.js',
+      self::RELAY_OSS.'/relay-runtime/XYZ.js' =>
+        'packages/relay-runtime/XYZ.js',
+      self::RELAY_OSS.'/relay-test-utils/MockEnvironment.js' =>
+        'packages/relay-test-utils/MockEnvironment.js',
+
+      // Special cases
+      self::RELAY_OSS.'/README.md' =>
+        null,
+
+      // BUCK files are used for yarn workspaces in BUCK (from xplat/js)
+      self::RELAY_OSS.'/relay-runtime/BUCK' => null,
+      self::RELAY_OSS.'/relay-compiler/BUCK' => null,
+      self::RELAY_OSS.'/relay-compiler/graphql-compiler/BUCK' => null,
+      self::RELAY_OSS.'/relay-test-utils/BUCK' => null,
+
+      // Other "common files"
+      self::RELAY_OSS.'/.patternlint/config.json' => null,
+    };
+  }
+
+  <<__Override>>
+  protected function removesSummariesByDefault(): bool {
+    return true;
+  }
+}

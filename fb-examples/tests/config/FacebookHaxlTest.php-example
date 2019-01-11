@@ -1,0 +1,25 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookHaxlTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/haxl/core/foo' => 'foo',
+      'fbcode/haxl/core/foo/bar' => 'foo/bar',
+      'fbcode/haxl/core/tests/Main.hs' => null, // FB-internal test runner
+      'fbcode/haxl/core/TARGETS' => null,
+      'fbcode/haxl/core/foo/TARGETS' => null,
+      'fbcode/haxl/core/open-source/foo' => null, // OSS export/import scripts
+      'fbcode/haxl/core/open-source/foo/bar' => null,
+      'fbcode/foo' => null,
+      'fbcode/foo/bar' => null,
+    };
+  }
+}

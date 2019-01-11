@@ -1,0 +1,29 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookMysql56Test extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'storage/rocksdb' => 'storage/rocksdb',
+      'fbcode/not_mysql/foo' => 'fbcode/not_mysql/foo',
+      'src.mk' => 'src.mk',
+      'koko.mk' => 'koko.mk',
+    };
+  }
+
+  <<__Override>>
+  protected static function getExampleBranchMappings(
+  ): ImmMap<string, ImmMap<string, ?string>> {
+    return ImmMap {
+      'fb-mysql-5.6.35' => static::getExamplePathMappings(),
+      'fb-mysql-8.0.13' => static::getExamplePathMappings(),
+    };
+  }
+}

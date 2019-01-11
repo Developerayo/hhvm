@@ -1,0 +1,36 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookFlipperTest extends FBConfigBaseTest {
+
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'xplat/sonar/package.json' => 'package.json',
+      'xplat/sonar/android/build.gradle' => 'android/build.gradle',
+      'xplat/sonar/iOS/FlipperKit/FBCxxUtils/' => null,
+      'xplat/sonar/iOS/Plugins/Facebook/' => null,
+      'xplat/sonar/scripts/facebook/create-plugin.py' => null,
+      'xplat/sonar/scripts/facebook/templates/' => null,
+      'xplat/sonar/src/fb/' => null,
+      'xplat/sonar/third-party/' => null,
+      'xplat/sonar/iOS/Podfile' => 'iOS/Podfile',
+      'xplat/sonar/iOS/FBDefines/BUCK' => null,
+      'xplat/sonar/iOS/BUCK' => null,
+      'xplat/sonar/iOS/Plugins/SonarKitLayoutPlugin/BUCK' => null,
+      'fbandroid/java/com/facebook/sonar/plugins/qpl/' => null,
+      'fbandroid/java/com/facebook/sonar/inject/' => null,
+      'fbandroid/Libraries/fbjni/BUCK' => null,
+      'fbobjc/Libraries/FBCxxUtils/FBCxxUtils/' => 'iOS/FlipperKit/FBCxxUtils/',
+      'fbobjc/Libraries/FBCxxUtils/FBCxxUtils/BUCK' => null,
+      'xplat/sonar/xplat/' => 'xplat/',
+      'xplat/sonar/plugins/facebook/' => null,
+    };
+  }
+}

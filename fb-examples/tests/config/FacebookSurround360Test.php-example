@@ -1,0 +1,32 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookSurround360Test extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/surround360/README.md' => 'README.md',
+      'fbcode/surround360/surround360_camera_ctl/README.md'
+        => 'surround360_camera_ctl/README.md',
+      'fbcode/surround360/surround360_design/README.md'
+        => 'surround360_design/README.md',
+      'fbcode/surround360/surround360_design/3d_models/STEP_files/'
+        .'FB360_V1_21.STEP'
+        => 'surround360_design/3d_models/STEP_files/FB360_V1_21.STEP',
+      'fbcode/surround360/surround360_render/README.md'
+        => 'surround360_render/README.md',
+      'fbcode/surround360/surround360_render/source/util/SystemUtil.h'
+        => 'surround360_render/source/util/SystemUtil.h',
+      'fbcode/surround360/surround360_render/dot_something'
+        => 'surround360_render/.something',
+      'fbcode/surround360/surround360_camera_ctl/dot_something'
+        => 'surround360_camera_ctl/.something',
+    };
+  }
+}

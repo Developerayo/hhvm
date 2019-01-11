@@ -1,0 +1,19 @@
+<?hh // strict
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+namespace Facebook\ShipIt\Config;
+
+final class FacebookThppTest extends FBConfigBaseTest {
+  <<__Override>>
+  public static function getExamplePathMappings(): ImmMap<string, ?string> {
+    return ImmMap {
+      'fbcode/thpp/foo' => 'thpp/foo',
+      'fbcode/thpp/public_tld/foo' => 'foo',
+      'fbcode/thpp/facebook/secret' => null,
+    };
+  }
+}
