@@ -18,7 +18,7 @@ trait FBShipItCLITrait {
    * default handler, this is something fairly meaningless like '#8 {main}'
    */
   final private static function abortWithException(
-    \Exception $ex,
+    \Error $ex,
   ): noreturn {
     $first_line = \sprintf(
       "Fatal error: Uncaught exception '%s' with message '%s'",

@@ -165,17 +165,9 @@ EOF;
     // Finally, update the autoload maps.
     \printf("  Updating autoload.php\n");
     (new ShipItShellCommand(
-      $config->getBaseDirectory(),
-      'php',
-      'bin/generate-autoload-map.php',
-    ))
-      ->runSynchronously();
-
-    \printf("  Updating tagit/autoload.php\n");
-    (new ShipItShellCommand(
-      $config->getBaseDirectory(),
-      'php',
-      '../tagit/bin/generate-autoload-map.php',
+      $config->getBaseDirectory().'/../',
+      './shipit/hhvm_wrapper',
+      'vendor/bin/hh-autoload',
     ))
       ->runSynchronously();
   }
