@@ -2,4 +2,4 @@
 # Not a full path, so be careful about changing directories
 DIR=$( dirname "${BASH_SOURCE[0]}" )
 
-SHIPIT_HHVM_WRAPPER=1 /usr/local/hphpi/bin/hhvm -c "${DIR}/fb_shipit.ini" "$@"
+SHIPIT_HHVM_WRAPPER=1 /usr/local/hphpi/legacy/bin/hhvm -c "${DIR}/fb_shipit.ini" "$@"
